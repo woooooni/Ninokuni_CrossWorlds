@@ -251,6 +251,24 @@ void CState_CurlingGame_Launch_Stone::Calculate_Score()
 
 	m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iScore = iCurScores[CCurlingGame_Manager::PARTICIPANT_PLAYER];
 	m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iScore = iCurScores[CCurlingGame_Manager::PARTICIPANT_NPC];
+
+	/* Send To Ui - Score */
+	{
+		/* Player */
+		{
+			CUI_Minigame_Curling_Base* pUi = CUIMinigame_Manager::GetInstance()->Get_MiniGame_Curling_Ui((_uint)MG_CL_UI_TYPE::SCORE_PLAYER);
+			if (nullptr != pUi)
+				pUi->Send_Message_Int(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iScore);
+		}
+		/* Npc */
+		{
+			CUI_Minigame_Curling_Base* pUi = CUIMinigame_Manager::GetInstance()->Get_MiniGame_Curling_Ui((_uint)MG_CL_UI_TYPE::SCORE_NPC);
+			if (nullptr != pUi)
+				pUi->Send_Message_Int(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iScore);
+
+		}
+	}
+
 }
 
 void CState_CurlingGame_Launch_Stone::Send_To_Ui()

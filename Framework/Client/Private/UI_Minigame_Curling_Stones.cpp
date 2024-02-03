@@ -27,24 +27,26 @@ HRESULT CUI_Minigame_Curling_Stones::Initialize_Prototype()
 HRESULT CUI_Minigame_Curling_Stones::Initialize(void* pArg)
 {
 	CUI::UI_INFO UIDesc = {};
-
-	const Vec2 vPosDelta	= { g_vWinCenter.x * 0.815f, g_vWinCenter.y * 0.475f };
-	const Vec2 vOriginSize	= { 1100.f, 220.f };
-	const Vec2 vSizeMag		= { 0.275f, 0.275f };
-
-	if (m_bPlayerType)
 	{
-		UIDesc.fX = g_vWinCenter.x + vPosDelta.x;
-		UIDesc.fY = g_vWinCenter.y + vPosDelta.y;
-	}
-	else
-	{
-		UIDesc.fX = g_vWinCenter.x - vPosDelta.x;
-		UIDesc.fY = g_vWinCenter.y + vPosDelta.y;
+		const Vec2 vPosDelta	= { g_vWinCenter.x * 0.815f, g_vWinCenter.y * 0.475f };
+		const Vec2 vOriginSize	= { 1100.f, 220.f };
+		const Vec2 vSizeMag		= { 0.275f, 0.275f };
+
+		if (m_bPlayerType)
+		{
+			UIDesc.fX = g_vWinCenter.x + vPosDelta.x;
+			UIDesc.fY = g_vWinCenter.y + vPosDelta.y;
+		}
+		else
+		{
+			UIDesc.fX = g_vWinCenter.x - vPosDelta.x;
+			UIDesc.fY = g_vWinCenter.y + vPosDelta.y;
+		}
+
+		UIDesc.fCX = vOriginSize.x * vSizeMag.x;
+		UIDesc.fCY = vOriginSize.y * vSizeMag.y;
 	}
 
-	UIDesc.fCX = vOriginSize.x * vSizeMag.x;
-	UIDesc.fCY = vOriginSize.y * vSizeMag.y;
 	
 	if (FAILED(__super::Initialize(&UIDesc)))
 		return E_FAIL;
@@ -91,11 +93,9 @@ HRESULT CUI_Minigame_Curling_Stones::Render()
 	return S_OK;
 }
 
-HRESULT CUI_Minigame_Curling_Stones::Send_Message_Int(const _int& iValue)
+void CUI_Minigame_Curling_Stones::Send_Message_Int(const _int& iValue)
 {
 	m_iCurStones = iValue;
-
-	return S_OK;
 }
 
 HRESULT CUI_Minigame_Curling_Stones::Ready_Components()

@@ -18,7 +18,7 @@ public:
 	virtual HRESULT	Render();
 
 public:
-	virtual HRESULT Send_Message_Int(const _int& iValue);
+	virtual void	Send_Message_Int(const _int& iValue);
 
 private:
 	virtual HRESULT	Ready_Components() override;

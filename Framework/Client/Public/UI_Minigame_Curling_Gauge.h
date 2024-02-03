@@ -18,8 +18,8 @@ public:
 	virtual HRESULT	Render();
 
 public:
-	virtual HRESULT Send_Message() override;
-	virtual HRESULT Send_Message_Float(const _float& fValue) override;
+	virtual void	Send_Message() override;
+	virtual void	Send_Message_Float(const _float& fValue) override;
 
 private:
 	virtual HRESULT	Ready_Components() override;

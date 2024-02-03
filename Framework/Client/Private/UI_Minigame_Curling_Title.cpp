@@ -22,12 +22,13 @@ HRESULT CUI_Minigame_Curling_Title::Initialize_Prototype()
 
 HRESULT CUI_Minigame_Curling_Title::Initialize(void* pArg)
 {
-	const Vec2 vPosDelta	= { g_vWinCenter.x * 0.f, g_vWinCenter.y * -0.85f };
-	const Vec2 vOriginSize	= { 1760.f, 220.f };
-	const Vec2 vSizeMag		= { 0.6f, 0.6f };
 
 	CUI::UI_INFO UIDesc = {};
 	{
+		const Vec2 vPosDelta	= { g_vWinCenter.x * 0.f, g_vWinCenter.y * -0.85f };
+		const Vec2 vOriginSize	= { 1760.f, 220.f };
+		const Vec2 vSizeMag		= { 0.6f, 0.6f };
+
 		UIDesc.fX = g_vWinCenter.x + vPosDelta.x;
 		UIDesc.fY = g_vWinCenter.y + vPosDelta.y;
 		UIDesc.fCX = vOriginSize.x * vSizeMag.x;
@@ -70,14 +71,11 @@ HRESULT CUI_Minigame_Curling_Title::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	/* Frame */
-	{
-		m_iPass = 1; // PS_MAIN_ALPHA
+	m_iPass = 1; // PS_MAIN_ALPHA
 
-		m_pShaderCom->Begin(m_iPass);
+	m_pShaderCom->Begin(m_iPass);
 
-		m_pVIBufferCom->Render();
-	}
+	m_pVIBufferCom->Render();
 
 	return S_OK;
 }
@@ -126,7 +124,7 @@ HRESULT CUI_Minigame_Curling_Title::Add_Text()
 		desc.strText	= L"CURLING  GAME";
 		desc.strFontTag = L"Default_Bold";
 		desc.vScale		= Vec2{ 0.8f };
-		desc.vPosition	= { g_iWinSizeX * 0.42f, g_iWinSizeY * 0.06f };
+		desc.vPosition	= { g_iWinSizeX * 0.42f, g_iWinSizeY * 0.055f };
 		desc.vColor		= (Vec4)DirectX::Colors::White;
 	}
 

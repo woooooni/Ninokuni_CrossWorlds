@@ -78,21 +78,17 @@ HRESULT CUI_Minigame_Curling_Gauge::Render()
 	return S_OK;
 }
 
-HRESULT CUI_Minigame_Curling_Gauge::Send_Message()
+void CUI_Minigame_Curling_Gauge::Send_Message()
 {
 	m_tLerpProgress.Start(0.f, 2.f, LERP_MODE::SMOOTHER_STEP);
-
-	return S_OK;
 }
 
-HRESULT CUI_Minigame_Curling_Gauge::Send_Message_Float(const _float& fValue)
+void CUI_Minigame_Curling_Gauge::Send_Message_Float(const _float& fValue)
 {
 	if (m_tLerpProgress.bActive)
 		m_tLerpProgress.Clear();
 
 	m_tLerpProgress.fCurValue = fValue;
-
-	return S_OK;
 }
 
 HRESULT CUI_Minigame_Curling_Gauge::Ready_Components()

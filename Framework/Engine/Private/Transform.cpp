@@ -147,7 +147,6 @@ void CTransform::Set_Scale(_float3 vScale)
 		XMVector3Normalize(Get_State(CTransform::STATE_LOOK)) * vScale.z);
 }
 
-
 _float3 CTransform::Get_Scale()
 {
 	return _float3(

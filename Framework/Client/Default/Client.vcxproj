@@ -341,6 +341,7 @@
     <ClInclude Include="..\Public\UI_Minigame_Curling_Base.h" />
     <ClInclude Include="..\Public\UI_Minigame_Curling_Gauge.h" />
     <ClInclude Include="..\Public\UI_Minigame_Curling_Info.h" />
+    <ClInclude Include="..\Public\UI_Minigame_Curling_Score.h" />
     <ClInclude Include="..\Public\UI_Minigame_Curling_Stones.h" />
     <ClInclude Include="..\Public\UI_Minigame_Curling_Title.h" />
     <ClInclude Include="..\Public\UI_Minigame_WorldHP.h" />
@@ -1374,6 +1375,7 @@
     <ClCompile Include="..\Private\UI_Minigame_Curling_Base.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Curling_Gauge.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Curling_Info.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_Curling_Score.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Curling_Stones.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Curling_Title.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_WorldHP.cpp" />

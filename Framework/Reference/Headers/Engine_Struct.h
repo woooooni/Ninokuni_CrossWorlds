@@ -544,6 +544,22 @@ namespace Engine
 			eMode = _eMode;
 		}
 
+		void Start(const Vec3& _fTargetValue, const _float& _fTime, const LERP_MODE& _eMode = LERP_MODE::DEFAULT)
+		{
+			if (_fTime < 0)
+				return;
+
+			bActive = TRUE;
+
+			fCurTime = 0.f;
+			fEndTime = _fTime;
+
+			vStartVec = vCurVec;
+			vTargetVec = _fTargetValue;
+
+			eMode = _eMode;
+		}
+
 		void Clear()
 		{
 			bActive = FALSE;
@@ -604,6 +620,22 @@ namespace Engine
 			fEndTime = _fTime;
 
 			vStartVec = vCurVec = _fStartValue;
+			vTargetVec = _fTargetValue;
+
+			eMode = _eMode;
+		}
+
+		void Start(const Vec4& _fTargetValue, const _float& _fTime, const LERP_MODE& _eMode = LERP_MODE::DEFAULT)
+		{
+			if (_fTime < 0)
+				return;
+
+			bActive = TRUE;
+
+			fCurTime = 0.f;
+			fEndTime = _fTime;
+
+			vStartVec = vCurVec;
 			vTargetVec = _fTargetValue;
 
 			eMode = _eMode;
