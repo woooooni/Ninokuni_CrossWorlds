@@ -17,6 +17,9 @@ public:
 	virtual void Tick_State(_float fTimeDelta);
 	virtual void Exit_State();
 
+private:
+	_bool m_bDownEffectCreate = false;
+
 public:
 	static CGlanixState_RageStamp* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

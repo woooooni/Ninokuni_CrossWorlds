@@ -18,7 +18,7 @@ CVfx_Glanix_Skill_RageStamp::CVfx_Glanix_Skill_RageStamp(const CVfx_Glanix_Skill
 
 HRESULT CVfx_Glanix_Skill_RageStamp::Initialize_Prototype()
 {
-	m_bOwnerStateIndex = CGlanix::GLANIX_RAGE2WAVE;
+	//m_bOwnerStateIndex = CGlanix::GLANIX_RAGE2WAVE;
 
 	m_iMaxCount = TYPE_END;
 	m_pFrameTriger    = new _int[m_iMaxCount];
@@ -42,20 +42,26 @@ HRESULT CVfx_Glanix_Skill_RageStamp::Initialize(void* pArg)
 
 void CVfx_Glanix_Skill_RageStamp::Tick(_float fTimeDelta)
 {
-	__super::Tick(fTimeDelta);
-
-	if (!m_bOwnerTween)
+	if (nullptr == m_pOwnerObject || true == m_bDead)
 	{
-		if (m_iCount == TYPE_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_CIRCLELINE])
-		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_FootDown_TrailLine"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_CIRCLELINE], m_pScaleOffset[TYPE_E_CIRCLELINE], m_pRotationOffset[TYPE_E_CIRCLELINE]);
-			m_iCount++;
-		}
-
-		else if (m_iCount == TYPE_END)
-			m_bFinish = true;
+		Set_Dead(true);
+		return;
 	}
+
+	CTransform* pOwnerTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr != pOwnerTransform)
+		m_WorldMatrix = pOwnerTransform->Get_WorldFloat4x4();
+
+	GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_JumpDown_Circle"),
+		XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.5f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+
+	GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_FootDown_Smoke"),
+		XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.7f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+
+	GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_JumpDown_TrailLine"),
+		XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.1f, 0.f), _float3(2.5f, 2.5f, 2.5f), _float3(0.f, 0.f, 0.f));
+
+	Set_Dead(true);
 }
 
 void CVfx_Glanix_Skill_RageStamp::LateTick(_float fTimeDelta)

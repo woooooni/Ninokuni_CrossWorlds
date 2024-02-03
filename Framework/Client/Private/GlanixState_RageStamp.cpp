@@ -15,6 +15,8 @@
 #include "StateMachine.h"
 #include "Glanix_IcePillar_Controller.h"
 
+#include "Effect_Manager.h"
+
 CGlanixState_RageStamp::CGlanixState_RageStamp(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -30,6 +32,7 @@ HRESULT CGlanixState_RageStamp::Initialize(const list<wstring>& AnimationList)
 void CGlanixState_RageStamp::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_RageFinalStamp"));
+	m_bDownEffectCreate = false;
 }
 
 void CGlanixState_RageStamp::Tick_State(_float fTimeDelta)
@@ -65,9 +68,15 @@ void CGlanixState_RageStamp::Tick_State(_float fTimeDelta)
 			if (nullptr != m_pGlanix->Get_PillarsController() && fDist <= m_pGlanix->Get_PillarsController()->Get_DeathDistnace())
 				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Decrease_HP(999);
 		}
+
+		if (false == m_bDownEffectCreate)
+		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_RageStamp"), m_pTransformCom->Get_WorldMatrix(), m_pGlanix);
+			m_bDownEffectCreate = true;
+		}
 	}
 
-	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
+	else if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_STUN);
 	}
