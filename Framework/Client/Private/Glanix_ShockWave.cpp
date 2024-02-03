@@ -3,6 +3,7 @@
 
 #include "GameInstance.h"
 #include "Glanix.h"
+#include "Effect_Manager.h"
 
 CGlanix_ShockWave::CGlanix_ShockWave(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CMonsterProjectile(pDevice, pContext, strObjectTag)
@@ -50,7 +51,8 @@ void CGlanix_ShockWave::Tick(_float fTimeDelta)
 {
 	if (false == m_bEffect)
 	{
-
+		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_ShockWave"),
+			m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.05f, -0.135f), _float3(1000.f, 5.f, 50.f), _float3(0.f, 0.f, 0.f), this);
 
 		m_bEffect = true;
 	}
@@ -131,6 +133,7 @@ HRESULT CGlanix_ShockWave::Ready_Components()
 		m_pTransformCom->Set_WorldMatrix(m_pGlanix->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_WorldMatrix());
 
 		Vec4 vWavePos = m_pTransformCom->Get_Position();
+		vWavePos += m_pTransformCom->Get_State(CTransform::STATE_LOOK) * 5.f;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vWavePos);
 		// m_pTransformCom->Set_Scale(Vec3(1.f, 1.f, 1.f));
 
