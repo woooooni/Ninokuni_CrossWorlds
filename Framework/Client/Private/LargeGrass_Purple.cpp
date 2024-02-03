@@ -46,8 +46,6 @@ void CLargeGrass_Purple::Tick(_float fTimeDelta)
 
 void CLargeGrass_Purple::LateTick(_float fTimeDelta)
 {
-	__super::LateTick(fTimeDelta);
-
 	Compute_CamZ(m_pTransformCom->Get_Position());
 
 	if (m_fCamDistance <= 60.0f && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.0f))

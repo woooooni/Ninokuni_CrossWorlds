@@ -20,8 +20,10 @@ CUI_CostumeTab_Map::CUI_CostumeTab_Map(const CUI_CostumeTab_Map& rhs)
 
 void CUI_CostumeTab_Map::Set_Active(_bool bActive)
 {
-	//if (true == bActive)
-		//m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
+	if (bActive)
+		m_pRendererCom->Set_RenderSwitch(CRenderer::RENDER_SWITCH::UIMESH_SWITCH, true);
+	else
+		m_pRendererCom->Set_RenderSwitch(CRenderer::RENDER_SWITCH::UIMESH_SWITCH, false);
 
 	m_bActive = bActive;
 }
