@@ -391,15 +391,15 @@ HRESULT CRenderer::Draw_World()
 	if (FAILED(Render_Distortion()))
 		return E_FAIL;
 
+	
+	if (true == m_bRenderSwitch[RENDER_SWITCH::GODRAY_SWITCH])
+	{
+		if (FAILED(Render_GodRay()))
+			return E_FAIL;
 
-	if (FAILED(Render_GodRay()))
-		return E_FAIL;
-
-	//if (FAILED(Render_AlphaBlendTargetMix(TEXT("Target_GodRay"), TEXT("MRT_Blend"), false)))
-	//	return E_FAIL;
-
-	if (FAILED(Render_LensFlare()))
-		return E_FAIL;
+		if (FAILED(Render_LensFlare()))
+			return E_FAIL;
+	}
 
 	if (FAILED(Render_AlphaBlend()))
 		return E_FAIL;
@@ -480,52 +480,48 @@ HRESULT CRenderer::Draw_UI()
 	{
 		//if (FAILED(Render_Shadow_UI()))
 		//	return E_FAIL;
-
-		if (FAILED(Render_NonBlend_UI()))
-			return E_FAIL;
-
-		if (FAILED(Render_Stencil_ONLY()))
-			return E_FAIL;
-
-		if (FAILED(Render_Reflect_Object()))
-			return E_FAIL;
-
-		if (FAILED(Render_Blending_Mirror()))
-			return E_FAIL;
-
-		if (FAILED(Render_AlphaBlendTargetMix(TEXT("Target_Blending_Mirror"), TEXT("MRT_Blend"), false)))
-			return E_FAIL;
-
-		if (FAILED(Render_Lights_UI()))
-			return E_FAIL;
-	}
-
-	// PostEffect : Bloom / OutLine
-	{
-		// Target : Bloom
+		if (true == m_bRenderSwitch[RENDER_SWITCH::UIMESH_SWITCH])
 		{
-			if (m_bBlomDraw)
+			if (FAILED(Render_NonBlend_UI()))
+				return E_FAIL;
+
+			if (FAILED(Render_Stencil_ONLY()))
+				return E_FAIL;
+
+			if (FAILED(Render_Reflect_Object()))
+				return E_FAIL;
+
+			if (FAILED(Render_Blending_Mirror()))
+				return E_FAIL;
+
+			if (FAILED(Render_AlphaBlendTargetMix(TEXT("Target_Blending_Mirror"), TEXT("MRT_Blend"), false)))
+				return E_FAIL;
+
+			if (FAILED(Render_Lights_UI()))
+				return E_FAIL;
+
 			{
-				if (FAILED(Render_Blur(L"Target_Bloom_UI", L"MRT_Bloom_Blur_UI", true, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
-					return E_FAIL;
+				if (m_bBlomDraw)
+				{
+					if (FAILED(Render_Blur(L"Target_Bloom_UI", L"MRT_Bloom_Blur_UI", true, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
+						return E_FAIL;
+				}
 			}
+
+			// Target : OutLine
+			{
+				if (m_bOutlineDraw)
+				{
+					if (FAILED(Render_OutLine_UI()))
+						return E_FAIL;
+				}
+			}
+
+			if (FAILED(Render_Deferred_UI()))
+				return E_FAIL;
 		}
 
-		// Target : OutLine
-		{
-			if (m_bOutlineDraw)
-			{
-				if (FAILED(Render_OutLine_UI()))
-					return E_FAIL;
-			}
-		}
 	}
-
-
-
-	if (FAILED(Render_Deferred_UI()))
-		return E_FAIL;
-
 
 	if (FAILED(Draw_UIEffect()))
 		return E_FAIL;
@@ -3133,7 +3129,7 @@ void CRenderer::BuildOffsetVectors()
 	mt19937 randEngine;
 	randEngine.seed(std::random_device()());
 	uniform_real_distribution<_float> randF(0.25f, 1.0f);
-	for (_uint i = 0; i < 14; ++i)
+	for (_uint i = 0; i < 26; ++i)
 	{
 		// [0.25, 1.0] 사이의 임의의 벡터를 만든다.
 		_float s = randF(randEngine);

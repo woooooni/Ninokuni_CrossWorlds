@@ -2,6 +2,7 @@
 #include "..\Public\EvermoreWater.h"
 #include "GameInstance.h"
 #include "Light.h"
+#include "Quest_Manager.h"
 
 CEvermoreWater::CEvermoreWater(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CWater(pDevice, pContext, m_strObjectTag, OBJ_TYPE::OBJ_WATER)
@@ -41,9 +42,10 @@ void CEvermoreWater::Tick(_float fTimeDelta)
 
 void CEvermoreWater::LateTick(_float fTimeDelta)
 {
-	__super::LateTick(fTimeDelta);
-
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_NONBLEND, this);
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_BOSS_KILL)
+		return;
+	else
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_NONBLEND, this);
 }
 
 HRESULT CEvermoreWater::Render()

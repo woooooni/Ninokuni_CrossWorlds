@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\Public\Plants.h"
 #include "GameInstance.h"
+#include "Quest_Manager.h"
 
 CPlants::CPlants(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CStaticObject(pDevice, pContext, strObjectTag, eType)
@@ -48,7 +49,14 @@ void CPlants::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
-	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 10.0f))
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_BOSS_KILL)
+	{
+		Compute_CamZ(m_pTransformCom->Get_Position());
+
+		if (m_fCamDistance <= 150.0f && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 10.0f))
+			m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+	}
+	else if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 10.0f))
 	{
 		// Shadow 필요하면 ShadowRender 추가?
 	//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);

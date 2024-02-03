@@ -31,11 +31,11 @@ HRESULT CEntireGrass::Initialize(void* pArg)
 	//_float fBladeHeightMin = 0.4f;
 	//_float fBladeHeightMax = 0.7f;
 
-	m_CBGrass.fTessellationGrassDistance = 0.2f;
+	m_CBGrass.fTessellationGrassDistance = 0.3f;
 	m_CBGrass.fBladeWidthMin = 0.07f;
 	m_CBGrass.fBladeWidthMax = 0.1f;
-	m_CBGrass.fBladeHeightMin = 0.6f;
-	m_CBGrass.fBladeHeightMax = 0.7f;
+	m_CBGrass.fBladeHeightMin = 0.7f;
+	m_CBGrass.fBladeHeightMax = 0.8f;
 
 	return S_OK;
 }
@@ -51,12 +51,10 @@ void CEntireGrass::Tick(_float fTimeDelta)
 
 void CEntireGrass::LateTick(_float fTimeDelta)
 {
-	__super::LateTick(fTimeDelta);
-
 	Compute_CamZ(m_pTransformCom->Get_Position());
 
 	//if (m_fCamDistance <= 60.0f && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.0f))
-		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+	m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 }
 
 HRESULT CEntireGrass::Render()

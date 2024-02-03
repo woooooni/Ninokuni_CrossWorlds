@@ -35,6 +35,8 @@ public:
 
 	enum SCREEN_EFFECT { SWORDMAN_SPLIT = 1, DESTROYER_BREAK, SCREENEFFECT_END };
 
+	enum RENDER_SWITCH { GODRAY_SWITCH, UIMESH_SWITCH, SWITCH_END};
+
 public:
 	typedef struct tagEffectInstancingDesc
 	{
@@ -338,6 +340,17 @@ private:
 	// 구현 필요
 	_bool   m_bPbrDraw  = false;
 
+public:
+	const _bool& Get_RenderSwitch(_uint iIndex) const { return m_bRenderSwitch[iIndex]; }
+	void Set_RenderSwitch(uint32 iIndex, _bool onoff)
+	{
+		if (iIndex >= RENDER_SWITCH::SWITCH_END)
+			return;
+
+		m_bRenderSwitch[iIndex] = onoff;
+	}
+private:
+	_bool  m_bRenderSwitch[RENDER_SWITCH::SWITCH_END] = { true, false };
 
 private:
 	_float m_fRadialBlurQuality = 16.f;

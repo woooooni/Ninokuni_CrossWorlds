@@ -41,8 +41,6 @@ void CWinterWater::Tick(_float fTimeDelta)
 
 void CWinterWater::LateTick(_float fTimeDelta)
 {
-	__super::LateTick(fTimeDelta);
-
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_NONBLEND, this);
 }
 

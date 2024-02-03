@@ -27,10 +27,17 @@ CUI_CharacterDummy::CUI_CharacterDummy(const CUI_CharacterDummy& rhs)
 
 void CUI_CharacterDummy::Set_Active(_bool bActive)
 {
-	m_bActive = bActive;
-
 	if (bActive)
+	{
+		m_pRendererCom->Set_RenderSwitch(CRenderer::RENDER_SWITCH::UIMESH_SWITCH, true);
 		m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
+	}
+	else
+	{
+		m_pRendererCom->Set_RenderSwitch(CRenderer::RENDER_SWITCH::UIMESH_SWITCH, false);
+	}
+
+	m_bActive = bActive;
 }
 
 HRESULT CUI_CharacterDummy::Initialize_Prototype()

@@ -2,6 +2,7 @@
 #include "Grass.h"
 #include "GameInstance.h"
 #include "Mesh.h"
+#include "Quest_Manager.h"
 
 CGrass::CGrass(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_GRASS)
@@ -43,11 +44,16 @@ void CGrass::Tick(_float fTimeDelta)
 
 void CGrass::LateTick(_float fTimeDelta)
 {
-	__super::LateTick(fTimeDelta);
-
 	Compute_CamZ(m_pTransformCom->Get_Position());
 
-	if (m_fCamDistance <= 60.0f && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.0f))
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_BOSS_KILL)
+	{
+		Compute_CamZ(m_pTransformCom->Get_Position());
+
+		if (m_fCamDistance <= 60.0f && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.0f))
+			m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+	}
+	else if (m_fCamDistance <= 60.0f && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.0f))
 		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 }
 
