@@ -37,7 +37,7 @@ private:
 	_bool			m_bPlayerType = false;
 	_uint			m_iCurScore = 0;
 
-	const _uint		m_iInterdigitSpacing = 5;	// 濠葩熱除 除問
+	const _uint		m_iInterdigitSpacing = 60;	// 濠葩熱除 除問
 	CUI::UI_INFO	m_tUIDesc_OriginLeft = {};	// 豭薹 羅 濠葩熱 晦遽 等檜攪
 
 public:

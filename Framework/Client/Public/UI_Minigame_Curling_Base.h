@@ -22,9 +22,6 @@ public:
 	virtual void  Send_Message_Bool(const _bool& bValue) {}
 	virtual void  Send_Message_Int(const _int& iValue) {}
 	virtual void  Send_Message_Float(const _float& fValue) {}
-	virtual void  Send_Message_Wstring(const wstring& wstrValue) {}
-	virtual void  Send_Message_Vec2(const Vec2& vValue) {}
-	virtual void  Send_Message_Vec3(const Vec3& vValue) {}
 
 protected:
 	virtual HRESULT	Ready_Components() override;
