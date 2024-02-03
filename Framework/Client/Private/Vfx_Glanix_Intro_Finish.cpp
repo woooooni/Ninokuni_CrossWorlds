@@ -37,7 +37,7 @@ HRESULT CVfx_Glanix_Intro_Finish::Initialize_Prototype()
 	m_pRotationOffset[TYPE_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 
 	m_pFrameTriger[TYPE_P_ATCHI]    = 84;
-	m_pPositionOffset[TYPE_P_ATCHI] = _float3(1.f, 3.f, 1.f);
+	m_pPositionOffset[TYPE_P_ATCHI] = _float3(1.f, 3.f, 2.f);
 	m_pScaleOffset[TYPE_P_ATCHI]    = _float3(1.f, 1.f, 1.f);
 	m_pRotationOffset[TYPE_P_ATCHI] = _float3(0.f, 0.f, 0.f);
 
