@@ -44,6 +44,9 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	_float m_fTimeAcc = 0.f;
+
+private:
 	class CEffect* m_pHand01Effect = nullptr;
 	class CEffect* m_pHand02Effect = nullptr;
 

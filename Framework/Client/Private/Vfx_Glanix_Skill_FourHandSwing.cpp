@@ -5,6 +5,7 @@
 #include "Effect_Manager.h"
 #include "Glanix.h"
 #include "Effect.h"
+#include "Utils.h"
 
 CVfx_Glanix_Skill_FourHandSwing::CVfx_Glanix_Skill_FourHandSwing(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -250,8 +251,11 @@ void CVfx_Glanix_Skill_FourHandSwing::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_E_TRAIL_07 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_TRAIL_07])
 		{
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_FourHandSwing_Trail_Right"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAIL_07], m_pScaleOffset[TYPE_E_TRAIL_07], m_pRotationOffset[TYPE_E_TRAIL_07]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAIL_07], m_pScaleOffset[TYPE_E_TRAIL_07], m_pRotationOffset[TYPE_E_TRAIL_07], nullptr, &pEffect);
+			if (pEffect != nullptr)
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.15f), CUtils::Random_Float(0.f, 0.15f));
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_P_CIRCLE_07 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_CIRCLE_07])
@@ -268,8 +272,11 @@ void CVfx_Glanix_Skill_FourHandSwing::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_E_TRAIL_08 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_TRAIL_08])
 		{
+		    CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_FourHandSwing_Trail_Left"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAIL_08], m_pScaleOffset[TYPE_E_TRAIL_08], m_pRotationOffset[TYPE_E_TRAIL_08]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAIL_08], m_pScaleOffset[TYPE_E_TRAIL_08], m_pRotationOffset[TYPE_E_TRAIL_08], nullptr, &pEffect);
+			if (pEffect != nullptr)
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.15f), CUtils::Random_Float(0.f, 0.15f));
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_P_CIRCLE_08 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_CIRCLE_08])
@@ -286,8 +293,11 @@ void CVfx_Glanix_Skill_FourHandSwing::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_E_TRAIL_09 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_TRAIL_09])
 		{
+		    CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_FourHandSwing_Trail_Right"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAIL_09], m_pScaleOffset[TYPE_E_TRAIL_09], m_pRotationOffset[TYPE_E_TRAIL_09]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAIL_09], m_pScaleOffset[TYPE_E_TRAIL_09], m_pRotationOffset[TYPE_E_TRAIL_09], nullptr, &pEffect);
+			if (pEffect != nullptr)
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.15f), CUtils::Random_Float(0.f, 0.15f));
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_P_CIRCLE_09 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_CIRCLE_09])
@@ -304,8 +314,11 @@ void CVfx_Glanix_Skill_FourHandSwing::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_E_TRAIL_10 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_TRAIL_10])
 		{
+		CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_FourHandSwing_Trail_Left"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAIL_10], m_pScaleOffset[TYPE_E_TRAIL_10], m_pRotationOffset[TYPE_E_TRAIL_10]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAIL_10], m_pScaleOffset[TYPE_E_TRAIL_10], m_pRotationOffset[TYPE_E_TRAIL_10], nullptr, &pEffect);
+			if (pEffect != nullptr)
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.15f), CUtils::Random_Float(0.f, 0.15f));
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_P_CIRCLE_10 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_CIRCLE_10])
