@@ -12,6 +12,7 @@ CStellia_Crystal_Controller::CStellia_Crystal_Controller()
 	m_fRespawnTime = 3.f;
 	m_iCrystalAmount = 6;
 	m_fSlowTime = 0.1f;
+	m_fLimitTime = 30.f;
 
 	m_vecCrystalType.push_back(CRYSTAL_AURA);
 	m_vecCrystalType.push_back(CRYSTAL_SKY);

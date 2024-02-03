@@ -56,7 +56,7 @@ private:
 	void Crystal_Roaming(_float fTimeDelta);
 
 private:
-	_int		m_iBingoType;
+	_int		m_iBingoType = 0;
 	_int		m_iSelfType = 0;
 	CStellia* m_pStellia = nullptr;
 

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "MainQuestNode_Glanix10.h"
+#include "MainQuestNode_Ending04.h"
 
 #include "GameInstance.h"
 #include "Utils.h"
@@ -11,19 +11,15 @@
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
 
-CMainQuestNode_Glanix10::CMainQuestNode_Glanix10()
+CMainQuestNode_Ending04::CMainQuestNode_Ending04()
 {
 }
 
-HRESULT CMainQuestNode_Glanix10::Initialize()
+HRESULT CMainQuestNode_Ending04::Initialize()
 {
 	__super::Initialize();
 
-	m_strQuestTag = TEXT("[메인]");
-	m_strQuestName = TEXT("국왕 루슬란");
-	m_strQuestContent = TEXT("루슬란과 대화하기");
-
-	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/04.MainQuest_Glanix/MainQuest_Glanix10.json");
+	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/09.MainQuest_Ending/MainQuest_Ending04.json");
 
 	for (const auto& talkDesc : Load) {
 		TALK_DELS sTalkDesc;
@@ -35,14 +31,13 @@ HRESULT CMainQuestNode_Glanix10::Initialize()
 	return S_OK;
 }
 
-void CMainQuestNode_Glanix10::Start()
+void CMainQuestNode_Ending04::Start()
 {
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
-	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
-	m_pRuslan = GI->Find_GameObject(LEVELID::LEVEL_KINGDOMHALL, LAYER_NPC, TEXT("Ruslan"));
+	m_pRuslan = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Ruslan"));
 
 	m_vecTalker.push_back(m_pKuu);
 	m_vecTalker.push_back(m_pRuslan);
@@ -61,7 +56,7 @@ void CMainQuestNode_Glanix10::Start()
 	TalkEvent();
 }
 
-CBTNode::NODE_STATE CMainQuestNode_Glanix10::Tick(const _float& fTimeDelta)
+CBTNode::NODE_STATE CMainQuestNode_Ending04::Tick(const _float& fTimeDelta)
 {
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
@@ -86,7 +81,7 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix10::Tick(const _float& fTimeDelta)
 					pActionCam->Finish_Action_Talk();
 
 				/* 여기서 퀘스트 보상 받기.(퀘스트 보상 다 받으면 return하기.*/
-				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("코에루크 설원의 문제 해결하기"));
+				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("엔딩"));
 				m_bIsRewarding = true;
 			}
 
@@ -104,21 +99,21 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix10::Tick(const _float& fTimeDelta)
 
 	else if (m_bIsRewarding)
 	{
-		if (CUI_Manager::GetInstance()->Is_QuestRewardWindowOff())
+		if (!CUI_Manager::GetInstance()->Is_QuestRewardWindowOff())
 		{
 			m_bIsClear = true;
-			return NODE_STATE::NODE_SUCCESS;
+			return NODE_STATE::NODE_FAIL;
 		}
 	}
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
-void CMainQuestNode_Glanix10::LateTick(const _float& fTimeDelta)
+void CMainQuestNode_Ending04::LateTick(const _float& fTimeDelta)
 {
 }
 
-void CMainQuestNode_Glanix10::TalkEvent()
+void CMainQuestNode_Ending04::TalkEvent()
 {
 	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
 	if (nullptr == pActionCam)
@@ -129,64 +124,72 @@ void CMainQuestNode_Glanix10::TalkEvent()
 	switch (m_iTalkIndex)
 	{
 	case 0:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_00_RuslanSay_Comeback!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_00_RuslanSay_Comeback!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pRuslan->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pRuslan->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Ruslan.ao|Ruslan_CSShowedTrueColors01"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;
 	case 1:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_01_KuuSay_EHem.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_01_KuuSay_EHem.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
-		/* 대화 카메라 타겟 변경 */
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
-		break;
-	case 2:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("02_KuuSay_I_No_Pet.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionAngry"));
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
 		break;
-	case 3:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_03_RuslanSay_ItsThis....ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+	case 2:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("02_KuuSay_I_No_Pet.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pRuslan->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		/* 대화 카메라 타겟 변경 */
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
+		break;
+	case 3:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_01_KuuSay_EHem.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_CatchEvent_Stand"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
 		break;
 	case 4:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_04_RuslanSay_Reward.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_04_RuslanSay_Reward.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
 		break;
 	case 5:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_05_KuuSay_Happy.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_05_KuuSay_Happy.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_Idle02"));
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_RIGTH);
 		break;
 	case 6:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_ImKuu.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		break;
+	case 7:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_ImKuu.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		break;
+	case 8:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_ImKuu.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		break;
+
 	}
 
 }
 
-CMainQuestNode_Glanix10* CMainQuestNode_Glanix10::Create()
+CMainQuestNode_Ending04* CMainQuestNode_Ending04::Create()
 {
-	CMainQuestNode_Glanix10* pInstance = new CMainQuestNode_Glanix10();
+	CMainQuestNode_Ending04* pInstance = new CMainQuestNode_Ending04();
 
 	if (FAILED(pInstance->Initialize()))
 	{
-		MSG_BOX("Fail Create : CMainQuestNode_Glanix10");
+		MSG_BOX("Fail Create : CMainQuestNode_Ending04");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CMainQuestNode_Glanix10::Free()
+void CMainQuestNode_Ending04::Free()
 {
 	__super::Free();
 }

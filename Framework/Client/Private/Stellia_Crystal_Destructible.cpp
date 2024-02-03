@@ -39,8 +39,8 @@ HRESULT CStellia_Crystal_Destructible::Initialize(void* pArg)
 {
 	// ºÎÀ¯ Value
 	m_fFlyDuration = 1.5f;
-	m_fCrystalMaxY = 3.f;
-	m_fCrystalMinY = 0.5f;
+	m_fCrystalMaxY = 1.f;
+	m_fCrystalMinY = 0.2f;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -88,7 +88,7 @@ HRESULT CStellia_Crystal_Destructible::Initialize(void* pArg)
 	
 	// ÅÏ Value
 	m_fDeSpeedDuration = 3.f;
-	m_tTurnDesc.fCurValue = 10.f;
+	m_tTurnDesc.fCurValue = 2.f;
 	m_tTurnDesc.Start(m_tTurnDesc.fCurValue, 0.f, m_fDeSpeedDuration, LERP_MODE::SMOOTHER_STEP);
 
 	return S_OK;
@@ -168,6 +168,8 @@ void CStellia_Crystal_Destructible::Tick(_float fTimeDelta)
 
 void CStellia_Crystal_Destructible::LateTick(_float fTimeDelta)
 {
+	LateUpdate_Collider(fTimeDelta);
+
 	if (nullptr != m_pHPBar)
 		m_pHPBar->LateTick(fTimeDelta);
 

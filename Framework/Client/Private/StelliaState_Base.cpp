@@ -131,7 +131,7 @@ void CStelliaState_Base::Generate_Explosion(_uint iCount)
 
 		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, L"Prorotype_GameObject_Stellia_Explosion", m_pStellia, &pExplosion)))
 		{
-			MSG_BOX("Add Icicle Failed.");
+			MSG_BOX("Add Explosion Failed.");
 			return;
 		}
 

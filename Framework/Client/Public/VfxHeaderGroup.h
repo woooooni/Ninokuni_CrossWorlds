@@ -59,6 +59,8 @@
 #include "Vfx_Stellia_Skill_Rage01Explosion.h"
 #include "Vfx_Stellia_Skill_Rage01JumpStamp.h"
 #include "Vfx_Stellia_Skill_Rage01SpinTail.h"
+// Rage02
+#include "Vfx_Stellia_Skill_Rage02Explosion.h"
 
 // -------------------------------------------------
 // ANIMAL //

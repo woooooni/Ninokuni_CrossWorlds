@@ -13,6 +13,8 @@
 #include "UI_World_NPCTag.h"
 #include "UI_World_NPCSpeechBalloon.h"
 
+#include "Quest_Manager.h"
+
 CKuu::CKuu(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -97,7 +99,8 @@ void CKuu::Tick(_float fTimeDelta)
 	}
 
 	/* Äí¿ì´Â rigidbody X */
-	m_pStateCom->Tick_State(fTimeDelta);
+	if(CQuest_Manager::GetInstance()->Get_CurQuestEvent() != CQuest_Manager::GetInstance()->QUESTEVENT_GAMEEND)
+		m_pStateCom->Tick_State(fTimeDelta);
 
 	// m_pControllerCom->Tick_Controller(fTimeDelta);
 

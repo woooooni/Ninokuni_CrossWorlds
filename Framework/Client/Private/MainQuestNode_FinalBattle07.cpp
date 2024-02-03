@@ -51,15 +51,20 @@ void CMainQuestNode_FinalBattle07::Start()
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 	m_pStellia = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_MONSTER, TEXT("Stellia"));
-	m_pStellia->Get_Component_StateMachine()->Change_State(CStellia::STELLIA_COMBATIDLE);
-
 	m_pWitch = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_NPC, TEXT("DreamMazeWitch"));
-	m_pWitch->Get_Component_StateMachine()->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_FOLLOWING);
 
 	if (m_pStellia == nullptr)
 		MSG_BOX("FinalBattle07 : Fail Find Stellia");
 	if (m_pWitch == nullptr)
 		MSG_BOX("FinalBattle07 : Fail Find Witch");
+
+	if (m_pStellia != nullptr && m_pWitch != nullptr)
+	{
+		m_pStellia->Get_Component_StateMachine()->Change_State(CStellia::STELLIA_COMBATIDLE);
+
+		dynamic_cast<CDreamMazeWitch_Npc*>(m_pWitch)->Witch_BattleSet(m_pStellia);
+		m_pWitch->Get_Component_StateMachine()->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_FOLLOWING);
+	}
 
 }
 
@@ -70,35 +75,38 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle07::Tick(const _float& fTimeDelta)
 
 	if (m_pStellia != nullptr)
 	{
-		// 최초 CombatIdle 시 발동
-		if (!m_bIsIntroTalk && m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_COMBATIDLE)
+		if (m_pStellia->Is_ReserveDead() == false)
 		{
-			m_bIsIntroTalk = true;
-		}
-
-		if (!m_bIsRage1Talk && m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE1LOOP_TURN)
-			m_bIsRage1Talk = true;
-
-		if (!m_bIsRage2Talk && m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE2LOOP)
-			m_bIsRage2Talk = true;
-
-		if (!m_bIsRage3Talk && m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE3TURN_AROUND)
-			m_bIsRage3Talk = true;
-
-		if (m_bIsTalk)
-		{
-			m_fTime += fTimeDelta;
-
-			if (m_fTime >= m_fTalkChangeTime)
+			// 최초 CombatIdle 시 발동
+			if (!m_bIsIntroTalk && m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_COMBATIDLE)
 			{
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 2);
-				m_fTime = m_fTalkChangeTime - m_fTime;
-				m_iTalkIndex += 1;
-				m_bIsTalk = false;
+				m_bIsIntroTalk = true;
 			}
-		}
 
-		BossBattle_TalkEvent(fTimeDelta);
+			if (!m_bIsRage1Talk && m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE1LOOP_TURN)
+				m_bIsRage1Talk = true;
+
+			if (!m_bIsRage2Talk && m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE2LOOP)
+				m_bIsRage2Talk = true;
+
+			if (!m_bIsRage3Talk && m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE3TURN_AROUND)
+				m_bIsRage3Talk = true;
+
+			if (m_bIsTalk)
+			{
+				m_fTime += fTimeDelta;
+
+				if (m_fTime >= m_fTalkChangeTime)
+				{
+					CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 2);
+					m_fTime = m_fTalkChangeTime - m_fTime;
+					m_iTalkIndex += 1;
+					m_bIsTalk = false;
+				}
+			}
+
+			BossBattle_TalkEvent(fTimeDelta);
+		}
 
 		if (CQuest_Manager::GetInstance()->Get_IsBossKill())
 		{
@@ -109,6 +117,9 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle07::Tick(const _float& fTimeDelta)
 
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+
+			dynamic_cast<CDreamMazeWitch_Npc*>(m_pWitch)->Set_IsFollowing(false);
+			dynamic_cast<CDreamMazeWitch_Npc*>(m_pWitch)->Set_IsBattle(false);
 
 			return NODE_STATE::NODE_FAIL;
 		}

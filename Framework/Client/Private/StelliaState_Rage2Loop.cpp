@@ -19,14 +19,14 @@ HRESULT CStelliaState_Rage2Loop::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
-	m_fRespawnTime = 1.f;
+	m_fRespawnTime = 4.f;
 
 	return S_OK;
 }
 
 void CStelliaState_Rage2Loop::Enter_State(void* pArg)
 {
-	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill06_New_Start"));
+	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_TurnStand"));
 
 	m_pStellia->Set_StelliaHit(false);
 }
@@ -38,13 +38,13 @@ void CStelliaState_Rage2Loop::Tick_State(_float fTimeDelta)
 	if (m_fTime >= m_fRespawnTime)
 	{
 		m_fTime = m_fRespawnTime - m_fTime;
-		__super::Generate_Explosion(2);
+		__super::Generate_Explosion(5);
 	}
 
-	if (m_pModelCom->Get_CurrAnimationFrame() >= 45 && !m_pModelCom->Is_Tween())
-	{
-		m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill06_New_Start"));
-	}
+	//if (m_pModelCom->Get_CurrAnimationFrame() >= 45 && !m_pModelCom->Is_Tween())
+	//{
+	//	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill06_New_Start"));
+	//}
 }
 
 void CStelliaState_Rage2Loop::Exit_State()

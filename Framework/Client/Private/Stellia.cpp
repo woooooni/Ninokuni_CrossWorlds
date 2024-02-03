@@ -167,8 +167,14 @@ void CStellia::Tick(_float fTimeDelta)
 	}
 
 	/* юс╫ц */
+	if (KEY_TAP(KEY::C))
+	{
+		m_pStateCom->Change_State(STELLIA_RAGE3START_FADEOUT);
+	}
 	if (KEY_TAP(KEY::X))
+	{
 		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
+	}
 
 	//#ifdef _DEBUG
 	//	if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel() && KEY_TAP(KEY::L))
@@ -178,6 +184,9 @@ void CStellia::Tick(_float fTimeDelta)
 	m_pStateCom->Tick_State(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
+
+	if(m_bDead == true)
+		CQuest_Manager::GetInstance()->Set_IsBossKill(true);
 
 	if (nullptr != m_pCrystalController)
 		m_pCrystalController->Tick(fTimeDelta);
@@ -333,24 +342,31 @@ HRESULT CStellia::Ready_Components()
 	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(1.f, 10.f, 10.f, 1.f));
 	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-55.f, 1.6, 363.f, 1.f));
 
-	if (CGameInstance::GetInstance()->Get_CurrentLevel() == LEVELID::LEVEL_TOOL)
-	{
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
+	//if (CGameInstance::GetInstance()->Get_CurrentLevel() == LEVELID::LEVEL_TOOL)
+	//{
+	//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
+	//	m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
+	//
+	//	m_vOriginPos = m_pTransformCom->Get_Position();
+	//	m_vOriginLook = m_pTransformCom->Get_Look();
+	//	m_vRage3StartPos = Vec4(0.f, 0.f, 40.f, 1.f);
+	//}
+	//else
+	//{
+		//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(138.f, -0.5f, 102.f, 1.f));
+		//m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
+		//
+		//m_vOriginPos = m_pTransformCom->Get_Position();
+		//m_vOriginLook = m_pTransformCom->Get_Look();
+		//m_vRage3StartPos = Vec4(138.f, -0.5f, 132.f, 1.f);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(143.436f, 2.311f, 120.378f, 1.f));
 		m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
 
 		m_vOriginPos = m_pTransformCom->Get_Position();
 		m_vOriginLook = m_pTransformCom->Get_Look();
-		m_vRage3StartPos = Vec4(0.f, 0.f, 40.f, 1.f);
-	}
-	else
-	{
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(138.f, -0.5f, 102.f, 1.f));
-		m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
+		m_vRage3StartPos = Vec4(143.436f, -0.5f, 150.378, 1.f);
 
-		m_vOriginPos = m_pTransformCom->Get_Position();
-		m_vOriginLook = m_pTransformCom->Get_Look();
-		m_vRage3StartPos = Vec4(138.f, -0.5f, 132.f, 1.f);
-	}
+	//}
 
 
 
@@ -570,7 +586,7 @@ HRESULT CStellia::Ready_States()
 	m_pStateCom->Add_State(STELLIA_RAGE2LOOP, CStelliaState_Rage2Loop::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
-	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill04_New_Start");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill04_New");
 	m_pStateCom->Add_State(STELLIA_RAGE2FINISH, CStelliaState_Rage2Finish::Create(m_pStateCom, strAnimationName));
 	
 	/* Rage3 */
@@ -793,7 +809,7 @@ CGameObject* CStellia::Clone(void* pArg)
 void CStellia::Free()
 {
 	__super::Free();
-
+	
 	Safe_Delete(m_pCrystalController);
 }
 

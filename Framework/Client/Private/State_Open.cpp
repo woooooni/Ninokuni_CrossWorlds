@@ -5,6 +5,8 @@
 #include "Game_Manager.h"
 #include "WitchWood.h"
 
+#include "Quest_Manager.h"
+
 CState_Open::CState_Open(CStateMachine* pMachine)
 	: CState(pMachine)
 {
@@ -21,7 +23,10 @@ HRESULT CState_Open::Initialize(const list<wstring>& AnimationList)
 
 void CState_Open::Enter_State(void* pArg)
 {
-	m_pModelCom->Set_Animation(m_AnimIndices[0]);
+	if(CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_FINALBATTLE)
+		m_pModelCom->Set_Animation(m_AnimIndices[1]);
+	else
+		m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 
 void CState_Open::Tick_State(_float fTimeDelta)
