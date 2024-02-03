@@ -92,7 +92,7 @@ return S_OK;
 void CGrandprix_Manager::Ready_Grandprix_EnemyInfo()
 {
 	Ready_Riders(); // 여기서 Active true함.
-
+	
 	CUIMinigame_Manager::GetInstance()->Set_HPOwner(m_pEnemyPlane, CUIMinigame_Manager::GRANDPRIX_ENEMY::ENGINEER);
 
 	for (size_t i = 0; i < m_Botos.size(); ++i)
@@ -365,8 +365,8 @@ void CGrandprix_Manager::Ready_Riders()
 
 				if (i < m_Enemies.size() && nullptr != m_Enemies[i])
 				{
-//					m_Enemies[i]->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION,
-//						Vec4(-15.f + 10.f * i, 1.f, 30.2f, 1.f));
+					m_Enemies[i]->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION,
+						Vec4(0.1f, 60.f, 105.f, 1.f));
 					m_Botos[i]->Ride(m_Enemies[i]);
 					//m_Botos[i]->Set_OriginPosition(m_Botos[i]->Get_Component<CTransform>(L"Com_Transform")->Get_Position());
 

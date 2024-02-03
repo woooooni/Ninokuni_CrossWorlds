@@ -10,10 +10,10 @@ public:
 	{
 		_bool bIsEnemy = false;
 
-		_float fMaxHP = 100000.f;
-		_float fCurHP = 100000.f;
+		_float fMaxHP = 50000.f;
+		_float fCurHP = 50000.f;
 	
-	} ENEMY_STAT;
+	} PLANE_STAT;
 
 protected:
 	CVehicle_Flying(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, OBJ_TYPE eObjType);
@@ -21,7 +21,7 @@ protected:
 	virtual ~CVehicle_Flying() = default;
 
 public:
-	const ENEMY_STAT& Get_Stat() { return m_eStat; }
+	const PLANE_STAT& Get_Stat() { return m_eStat; }
 
 	void Set_Routes();
 
@@ -65,7 +65,7 @@ protected:
 	HRESULT Ready_Routes();
 
 protected:
-	ENEMY_STAT m_eStat;
+	PLANE_STAT m_eStat;
 
 	Vec4 m_vStartPos = {};
 

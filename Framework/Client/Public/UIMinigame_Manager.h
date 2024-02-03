@@ -81,6 +81,7 @@ private: // Evermore Tower Defence
 	class CUI_Minigame_Basic*				m_pGold = { nullptr };
 
 private: // Evermore Granprix
+	class CUI_Minigame_PlayerInfo*			m_pPlayerStat = { nullptr };
 	class CUI_Minigame_Basic*				m_pCloud = { nullptr };
 	vector<class CUI_Minigame_EnemyInfo*>	m_EnemyHP;
 	vector<class CUI_Minigame_ClassSkill*>	m_Skill;
