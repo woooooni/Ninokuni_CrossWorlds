@@ -290,6 +290,18 @@ HRESULT CLoader::Loading_For_Level_Logo()
 		CGrass_Purple::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_Grass_Purple")), LAYER_TYPE::LAYER_GRASS, true))
 		return E_FAIL;
 
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LargeGrass"),
+		CLargeGrass_Purple::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_LargeGrass")), LAYER_TYPE::LAYER_GRASS, true))
+		return E_FAIL;
+
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LargeGrass_Purple"),
+		CLargeGrass::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_LargeGrass_Purple")), LAYER_TYPE::LAYER_GRASS, true))
+		return E_FAIL;
+
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_EntireGrass"),
+		CEntireGrass::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_EntireGrass")), LAYER_TYPE::LAYER_GRASS, true))
+		return E_FAIL;
+
 
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_Background"), CUI_Logo_Background::Create(m_pDevice, m_pContext), LAYER_UI)))
@@ -323,6 +335,12 @@ HRESULT CLoader::Loading_For_Level_Logo()
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GrassPlane", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/GrassPlane/", L"Common_GrassPlane")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Large_GrassPlane", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/GrassPlane/", L"Common_Large_Grass_Plane")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Entire_GrassPlane", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/GrassPlane/", L"Common_Grass_Entire_Plane")))
 		return E_FAIL;
 
 	
@@ -883,6 +901,18 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		CGrass_Purple::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_Grass_Purple")), LAYER_TYPE::LAYER_GRASS, true))
 		return E_FAIL;
 
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LargeGrass"),
+		CLargeGrass_Purple::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_LargeGrass")), LAYER_TYPE::LAYER_GRASS, true))
+		return E_FAIL;
+
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LargeGrass_Purple"),
+		CLargeGrass::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_LargeGrass_Purple")), LAYER_TYPE::LAYER_GRASS, true))
+		return E_FAIL;
+
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_EntireGrass"),
+		CEntireGrass::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_EntireGrass")), LAYER_TYPE::LAYER_GRASS, true))
+		return E_FAIL;
+
 	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LensFlare"),
 		CLensFlare::Create(m_pDevice, m_pContext, TEXT("Common_LensFlare"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
 		return E_FAIL;
@@ -947,6 +977,12 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GrassPlane", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/GrassPlane/", L"Common_GrassPlane")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Large_GrassPlane", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/GrassPlane/", L"Common_Large_Grass_Plane")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Entire_GrassPlane", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/GrassPlane/", L"Common_Grass_Entire_Plane")))
 		return E_FAIL;
 
 	switch (g_eLoadCharacter)

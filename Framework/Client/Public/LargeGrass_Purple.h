@@ -17,7 +17,7 @@ END
 
 BEGIN(Client)
 
-class CGrass_Purple final : public CGameObject
+class CLargeGrass_Purple final : public CGameObject
 {
 private:
 	enum GRASS_TEX { WIND_MAP, SHADE_MAP, GRASS_TEXEND };
@@ -49,9 +49,9 @@ private:
 		Vec4 vWindVelocity = Vec4(1.0f, 0.0f, 0.0f, 0.0f);
 	};
 private:
-	explicit CGrass_Purple(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	explicit CGrass_Purple(const CGrass_Purple& rhs);
-	virtual ~CGrass_Purple() = default;
+	explicit CLargeGrass_Purple(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	explicit CLargeGrass_Purple(const CLargeGrass_Purple& rhs);
+	virtual ~CLargeGrass_Purple() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -75,12 +75,11 @@ private:
 private:
 	CB_GRASS m_CBGrass = {};
 	_float m_fTime = 0.0f;
-
 private:
-	Vec4 m_vUpperColor = Vec4(0.627f, 0.412f, 0.89f, 1.0f);
-	Vec4 m_vBottomColor = Vec4(0.325f, 0.188f, 0.49f, 1.0f);
+	Vec4 m_vUpperColor = Vec4(0.412f, 0.549f, 0.282f, 1.0f);
+	Vec4 m_vBottomColor = Vec4(0.243f, 0.329f, 0.161f, 1.0f);
 public:
-	static CGrass_Purple* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CLargeGrass_Purple* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

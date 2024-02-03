@@ -19,5 +19,8 @@
 #include "WitchWood.h"
 #include "RubyCarriage.h"
 #include "Grass_Purple.h"
+#include "LargeGrass.h"
+#include "LargeGrass_Purple.h"
+#include "EntireGrass.h"
 // MiniGameMap
 

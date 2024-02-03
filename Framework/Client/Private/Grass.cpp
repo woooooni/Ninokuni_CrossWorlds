@@ -26,6 +26,9 @@ HRESULT CGrass::Initialize(void* pArg)
 	m_CBGrass.fBendDelta = GI->RandomFloat(0.2f, 0.6f);
 	m_pModelCom->Get_Meshes()[0]->Set_Topology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 
+	m_CBGrass.fTessellationGrassDistance = 0.3f;
+
+
 	return S_OK;
 }
 
@@ -42,7 +45,9 @@ void CGrass::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
-	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 10.0f))
+	Compute_CamZ(m_pTransformCom->Get_Position());
+
+	if (m_fCamDistance <= 60.0f && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.0f))
 		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 }
 
@@ -81,7 +86,27 @@ HRESULT CGrass::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing
 	if (FAILED(pInstancingShader->Bind_RawValue("vUpperColor", &m_vUpperColor, sizeof(Vec4))))
 		return E_FAIL;
 
-	if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 9)))
+	_uint iLevelID = GI->Get_CurrentLevel();
+
+	if (LEVELID::LEVEL_LOBBY == iLevelID)
+	{
+		m_CBGrass.fBladeHeightMax = 0.4f;
+		m_CBGrass.fBladeHeightMin = 0.2f;
+		m_CBGrass.fTessellationGrassDistance = 0.1f;
+	}
+
+	if (FAILED(pInstancingShader->Bind_RawValue("fBladeHeightMax", &m_CBGrass.fBladeHeightMax, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(pInstancingShader->Bind_RawValue("fBladeHeightMin", &m_CBGrass.fBladeHeightMin, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(pInstancingShader->Bind_RawValue("fTessellationGrassDistance", &m_CBGrass.fTessellationGrassDistance, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(pInstancingShader->Bind_RawValue("fBladeWidthMax", &m_CBGrass.fBladeWidthMax, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(pInstancingShader->Bind_RawValue("fBladeWidthMin", &m_CBGrass.fBladeWidthMin, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 8)))
 		return E_FAIL;
 
 
