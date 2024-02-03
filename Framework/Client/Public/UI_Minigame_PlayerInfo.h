@@ -11,7 +11,7 @@ protected:
 	virtual ~CUI_Minigame_PlayerInfo() = default;
 
 public:
-	void Set_Owner(CVehicle_Flying* pOwner);
+	void Set_Owner(class CVehicle_Flying* pOwner);
 	class CVehicle_Flying* Get_Owner() { return m_pOwner; }
 
 public:

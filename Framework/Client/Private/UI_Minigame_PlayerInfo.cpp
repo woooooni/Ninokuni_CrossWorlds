@@ -63,7 +63,7 @@ HRESULT CUI_Minigame_PlayerInfo::Initialize(void* pArg)
 
 	if (nullptr != CRiding_Manager::GetInstance()->Get_Character_Biplane())
 	{
-		Set_Owner(CRiding_Manager::GetInstance()->Get_Character_Biplane());
+//		Set_Owner(CRiding_Manager::GetInstance()->Get_Character_Biplane());
 	}
 
 	if (nullptr != m_pOwner)
