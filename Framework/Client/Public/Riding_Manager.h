@@ -26,6 +26,10 @@ public: // Clone
 
 public:
 	class CVehicle_Flying_Biplane* Get_Character_Biplane() { return m_pBiplane; }
+
+	_float Get_Character_BiplaneSpeed();
+	void Set_Character_BiplaneSpeed(_float fSpeed);
+
 	HRESULT Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff);
 
 private:

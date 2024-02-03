@@ -20,6 +20,15 @@ void CUI_Minigame_EnemyHP::Set_Owner(CGameObject* pOwner)
 
 	m_pOwner = dynamic_cast<CVehicle_Flying*>(pOwner);
 
+	CVehicle_Flying::PLANE_STAT StatDesc = {};
+	memcpy(&StatDesc, &(m_pOwner->Get_Stat()), sizeof(CVehicle_Flying::PLANE_STAT));
+
+	if (false == StatDesc.bIsEnemy)
+		return;
+
+	m_fMaxHP = StatDesc.fMaxHP;
+	m_fCurHP = StatDesc.fCurHP;
+	m_fPreHP = m_fCurHP;
 }
 
 HRESULT CUI_Minigame_EnemyHP::Initialize_Prototype()
@@ -50,15 +59,12 @@ void CUI_Minigame_EnemyHP::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-
-		m_fTimeAcc += fTimeDelta * 0.1f;
-
 		if (m_fCurHP < m_fPreHP)
 			m_bLerp = false;
 
 		if (!m_bLerp && m_fPreHP > m_fCurHP)
 		{
-			m_fPreHP -= fTimeDelta * 500.f;
+			m_fPreHP -= fTimeDelta * 50.f;
 
 			if (m_fPreHP <= m_fCurHP)
 			{
@@ -77,6 +83,9 @@ void CUI_Minigame_EnemyHP::LateTick(_float fTimeDelta)
 	{
 		if (nullptr != m_pOwner)
 		{
+			if (true == m_pOwner->Is_Dead() || true == m_pOwner->Is_ReserveDead())
+				return;
+
 			if (true == m_pOwner->Get_Stat().bIsEnemy)
 			{
 				CVehicle_Flying::PLANE_STAT StatDesc = m_pOwner->Get_Stat();
@@ -201,7 +210,7 @@ HRESULT CUI_Minigame_EnemyHP::Bind_ShaderResources()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_MaxHP", &m_fMaxHP, sizeof(_float))))
 		return E_FAIL;
-	if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_LerpTexture")))
+	if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_HPGaugeTexture")))
 		return E_FAIL;
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
 		return E_FAIL;

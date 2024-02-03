@@ -394,7 +394,7 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 
 void CUIMinigame_Manager::Start_Grandprix()
 {
-	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f, true);
 
 	m_bCountStart = true;
 	m_bGrandprixEnd = false;

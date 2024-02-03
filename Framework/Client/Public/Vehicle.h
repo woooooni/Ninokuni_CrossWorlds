@@ -62,6 +62,7 @@ public:
 	void Set_Aboard(_bool bAboard);
 
 	_float Get_Speed() { return m_VehicleDesc.fSpeed; }
+	void Set_Speed(_float fSpeed) { m_VehicleDesc.fSpeed = fSpeed; }
 
 public:
 	virtual HRESULT Initialize_Prototype() override;

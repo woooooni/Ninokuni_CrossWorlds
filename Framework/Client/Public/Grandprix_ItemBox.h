@@ -5,7 +5,7 @@ BEGIN(Client)
 class CGrandprix_ItemBox final : public CGameObject
 {
 public:
-	enum ITEMBOX_TYPE { ITEMBOX_SPEEDUP, ITEMBOX_DOUBLE, ITEMBOX_BOMB, ITEMBOX_SLOW, ITEMBOX_END };
+	enum ITEMBOX_TYPE { ITEMBOX_SPEEDUP, ITEMBOX_SIZEUP, ITEMBOX_BOMB, ITEMBOX_SLOW, ITEMBOX_END };
 
 private:
 	CGrandprix_ItemBox(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

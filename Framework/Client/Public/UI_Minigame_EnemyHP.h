@@ -24,10 +24,9 @@ public:
 private:
 	CTexture* m_pFXTextureCom = { nullptr };
 	class CVehicle_Flying* m_pOwner = { nullptr };
-	_uint m_iPass = { 11 };
+	_uint m_iPass = { 14 };
 
 	_bool m_bLerp = { false };
-	_float m_fTimeAcc = { 0.f };
 	_float m_fMaxHP = { 0 };
 	_float m_fPreHP = { 0 };
 	_float m_fCurHP = { 0 };

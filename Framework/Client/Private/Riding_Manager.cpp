@@ -91,6 +91,22 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObjectToLayer(LEVELID eID)
 	return S_OK;
 }
 
+_float CRiding_Manager::Get_Character_BiplaneSpeed()
+{
+	if (nullptr == m_pBiplane)
+		return 0.f;
+
+	return m_pBiplane->Get_Speed();
+}
+
+void CRiding_Manager::Set_Character_BiplaneSpeed(_float fSpeed)
+{
+	if (nullptr == m_pBiplane)
+		return;
+
+	m_pBiplane->Set_Speed(fSpeed);
+}
+
 HRESULT CRiding_Manager::Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff)
 {
 	CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
