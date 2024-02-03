@@ -9,6 +9,7 @@
 #include "Camera_Manager.h"
 #include "Game_Manager.h"
 #include "Player.h"
+#include "Effect_Manager.h"
 
 CGlanixState_RageStart::CGlanixState_RageStart(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -25,6 +26,8 @@ HRESULT CGlanixState_RageStart::Initialize(const list<wstring>& AnimationList)
 void CGlanixState_RageStart::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_BossSkillRage"));
+
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Intro_Roar"), m_pTransformCom->Get_WorldMatrix(), m_pGlanix);
 }
 
 void CGlanixState_RageStart::Tick_State(_float fTimeDelta)
