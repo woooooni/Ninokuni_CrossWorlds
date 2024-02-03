@@ -926,6 +926,16 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_Icicle"),
 			CVfx_Glanix_Skill_Icicle::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_Icicle")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
+
+		// Prototype_Vfx_Glanix_Skill_Spawn
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_Spawn"),
+			CVfx_Glanix_Skill_Spawn::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_Spawn")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Glanix_Skill_RageStamp
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_RageStamp"),
+			CVfx_Glanix_Skill_RageStamp::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_RageStamp")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
 	}
 
 	// Stellia

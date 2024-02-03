@@ -48,6 +48,13 @@ HRESULT CGlanix_ShockWave::Initialize(void* pArg)
 
 void CGlanix_ShockWave::Tick(_float fTimeDelta)
 {
+	if (false == m_bEffect)
+	{
+
+
+		m_bEffect = true;
+	}
+
 	m_fTime += fTimeDelta;
 	fSpeed += fTimeDelta;
 

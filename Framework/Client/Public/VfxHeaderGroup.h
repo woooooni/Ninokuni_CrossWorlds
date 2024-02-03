@@ -48,6 +48,8 @@
 #include "Vfx_Glanix_Skill_IceThrow.h"
 #include "Vfx_Glanix_Skill_IcePillar.h"
 #include "Vfx_Glanix_Skill_Icicle.h"
+#include "Vfx_Glanix_Skill_Spawn.h"
+#include "Vfx_Glanix_Skill_RageStamp.h"
 
 /* Stellia */
 ////// Stellia
