@@ -1,3 +1,4 @@
+#include "SimpleMath.h"
 //-------------------------------------------------------------------------------------
 // SimpleMath.inl -- Simplified C++ Math wrapper for DirectXMath
 //
@@ -1333,6 +1334,30 @@ inline Vector3 Vector3::ZeroZ() noexcept
     using namespace DirectX;
     Vector3 v1 = XMLoadFloat3(this);
     v1.z = 0.f;
+    return v1;
+}
+
+inline Vector3 Vector3::OneX() noexcept
+{
+    using namespace DirectX;
+    Vector3 v1 = XMLoadFloat3(this);
+    v1.x = 1.f;
+    return v1;
+}
+
+inline Vector3 Vector3::OneY() noexcept
+{
+    using namespace DirectX;
+    Vector3 v1 = XMLoadFloat3(this);
+    v1.y = 1.f;
+    return v1;
+}
+
+inline Vector3 Vector3::OneZ() noexcept
+{
+    using namespace DirectX;
+    Vector3 v1 = XMLoadFloat3(this);
+    v1.z = 1.f;
     return v1;
 }
 

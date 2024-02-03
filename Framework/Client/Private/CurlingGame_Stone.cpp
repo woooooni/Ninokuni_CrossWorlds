@@ -113,8 +113,8 @@ void CCurlingGame_Stone::Tick(_float fTimeDelta)
 		m_bMoving = !m_pRigidBodyCom->Check_Sleep();
 
 		/* 회전 적용 */
-		 const _float fRotateSpeed = Vec3(m_pRigidBodyCom->Get_Velocity()).Length() * m_fRotateSpeed * fTimeDelta;
-		 m_pTransformCom->Rotation(Vec3::Up, fRotateSpeed);
+		//const _float fRotateSpeed = Vec3(m_pRigidBodyCom->Get_Velocity()).Length() * m_fRotateSpeed * fTimeDelta;
+		//m_pTransformCom->Rotation(Vec3::Up, fRotateSpeed);
 	}
 }
 

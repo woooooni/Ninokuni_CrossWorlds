@@ -26,6 +26,7 @@ private:
 	const _bool& Check_FinishGame();
 
 	void Calculate_Score();
+	void Send_To_Ui();
 
 private:
 	_bool m_bResetTurn = false;

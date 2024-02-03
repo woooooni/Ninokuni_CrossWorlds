@@ -338,6 +338,9 @@ namespace DirectX
             Vector3 ZeroX() noexcept;
             Vector3 ZeroY() noexcept;
             Vector3 ZeroZ() noexcept;
+            Vector3 OneX() noexcept;
+            Vector3 OneY() noexcept;
+            Vector3 OneZ() noexcept;
             Vector3 Inverse() noexcept;
         };
 

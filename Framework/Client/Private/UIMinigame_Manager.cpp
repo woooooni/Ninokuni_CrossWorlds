@@ -22,7 +22,8 @@
 #include "UI_Minigame_WorldHP.h"
 #include "UI_Minigame_Aim.h"
 
-#include "UI_Minigame_CurlingGauge.h"
+
+#include "CurlingGame_Group.h"
 
 #include "UI_Fade.h"
 
@@ -62,6 +63,23 @@ void CUIMinigame_Manager::Set_Flyable(_bool bFlyable)
 	{
 		pFollowCamera->Set_MinMaxLimitY(0.2f, 2.9f);
 	}
+}
+
+CUI_Minigame_Curling_Base* CUIMinigame_Manager::Get_MiniGame_Curling_Ui(const _uint& iObjTag)
+{
+	if ((_uint)MG_CL_UI_TYPE::TYPEEND <= iObjTag)
+		return nullptr;
+
+	for (auto& pUi : m_CurlingGameUIs)
+	{
+		if (nullptr == pUi)
+			continue;
+
+		if (g_wstr_MG_Curling_Ui_ObjTags[iObjTag] == pUi->Get_ObjectTag())
+			return pUi;
+	}
+
+	return nullptr;
 }
 
 HRESULT CUIMinigame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -240,7 +258,7 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_ToLayer(LEVELID eID)
 	}
 	else if (LEVELID::LEVEL_ICELAND == eID)
 	{
-		for (auto& iter : m_CurlingGauge)
+		for (auto& iter : m_CurlingGameUIs)
 		{
 			if (nullptr == iter)
 				return E_FAIL;
@@ -460,7 +478,7 @@ void CUIMinigame_Manager::OnOff_CurlingUI(_bool bOnOff)
 	{
 		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
 
-		for (auto& iter : m_CurlingGauge)
+		for (auto& iter : m_CurlingGameUIs)
 		{
 			if (nullptr != iter)
 				iter->Set_Active(true);
@@ -468,7 +486,7 @@ void CUIMinigame_Manager::OnOff_CurlingUI(_bool bOnOff)
 	}
 	else
 	{
-		for (auto& iter : m_CurlingGauge)
+		for (auto& iter : m_CurlingGameUIs)
 		{
 			if (nullptr != iter)
 				iter->Set_Active(false);
@@ -612,6 +630,7 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 		CUI_Minigame_PlayerInfo::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+
 	// 매니저 내에서는 프로토타입만 생성함
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Enemy_WorldHP"),
 		CUI_Minigame_WorldHP::Create(m_pDevice, m_pContext), LAYER_UI)))
@@ -628,12 +647,44 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 
 HRESULT CUIMinigame_Manager::Ready_MinigameUI_IceLand()
 {
-	// 컬링게임용 UI Prototypes
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Curling_GaugeBack"),
-		CUI_Minigame_CurlingGauge::Create(m_pDevice, m_pContext, CUI_Minigame_CurlingGauge::UI_CURLINGGAUGE::GAUGE_BACK), LAYER_UI)))
+	/* Gauge */
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::GUAGE],
+		CUI_Minigame_Curling_Gauge::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::GUAGE]), LAYER_UI)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Curling_GaugeBar"),
-		CUI_Minigame_CurlingGauge::Create(m_pDevice, m_pContext, CUI_Minigame_CurlingGauge::UI_CURLINGGAUGE::GAUGE_BAR), LAYER_UI)))
+
+	/* Info_Npc */
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::INFO_NPC],
+		CUI_Minigame_Curling_Info::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::INFO_NPC], false), LAYER_UI)))
+		return E_FAIL;
+	
+	/* Info_Player */
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::INFO_PLAYER],
+		CUI_Minigame_Curling_Info::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::INFO_PLAYER], true), LAYER_UI)))
+		return E_FAIL;
+
+	/* Stones_Npc */
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::STONES_NPC],
+		CUI_Minigame_Curling_Stones::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::STONES_NPC], false), LAYER_UI)))
+		return E_FAIL;
+
+	/* Stones_Player */
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::STONES_PLAYER],
+		CUI_Minigame_Curling_Stones::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::STONES_PLAYER], true), LAYER_UI)))
+		return E_FAIL;
+
+	/* Title */
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::TITLE],
+		CUI_Minigame_Curling_Title::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::TITLE]), LAYER_UI)))
+		return E_FAIL;
+
+	/* Stones_Npc */
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::SCORE_NPC],
+		CUI_Minigame_Curling_Score::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::SCORE_NPC], false), LAYER_UI)))
+		return E_FAIL;
+
+	/* Stones_Player */
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::SCORE_PLAYER],
+		CUI_Minigame_Curling_Score::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::SCORE_PLAYER], true), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;
@@ -1087,35 +1138,128 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 
 HRESULT CUIMinigame_Manager::Ready_Curling()
 {
-	m_CurlingGauge.reserve(2);
+	CGameObject* pClone = nullptr;
+	CUI_Minigame_Curling_Base* pUi = nullptr;
 
-	CUI::UI_INFO UIDesc = {};
-	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	UIDesc.fCX = 804.f;
-	UIDesc.fCY = 320.f;
-	UIDesc.fX = g_iWinSizeX * 0.5f;
-	UIDesc.fY = g_iWinSizeY * 0.5f;
-	CGameObject* pGauge = nullptr;
-	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI,
-		TEXT("Prototype_GameObject_UI_Minigame_Curling_GaugeBack"), &UIDesc, &pGauge)))
-		return E_FAIL;
-	if (nullptr == pGauge)
-		return E_FAIL;
-	if (nullptr == dynamic_cast<CUI_Minigame_CurlingGauge*>(pGauge))
-		return E_FAIL;
-	m_CurlingGauge.push_back(dynamic_cast<CUI_Minigame_CurlingGauge*>(pGauge));
-	Safe_AddRef(pGauge);
+	/* Guage */
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::GUAGE], nullptr, &pClone)))
+			return E_FAIL;
 
-	pGauge = nullptr;
-	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI,
-		TEXT("Prototype_GameObject_UI_Minigame_Curling_GaugeBar"), &UIDesc, &pGauge)))
-		return E_FAIL;
-	if (nullptr == pGauge)
-		return E_FAIL;
-	if (nullptr == dynamic_cast<CUI_Minigame_CurlingGauge*>(pGauge))
-		return E_FAIL;
-	m_CurlingGauge.push_back(dynamic_cast<CUI_Minigame_CurlingGauge*>(pGauge));
-	Safe_AddRef(pGauge);
+		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+		if (nullptr == pUi)
+			return E_FAIL;
+
+		m_CurlingGameUIs.push_back(pUi);
+		Safe_AddRef(pUi);
+
+		pClone = pUi = nullptr;
+	}
+
+	/* Info_Npc */
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::INFO_NPC], nullptr, &pClone)))
+			return E_FAIL;
+	
+		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+		if (nullptr == pUi)
+			return E_FAIL;
+	
+		m_CurlingGameUIs.push_back(pUi);
+		Safe_AddRef(pUi);
+	
+		pClone = pUi = nullptr;
+	}
+	
+	/* Info_Player */
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::INFO_PLAYER], nullptr, &pClone)))
+			return E_FAIL;
+	
+		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+		if (nullptr == pUi)
+			return E_FAIL;
+	
+		m_CurlingGameUIs.push_back(pUi);
+		Safe_AddRef(pUi);
+	
+		pClone = pUi = nullptr;
+	}
+
+	/* Stones_Npc */
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::STONES_NPC], nullptr, &pClone)))
+			return E_FAIL;
+
+		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+		if (nullptr == pUi)
+			return E_FAIL;
+
+		m_CurlingGameUIs.push_back(pUi);
+		Safe_AddRef(pUi);
+
+		pClone = pUi = nullptr;
+	}
+
+	/* Stones_Player */
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::STONES_PLAYER], nullptr, &pClone)))
+			return E_FAIL;
+
+		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+		if (nullptr == pUi)
+			return E_FAIL;
+
+		m_CurlingGameUIs.push_back(pUi);
+		Safe_AddRef(pUi);
+
+		pClone = pUi = nullptr;
+	}
+
+	/* Title */
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::TITLE], nullptr, &pClone)))
+			return E_FAIL;
+
+		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+		if (nullptr == pUi)
+			return E_FAIL;
+
+		m_CurlingGameUIs.push_back(pUi);
+		Safe_AddRef(pUi);
+
+		pClone = pUi = nullptr;
+	}
+
+	/* Score_Npc */
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::SCORE_NPC], nullptr, &pClone)))
+			return E_FAIL;
+
+		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+		if (nullptr == pUi)
+			return E_FAIL;
+
+		m_CurlingGameUIs.push_back(pUi);
+		Safe_AddRef(pUi);
+
+		pClone = pUi = nullptr;
+	}
+
+	/* Score_Player */
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::SCORE_PLAYER], nullptr, &pClone)))
+			return E_FAIL;
+
+		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+		if (nullptr == pUi)
+			return E_FAIL;
+
+		m_CurlingGameUIs.push_back(pUi);
+		Safe_AddRef(pUi);
+
+		pClone = pUi = nullptr;
+	}
 
 	return S_OK;
 }
@@ -1181,14 +1325,7 @@ void CUIMinigame_Manager::LateTick_Grandprix(_float fTimeDelta)
 
 void CUIMinigame_Manager::Tick_Curling(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::O))
-	{
-		OnOff_CurlingUI(true);
-	}
-	if (KEY_TAP(KEY::P))
-	{
-		OnOff_CurlingUI(false);
-	}
+	
 }
 
 void CUIMinigame_Manager::Free()
@@ -1224,9 +1361,9 @@ void CUIMinigame_Manager::Free()
 	Safe_Release(m_pBiplaneIcon);
 
 	// 컬링
-	for (auto& pGauge : m_CurlingGauge)
-		Safe_Release(pGauge);
-	m_CurlingGauge.clear();
+	for (auto& pUI : m_CurlingGameUIs)
+		Safe_Release(pUI);
+	m_CurlingGameUIs.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

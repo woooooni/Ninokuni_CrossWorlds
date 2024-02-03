@@ -204,6 +204,7 @@ namespace Client
 	static const _float Cam_Fov_LockOn_Glanix_ItemPattern = XMConvertToRadians(75.0f);
 	static const Vec4	Cam_Target_Offset_LockOn_Glanix_ItemPattern = Vec4{ 0.f, 4.5f, -10.f, 1.f };
 
+	const Vec2 g_vWinCenter = { 800.f, 450.f };
 
 	/* Bgm Sound */
 

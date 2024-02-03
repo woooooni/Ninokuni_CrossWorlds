@@ -350,6 +350,12 @@
     <ClInclude Include="..\Public\StelliaState_SpawnRoar.h" />
     <ClInclude Include="..\Public\StelliaState_SpawnStand.h" />
     <ClInclude Include="..\Public\UI_Minigame_PlayerInfo.h" />
+    <ClInclude Include="..\Public\UI_Minigame_Curling_Base.h" />
+    <ClInclude Include="..\Public\UI_Minigame_Curling_Gauge.h" />
+    <ClInclude Include="..\Public\UI_Minigame_Curling_Info.h" />
+    <ClInclude Include="..\Public\UI_Minigame_Curling_Score.h" />
+    <ClInclude Include="..\Public\UI_Minigame_Curling_Stones.h" />
+    <ClInclude Include="..\Public\UI_Minigame_Curling_Title.h" />
     <ClInclude Include="..\Public\UI_Minigame_WorldHP.h" />
     <ClInclude Include="..\Public\Vehicle_Flying_EnemyBiplane.h" />
     <ClInclude Include="..\Public\Skill_Biplane_1.h" />
@@ -968,7 +974,6 @@
     <ClInclude Include="..\Public\UI_Milepost.h" />
     <ClInclude Include="..\Public\UI_Minigame_Basic.h" />
     <ClInclude Include="..\Public\UI_Minigame_ClassSkill.h" />
-    <ClInclude Include="..\Public\UI_Minigame_CurlingGauge.h" />
     <ClInclude Include="..\Public\UI_Minigame_EnemyHP.h" />
     <ClInclude Include="..\Public\UI_Minigame_EnemyInfo.h" />
     <ClInclude Include="..\Public\UI_Minigame_GaugeBar.h" />
@@ -1393,6 +1398,12 @@
     <ClCompile Include="..\Private\StelliaState_SpawnRoar.cpp" />
     <ClCompile Include="..\Private\StelliaState_SpawnStand.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_PlayerInfo.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_Curling_Base.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_Curling_Gauge.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_Curling_Info.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_Curling_Score.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_Curling_Stones.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_Curling_Title.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_WorldHP.cpp" />
     <ClCompile Include="..\Private\Vehicle_Flying_EnemyBiplane.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_1.cpp" />
@@ -2011,7 +2022,6 @@
     <ClCompile Include="..\Private\UI_Milepost.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Basic.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_ClassSkill.cpp" />
-    <ClCompile Include="..\Private\UI_Minigame_CurlingGauge.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_EnemyHP.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_EnemyInfo.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_GaugeBar.cpp" />

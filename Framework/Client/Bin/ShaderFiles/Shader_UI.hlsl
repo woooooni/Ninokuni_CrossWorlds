@@ -31,7 +31,7 @@ float g_LerpHP;
 
 float2	g_DissolveStart;
 float	g_DissolveRange;
-
+float	g_Progress;
 
 struct VS_IN
 {
@@ -572,6 +572,30 @@ PS_OUT PS_VERTICAL_COOLTIME(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_VERTICAL_PROGRESS_COLOR(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+	
+	// 앞으로 진행될 부분 (위)이라면 기존 텍스처 컬러값을 사용한다. 
+    Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+	
+    if (Out.vColor.a < 0.05f)
+        discard;
+	
+    if (0.7f < Out.vColor.a)
+        Out.vColor.a -= 0.1f; // 단독
+	
+	// 이미 진행된 부분 (아래)이라면 따로 세팅된 컬러값을 사용한다. 
+	if (saturate(1.f - g_Progress) < In.vTexUV.y)
+    {
+        Out.vColor.rgb = g_Diffusecolor.rgb;
+        
+        Out.vColor.g = In.vTexUV.y; // 단독
+    }
+	
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass // 0
@@ -872,4 +896,17 @@ technique11 DefaultTechnique
 		DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_VERTICAL_COOLTIME();
 	}
+
+    pass VerticalProgressColor // 23
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_VERTICAL_PROGRESS_COLOR();
+    }
 }

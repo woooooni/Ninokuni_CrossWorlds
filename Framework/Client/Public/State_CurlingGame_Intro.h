@@ -36,11 +36,11 @@ private:
 
 private:
 	HRESULT Ready_Stauium();
-	HRESULT Ready_UIs();
 	HRESULT Ready_Decals();
 	HRESULT Ready_Characters();
 
 private:
+	HRESULT Set_UIs();
 	HRESULT Set_CameraTransform();
 	HRESULT Set_CharacterTransform();
 

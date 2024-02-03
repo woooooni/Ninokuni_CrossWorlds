@@ -5,6 +5,7 @@
 
 #include "Game_Manager.h"
 #include "UI_Manager.h"
+#include "UIMinigame_Manager.h"
 #include "Effect_Manager.h"
 
 #include "Camera_Group.h"
@@ -39,6 +40,15 @@ void CState_CurlingGame_Launch_Stone::Enter_State(void* pArg)
 
 		pCurlingCam->Start_StoneAction();
 	}
+
+	/* 스톤 갯수 감소 */
+	if(m_pManager->m_bPlayerTurn)
+		m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iNumStone--;
+	else
+		m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iNumStone--;
+
+	/* Send To Ui */
+	Send_To_Ui();
 }
 
 void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
@@ -70,12 +80,20 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 			if (pStone->Is_Outted() && pStone->Is_Active())
 				pStone->Set_Active(false);
 		}
+
+		/* Send To Ui */
+		{
+			CUI_Minigame_Curling_Base* pUi = CUIMinigame_Manager::GetInstance()->Get_MiniGame_Curling_Ui((_uint)MG_CL_UI_TYPE::GUAGE);
+			if (nullptr != pUi)
+				pUi->Send_Message();
+		}
 	}
 
 	if (m_bResetTurn)
 	{
 		if (Check_FinishGame())
 		{
+
 			// 게임이 끝난 경우
 			const _uint iPlayerScore = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iScore;
 			const _uint iNpcScore = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iScore;
@@ -85,13 +103,18 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 				/* 비기면 스톤 추가*/
 				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iNumStone = 2;
 				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iNumStone = 2;
+				Send_To_Ui();
 			}
 			else if (iPlayerScore > iNpcScore) 
 			{
+				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+				return;
 				/* 플레이어 승리 (성혁이형이랑 연동 필요) */
 			}
 			else if (iPlayerScore < iNpcScore) 
 			{
+				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+				return;
 				/* 플레이어 패배 (성혁이형이랑 연동 필요)  */
 			}
 		}
@@ -228,6 +251,42 @@ void CState_CurlingGame_Launch_Stone::Calculate_Score()
 
 	m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iScore = iCurScores[CCurlingGame_Manager::PARTICIPANT_PLAYER];
 	m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iScore = iCurScores[CCurlingGame_Manager::PARTICIPANT_NPC];
+
+	/* Send To Ui - Score */
+	{
+		/* Player */
+		{
+			CUI_Minigame_Curling_Base* pUi = CUIMinigame_Manager::GetInstance()->Get_MiniGame_Curling_Ui((_uint)MG_CL_UI_TYPE::SCORE_PLAYER);
+			if (nullptr != pUi)
+				pUi->Send_Message_Int(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iScore);
+		}
+		/* Npc */
+		{
+			CUI_Minigame_Curling_Base* pUi = CUIMinigame_Manager::GetInstance()->Get_MiniGame_Curling_Ui((_uint)MG_CL_UI_TYPE::SCORE_NPC);
+			if (nullptr != pUi)
+				pUi->Send_Message_Int(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iScore);
+
+		}
+	}
+
+}
+
+void CState_CurlingGame_Launch_Stone::Send_To_Ui()
+{
+	/* Player */
+	{
+		CUI_Minigame_Curling_Base* pUi = CUIMinigame_Manager::GetInstance()->Get_MiniGame_Curling_Ui((_uint)MG_CL_UI_TYPE::STONES_PLAYER);
+		if (nullptr != pUi)
+			pUi->Send_Message_Int(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_TYPE::PARTICIPANT_PLAYER].iNumStone);
+	}
+
+	/* Npc */
+	{
+		CUI_Minigame_Curling_Base* pUi = CUIMinigame_Manager::GetInstance()->Get_MiniGame_Curling_Ui((_uint)MG_CL_UI_TYPE::STONES_NPC);
+		if (nullptr != pUi)
+			pUi->Send_Message_Int(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_TYPE::PARTICIPANT_NPC].iNumStone);
+	}
+
 }
 
 CState_CurlingGame_Launch_Stone* CState_CurlingGame_Launch_Stone::Create(CManager_StateMachine* pStateMachine)

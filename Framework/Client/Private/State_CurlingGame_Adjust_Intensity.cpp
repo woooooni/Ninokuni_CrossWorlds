@@ -5,6 +5,7 @@
 
 #include "Game_Manager.h"
 #include "UI_Manager.h"
+#include "UIMinigame_Manager.h"
 #include "Effect_Manager.h"
 
 #include "Camera_Group.h"
@@ -55,8 +56,6 @@ void CState_CurlingGame_Adjust_Intensity::Tick_State(const _float& fTimeDelta)
 
 				m_tGuageDesc.Stop();
 
-				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iNumStone--;
-
 				if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::LAUNCH)))
 					return;
 			}
@@ -72,32 +71,22 @@ void CState_CurlingGame_Adjust_Intensity::Tick_State(const _float& fTimeDelta)
 
 				m_tGuageDesc.Stop();
 
-				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iNumStone--;
-
 				if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::LAUNCH)))
 					return;
 			}
 		}
 	}
+
+	/* Send To Ui */
+	{
+		CUI_Minigame_Curling_Base* pUi = CUIMinigame_Manager::GetInstance()->Get_MiniGame_Curling_Ui((_uint)MG_CL_UI_TYPE::GUAGE);
+		if(nullptr != pUi)
+			pUi->Send_Message_Float(m_tGuageDesc.tLerpValue.fCurValue);
+	}
 }
 
 void CState_CurlingGame_Adjust_Intensity::LateTick_State(const _float& fTimeDelta)
 {
-	Vec2		vPos = { g_iWinSizeX * 0.2f, g_iWinSizeY * 0.5f };
-	const Vec2	vScale(0.4f);
-	const wstring wstrFont = L"Default_Bold";
-	CRenderer* pRenderer = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CRenderer>(L"Com_Renderer");
-
-	CRenderer::TEXT_DESC desc = {};
-	{
-		desc.strText = L"Power : " + to_wstring(_int(m_tGuageDesc.tLerpValue.fCurValue * 100.f));
-		desc.vPosition = vPos;
-		desc.vColor = (Vec4)DirectX::Colors::DarkViolet;
-		desc.strFontTag = wstrFont;
-		desc.vScale = vScale * 1.5f;
-	}
-
-	pRenderer->Add_Text(desc);
 }
 
 void CState_CurlingGame_Adjust_Intensity::Exit_State()

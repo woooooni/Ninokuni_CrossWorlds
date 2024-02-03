@@ -5,6 +5,7 @@
 
 #include "Game_Manager.h"
 #include "UI_Manager.h"
+#include "UIMinigame_Manager.h"
 #include "Effect_Manager.h"
 
 #include "Camera_Group.h"
@@ -15,11 +16,7 @@
 
 #include "Animation.h"
 
-#include "State_CurlingGame_Intro.h"
-#include "State_CurlingGame_Move_Character.h"
-#include "State_CurlingGame_Choose_Direction.h"
-#include "State_CurlingGame_Adjust_Intensity.h"
-#include "State_CurlingGame_Launch_Stone.h"
+
 
 using Ray = DirectX::SimpleMath::Ray;
 
@@ -57,6 +54,8 @@ HRESULT CCurlingGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11Devic
 		return E_FAIL;
 #endif
 
+	m_tParticipants[PARTICIPANT_NPC].iNumStone = g_iMaxStoneCount;
+	m_tParticipants[PARTICIPANT_PLAYER].iNumStone = g_iMaxStoneCount;
 	return S_OK;
 }
 
@@ -77,7 +76,7 @@ void CCurlingGame_Manager::LateTick(const _float& fTimeDelta)
 
 	m_pManagerStateMachineCom->LateTick(fTimeDelta);
 
-	Debug();
+	//Debug();
 }
 
 void CCurlingGame_Manager::Render_Debug()
@@ -101,7 +100,7 @@ HRESULT CCurlingGame_Manager::Start_Game()
 
 	if (FAILED(m_pManagerStateMachineCom->Change_State(INTRO)))
 		return E_FAIL;
-
+	
 	return S_OK;
 }
 
