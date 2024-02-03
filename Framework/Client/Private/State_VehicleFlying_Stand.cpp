@@ -48,8 +48,8 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
     // Skills
     if (KEY_TAP(KEY::NUM_1))
     {
-        CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP1);
-        CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP1);
+        CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_MUCKCLOUD);
+        CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_MUCKCLOUD);
         return;
     }
 //    if (KEY_TAP(KEY::NUM_2))
@@ -62,12 +62,13 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
 //    }
     if (KEY_TAP(KEY::NUM_3))
     {
-        CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP3);
-        CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP3);
+        CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_GUIDED_MISSILE);
+        CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_GUIDED_MISSILE);
         return;
     }
     if (KEY_TAP(KEY::R))
     {
+        CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_BURST);
         CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_BURST);
         return;
     }

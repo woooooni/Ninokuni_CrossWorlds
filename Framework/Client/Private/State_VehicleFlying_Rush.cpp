@@ -38,7 +38,7 @@ HRESULT CState_VehicleFlying_Rush::Initialize(const list<wstring>& AnimationList
 void CState_VehicleFlying_Rush::Enter_State(void* pArg)
 {
     m_fAccSpeed = 30.f;
-    m_fAccRadialBlurScale = 16.f;
+    m_fAccRadialBlurPower = 0.1f;
     CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(XMConvertToRadians(80.f), 0.5f);
 
     CVehicle_Flying_Biplane* pFlyingBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pVehicle);
@@ -48,7 +48,7 @@ void CState_VehicleFlying_Rush::Enter_State(void* pArg)
 
 void CState_VehicleFlying_Rush::Tick_State(_float fTimeDelta)
 {
-    m_fAccRadialBlurScale += 5.f * fTimeDelta;
+    m_fAccRadialBlurPower -= 0.05f * fTimeDelta;
     m_fAccSpeed -= 10.f * fTimeDelta;
 
     if (0.f >= m_fAccSpeed)
@@ -58,7 +58,7 @@ void CState_VehicleFlying_Rush::Tick_State(_float fTimeDelta)
     }
      
 
-    CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(true, m_fAccRadialBlurScale);
+    CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(true, 16.f, m_fAccRadialBlurPower);
     // m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Look()), -5.f * XMConvertToRadians(180.f) * fTimeDelta);
     m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed() + m_fAccSpeed, fTimeDelta);
 }
@@ -66,6 +66,7 @@ void CState_VehicleFlying_Rush::Tick_State(_float fTimeDelta)
 void CState_VehicleFlying_Rush::Exit_State()
 {
     m_fAccSpeed = 10.f;
+    m_fAccRadialBlurPower = 0.1f;
     CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(Cam_Fov_Follow_Default, 0.5f);
     CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(false, 16.f);
 

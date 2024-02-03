@@ -25,7 +25,7 @@ public:
 
 private:
 	_float m_fAccSpeed = 10.f;
-	_float m_fAccRadialBlurScale = 16.f;
+	_float m_fAccRadialBlurPower = 0.1f;
 
 public:
 	static CState_VehicleFlying_Rush* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

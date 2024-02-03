@@ -9,6 +9,7 @@
 #include "Skill_Biplane_1.h"
 #include "Skill_Biplane_2.h"
 #include "Skill_Biplane_3.h"
+#include "Skill_Biplane_Burst.h"
 
 #include "Skill_Destroyer_LeafSlam.h"
 #include "Skill_Destroyer_WheelWind.h"
@@ -70,11 +71,13 @@ HRESULT CSkill_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 		m_Skills[CHARACTER_TYPE::SWORD_MAN].emplace(SKILL_TYPE::SWORDMAN_SWORD_TEMPEST, CSkill_SwordMan_SwordTempest::Create(m_pDevice, m_pContext, pSwordMan));
 		m_Skills[CHARACTER_TYPE::SWORD_MAN].emplace(SKILL_TYPE::SWORDMAN_BURST_MEGA_SLASH, CSkill_SwordMan_Burst_MegaSlash::Create(m_pDevice, m_pContext, pSwordMan));
 
-		m_Skills[CHARACTER_TYPE::SWORD_MAN].emplace(SKILL_TYPE::FLYING_TEMP1, CSkill_Biplane_1::Create(m_pDevice, m_pContext, pSwordMan));
+		m_Skills[CHARACTER_TYPE::SWORD_MAN].emplace(SKILL_TYPE::FLYING_MUCKCLOUD, CSkill_Biplane_1::Create(m_pDevice, m_pContext, pSwordMan));
 
-		m_Skills[CHARACTER_TYPE::SWORD_MAN].emplace(SKILL_TYPE::FLYING_TEMP2, CSkill_Biplane_2::Create(m_pDevice, m_pContext, pSwordMan));
+		m_Skills[CHARACTER_TYPE::SWORD_MAN].emplace(SKILL_TYPE::FLYING_RUSH, CSkill_Biplane_2::Create(m_pDevice, m_pContext, pSwordMan));
 
-		m_Skills[CHARACTER_TYPE::SWORD_MAN].emplace(SKILL_TYPE::FLYING_TEMP3, CSkill_Biplane_3::Create(m_pDevice, m_pContext, pSwordMan));
+		m_Skills[CHARACTER_TYPE::SWORD_MAN].emplace(SKILL_TYPE::FLYING_GUIDED_MISSILE, CSkill_Biplane_3::Create(m_pDevice, m_pContext, pSwordMan));
+
+		m_Skills[CHARACTER_TYPE::SWORD_MAN].emplace(SKILL_TYPE::FLYING_BURST, CSkill_Biplane_Burst::Create(m_pDevice, m_pContext, pSwordMan));
 	}
 	
 

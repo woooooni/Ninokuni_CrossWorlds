@@ -11,6 +11,8 @@
 #include "Camera.h"
 #include "Game_Manager.h"
 #include "Player.h"
+#include "Effect_Manager.h"
+#include "Particle_Manager.h"
 
 CBiplane_BlackHole::CBiplane_BlackHole(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CVehicleFlying_Projectile(pDevice, pContext, L"Biplane_BlackHole", OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER_PROJECTILE)
@@ -47,6 +49,22 @@ HRESULT CBiplane_BlackHole::Initialize(void* pArg)
 
 	m_fDeletionTime = 5.f;
 
+
+	if (FAILED(CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_GrandPrix_BlackHole_Sphere", m_pTransformCom->Get_WorldMatrix(),
+		Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
+		return E_FAIL;
+
+	if (FAILED(CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_GrandPrix_AccretionDisk", m_pTransformCom->Get_WorldMatrix(),
+		Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
+		return E_FAIL;
+
+	if (FAILED(CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_GrandPrix_AccretionDisk_Distortion", m_pTransformCom->Get_WorldMatrix(),
+		Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
+		return E_FAIL;
+
+	if (FAILED(CParticle_Manager::GetInstance()->Generate_Particle(L"Particle_BlackHole", m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -59,7 +77,7 @@ void CBiplane_BlackHole::Tick(_float fTimeDelta)
 		m_fAccArrive += fTimeDelta;
 		if (m_fAccArrive >= m_fArriveTime)
 		{
-			true == m_bArrive;
+			m_bArrive = true;
 			m_fAccArrive = 0.f;
 			m_fAccDeletionTime = 0.f;
 
@@ -127,14 +145,14 @@ HRESULT CBiplane_BlackHole::Ready_Components()
 
 	SphereDesc.pNode = nullptr;
 	SphereDesc.pOwnerTransform = m_pTransformCom;
-	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	SphereDesc.ModelPivotMatrix = XMMatrixRotationY(180.f);
 	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
 
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
 		return E_FAIL;
 
 
-	SphereDesc.tSphere.Radius = 10.f;
+	SphereDesc.tSphere.Radius = 30.f;
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &SphereDesc)))
 		return E_FAIL;
 

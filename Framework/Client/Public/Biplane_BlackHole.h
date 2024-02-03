@@ -32,7 +32,7 @@ private:
 private:
 	_float m_fMoveSpeed = 2.f;
 	_float m_fAccArrive = 0.f;
-	_float m_fArriveTime = 5.f;
+	_float m_fArriveTime = 3.f;
 
 	_float m_fColliderOnOffDamageTime = 1.f;
 	_float m_fAccColliderOnOffDamage = 0.f;
