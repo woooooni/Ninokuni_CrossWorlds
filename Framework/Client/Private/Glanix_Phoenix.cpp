@@ -260,15 +260,18 @@ HRESULT CGlanix_Phoenix::Ready_States()
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Phoenix.ao|Phoenix_Spawn");
-	m_pStateCom->Add_State(PHOENIX_SPAWN, CGlanix_PhoenixState_Spawn::Create(m_pStateCom, strAnimationName));
+	if (FAILED(m_pStateCom->Add_State(PHOENIX_SPAWN, CGlanix_PhoenixState_Spawn::Create(m_pStateCom, strAnimationName))))
+		return E_FAIL;
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Phoenix.ao|Phoenix_Stand");
-	m_pStateCom->Add_State(PHOENIX_IDLE, CGlanix_PhoenixState_Idle::Create(m_pStateCom, strAnimationName));
+	if (FAILED(m_pStateCom->Add_State(PHOENIX_IDLE, CGlanix_PhoenixState_Idle::Create(m_pStateCom, strAnimationName))))
+		return E_FAIL;
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Phoenix.ao|Phoenix_Success");
-	m_pStateCom->Add_State(PHOENIX_OUT, CGlanix_PhoenixState_Out::Create(m_pStateCom, strAnimationName));
+	if (FAILED(m_pStateCom->Add_State(PHOENIX_OUT, CGlanix_PhoenixState_Out::Create(m_pStateCom, strAnimationName))))
+		return E_FAIL;
 	
 	m_pStateCom->Change_State(PHOENIX_SPAWN);
 

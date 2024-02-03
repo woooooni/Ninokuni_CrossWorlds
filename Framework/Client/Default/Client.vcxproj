@@ -230,6 +230,7 @@
     <ClInclude Include="..\Public\Baobam_WaterNode_Skill1.h" />
     <ClInclude Include="..\Public\Baobam_WaterNode_Skill2.h" />
     <ClInclude Include="..\Public\Baobam_WaterNode_Stun.h" />
+    <ClInclude Include="..\Public\Biplane_BlackHole.h" />
     <ClInclude Include="..\Public\Biplane_GuidedMissile.h" />
     <ClInclude Include="..\Public\Biplane_ThunderCloud.h" />
     <ClInclude Include="..\Public\BlackSmithMaster.h" />
@@ -1262,6 +1263,7 @@
     <ClCompile Include="..\Private\Baobam_WaterNode_Skill1.cpp" />
     <ClCompile Include="..\Private\Baobam_WaterNode_Skill2.cpp" />
     <ClCompile Include="..\Private\Baobam_WaterNode_Stun.cpp" />
+    <ClCompile Include="..\Private\Biplane_BlackHole.cpp" />
     <ClCompile Include="..\Private\Biplane_GuidedMissile.cpp" />
     <ClCompile Include="..\Private\Biplane_ThunderCloud.cpp" />
     <ClCompile Include="..\Private\BlackSmithMaster.cpp" />

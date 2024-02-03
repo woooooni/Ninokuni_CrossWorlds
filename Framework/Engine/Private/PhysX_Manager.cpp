@@ -30,10 +30,10 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	PxCudaContextManagerDesc CudaDesc;
 	m_pCudaContextManager = PxCreateCudaContextManager(*m_Foundation, CudaDesc);
 
-	//m_pPvd = PxCreatePvd(*m_Foundation);
-	//m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
-	//m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
-	//_bool bConntected = m_pPvd->isConnected();
+	/*m_pPvd = PxCreatePvd(*m_Foundation);
+	m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
+	m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
+	_bool bConntected = m_pPvd->isConnected();*/
 
 	m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, PxTolerancesScale(), true, m_pPvd);
 	PxInitExtensions(*m_Physics, m_pPvd);
@@ -1215,13 +1215,20 @@ void CPhysX_Manager::Free()
 }
 
 _bool CPhysX_Manager::Check_Push(_uint iLeftObjType, _uint iRightObjType)
-{
-	_bool bPush = false;
-	bPush = ((iLeftObjType == OBJ_MONSTER) && (iRightObjType == OBJ_MONSTER));
-	bPush = ((iLeftObjType == OBJ_MONSTER && iRightObjType == OBJ_CHARACTER) || (iLeftObjType == OBJ_CHARACTER && iRightObjType == OBJ_MONSTER));
+{	
+
+	if ((iLeftObjType == OBJ_MONSTER) && (iRightObjType == OBJ_MONSTER))
+		return true;
+
+	else if ((iLeftObjType == OBJ_MONSTER && iRightObjType == OBJ_CHARACTER) || (iLeftObjType == OBJ_CHARACTER && iRightObjType == OBJ_MONSTER))
+		return true;
+
+	else if ((iLeftObjType == OBJ_GRANDPRIX_ENEMY && iRightObjType == OBJ_GRANDPRIX_CHARACTER) || (iLeftObjType == OBJ_GRANDPRIX_ENEMY && iRightObjType == OBJ_GRANDPRIX_ENEMY))
+		return true;
 
 
-	return bPush;
+
+	return false;
 }
 
 // ControllerFilterCallBack

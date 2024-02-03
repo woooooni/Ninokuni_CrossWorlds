@@ -86,7 +86,7 @@ HRESULT CGrandprix_Manager::Ready_Grandprix_GameObjectToLayer(LEVELID eID)
 		}
 	}
 
-return S_OK;
+	return S_OK;
 }
 
 void CGrandprix_Manager::Ready_Grandprix_EnemyInfo()

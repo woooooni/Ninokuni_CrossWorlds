@@ -160,7 +160,7 @@ HRESULT CVehicle_Flying::Ready_Routes()
 	m_RoutePoints.push_back({ -80.f, 85.5f, 62.f, 1.f });
 	m_RoutePoints.push_back({ 35.f, 102.5f, 107.8f, 1.f });
 
-	if(m_eStat.bIsEnemy == true
+	if(m_tStat.bIsEnemy == true
 		&& Get_ObjectTag() == TEXT("Vehicle_EnemyBiplane"))
 	{
 		// 엔지니어 Start Route
@@ -188,6 +188,7 @@ HRESULT CVehicle_Flying::Ready_Routes()
 	{
 		m_iRouteIndex = GI->RandomInt(0, m_RoutePoints.size() - 1);
 		//m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_RoutePoints[m_iRouteIndex]);
+		// m_pControllerCom->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
 	}
 
 	return S_OK;
