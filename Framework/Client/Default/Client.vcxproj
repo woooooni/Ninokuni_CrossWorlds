@@ -263,6 +263,10 @@
     <ClInclude Include="..\Public\Clown_WizardNode_Blow.h" />
     <ClInclude Include="..\Public\Clown_Wizard_DarkBall.h" />
     <ClInclude Include="..\Public\MainQuestNode_Ending01.h" />
+    <ClInclude Include="..\Public\MainQuestNode_Ending02.h" />
+    <ClInclude Include="..\Public\MainQuestNode_Ending03.h" />
+    <ClInclude Include="..\Public\MainQuestNode_Ending04.h" />
+    <ClInclude Include="..\Public\MainQuestNode_Ending05.h" />
     <ClInclude Include="..\Public\MainQuestNode_FinalBattle08.h" />
     <ClInclude Include="..\Public\MainQuestNode_FinalBattle01.h" />
     <ClInclude Include="..\Public\MainQuestNode_FinalBattle02.h" />
@@ -334,6 +338,7 @@
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Trace.h" />
     <ClInclude Include="..\Public\State_VehicleFlying_Rush.h" />
     <ClInclude Include="..\Public\UI_Grandprix_PlaneHP.h" />
+    <ClInclude Include="..\Public\Stellia_Explosion.h" />
     <ClInclude Include="..\Public\UI_Minigame_Aim.h" />
     <ClInclude Include="..\Public\StelliaState_Rage1StartTurnOL.h" />
     <ClInclude Include="..\Public\StelliaState_Rage3ClawReady.h" />
@@ -360,6 +365,7 @@
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_Rage01Explosion.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_Rage01JumpStamp.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_Rage01SpinTail.h" />
+    <ClInclude Include="..\Public\Vfx_Stellia_Skill_Rage02Explosion.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_SpinTail.h" />
     <ClInclude Include="..\Public\Manager_StateMachine.h" />
     <ClInclude Include="..\Public\State_CurlingGame_Adjust_Intensity.h" />
@@ -622,7 +628,6 @@
     <ClInclude Include="..\Public\Stellia_Crystal_Controller.h" />
     <ClInclude Include="..\Public\Stellia_Crystal_Destructible.h" />
     <ClInclude Include="..\Public\Stellia_Crystal_Explosion.h" />
-    <ClInclude Include="..\Public\Stellia_Explosion.h" />
     <ClInclude Include="..\Public\SubQuestNode_NoisySnowField01.h" />
     <ClInclude Include="..\Public\SubQuestNode_NoisySnowField02.h" />
     <ClInclude Include="..\Public\SubQuestNode_NoisySnowField03.h" />
@@ -1297,6 +1302,10 @@
     <ClCompile Include="..\Private\Clown_WizardNode_Blow.cpp" />
     <ClCompile Include="..\Private\Clown_Wizard_DarkBall.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_Ending01.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_Ending02.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_Ending03.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_Ending04.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_Ending05.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_FinalBattle08.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_FinalBattle01.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_FinalBattle02.cpp" />
@@ -1368,6 +1377,7 @@
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Trace.cpp" />
     <ClCompile Include="..\Private\State_VehicleFlying_Rush.cpp" />
     <ClCompile Include="..\Private\UI_Grandprix_PlaneHP.cpp" />
+    <ClCompile Include="..\Private\Stellia_Explosion.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Aim.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage1StartTurnOL.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage3ClawReady.cpp" />
@@ -1394,6 +1404,7 @@
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_Rage01Explosion.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_Rage01JumpStamp.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_Rage01SpinTail.cpp" />
+    <ClCompile Include="..\Private\Vfx_Stellia_Skill_Rage02Explosion.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_SpinTail.cpp" />
     <ClCompile Include="..\Private\Manager_StateMachine.cpp" />
     <ClCompile Include="..\Private\State_CurlingGame_Adjust_Intensity.cpp" />
@@ -1658,7 +1669,6 @@
     <ClCompile Include="..\Private\Stellia_Crystal_Controller.cpp" />
     <ClCompile Include="..\Private\Stellia_Crystal_Destructible.cpp" />
     <ClCompile Include="..\Private\Stellia_Crystal_Explosion.cpp" />
-    <ClCompile Include="..\Private\Stellia_Explosion.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_NoisySnowField01.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_NoisySnowField02.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_NoisySnowField03.cpp" />

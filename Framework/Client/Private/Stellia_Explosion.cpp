@@ -63,32 +63,36 @@ void CStellia_Explosion::Tick(_float fTimeDelta)
 {
 	if (m_pDecal == nullptr)
 	{
-		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Decal_Swordman_Skill_Perfectblade_Circle"), m_pTransformCom->Get_WorldMatrix(),
-			Vec3(0.f, 0.f, 0.f), Vec3(2.5f, 5.f, 2.5f), Vec3(0.f, 0.f, 0.f), nullptr, &m_pDecal, false);
+		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Stellia_Rage02_Explosion"), m_pTransformCom->Get_WorldMatrix(),
+			Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.f, 2.f), Vec3(0.f, 0.f, 0.f), nullptr, &m_pDecal, false);
 		Safe_AddRef(m_pDecal);
 	}
 	else
 	{
 		m_fTime += fTimeDelta;
-		// 지우기 
-		if (m_fTime >= m_pDecal->Get_DecalDesc().fLifeTime)
-		{
-			this->Set_Dead(true);
-			return;
-		}
+		//// 지우기 
+		//if (m_fTime >= m_pDecal->Get_DecalDesc().fLifeTime)
+		//{
+		//	this->Set_Dead(true);
+		//	// Effect Create
+		//
+		//	return;
+		//}
 		// 콜라이더 끄기
-		if (m_fTime >= m_pDecal->Get_DecalDesc().fLifeTime - 1.5f)
+		if (m_bIsExplosion && m_fTime >= 0.5f)
 		{
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
+			this->Set_Dead(true);
 		}
 
-		// 임시로. 나중에는 데칼이 일정 크기만큼 다 커지면 펑퍼러러펑펑
-		if (m_fTime >= m_pDecal->Get_DecalDesc().fLifeTime - 2.f)
+		if (m_fTime >= m_pDecal->Get_DecalDesc().fLifeTime)
 		{
 			if (!m_bIsExplosion)
 			{
 				m_bIsExplosion = true;
 				Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
+				GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage02Explosion"), m_pTransformCom->Get_WorldMatrix(), nullptr);
+				m_fTime = 0.f;
 			}
 		}
 

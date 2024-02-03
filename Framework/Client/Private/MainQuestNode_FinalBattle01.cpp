@@ -44,6 +44,12 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle01::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_WITCHFOREST)
 	{
+		// 테스트용으로 한번 더 체크
+		if (m_pWitchWood == nullptr)
+		{
+			m_pWitchWood = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_BUILDING, L"Witch_Wood_Wall");
+		}
+
 		if (m_pQuestDestSpot != nullptr)
 		{
 			m_pQuestDestSpot->Tick(fTimeDelta);

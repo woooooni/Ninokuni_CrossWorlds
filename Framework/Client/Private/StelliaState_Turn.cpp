@@ -28,19 +28,17 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 	}
 
 	//// 레이지1 패턴
-	//if (!m_bIsRageInit && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.75f)
-	//{
-	//	m_bIsRageInit = true;
-	//	m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE, true);
-	//	m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE1START_TURN_OC);
-	//	return;
-	//}
+	if (!m_bIsRageInit && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.75f)
+	{
+		m_bIsRageInit = true;
+		m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE, true);
+		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE1START_TURN_OC);
+		return;
+	}
 
-	// 레이지2 패턴
-	//if (!m_bIsRage2Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.40f &&
-	//	m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
-	if (!m_bIsRage2Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.90f)
-
+	// 레이지2 패턴 (위에게 진짜 조건문)
+	if (!m_bIsRage2Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.40f &&
+		m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
 	{
 		m_bIsRage2Init = true;
 		m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE2, true);
@@ -48,7 +46,7 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 		return;
 	}
 
-	// 레이지3 패턴
+	// 레이지3 패턴 (위에게 진짜 조건문)
 	if (!m_bIsRageInit && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.15f &&
 		m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
 	{

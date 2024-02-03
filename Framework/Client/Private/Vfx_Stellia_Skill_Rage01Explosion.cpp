@@ -39,6 +39,13 @@ HRESULT CVfx_Stellia_Skill_Rage01Explosion::Initialize_Prototype()
 	m_pScaleOffset[TYPE_D_DECAL_01] = _float3(20.f, 2.f, 19.5f);
 	m_pRotationOffset[TYPE_D_DECAL_01] = _float3(0.f, -90.f, 0.f);
 
+	/* 2. ExplosionReady Particle */
+	m_pFrameTriger[TYPE_P_EXPOLSION_READY] = 5;
+	m_pPositionOffset[TYPE_P_EXPOLSION_READY] = _float3(0.f, -0.5f, 0.f);
+	m_pScaleOffset[TYPE_P_EXPOLSION_READY] = _float3(10.f, 1.f, 10.f);
+	m_pRotationOffset[TYPE_P_EXPOLSION_READY] = _float3(0.f, -0.f, 0.f);
+
+
 	return S_OK;
 }
 
@@ -68,6 +75,13 @@ void CVfx_Stellia_Skill_Rage01Explosion::Tick(_float fTimeDelta)
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_DECAL_01], m_pScaleOffset[TYPE_D_DECAL_01], m_pRotationOffset[TYPE_D_DECAL_01]);
 			m_iCount++;
 		}
+
+		//else if (m_iCount == TYPE_P_EXPOLSION_READY && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_EXPOLSION_READY])
+		//{
+		//	GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Rage01_FnishExplosion_Ready"),
+		//		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_EXPOLSION_READY], m_pScaleOffset[TYPE_P_EXPOLSION_READY], m_pRotationOffset[TYPE_P_EXPOLSION_READY]);
+		//	m_iCount++;
+		//}
 	}
 }
 

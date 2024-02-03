@@ -47,7 +47,7 @@ private:
 
 	_bool  m_bIsProgress = false;
 	_float m_fAccLimitTime = 0.f;
-	_float m_fLimitTime = 30.f;
+	_float m_fLimitTime = 0.f;
 
 	_int m_iCrystalAmount = 0;
 	vector<CRYSTAL_TYPE> m_vecCrystalType;

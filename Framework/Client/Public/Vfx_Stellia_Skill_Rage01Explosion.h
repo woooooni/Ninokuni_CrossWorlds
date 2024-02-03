@@ -15,6 +15,8 @@ private:
 		TYPE_D_DECAL_00,
 		TYPE_D_DECAL_01,
 
+		TYPE_P_EXPOLSION_READY,
+
 		TYPE_END
 	};
 

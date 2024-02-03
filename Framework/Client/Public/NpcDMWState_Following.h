@@ -18,9 +18,6 @@ public:
 	virtual void Tick_State(_float fTimeDelta);
 	virtual void Exit_State();
 
-private:
-	CGameObject* m_pStellia = nullptr;
-
 public:
 	static CNpcDMWState_Following* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

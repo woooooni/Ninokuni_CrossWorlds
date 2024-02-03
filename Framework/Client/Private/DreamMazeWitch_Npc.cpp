@@ -13,6 +13,9 @@
 
 #include "NpcDMWState_Following.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+
 CDreamMazeWitch_Npc::CDreamMazeWitch_Npc(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -62,12 +65,30 @@ HRESULT CDreamMazeWitch_Npc::Initialize(void* pArg)
 	m_pBalloon->Set_Owner(this, 1.2f);
 	m_pBalloon->Set_Balloon(TEXT(""));
 
+	m_fFollowingSpeed = 12.f;
+
 	return S_OK;
 }
 
 void CDreamMazeWitch_Npc::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	if (m_bIsBattle)
+	{
+		if (m_pStellia != nullptr)
+		{
+			if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_DEAD)
+			{
+				m_bIsBattle = false;
+				return;
+			}
+			else
+			{
+				Following_Stellia(fTimeDelta);
+			}
+		}
+	}
 
 	//if (nullptr != m_pTag)
 	//	m_pTag->Tick(fTimeDelta);
@@ -172,6 +193,20 @@ HRESULT CDreamMazeWitch_Npc::Ready_States()
 	return S_OK;
 }
 
+void CDreamMazeWitch_Npc::Witch_BattleSet(CGameObject* pStellia)
+{
+	m_pStellia = pStellia;
+	m_pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+	
+	if (m_pStellia == nullptr)
+		MSG_BOX("Stellia Is Null");
+	if (m_pPlayer == nullptr)
+		MSG_BOX("Player Is Null");
+
+	m_bIsBattle = true;
+	m_bIsFollowing = true;
+}
+
 HRESULT CDreamMazeWitch_Npc::Ready_Colliders()
 {
 	if (FAILED(__super::Ready_Colliders()))
@@ -183,6 +218,32 @@ HRESULT CDreamMazeWitch_Npc::Ready_Colliders()
 HRESULT CDreamMazeWitch_Npc::Ready_Sockets()
 {
 	return S_OK;
+}
+
+void CDreamMazeWitch_Npc::Following_Stellia(_float)
+{
+	if (m_bIsFollowing)
+	{
+		m_pTransformCom->LookAt_ForLandObject(m_pPlayer->Get_Component_Transform()->Get_Position());
+		Vec4 vStelliaPos = m_pStellia->Get_Component_Transform()->Get_Position();
+
+		Vec4 vReleativePos = m_pStellia->Get_Component_Transform()->Get_RelativeOffset({ -5.f , vStelliaPos.y + 8.f, -5.f, 1.f });
+
+		Vec4 vDestPos = Vec4(vReleativePos + vStelliaPos).OneW();
+
+		if (Vec4::Zero == m_vCurPos || m_fDampingLimitDistance < Vec4::Distance(vDestPos, m_vCurPos))
+		{
+			m_vCurPos = vDestPos;
+		}
+		else
+		{
+			const Vec4 vDist = (vDestPos.ZeroW() - m_vCurPos.ZeroW()) * m_fDampingCoefficient;
+			m_vCurPos += vDist;
+			m_vCurPos.y = vDestPos.y;
+		}
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(m_vCurPos, 1.f));
+	}
 }
 
 CDreamMazeWitch_Npc* CDreamMazeWitch_Npc::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)

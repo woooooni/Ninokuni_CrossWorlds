@@ -24,19 +24,12 @@ HRESULT CNpcDMWState_Following::Initialize(const list<wstring>& AnimationList)
 void CNpcDMWState_Following::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
-	m_pStellia = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_MONSTER, TEXT("Stellia"));
+	m_pWitch->Set_IsFollowing(true);
 }
 
 void CNpcDMWState_Following::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
-
-	if (m_pStellia != nullptr)
-	{
-		Vec4 vStelliaPos = m_pStellia->Get_Component_Transform()->Get_Position();
-
-		__super::Following_Stellia(vStelliaPos, fTimeDelta);
-	}
 }
 
 void CNpcDMWState_Following::Exit_State()

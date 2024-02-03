@@ -11,8 +11,6 @@
 #include "MainQuest_FinalBattle.h"
 #include "MainQuest_Ending.h"
 
-#include "MainQuest_Invasion.h"
-
 #include "GameInstance.h"
 
 CMainQuest::CMainQuest()
