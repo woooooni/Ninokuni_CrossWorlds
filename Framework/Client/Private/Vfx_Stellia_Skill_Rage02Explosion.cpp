@@ -27,13 +27,13 @@ HRESULT CVfx_Stellia_Skill_Rage02Explosion::Initialize_Prototype()
 
 	// 0
 	m_pFrameTriger[TYPE_P_BOMB_X] = 0;
-	m_pPositionOffset[TYPE_P_BOMB_X] = _float3(0.f, 0.f, 0.f);
+	m_pPositionOffset[TYPE_P_BOMB_X] = _float3(0.f, 2.f, 0.f);
 	m_pScaleOffset[TYPE_P_BOMB_X] = _float3(.5f, .5f, .5f);
 	m_pRotationOffset[TYPE_P_BOMB_X] = _float3(0.f, 0.f, 0.f);
 
 	// 1
 	m_pFrameTriger[TYPE_P_BOMB_Y] = 0;
-	m_pPositionOffset[TYPE_P_BOMB_Y] = _float3(0.f, 0.f, 0.f);
+	m_pPositionOffset[TYPE_P_BOMB_Y] = _float3(0.f, -2.f, 0.f);
 	m_pScaleOffset[TYPE_P_BOMB_Y] = _float3(.5f, .5f, .5f);
 	m_pRotationOffset[TYPE_P_BOMB_Y] = _float3(0.f, 0.f, 0.f);
 
