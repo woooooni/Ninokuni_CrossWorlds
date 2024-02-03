@@ -16,6 +16,8 @@
 
 #include "UI_Manager.h"
 
+#include "Effect_Manager.h"
+
 CGlanixState_Rage2Start::CGlanixState_Rage2Start(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -70,6 +72,8 @@ void CGlanixState_Rage2Start::Enter_State(void* pArg)
 			CUI_Manager::GetInstance()->OnOff_IceVignette(true);
 		}
 	}
+
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Intro_Roar"), m_pTransformCom->Get_WorldMatrix(), m_pGlanix);
 }
 
 void CGlanixState_Rage2Start::Tick_State(_float fTimeDelta)

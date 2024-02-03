@@ -147,10 +147,10 @@ void CGlanix::Tick(_float fTimeDelta)
 	if (KEY_TAP(KEY::Z))
 		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
 
-#ifdef _DEBUG
-	if (KEY_TAP(KEY::M))
-		m_pStateCom->Change_State(GLANIX_RAGESTART);
-#endif // DEBUG
+//#ifdef _DEBUG
+//	if (KEY_TAP(KEY::C))
+//		m_pStateCom->Change_State(GLANIX_RAGE2START);
+//#endif // DEBUG
 
 	m_pStateCom->Tick_State(fTimeDelta);
 
@@ -158,11 +158,17 @@ void CGlanix::Tick(_float fTimeDelta)
 
 	if (nullptr != m_pPillarController)
 		m_pPillarController->Tick(fTimeDelta);
+
+	//if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel())
+	//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE, true);
 }
 
 void CGlanix::LateTick(_float fTimeDelta)
-{ 
+{
 	__super::LateTick(fTimeDelta);
+	
+	//if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel())
+	//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE, true);
 }
 
 HRESULT CGlanix::Render()

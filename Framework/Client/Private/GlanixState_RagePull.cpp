@@ -8,6 +8,8 @@
 #include "Camera_Manager.h"
 #include "Camera.h"
 
+#include "Effect_Manager.h"
+
 CGlanixState_RagePull::CGlanixState_RagePull(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -44,6 +46,12 @@ void CGlanixState_RagePull::Tick_State(_float fTimeDelta)
 	{
 		_vector vPullDir = XMVector3Normalize(m_pTransformCom->Get_Position() - m_pPlayerTransform->Get_Position());
 		m_pPlayer->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(vPullDir, 4.5f, true);
+
+		if (m_pModelCom->Get_CurrAnimationFrame() <= 165)
+		{
+			GET_INSTANCE(CEffect_Manager)->Tick_Generate_Effect(&fEffectTimeAcc, 0.4f, fTimeDelta, TEXT("Effect_Glanix_Roar_TrailLine_InMoveCircleLine"),
+				m_pTransformCom->Get_WorldMatrix(), _float3(0.f, -0.1f, 0.f), _float3(15.f, 10.f, 15.f), _float3(180.f, 0.f, 0.f));
+		}
 	}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())

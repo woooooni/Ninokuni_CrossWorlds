@@ -20,6 +20,7 @@ public:
 
 private:
 	_float m_fSlidingSpeed = 0.f;
+	_bool m_bEffectCreate = false;
 
 public:
 	static CGlanixState_RageChargeEnd* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);

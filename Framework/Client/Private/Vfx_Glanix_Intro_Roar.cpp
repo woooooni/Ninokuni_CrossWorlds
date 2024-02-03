@@ -17,7 +17,7 @@ CVfx_Glanix_Intro_Roar::CVfx_Glanix_Intro_Roar(const CVfx_Glanix_Intro_Roar& rhs
 
 HRESULT CVfx_Glanix_Intro_Roar::Initialize_Prototype()
 {
-	m_bOwnerStateIndex = CGlanix::GLANIX_INTRO_ROAR;
+	//m_bOwnerStateIndex = CGlanix::GLANIX_INTRO_ROAR;
 
 	m_iMaxCount = TYPE_END;
 	m_pFrameTriger    = new _int[m_iMaxCount];
@@ -108,7 +108,23 @@ HRESULT CVfx_Glanix_Intro_Roar::Initialize(void* pArg)
 
 void CVfx_Glanix_Intro_Roar::Tick(_float fTimeDelta)
 {
-	__super::Tick(fTimeDelta);
+	if (m_bFinish || m_pOwnerObject == nullptr || m_pOwnerObject->Is_ReserveDead() || m_pOwnerObject->Is_Dead())
+	{
+		Set_Dead(true);
+		return;
+	}
+
+	CModel* pModel = m_pOwnerObject->Get_Component<CModel>(L"Com_Model");
+	if (pModel == nullptr)
+	{
+		Set_Dead(true);
+		return;
+	}
+
+	if (m_bOwnerTween) // false == TweenFinish
+		m_bOwnerTween = pModel->Is_Tween();
+	else
+		m_iOwnerFrame = pModel->Get_CurrAnimationFrame();
 
 	if (!m_bOwnerTween)
 	{

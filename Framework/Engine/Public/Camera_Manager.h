@@ -50,7 +50,7 @@ public:
 	CCamera*	Get_Camera(const _uint& iKey);
 	CCamera*	Get_CurCamera() const { return m_pCurCamera; }
 	CCamera*	Get_PrevCamera() const { return m_pPrevCamera; }
-	HRESULT		Set_CurCamera(const _uint& iKey);
+	HRESULT		Set_CurCamera(const _uint& iKey, const _bool& bForce = false);
 	HRESULT		Set_PrevCamera();
 	
 	const _bool Is_Empty_Camera(const _uint& iKey);

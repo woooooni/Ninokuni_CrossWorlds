@@ -46,6 +46,9 @@ private:
 
 	_bool m_bFirst = true;
 
+private:
+	_bool m_bEffect = false;
+
 public:
 	static CGlanix_ShockWave* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;

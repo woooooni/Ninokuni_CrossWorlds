@@ -8,6 +8,8 @@
 
 #include "Camera_Manager.h"
 #include "Effect_Manager.h"
+#include "Particle_Manager.h"
+#include "Utils.h"
 
 CGlanix_IcePillar::CGlanix_IcePillar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, LAYER_TYPE::LAYER_PROP)
@@ -167,7 +169,29 @@ void CGlanix_IcePillar::Collision_Continue(const COLLISION_INFO& tInfo)
 			dynamic_cast<CGlanix*>(tInfo.pOther)->Set_IsCrash(true);
 
 			// Effect Create
-			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_IcePillar"), m_pTransformCom->Get_WorldMatrix(), this);
+			{
+				_float fRandomXOffset = CUtils::Random_Float(-1.f, 1.f);
+				_float fRandomYOffset = CUtils::Random_Float(-1.f, 1.f);
+
+				CTransform* pOtherTransform = tInfo.pOther->Get_Component<CTransform>(L"Com_Transform");
+				if (nullptr == pOtherTransform)
+					return;
+
+				Vec4 vMonsterPos = pOtherTransform->Get_Position();
+				Vec4 vThisPos = m_pTransformCom->Get_Position();
+				Vec4 vLook = XMVector4Normalize(vThisPos - vMonsterPos);
+
+				_vector vLookPosition = pOtherTransform->Get_Position();
+				vLookPosition += vLook * 0.5f;
+
+				_matrix ThisWorldMat = pOtherTransform->Get_WorldMatrix();
+				ThisWorldMat.r[CTransform::STATE_POSITION] = vLookPosition;
+
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Hit_Monster"), ThisWorldMat,
+					_float3(fRandomXOffset, 3.f + fRandomYOffset, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+
+				GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_IcePillar"), m_pTransformCom->Get_WorldMatrix(), this);
+			}
 
 			if (nullptr != m_pGlanix)
 				m_pGlanix->Delete_Pillar(m_iKey);

@@ -5,6 +5,7 @@
 
 #include "GameInstance.h"
 #include "Camera_Manager.h"
+#include "Effect_Manager.h"
 
 CGlanixState_Spawn::CGlanixState_Spawn(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -25,6 +26,8 @@ void CGlanixState_Spawn::Enter_State(void* pArg)
 
 	//if(m_pPlayer != nullptr)
 	//	m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_Spawn"), m_pTransformCom->Get_WorldMatrix(), m_pGlanix);
 }
 
 void CGlanixState_Spawn::Tick_State(_float fTimeDelta)

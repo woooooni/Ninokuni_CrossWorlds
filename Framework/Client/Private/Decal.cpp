@@ -17,13 +17,17 @@ CDecal::CDecal(const CDecal& rhs)
 	: CGameObject(rhs)
 	, m_isCloned(true)
 	, m_tDecalDesc(rhs.m_tDecalDesc)
+	, m_tDecalScaleDesc(rhs.m_tDecalScaleDesc)
 {
 }
 
-HRESULT CDecal::Initialize_Prototype(const DECAL_DESC* pDecalDesc)
+HRESULT CDecal::Initialize_Prototype(const DECAL_DESC* pDecalDesc, const DECAL_SCALE_DESC* pDecalScaleDesc)
 {
 	if (pDecalDesc != nullptr)
 		m_tDecalDesc = *pDecalDesc;
+
+	if (pDecalScaleDesc != nullptr)
+		m_tDecalScaleDesc = *pDecalScaleDesc;
 
  	return S_OK;
 }
@@ -385,11 +389,11 @@ void CDecal::Tick_Scale(_float fTimeDelta)
 	}
 }
 
-CDecal* CDecal::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const DECAL_DESC* pDecalDesc)
+CDecal* CDecal::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const DECAL_DESC* pDecalDesc, const DECAL_SCALE_DESC* pDecalScaleDesc)
 {
 	CDecal* pInstance = new CDecal(pDevice, pContext, strObjectTag);
 
-	if (FAILED(pInstance->Initialize_Prototype(pDecalDesc)))
+	if (FAILED(pInstance->Initialize_Prototype(pDecalDesc, pDecalScaleDesc)))
 	{
 		MSG_BOX("Failed to Created : CDecal");
 		Safe_Release(pInstance);
