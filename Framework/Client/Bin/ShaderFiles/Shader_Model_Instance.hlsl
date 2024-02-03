@@ -540,10 +540,10 @@ VS_GRASS_OUT geomVert(VS_IN v)
 
 cbuffer CB_GrassBuffer
 {
-    float fBladeWidthMin = 0.02f; // 0.0 ~ 0.1
-    float fBladeWidthMax = 0.05f; // 0.0 ~ 0.1
-    float fBladeHeightMin = 0.21f; // 0.0 ~ 2.0
-    float fBladeHeightMax = 0.4f; // 0.0 ~ 2.0
+    float fBladeWidthMin = 0.04f; // 0.0 ~ 0.1
+    float fBladeWidthMax = 0.07f; // 0.0 ~ 0.1
+    float fBladeHeightMin = 0.4f; // 0.0 ~ 2.0
+    float fBladeHeightMax = 0.7f; // 0.0 ~ 2.0
     
     // 구부러짐 관련.
     float fBladeSegments = 3.0f; // 1 ~ 10

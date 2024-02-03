@@ -355,7 +355,8 @@ void CTool_Map::Picking()
 				|| i == LAYER_TYPE::LAYER_BACKGROUND
 				|| i == LAYER_TYPE::LAYER_SKYBOX
 				|| i == LAYER_TYPE::LAYER_UI
-				|| i == LAYER_TYPE::LAYER_EFFECT)
+				|| i == LAYER_TYPE::LAYER_EFFECT
+				|| i == LAYER_TYPE::LAYER_GROUND)
 				continue;
 
 			list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);
@@ -742,6 +743,31 @@ void CTool_Map::MapObjectSpace()
 					}
 
 				}
+
+				ImGui::SameLine();
+
+				if (ImGui::Button(u8"잔디 전부 삭제"))
+				{
+					list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
+
+					auto iter = pGameObjects.begin();
+
+					while (iter != pGameObjects.end())
+					{
+						if (nullptr == m_pSelectObj)
+							break;
+
+						if ((*iter)->Get_ObjectTag() == TEXT("Common_grass_01") || (*iter)->Get_ObjectTag() == TEXT("Common_grass_Small_01"))
+						{
+							Safe_Release<CGameObject*>((*iter));
+							iter = pGameObjects.erase(iter);
+						}
+						else
+							++iter;
+
+					}
+				}
+
 				ImGui::PopItemWidth();
 			}
 			else

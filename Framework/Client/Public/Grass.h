@@ -24,10 +24,10 @@ private:
 private:
 	struct CB_GRASS
 	{
-		_float fBladeWidthMin = 0.02f;
-		_float fBladeWidthMax = 0.05f;
-		_float fBladeHeightMin = 0.1f;
-		_float fBladeHeightMax = 0.2f;
+		_float fBladeWidthMin = 0.04f;
+		_float fBladeWidthMax = 0.07f;
+		_float fBladeHeightMin = 0.4f;
+		_float fBladeHeightMax = 0.7f;
 
 		_float fBladeBendDistance = 0.38f;
 		_float fBladeBendCurve = 2.0f;
@@ -76,8 +76,8 @@ private:
 	CB_GRASS m_CBGrass = {};
 	_float m_fTime = 0.0f;
 private:
-	Vec4 m_vUpperColor = Vec4(0.608f, 0.416f, 0.82f, 1.0f);
-	Vec4 m_vBottomColor = Vec4(0.475f, 0.306f, 0.659f, 1.0f);
+	Vec4 m_vUpperColor = Vec4(0.412f, 0.549f, 0.282f, 1.0f);
+	Vec4 m_vBottomColor = Vec4(0.243f, 0.329f, 0.161f, 1.0f);
 public:
 	static CGrass* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg);

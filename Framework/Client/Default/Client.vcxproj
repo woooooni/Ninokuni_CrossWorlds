@@ -262,6 +262,9 @@
     <ClInclude Include="..\Public\Clown_WizardNode_Air.h" />
     <ClInclude Include="..\Public\Clown_WizardNode_Blow.h" />
     <ClInclude Include="..\Public\Clown_Wizard_DarkBall.h" />
+    <ClInclude Include="..\Public\EntireGrass.h" />
+    <ClInclude Include="..\Public\LargeGrass.h" />
+    <ClInclude Include="..\Public\LargeGrass_Purple.h" />
     <ClInclude Include="..\Public\MainQuestNode_Ending01.h" />
     <ClInclude Include="..\Public\MainQuestNode_Ending02.h" />
     <ClInclude Include="..\Public\MainQuestNode_Ending03.h" />
@@ -1301,6 +1304,9 @@
     <ClCompile Include="..\Private\Clown_WizardNode_Air.cpp" />
     <ClCompile Include="..\Private\Clown_WizardNode_Blow.cpp" />
     <ClCompile Include="..\Private\Clown_Wizard_DarkBall.cpp" />
+    <ClCompile Include="..\Private\EntireGrass.cpp" />
+    <ClCompile Include="..\Private\LargeGrass.cpp" />
+    <ClCompile Include="..\Private\LargeGrass_Purple.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_Ending01.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_Ending02.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_Ending03.cpp" />
