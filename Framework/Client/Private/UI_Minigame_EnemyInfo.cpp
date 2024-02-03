@@ -95,6 +95,9 @@ void CUI_Minigame_EnemyInfo::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (m_pOwner == nullptr)
+			return;
+
 		if (true == m_pOwner->Is_Dead() || true == m_pOwner->Is_ReserveDead())
 		{
 			m_iPass = 16;
@@ -128,6 +131,9 @@ void CUI_Minigame_EnemyInfo::LateTick(_float fTimeDelta)
 	if (m_bActive)
 	{
 		if (8 < m_iTextureIndex)
+			return;
+
+		if (m_pOwner == nullptr)
 			return;
 
 		if (true == m_pOwner->Is_Dead() || true == m_pOwner->Is_ReserveDead())

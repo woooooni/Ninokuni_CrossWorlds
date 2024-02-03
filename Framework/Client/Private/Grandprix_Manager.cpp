@@ -9,6 +9,11 @@
 #include "Vehicle_Flying_EnemyBoto.h"
 #include "Grandprix_ItemBox.h"
 #include "Grandprix_Engineer.h"
+#include "Grandprix_ItemBox.h"
+#include "Riding_Manager.h"
+
+#include "UI_Manager.h"
+#include "UI_Fade.h"
 
 IMPLEMENT_SINGLETON(CGrandprix_Manager)
 
@@ -25,12 +30,76 @@ HRESULT CGrandprix_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceC
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
 
+	fill(begin(m_bItem), end(m_bItem), false);
+	fill(begin(m_fTimeAcc), end(m_fTimeAcc), 0.f);
+
 	return S_OK;
 }
 
 void CGrandprix_Manager::Tick(_float fTimeDelta)
 {
+	if (true == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP])
+	{
+		m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP] += fTimeDelta;
 
+		// 5초가 지나면 복구
+		if (5.f < m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP])
+		{
+			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP] = false;
+			m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP] = 0.f;
+
+			CRiding_Manager::GetInstance()->Set_Character_BiplaneSpeed(10.f);
+		}
+	}
+
+	if (true == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP])
+	{
+		m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP] += fTimeDelta;
+
+		// 10초가 지나면 사이즈 복구
+		if (10.f < m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP])
+		{
+			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP] = false;
+			m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP] = 0.f;
+
+			for (auto& pVehicle : m_Botos)
+			{
+				if (nullptr != pVehicle &&
+					(false == pVehicle->Is_ReserveDead() || false == pVehicle->Is_Dead()))
+				{
+					pVehicle->Get_Component<CTransform>(L"Com_Transform")->Set_Scale(Vec3(1.f));
+				}
+			}
+			for (auto& pGhost : m_Enemies)
+			{
+				if (nullptr != pGhost &&
+					(false == pGhost->Is_ReserveDead() || false == pGhost->Is_Dead()))
+				{
+					pGhost->Get_Component<CTransform>(L"Com_Transform")->Set_Scale(Vec3(1.f));
+				}
+			}
+		}
+	}
+
+	if (true == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB])
+	{
+		m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB] += fTimeDelta;
+
+		// ?
+	}
+
+	if (true == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SLOW])
+	{
+		m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SLOW] += fTimeDelta;
+
+		if (0.1f < m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SLOW])
+		{
+			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SLOW] = false;
+			m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SLOW] = 0.f;
+			// 5초가 지나면 복구 -> 알아서 복구됨 제어할 필요 없음.
+			// Bool변수만 제어
+		}
+	}
 }
 
 void CGrandprix_Manager::LateTick(_float fTimeDelta)
@@ -289,8 +358,6 @@ void CGrandprix_Manager::End_Grandprix()
 {
 	// 남아 있는 적이 있다면, Set_Dead 처리한다.
 
-	// Engineer
-//	if (false == m_pEnemyPlane->Is_Dead() || false == m_pEnemyPlane->Is_ReserveDead())
 	if (nullptr != m_pEnemyPlane)
 	{
 		m_pEnemyPlane->Set_Dead(true);
@@ -332,6 +399,68 @@ void CGrandprix_Manager::End_Grandprix()
 		}
 	}
 	m_Items.clear();
+
+//	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 3.f, true);
+}
+
+void CGrandprix_Manager::Add_ItemBox(_uint iType)
+{
+	if (iType == CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_END)
+		return;
+
+	switch (iType)
+	{
+	case CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP:
+		if (false == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP])
+		{
+			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP] = true; // 5초
+			// 플레이어 탈 것의 스피드를 제어한다.
+			CRiding_Manager::GetInstance()->Set_Character_BiplaneSpeed((CRiding_Manager::GetInstance()->Get_Character_BiplaneSpeed()) * 2.f);
+		}
+		break;
+
+	case CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP:
+		if (false == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP]) // 10초
+		{
+			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP] = true;
+			// 적과 적의 탈 것의 사이즈를 키운다.
+			for (auto& pVehicle : m_Botos)
+			{
+				if (nullptr != pVehicle &&
+					(false == pVehicle->Is_ReserveDead() || false == pVehicle->Is_Dead()))
+				{
+					pVehicle->Get_Component<CTransform>(L"Com_Transform")->Set_Scale(Vec3(5.f));
+				}
+			}
+			for (auto& pGhost : m_Enemies)
+			{
+				if (nullptr != pGhost &&
+					(false == pGhost->Is_ReserveDead() || false == pGhost->Is_Dead()))
+				{
+					pGhost->Get_Component<CTransform>(L"Com_Transform")->Set_Scale(Vec3(5.f));
+				}
+			}
+		}
+		break;
+
+	case CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB:
+		if (false == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB])
+		{
+			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB] = true;
+			// 플레이어 탈 것을 멀리 밀어낸다.
+		}
+		break;
+
+	case CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SLOW:
+		if (false == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SLOW]) // 5초
+		{
+			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SLOW] = true;
+			// 시간이 느리게 흐르도록 세팅한다.
+			//GI->Set_Slow(TIMER_TYPE::GAME_PLAY, )
+			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 5.f, 0.5f, true);
+		}
+		break;
+	}
 }
 
 

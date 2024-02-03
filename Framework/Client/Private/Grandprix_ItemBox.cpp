@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Grandprix_ItemBox.h"
 #include "GameInstance.h"
+#include "Grandprix_Manager.h"
 
 CGrandprix_ItemBox::CGrandprix_ItemBox(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, LAYER_TYPE::LAYER_PROP)
@@ -22,6 +23,28 @@ void CGrandprix_ItemBox::Set_MinMaxPosition(Vec4 vOriginPos)
 
 	m_fSpeed = GI->RandomFloat(0.5f, 1.5f);
 	m_bReverse = GI->RandomInt(0, 1);
+
+	m_eItemType = ITEMBOX_SIZEUP; // Test
+
+	// 아이템 타입을 랜덤으로 세팅한다.
+//	switch (GI->RandomInt(0, ITEMBOX_END - 1))
+//	{
+//	case ITEMBOX_TYPE::ITEMBOX_SPEEDUP:
+//		m_eItemType = ITEMBOX_SPEEDUP;
+//		break;
+//
+//	case ITEMBOX_TYPE::ITEMBOX_SIZEUP:
+//		m_eItemType = ITEMBOX_SIZEUP;
+//		break;
+//
+//	case ITEMBOX_TYPE::ITEMBOX_BOMB:
+//		m_eItemType = ITEMBOX_BOMB;
+//		break;
+//
+//	case ITEMBOX_TYPE::ITEMBOX_SLOW:
+//		m_eItemType = ITEMBOX_SLOW;
+//		break;
+//	}
 }
 
 HRESULT CGrandprix_ItemBox::Initialize_Prototype()
@@ -43,6 +66,8 @@ HRESULT CGrandprix_ItemBox::Initialize(void* pArg)
 
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
+
+	m_pTransformCom->Set_Scale(Vec3(2.f, 2.f, 2.f));
 
 	m_bActive = false;
 
@@ -145,7 +170,11 @@ HRESULT CGrandprix_ItemBox::Render_Instance_Shadow(CShader* pInstancingShader, C
 
 void CGrandprix_ItemBox::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-	_int a = 0;
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER)
+	{
+		CGrandprix_Manager::GetInstance()->Add_ItemBox(m_eItemType);
+		Set_Dead(true);
+	}
 }
 
 void CGrandprix_ItemBox::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -241,20 +270,22 @@ void CGrandprix_ItemBox::Update_Rotation(_float fTimeDelta)
 	m_vRotationAngle.z += XMConvertToRadians(45.f * fTimeDelta);
 
 	// 각 축에 대한 쿼터니언 생성
-	_vector vRoll = XMQuaternionRotationRollPitchYaw(m_vRotationAngle.x, 0.0f, 0.0f);
-	_vector vPitch = XMQuaternionRotationRollPitchYaw(0.0f, m_vRotationAngle.y, 0.0f);
-	_vector vYaw = XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, m_vRotationAngle.z);
+	Vec4 vRoll = XMQuaternionRotationRollPitchYaw(m_vRotationAngle.x, 0.0f, 0.0f);
+	Vec4 vPitch = XMQuaternionRotationRollPitchYaw(0.0f, m_vRotationAngle.y, 0.0f);
+	Vec4 vYaw = XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, m_vRotationAngle.z);
 
 	// 각 축의 쿼터니언을 곱하여 최종 회전 쿼터니언 얻음
-	_vector vQuaternion = XMQuaternionMultiply(vYaw, XMQuaternionMultiply(vPitch, vRoll));
+	Vec4 vQuaternion = XMQuaternionMultiply(vYaw, XMQuaternionMultiply(vPitch, vRoll));
 
 	// 쿼터니언을 행렬로 변환
 	_matrix rotationMatrix = XMMatrixRotationQuaternion(vQuaternion);
 
+	Vec3 vScale = m_pTransformCom->Get_Scale();
+
 	// 행렬을 상태에 적용
-	m_pTransformCom->Set_State(CTransform::STATE_RIGHT, rotationMatrix.r[0]);
-	m_pTransformCom->Set_State(CTransform::STATE_UP, rotationMatrix.r[1]);
-	m_pTransformCom->Set_State(CTransform::STATE_LOOK, rotationMatrix.r[2]);
+	m_pTransformCom->Set_State(CTransform::STATE_RIGHT, rotationMatrix.r[0] * vScale.x);
+	m_pTransformCom->Set_State(CTransform::STATE_UP, rotationMatrix.r[1] * vScale.y);
+	m_pTransformCom->Set_State(CTransform::STATE_LOOK, rotationMatrix.r[2] * vScale.z);
 }
 
 #pragma endregion
