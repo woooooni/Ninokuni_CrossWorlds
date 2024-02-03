@@ -8,6 +8,7 @@
 #include "Camera_Follow.h"
 
 #include "Character_Biplane_Bullet.h"
+#include "Vehicle_Flying_Biplane.h"
 
 CState_VehicleFlying_Run::CState_VehicleFlying_Run(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
@@ -32,7 +33,14 @@ void CState_VehicleFlying_Run::Enter_State(void* pArg)
 	m_iCurrAnimIndex = m_AnimIndices[0];
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 
-	
+	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	pFollowCam->Set_MinMaxLimitY(0.2f, 2.9f);
+
+	CVehicle_Flying_Biplane* pBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pVehicle);
+	if (nullptr != pBiplane)
+	{
+		pBiplane->Start_Trail(CVehicle_Flying_Biplane::BIPLANE_TRAIL::TAIL);
+	}
 }
 
 void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
@@ -148,8 +156,6 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 	{
 		if (true == CUIMinigame_Manager::GetInstance()->Is_AimActive())
 			CUIMinigame_Manager::GetInstance()->Set_GrandprixAimActive(false);
-
-		return;
 	}
 
 //	if (KEY_TAP(KEY::SPACE))

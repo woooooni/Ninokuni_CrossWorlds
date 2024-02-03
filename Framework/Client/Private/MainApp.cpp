@@ -32,6 +32,10 @@
 
 #include "Camera_Group.h"
 
+#include "Pool.h"
+#include "Character_Biplane_Bullet.h"
+#include "Enemy_Biplane_Bullet.h"
+
 #ifdef _DEBUG
 // #include <vld.h>
 #endif
@@ -66,7 +70,7 @@ HRESULT CMainApp::Initialize()
 
 		g_iStartQuestLevel = 5;									/* 시작 퀘스트 레벨 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;			/* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH;			/* 모델 로드할 캐릭터 타입 */
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;	/* 게임 플레이 캐릭터 타입 */
 	}
@@ -1688,6 +1692,9 @@ void Client::CMainApp::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 	Safe_Release(m_pRenderer_Com);
+
+	CPool<CCharacter_Biplane_Bullet>::Free();
+	CPool<CEnemy_Biplane_Bullet>::Free();
 
 	CRiding_Manager::GetInstance()->DestroyInstance();
 	CGrandprix_Manager::GetInstance()->DestroyInstance();

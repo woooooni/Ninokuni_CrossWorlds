@@ -16,6 +16,7 @@ class CVehicleFlying_Projectile abstract : public CGameObject
 public:
 	typedef struct tagFlyingProjectileDesc
 	{
+		_bool bPool = false;
 		class CVehicle_Flying* pOwner = { nullptr };
 
 	} GRANDPRIX_PROJECTILE_DESC;
@@ -26,6 +27,7 @@ protected:
 	virtual ~CVehicleFlying_Projectile() = default;
 
 public:
+	void Set_Owner(class CVehicle_Flying* pOwner);
 	class CVehicle_Flying* Get_Owner() { return m_pOwner; }
 
 public:

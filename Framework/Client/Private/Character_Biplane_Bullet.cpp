@@ -7,6 +7,7 @@
 #include "Particle_Manager.h"
 #include "Vehicle_Flying.h"
 #include "Character.h"
+#include "Pool.h"
 
 CCharacter_Biplane_Bullet::CCharacter_Biplane_Bullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CVehicleFlying_Projectile(pDevice, pContext, L"Character_Biplane_Bullet", OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER_PROJECTILE)
@@ -17,6 +18,7 @@ CCharacter_Biplane_Bullet::CCharacter_Biplane_Bullet(ID3D11Device* pDevice, ID3D
 CCharacter_Biplane_Bullet::CCharacter_Biplane_Bullet(const CCharacter_Biplane_Bullet& rhs)
 	: CVehicleFlying_Projectile(rhs)
 {
+	
 }
 
 
@@ -111,7 +113,15 @@ void CCharacter_Biplane_Bullet::Collision_Enter(const COLLISION_INFO& tInfo)
 	{
 		wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
 		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
+
+		CPool<CCharacter_Biplane_Bullet>::Return_Obj(this);
 	}
+}
+
+void CCharacter_Biplane_Bullet::Return_Pool()
+{
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
+
 }
 
 

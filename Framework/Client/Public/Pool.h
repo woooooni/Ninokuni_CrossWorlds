@@ -42,6 +42,7 @@ public:
 		if (nullptr == pObj)
 			return nullptr;
 
+		pObj->Reserve_Dead(false);
 		pObj->Set_Dead(false);
 		pObj->Enter_Scene();
 
@@ -52,14 +53,14 @@ public:
 	static _bool Return_Obj(T* pObj)
 	{
 		if (nullptr == pObj)
-			return nullptr;
+			return false;
 
 		pObj->Return_Pool();
 		g_objQueue.push(pObj);
 		return true;
 	}
 
-	void Free()
+	static void Free()
 	{
 		if (g_objQueue.empty())
 			return;

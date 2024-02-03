@@ -11,6 +11,10 @@
 #include "UIMinigame_Manager.h"
 #include "Trail.h"
 
+#include "Pool.h"
+#include "Character_Biplane_Bullet.h"
+#include "VehicleFlying_Projectile.h"
+
 CVehicle_Flying_Biplane::CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVehicle_Flying(pDevice, pContext, strObjectTag, OBJ_GRANDPRIX_CHARACTER)
 {
@@ -23,7 +27,8 @@ CVehicle_Flying_Biplane::CVehicle_Flying_Biplane(const CVehicle_Flying_Biplane& 
 
 HRESULT CVehicle_Flying_Biplane::Initialize_Prototype()
 {
-	__super::Initialize_Prototype();
+	if (FAILED(__super::Initialize_Prototype()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -39,6 +44,9 @@ HRESULT CVehicle_Flying_Biplane::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Trails()))
+		return E_FAIL;
+
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 	
@@ -51,8 +59,7 @@ HRESULT CVehicle_Flying_Biplane::Initialize(void* pArg)
 			m_bIsPlayers = true;
 	}
 
-	if (FAILED(Ready_Trails()))
-		return E_FAIL;
+	
 
 	return S_OK;
 }
@@ -400,9 +407,9 @@ HRESULT CVehicle_Flying_Biplane::Ready_Trails()
 			return E_FAIL;
 
 		if(i <= BIPLANE_TRAIL::RIGHT_WING)
-			m_pTrails[i]->SetUp_Position(XMVectorSet(-0.5f, 0.f, 0.f, 1.f), XMVectorSet(0.5f, 0.f, 0.f, 1.f));
+			m_pTrails[i]->SetUp_Position(XMVectorSet(-0.25f, 0.f, 0.f, 1.f), XMVectorSet(0.25f, 0.f, 0.f, 1.f));
 		else
-			m_pTrails[i]->SetUp_Position(XMVectorSet(0.f, -0.5f, 0.f, 1.f), XMVectorSet(0.f, 0.5f, 0.f, 1.f));
+			m_pTrails[i]->SetUp_Position(XMVectorSet(0.f, -0.25f, 0.f, 1.f), XMVectorSet(0.f, 0.25f, 0.f, 1.f));
 
 		m_pTrails[i]->Stop_Trail();
 	}
