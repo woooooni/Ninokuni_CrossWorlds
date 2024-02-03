@@ -14,6 +14,10 @@
 #include "Weapon.h"
 #include <future>
 
+#include "Quest_Manager.h"
+#include "Game_Manager.h"
+#include "Player.h"
+
 USING(Client)
 CGameNpc::CGameNpc(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_NPC)
@@ -49,6 +53,14 @@ HRESULT CGameNpc::Initialize(void* pArg)
 void CGameNpc::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_ENDING &&
+		GI->Get_CurrentLevel() == LEVEL_EVERMORE && m_strObjectTag != TEXT("KingdomGuard"))
+	{
+		CGameObject* pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+		m_pTransformCom->LookAt_ForLandObject(pPlayer->Get_Component_Transform()->Get_Position());
+	}
+
 
 	m_pStateCom->Tick_State(fTimeDelta);
 

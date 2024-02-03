@@ -117,10 +117,7 @@ HRESULT CHumanChild02::Ready_States()
 	strAnimationName.push_back(L"SKM_HumanChild02.ao|HumanChild_IdleSleepNofacial");
 	m_pStateCom->Add_State(NPC_MOVE_TWOWAY, CNpcState_TwoWay::Create(m_pStateCom, strAnimationName));
 
-	m_vecRoaming.push_back({ 8.f, 0.f, 5.f, 1.0f });
-	m_vecRoaming.push_back({ 0.f, 0.f, 0.f, 1.0f});
-
-	m_pStateCom->Change_State(NPC_MOVE_TWOWAY);
+	m_pStateCom->Change_State(NPC_IDLE);
 
 	return S_OK;
 }

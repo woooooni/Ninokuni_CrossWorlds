@@ -117,11 +117,7 @@ HRESULT CHumanChildHalloweenA::Ready_States()
 	strAnimationName.push_back(L"SKM_HumanChildHalloweenA.ao|HumanChildHalloweenA_Success");
 	m_pStateCom->Add_State(NPC_MOVE_TWOWAY, CNpcState_TwoWay::Create(m_pStateCom, strAnimationName));
 
-	m_vecRoaming.push_back({ 10.f, 0.f, -10.f, 1.f });
-	m_vecRoaming.push_back({ 10.f, 0.f, 10.f, 1.f });
-	m_vecRoaming.push_back({ -10.f, 0.f, 10.f, 1.f });
-
-	m_pStateCom->Change_State(NPC_MOVE_ONEWAY);
+	m_pStateCom->Change_State(NPC_IDLE);
 
 	return S_OK;
 }
