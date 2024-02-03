@@ -50,9 +50,9 @@ HRESULT CVehicle_Flying_EnemyBoto::Initialize(void* pArg)
 	
 	m_bUseBone = true; 
 
-	m_eStat.bIsEnemy = true;
-	m_eStat.fMaxHP = 100000.f;
-	m_eStat.fCurHP = 100000.f;
+	m_tStat.bIsEnemy = true;
+	m_tStat.fMaxHP = 100000.f;
+	m_tStat.fCurHP = 100000.f;
 
 	CGameObject* pTemp = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minigame_Enemy_WorldHP"), LAYER_TYPE::LAYER_UI);
 	if (nullptr == pTemp)
@@ -67,11 +67,14 @@ HRESULT CVehicle_Flying_EnemyBoto::Initialize(void* pArg)
 	pTemp = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minigame_Enemy_Aim"), LAYER_TYPE::LAYER_UI);
 	if (nullptr == pTemp)
 		return E_FAIL;
+
 	if (nullptr == dynamic_cast<CUI_Minigame_Aim*>(pTemp))
 		return E_FAIL;
+
 	m_pAim = dynamic_cast<CUI_Minigame_Aim*>(pTemp);
 	m_pAim->Set_Owner(this);
 
+	m_pRigidBodyCom->Set_Ground(true);
 	m_pRigidBodyCom->Set_Use_Gravity(false);
 
 	return S_OK;
@@ -81,6 +84,17 @@ void CVehicle_Flying_EnemyBoto::Tick(_float fTimeDelta)
 {
 	if (nullptr == m_pRider)
 		return;
+
+	if (true == m_bReserveDead)
+	{
+		Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
+		m_fDissolveWeight += m_fDissolveSpeed * fTimeDelta;
+		if (m_fDissolveWeight >= m_fDissolveTotal)
+		{
+			Set_Dead(true);
+			return;
+		}
+	}
 
 	if (true == m_bOnBoard)
 	{
@@ -103,10 +117,11 @@ void CVehicle_Flying_EnemyBoto::Tick(_float fTimeDelta)
 			GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect,
 				CUtils::Random_Float(0.8f, 0.8f), fTimeDelta, TEXT("Particle_Smoke"), this, _float3(0.f, 1.f, -1.6f));
 		}
-
-		if (nullptr != m_pControllerCom)
-			m_pControllerCom->Tick_Controller(fTimeDelta);
 	}
+
+	if (nullptr != m_pControllerCom)
+		m_pControllerCom->Tick_Controller(fTimeDelta);
+
 }
 
 void CVehicle_Flying_EnemyBoto::LateTick(_float fTimeDelta)
@@ -153,6 +168,18 @@ HRESULT CVehicle_Flying_EnemyBoto::Render()
 			return E_FAIL;
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
+			return E_FAIL;
+
+		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture", 51)))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_DissolveDuration", &m_fDissolveDuration, sizeof(_float))))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fDissolveWeight, sizeof(_float))))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vDissolveColor", &m_vDissolveColor, sizeof(_float4))))
 			return E_FAIL;
 
 		if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
@@ -247,6 +274,13 @@ HRESULT CVehicle_Flying_EnemyBoto::Render_ShadowDepth()
 void CVehicle_Flying_EnemyBoto::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER_PROJECTILE)
+	{
+		if (CCollider::DETECTION_TYPE::BODY == tInfo.pMyCollider->Get_DetectionType() && CCollider::DETECTION_TYPE::ATTACK == tInfo.pOtherCollider->Get_DetectionType())
+		{
+			On_Damaged(tInfo);
+		}
+	}
 }
 
 void CVehicle_Flying_EnemyBoto::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -287,6 +321,12 @@ HRESULT CVehicle_Flying_EnemyBoto::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_EVERMORE,
 		TEXT("Prototype_Component_Texture_Vehicle_Minigame_Grandprix_Boto_Textures"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
+
+	m_pDissolveTextureCom = static_cast<CTexture*>(GI->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise")));
+	if (m_pDissolveTextureCom == nullptr)
+		return E_FAIL;
+
+	
 
 	return S_OK;
 }
@@ -351,7 +391,34 @@ void CVehicle_Flying_EnemyBoto::Update_RiderState()
 				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGrandprix_Enemy::ENEMY_STATE::FLYING_STAND);
 		}
 	}
-} 
+}
+void CVehicle_Flying_EnemyBoto::On_Damaged(const COLLISION_INFO& tInfo)
+{
+	_int iDamage = 3000;
+	if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Character_Biplane_Bullet"))
+	{
+		iDamage = iDamage * 0.5f + GI->RandomInt(-300, 300);
+	}
+	else if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Biplane_Thunder_Cloud"))
+	{
+		iDamage = iDamage * 0.7f + GI->RandomInt(-300, 300);
+	}
+	else if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Biplane_GuidedMissile"))
+	{
+		iDamage = iDamage * 0.3f + GI->RandomInt(-300, 300);
+	}
+
+	m_tStat.fCurHP = max(0, m_tStat.fCurHP - iDamage);
+
+	if (0.f >= m_tStat.fCurHP)
+	{
+		m_pRider->Set_Dead(true);
+		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_DEAD);
+		Reserve_Dead(true);
+		return;
+	}
+}
+
 
 HRESULT CVehicle_Flying_EnemyBoto::Ready_Colliders()
 {
@@ -360,15 +427,15 @@ HRESULT CVehicle_Flying_EnemyBoto::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 1.5f;
-	SphereDesc.tSphere = tSphere;
+	tSphere.Radius = 1.f;
 
+	SphereDesc.tSphere = tSphere;
 	SphereDesc.pNode = nullptr;
 	SphereDesc.pOwnerTransform = m_pTransformCom;
 	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
+	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
 
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &SphereDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -406,4 +473,5 @@ void CVehicle_Flying_EnemyBoto::Free()
 
 	Safe_Release(m_pAim);
 	Safe_Release(m_pHP);
+	Safe_Release(m_pDissolveTextureCom);
 }

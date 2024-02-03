@@ -197,15 +197,15 @@ HRESULT CGrandprix_ItemBox::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 3.f;
+	tSphere.Radius = 2.f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
 	SphereDesc.pOwnerTransform = m_pTransformCom;
 	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
+	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
 
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &SphereDesc)))
 		return E_FAIL;
 
 	return S_OK;

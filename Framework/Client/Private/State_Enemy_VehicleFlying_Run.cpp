@@ -118,15 +118,16 @@ void CState_Enemy_VehicleFlying_Run::Move(_float fTimeDelta)
     // 루트를 짜기 위한 과정임.
     Vec4 vMyPos = m_pTransformCom->Get_Position();
 
-    Vec3 vScale = m_pTransformCom->Get_Scale();
+    if (0.1f < Vec3(vDestPos - vMyPos).Length())
+    {
+        Vec3 vDestLook = XMVector3Normalize(vDestPos - vMyPos);
+        Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 
-    Vec3 vDestLook = XMVector3Normalize(vDestPos - vMyPos);
-    Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+        Vec3 vLerpLook = Vec3::Lerp(vLook, vDestLook, 5.f * fTimeDelta);
 
-    Vec3 vLerpLook = Vec3::Lerp(vLook, vDestLook, fTimeDelta);
-
-    m_pTransformCom->Rotation_Look(XMVector3Normalize(vLerpLook));
-    m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMovingSpeed, fTimeDelta);
+        m_pTransformCom->Rotation_Look(XMVector3Normalize(vLerpLook));
+        m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMovingSpeed, fTimeDelta);
+    }
 }
 
 CState_Enemy_VehicleFlying_Run* CState_Enemy_VehicleFlying_Run::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

@@ -21,7 +21,7 @@ protected:
 	virtual ~CVehicle_Flying() = default;
 
 public:
-	const ENEMY_STAT& Get_Stat() { return m_eStat; }
+	const ENEMY_STAT& Get_Stat() { return m_tStat; }
 
 	void Set_Routes();
 
@@ -65,7 +65,7 @@ protected:
 	HRESULT Ready_Routes();
 
 protected:
-	ENEMY_STAT m_eStat;
+	ENEMY_STAT m_tStat;
 
 	Vec4 m_vStartPos = {};
 
