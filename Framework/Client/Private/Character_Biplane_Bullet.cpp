@@ -52,6 +52,13 @@ void CCharacter_Biplane_Bullet::Tick(_float fTimeDelta)
 
 	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Smoke"), this);
 	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
+
+	if (true == m_bDead)
+	{
+		CPool<CCharacter_Biplane_Bullet>::Return_Obj(this);
+		return;
+	}
+		
 }
 
 void CCharacter_Biplane_Bullet::LateTick(_float fTimeDelta)
@@ -114,7 +121,12 @@ void CCharacter_Biplane_Bullet::Collision_Enter(const COLLISION_INFO& tInfo)
 		wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
 		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
 
-		CPool<CCharacter_Biplane_Bullet>::Return_Obj(this);
+		Set_Dead(true);
+		if (false == CPool<CCharacter_Biplane_Bullet>::Return_Obj(this))
+		{
+			MSG_BOX("ReturnPool Failed. : CCharacter_Biplane_Bullet");
+			return;
+		}
 	}
 }
 

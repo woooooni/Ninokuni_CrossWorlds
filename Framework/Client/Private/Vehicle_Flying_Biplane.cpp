@@ -5,6 +5,7 @@
 #include "State_VehicleFlying_Stand.h"
 #include "State_VehicleFlying_Run.h"
 #include "State_VehicleFlying_Rush.h"
+#include "State_VehicleFlying_Damaged.h"
 
 #include "Character.h"
 
@@ -73,19 +74,9 @@ void CVehicle_Flying_Biplane::Tick(_float fTimeDelta)
 		
 		Update_RiderState();
 
-		if (false == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
-		{
-			if (false == m_bUseRigidbody)
-				m_bUseRigidbody = true;
-		}
-		else
-			m_bUseRigidbody = false;
 
-		if (true == m_bUseRigidbody)
-		{
-			if (nullptr != m_pRigidBodyCom)
-				m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-		}
+		if (nullptr != m_pRigidBodyCom)
+			m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 
 		if (nullptr != m_pControllerCom)
 			m_pControllerCom->Tick_Controller(fTimeDelta);
@@ -147,6 +138,9 @@ HRESULT CVehicle_Flying_Biplane::Render()
 			return E_FAIL;
 
 		_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+
+		if (true == m_bInfinite)
+			vRimColor = { 0.f, 1.f, 1.f, 1.f };
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
 			return E_FAIL;
@@ -239,6 +233,13 @@ HRESULT CVehicle_Flying_Biplane::Render_ShadowDepth()
 void CVehicle_Flying_Biplane::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
+	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+	{
+		if (OBJ_TYPE::OBJ_GRANDPRIX_ENEMY_PROJECTILE == tInfo.pOther->Get_ObjectType())
+		{
+			On_Damaged(tInfo);
+		}
+	}
 }
 
 void CVehicle_Flying_Biplane::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -351,6 +352,10 @@ HRESULT CVehicle_Flying_Biplane::Ready_States()
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_RUSH, CState_VehicleFlying_Rush::Create(m_pStateCom, strAnimationNames));
 
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_DAMAGED, CState_VehicleFlying_Damaged::Create(m_pStateCom, strAnimationNames));
+
 
 
 	/*strAnimationNames.clear();
@@ -407,9 +412,9 @@ HRESULT CVehicle_Flying_Biplane::Ready_Trails()
 			return E_FAIL;
 
 		if(i <= BIPLANE_TRAIL::RIGHT_WING)
-			m_pTrails[i]->SetUp_Position(XMVectorSet(-0.25f, 0.f, 0.f, 1.f), XMVectorSet(0.25f, 0.f, 0.f, 1.f));
+			m_pTrails[i]->SetUp_Position(XMVectorSet(-0.05f, 0.f, 0.f, 1.f), XMVectorSet(0.05f, 0.f, 0.f, 1.f));
 		else
-			m_pTrails[i]->SetUp_Position(XMVectorSet(0.f, -0.25f, 0.f, 1.f), XMVectorSet(0.f, 0.25f, 0.f, 1.f));
+			m_pTrails[i]->SetUp_Position(XMVectorSet(0.f, -0.05f, 0.f, 1.f), XMVectorSet(0.f, 0.05f, 0.f, 1.f));
 
 		m_pTrails[i]->Stop_Trail();
 	}
@@ -444,7 +449,22 @@ void CVehicle_Flying_Biplane::Update_RiderState()
 
 void CVehicle_Flying_Biplane::On_Damaged(const COLLISION_INFO& tInfo)
 {
-	// 데미지 처리.
+	if (true == m_bInfinite)
+		return;
+
+	wstring strAttackerName = tInfo.pOther->Get_PrototypeTag();
+
+	if (wstring::npos != strAttackerName.find(L"Enemy_Biplane_Bullet"))
+	{
+		CTransform* pOtherTransform = tInfo.pOther->Get_Component_Transform();
+		Vec3 vDir = m_pTransformCom->Get_Position() - pOtherTransform->Get_Position();
+		vDir = XMVector3Normalize(vDir);
+
+		m_pRigidBodyCom->Set_FrictionScale(2.f);
+		m_pRigidBodyCom->Add_Velocity(vDir, 20.f, true);
+	}
+
+	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_DAMAGED);
 }
 
 HRESULT CVehicle_Flying_Biplane::Ready_Colliders()
@@ -497,6 +517,7 @@ CGameObject* CVehicle_Flying_Biplane::Clone(void* pArg)
 void CVehicle_Flying_Biplane::Free()
 {
 	__super::Free();
+
 	for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
 		Safe_Release(m_pTrails[i]);
 }

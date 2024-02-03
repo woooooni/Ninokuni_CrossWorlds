@@ -27,7 +27,6 @@ public:
 			if (nullptr == pObj)
 				return E_FAIL;
 
-			Safe_AddRef(pObj);
 			g_objQueue.push(pObj);
 		}
 		return S_OK;
@@ -53,10 +52,11 @@ public:
 	static _bool Return_Obj(T* pObj)
 	{
 		if (nullptr == pObj)
-			return false;
+			return false;		
 
 		pObj->Return_Pool();
 		g_objQueue.push(pObj);
+		Safe_AddRef(pObj);
 		return true;
 	}
 
@@ -73,6 +73,7 @@ public:
 			Safe_Release(pObj);
 			g_objQueue.pop();
 		}
+
 	}
 
 	static queue<T*>& Get_Que() { return g_objQueue; }

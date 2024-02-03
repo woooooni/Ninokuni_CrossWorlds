@@ -46,6 +46,14 @@ HRESULT CVehicle_Flying::Initialize(void* pArg)
 void CVehicle_Flying::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+	if (true == m_bInfinite)
+	{
+		m_fAccInfinite += fTimeDelta;
+		if (m_fAccInfinite >= m_fInfiniteTime)
+		{
+			m_bInfinite = false;
+		}
+	}
 }
 
 void CVehicle_Flying::LateTick(_float fTimeDelta)

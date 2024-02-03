@@ -34,7 +34,13 @@ void CState_VehicleFlying_Run::Enter_State(void* pArg)
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 
 	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-	pFollowCam->Set_MinMaxLimitY(0.2f, 2.9f);
+	if (nullptr != pFollowCam)
+	{
+		pFollowCam->Set_DampingBackLimitRad(XMConvertToRadians(90.f));
+		pFollowCam->Set_CanInput(true);
+		pFollowCam->Set_MinMaxLimitY(0.4f, 2.5f);
+	}
+	
 
 	CVehicle_Flying_Biplane* pBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pVehicle);
 	if (nullptr != pBiplane)
@@ -46,6 +52,8 @@ void CState_VehicleFlying_Run::Enter_State(void* pArg)
 void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 {
 	_bool bMove = false;
+
+	
 
 	// Skills
 	if (KEY_TAP(KEY::NUM_1))

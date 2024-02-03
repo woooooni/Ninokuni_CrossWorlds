@@ -726,7 +726,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Enemy_Biplane_Bullet"),
-			CEnemy_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			CEnemy_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER)) 
 			return E_FAIL;
 
 		CVehicleFlying_Projectile::GRANDPRIX_PROJECTILE_DESC EnemyProjectileDesc = {};

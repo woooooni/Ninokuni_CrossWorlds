@@ -39,6 +39,14 @@ void CState_VehicleFlying_Stand::Enter_State(void* pArg)
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 
+    CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+    if (nullptr != pFollowCam)
+    {
+        pFollowCam->Set_DampingBackLimitRad(XMConvertToRadians(90.f));
+        pFollowCam->Set_CanInput(true);
+        pFollowCam->Set_MinMaxLimitY(0.7f, 2.1f);
+    }
+
     CVehicle_Flying_Biplane* pBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pVehicle);
     if (nullptr != pBiplane)
     {
@@ -93,6 +101,14 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
 
     if (true == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
     {
+        if (false == m_bInitVelocity)
+        {
+            m_pRigidBodyCom->Set_Velocity(Vec3(0.f, 0.f, 0.f));
+            m_pRigidBodyCom->Set_Ground(false);
+            m_pRigidBodyCom->Set_Use_Gravity(false);
+            m_bInitVelocity = true;
+        }
+
         if (false == m_bShoot)
         {
             m_fTimeAcc += fTimeDelta;
@@ -126,11 +142,11 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
             Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
             vVelocity.y = 0.f;
 
-            if (vVelocity.Length() >= 15.f) // 20.f -> 15.f 수정
+            if (vVelocity.Length() >= 20.f) // 20.f -> 15.f 수정
             {
                 Vec3 vVelocityDir = XMVector3Normalize(m_pTransformCom->Get_Look());
                 vVelocityDir.y = 0.8f;
-                m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), 5.f, false);
+                m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), 20.f, true);
                 m_pRigidBodyCom->Set_Use_Gravity(false);
             }
             else
@@ -138,6 +154,7 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
                 Vec3 vVelocityDir = m_pTransformCom->Get_Look();
                 vVelocityDir.y = 0.f;
                 m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), 200.f * fTimeDelta, false); // 200.f -> 100.f로 수정
+                m_pRigidBodyCom->Set_Ground(false);
                 m_pRigidBodyCom->Set_Use_Gravity(true);
             }
         }
