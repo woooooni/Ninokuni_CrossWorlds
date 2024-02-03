@@ -25,7 +25,7 @@ public: // Get/Set
 	void			Set_RandomNick(const wstring& strRandom);
 	void			Set_UserName();
 	void			Set_MonsterDescForUI(class CMonster* pOwner, _bool bActive = true);
-	void			Set_BossActive(_bool bBossActive) { m_bBossActive = bBossActive; }
+//	void			Set_BossActive(_bool bBossActive) { m_bBossActive = bBossActive; }
 
 	_bool			Is_DefaultSettingOn();
 	_bool			Is_NicknameSettingComplete();
