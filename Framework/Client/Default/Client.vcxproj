@@ -349,6 +349,7 @@
     <ClInclude Include="..\Public\StelliaState_SpawnIdle.h" />
     <ClInclude Include="..\Public\StelliaState_SpawnRoar.h" />
     <ClInclude Include="..\Public\StelliaState_SpawnStand.h" />
+    <ClInclude Include="..\Public\UI_Minigame_Curling_TurnArrow.h" />
     <ClInclude Include="..\Public\UI_Minigame_PlayerInfo.h" />
     <ClInclude Include="..\Public\UI_Minigame_Curling_Base.h" />
     <ClInclude Include="..\Public\UI_Minigame_Curling_Gauge.h" />
@@ -1397,6 +1398,7 @@
     <ClCompile Include="..\Private\StelliaState_SpawnIdle.cpp" />
     <ClCompile Include="..\Private\StelliaState_SpawnRoar.cpp" />
     <ClCompile Include="..\Private\StelliaState_SpawnStand.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_Curling_TurnArrow.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_PlayerInfo.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Curling_Base.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Curling_Gauge.cpp" />
