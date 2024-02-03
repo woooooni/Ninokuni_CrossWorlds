@@ -50,9 +50,9 @@ HRESULT CVehicle_Flying_EnemyBoto::Initialize(void* pArg)
 	
 	m_bUseBone = true; 
 
-	m_eStat.bIsEnemy = true;
-	m_eStat.fMaxHP = 50000.f;
-	m_eStat.fCurHP = 50000.f;
+	m_tStat.bIsEnemy = true;
+	m_tStat.fMaxHP = 50000.f;
+	m_tStat.fCurHP = 50000.f;
 
 	CGameObject* pTemp = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minigame_Enemy_WorldHP"), LAYER_TYPE::LAYER_UI);
 	if (nullptr == pTemp)

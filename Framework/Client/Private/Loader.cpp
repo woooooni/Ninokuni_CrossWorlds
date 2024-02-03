@@ -162,12 +162,16 @@
 #include "Enemy_Biplane_Bullet.h"
 #include "Biplane_GuidedMissile.h"
 #include "Biplane_ThunderCloud.h"
+#include "Biplane_BlackHole.h"
+
 #include "Grandprix_Engineer.h"
 #include "Grandprix_Enemy_Ghost2.h"
 #include "Grandprix_ItemBox.h"
 
 #include "Respawn_Box.h"
 #include "CurlingGame_Manager.h"
+
+
 
 _bool CLoader::g_bFirstLoading = false;
 _bool CLoader::g_bLevelFirst[LEVELID::LEVEL_WITCHFOREST + 1] = {};
@@ -705,6 +709,10 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Biplane_ThunderCloud"),
 			CBiplane_Thunder_Cloud::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			return E_FAIL;
+
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Biplane_BlackHole"),
+			CBiplane_BlackHole::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Grandprix_ItemBox"), // 레이어변경 필요함

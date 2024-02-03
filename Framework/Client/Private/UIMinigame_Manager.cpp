@@ -438,15 +438,15 @@ void CUIMinigame_Manager::End_Grandprix()
 
 void CUIMinigame_Manager::Use_GrandprixSkill(SKILL_TYPE eType)
 {
-	if (SKILL_TYPE::FLYING_TEMP1 > eType && SKILL_TYPE::SKILL_END == eType)
+	if (SKILL_TYPE::FLYING_MUCKCLOUD > eType && SKILL_TYPE::SKILL_END == eType)
 		return;
 
 	_uint iIndex = 0;
-	if (eType == SKILL_TYPE::FLYING_TEMP1)
+	if (eType == SKILL_TYPE::FLYING_MUCKCLOUD)
 		iIndex = 0;
-	else if (eType == SKILL_TYPE::FLYING_TEMP2)
+	else if (eType == SKILL_TYPE::FLYING_RUSH)
 		iIndex = 1;
-	else if (eType == SKILL_TYPE::FLYING_TEMP3)
+	else if (eType == SKILL_TYPE::FLYING_GUIDED_MISSILE)
 		iIndex = 2;
 	else
 		iIndex = 3;
