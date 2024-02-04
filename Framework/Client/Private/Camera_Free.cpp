@@ -56,7 +56,7 @@ void CCamera_Free::LateTick(_float fTimeDelta)
 
 	//__super::LateTick(fTimeDelta);
 
-	//Debug();
+	Debug();
 }
 
 HRESULT CCamera_Free::Render()
@@ -140,9 +140,9 @@ void CCamera_Free::Debug()
 
 		const Vec3 vCamPos = m_pTransformCom->Get_Position();
 
-		desc.strText = L"Pos - x : " + to_wstring(vCamPos.x)
-					+ L"Pos - y : " + to_wstring(vCamPos.x)
-					+ L"Pos - z : " + to_wstring(vCamPos.x);
+		desc.strText = L"Pos : x  " + to_wstring(vCamPos.x)
+					+ L", y : " + to_wstring(vCamPos.y)
+					+ L", z : " + to_wstring(vCamPos.z);
 
 		desc.strFontTag = wstrFont;
 		desc.vScale = vScale * 1.5f;
@@ -158,9 +158,9 @@ void CCamera_Free::Debug()
 
 		const Vec3 vCamLook = m_pTransformCom->Get_Look();
 
-		desc.strText = L"Look - x : " + to_wstring(vCamLook.x)
-			+ L"Look - y : " + to_wstring(vCamLook.x)
-			+ L"Look - z : " + to_wstring(vCamLook.x);		
+		desc.strText = L"Look : x  " + to_wstring(vCamLook.x)
+			+ L", y : " + to_wstring(vCamLook.y)
+			+ L", z : " + to_wstring(vCamLook.z);
 		
 		desc.strFontTag = wstrFont;
 		desc.vScale = vScale * 1.5f;

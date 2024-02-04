@@ -71,7 +71,11 @@ public:
 	void Set_Right(_vector vState);
 	void Set_Up(_vector vState);
 	void Set_Look(_vector vState);
+	
 	void Set_Position(_vector vState);
+
+	Vec4 Get_LookAt();
+	void Set_LookAtByDir(Vec4 vLook);
 
 public:
 	virtual HRESULT Initialize_Prototype();

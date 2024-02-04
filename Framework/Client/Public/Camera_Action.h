@@ -16,7 +16,7 @@ class CKuu;
 class CCamera_Action final : public CCamera
 {
 public:
-	enum CAMERA_ACTION_TYPE { LOBBY, DOOR, TALK, WINDMILL, SWORDMAN_BURST, ENGINEER_BURST, DESTROYER_BURST, CAMERA_ACTION_END };
+	enum CAMERA_ACTION_TYPE { LOBBY, DOOR, TALK, WINDMILL, SWORDMAN_BURST, ENGINEER_BURST, DESTROYER_BURST, STADIUM, CAMERA_ACTION_END };
 
 public:
 	typedef struct tagActionLobbyDesc
@@ -124,6 +124,44 @@ public:
 		class CTransform* pEngineerTransform = nullptr;
 	} ACTION_ENGINEER_BURST_DESC;
 
+	typedef struct tagStadiumDesc
+	{
+		/* Time */
+		_float fAcc = 0.f;
+		_float fDurationPerView = 0.f;
+	
+		// 이전 토크 이벤트로 돌아가기 위한 데이터
+		_float	fPrevTalkFov		= 0.f;
+		Vec4	vPrevTalkLookAt		= {};
+		Vec4	vPrevTalkPos		= {};
+
+
+		// View Lost 
+
+		enum VIEW_NUM { V0_WALL, V1_WALL, V2_TRACK, V3_TRACK, V4_FINAL, VIEW_NUM_END };
+
+		const Vec4 ViewPositions[VIEW_NUM::VIEW_NUM_END]
+		{
+			Vec4(-149.46f, -4.64f, 221.92f, 1.f),
+			Vec4(-107.68f, -1.423f, 245.62f, 1.f),
+			Vec4(-122.34f, 4.97f, 208.01f, 1.f),
+			Vec4(-101.64f, 2.97f, 214.74f, 1.f),
+			Vec4(-165.41f, 12.29f, 259.22, 1.f)
+		};
+
+		const Vec4 ViewLooks[VIEW_NUM::VIEW_NUM_END]
+		{
+			Vec4(0.895f, 0.144f, 0.421, 0.f).Normalized(),
+			Vec4(-0.638f, 0.092f, -0.763f, 0.f).Normalized(),
+			Vec4(-0.234f, -0.22f, 0.946f, 0.f).Normalized(),
+			Vec4(-0.681f, -0.435, 0.587f, 0.f).Normalized(),
+			Vec4(0.571f, -0.423f, -0.702f, 0.f).Normalized()
+		};
+
+		_uint iCurViewNum = V0_WALL;
+
+	}ACTION_STADIUM_DESC;
+
 private:
 	CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_Action(const CCamera_Action& rhs);
@@ -156,6 +194,9 @@ public:
 	HRESULT Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_TYPE& eType); /* 중간 화자 변경시 호출 */
 	HRESULT Finish_Action_Talk(const CAMERA_TYPE& eNextCameraType = CAMERA_TYPE::FOLLOW); /* 대화 종료시 호출 */
 
+	HRESULT Start_Action_Stadium(const _float& fDuration);
+	HRESULT Finish_Action_Stadium();
+
 public:
 	const _bool& Is_Finish_Action() const { return m_bAction; }
 	virtual Vec4 Get_LookAt() override;
@@ -169,6 +210,7 @@ private:
 	void Tick_SwordManBurst(_float fTimeDelta);
 	void Tick_EngineerBurst(_float fTimeDelta);
 	void Tick_DestroyerBurst(_float fTimeDelta);
+	void Tick_Stadium(_float fTimeDelta);
 
 private:
 	void Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType);
@@ -187,7 +229,7 @@ private:
 	ACTION_DOOR_DESC		m_tActionDoorDesc = {};
 	ACTION_TALK_DESC		m_tActionTalkDesc = {};
 	ACTION_WINDMILL_DESC	m_tActionWindMillDesc = {};
-
+	ACTION_STADIUM_DESC		m_tActionStadiumDesc = {};
 
 	ACTION_SWORDMAN_BURST_DESC m_tActionSwordManBurstDesc = {};
 	ACTION_ENGINEER_BURST_DESC m_tActionEngineerBurstDesc = {};

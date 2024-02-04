@@ -115,6 +115,9 @@ public:
 
 		/* Ui Option */
 		_float fAmplitudeMag = 1.f;
+
+		/* Fade Out*/
+		_bool	bFadeOut = false;
 		
 		void Clear()
 		{
@@ -125,6 +128,8 @@ public:
 
 			fBlendInTime = 0.05f;
 			fBlendOutTime = 0.05f;
+
+			bFadeOut = false;
 		}
 
 		Vec3 Get_ShakeLocalPos()

@@ -84,17 +84,17 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		case CCamera_Action::WINDMILL:
 			Tick_WindMill(fTimeDelta);
 			break;
-
 		case CCamera_Action::SWORDMAN_BURST:
 			Tick_SwordManBurst(fTimeDelta);
 			break;
-
 		case CCamera_Action::ENGINEER_BURST:
 			Tick_EngineerBurst(fTimeDelta);
 			break;
-
 		case CCamera_Action::DESTROYER_BURST:
 			Tick_DestroyerBurst(fTimeDelta);
+			break;
+		case CCamera_Action::STADIUM:
+			Tick_Stadium(fTimeDelta);
 			break;
 		default:
 			break;
@@ -102,7 +102,7 @@ void CCamera_Action::Tick(_float fTimeDelta)
 	}
 
 	/* Test */
-	Test(fTimeDelta);
+	//Test(fTimeDelta);
 }
 
 void CCamera_Action::LateTick(_float fTimeDelta)
@@ -111,6 +111,56 @@ void CCamera_Action::LateTick(_float fTimeDelta)
 		return;
 
 	__super::LateTick(fTimeDelta);
+}
+
+HRESULT CCamera_Action::Start_Action_Stadium(const _float& fDuration)
+{
+	m_bAction = true;
+	
+	m_eCurActionType = CAMERA_ACTION_TYPE::STADIUM;
+	
+	/* 토크 이벤트 데이터 보관 */
+	{
+		memcpy(&m_tActionStadiumDesc.vPrevTalkLookAt, &m_pTransformCom->Get_LookAt(), sizeof(Vec4));
+		memcpy(&m_tActionStadiumDesc.vPrevTalkPos, &m_pTransformCom->Get_Position(), sizeof(Vec4));
+		m_tActionStadiumDesc.fPrevTalkFov = Get_Fov();
+		Set_Fov(Cam_Fov_CurlingGame_Intro);
+	}
+
+	/* Time */
+	{
+		m_tActionStadiumDesc.fDurationPerView = fDuration / (_float)ACTION_STADIUM_DESC::VIEW_NUM::VIEW_NUM_END;
+	}
+
+	/* Transform */
+	{	
+		// 포지션을 먼저 세팅해주고 이후 룩앳을 세팅해야한다.
+		m_pTransformCom->Set_Position(m_tActionStadiumDesc.ViewPositions[m_tActionStadiumDesc.iCurViewNum]);
+		m_pTransformCom->Set_LookAtByDir(m_tActionStadiumDesc.ViewLooks[m_tActionStadiumDesc.iCurViewNum]);
+	}
+
+	/* Shake */
+	{
+		Start_Shake(0.1f, 150.f, fDuration);
+		// 페이드 인아웃
+	}
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Finish_Action_Stadium()
+{
+	m_bAction = false;
+
+	/* 이전 데이터로 복귀*/
+	{
+		Set_Fov(m_tActionStadiumDesc.fPrevTalkFov);
+
+		m_pTransformCom->Set_Position(m_tActionStadiumDesc.vPrevTalkPos.OneW());
+		m_pTransformCom->LookAt(m_tActionStadiumDesc.vPrevTalkLookAt.OneW());
+	}
+
+	return S_OK;
 }
 
 Vec4 CCamera_Action::Get_LookAt()
@@ -137,6 +187,10 @@ Vec4 CCamera_Action::Get_LookAt()
 		return m_tActionTalkDesc.vPrevLookAt.OneW();
 	}
 	break;
+	case CAMERA_ACTION_TYPE::STADIUM:
+	{
+		return m_pTransformCom->Get_LookAt();
+	}
 	default:
 		break;
 	}
@@ -458,6 +512,44 @@ void CCamera_Action::Test(_float fTimeDelta)
 	{
 		Start_Action_WindMill(true);
 	}
+}
+
+void CCamera_Action::Tick_Stadium(_float fTimeDelta)
+{
+	/* Time Update */
+	m_tActionStadiumDesc.fAcc += fTimeDelta;
+	if (m_tActionStadiumDesc.fDurationPerView <= m_tActionStadiumDesc.fAcc)
+	{
+		m_tActionStadiumDesc.fAcc = 0.f;
+		m_tActionStadiumDesc.iCurViewNum++;
+
+		/* Increase View Type */
+		if (ACTION_STADIUM_DESC::VIEW_NUM::VIEW_NUM_END == m_tActionStadiumDesc.iCurViewNum)
+		{
+			//Finish_Action_Stadium();
+			return;
+		}
+
+		/* Set Transform */
+		{
+			m_pTransformCom->Set_Position(m_tActionStadiumDesc.ViewPositions[m_tActionStadiumDesc.iCurViewNum]);
+			m_pTransformCom->Set_LookAtByDir(m_tActionStadiumDesc.ViewLooks[m_tActionStadiumDesc.iCurViewNum]);
+		}
+	}
+
+	if (Is_Shake())
+	{
+		m_pTransformCom->Set_LookAtByDir(m_tActionStadiumDesc.ViewLooks[m_tActionStadiumDesc.iCurViewNum]);
+
+		Vec4 vLookAt = m_pTransformCom->Get_LookAt() + Vec4(Get_ShakeLocalPos());
+		
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
+
+	//if (ACTION_STADIUM_DESC::VIEW_NUM::V4_FINAL == m_tActionStadiumDesc.iCurViewNum)
+	//{
+	//	m_pTransformCom->Translate(Vec3(m_pTransformCom->Get_Look()).Normalized() * -1.f * fTimeDelta);
+	//}
 }
 
 void CCamera_Action::Tick_WindMill(_float fTimeDelta)

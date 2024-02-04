@@ -170,6 +170,8 @@ namespace Client
 	static const _float Cam_Fov_CurlingGame_Default			= XMConvertToRadians(45.0f);
 	static const _float Cam_Fov_CurlingGame_Damping			= XMConvertToRadians(50.0f);
 	static const _float Cam_Fov_CurlingGame_AfterDamping	= XMConvertToRadians(60.0f);
+	static const _float Cam_Fov_CurlingGame_Intro			= XMConvertToRadians(60.0f);
+
 
 
 	static const Vec4	Cam_TargetOffset_Follow_SholderView_Default		= { 0.7f, 1.3f, 0.f, 1.f };

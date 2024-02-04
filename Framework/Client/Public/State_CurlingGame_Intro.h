@@ -9,11 +9,13 @@ class CState_CurlingGame_Intro final : public CState_CurlingGame_Base
 	typedef struct tagStaiumDesc
 	{
 		LERP_FLOAT_DESC			tLerHeight;
-		const _float			fTargetHeight = 27.3f;
-		const _float			fLerpTime = 3.f;
-		const LERP_MODE			eLerpMode = LERP_MODE::SMOOTHER_STEP;
 
-		_float					fPrevHeight = 0.f;
+		const _float			fStartHeitht	= 21.f;
+		_float					fPrevHeight		= fStartHeitht;
+		const _float			fTargetHeight	= 27.3f;// -fStartHeitht;
+
+		const _float			fLerpTime = 4.f;
+		const LERP_MODE			eLerpMode = LERP_MODE::EASE_OUT;
 
 	}STADIUM_DESC;
 
@@ -32,12 +34,13 @@ public:
 	virtual HRESULT Render() override;
 
 private:
+	HRESULT Ready_Stadium();
+	HRESULT Ready_Decals();
+	HRESULT Ready_CharacterData();
+
 	void Tick_Stadium(const _float& fTimeDelta);
 
-private:
-	HRESULT Ready_Stauium();
-	HRESULT Ready_Decals();
-	HRESULT Ready_Characters();
+	HRESULT Finish_Stadium();
 
 private:
 	HRESULT Set_UIs();

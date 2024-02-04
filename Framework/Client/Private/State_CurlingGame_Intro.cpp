@@ -31,13 +31,13 @@ HRESULT CState_CurlingGame_Intro::Initialize()
 
 void CState_CurlingGame_Intro::Enter_State(void* pArg)
 {
-	if (FAILED(Ready_Stauium()))
+	if (FAILED(Ready_Stadium()))
 		return;
 
 	if (FAILED(Ready_Decals()))
 		return;
 
-	if (FAILED(Ready_Characters()))
+	if (FAILED(Ready_CharacterData()))
 		return;
 }
 
@@ -46,22 +46,22 @@ void CState_CurlingGame_Intro::Tick_State(const _float& fTimeDelta)
 	if (m_tStadiumDesc.tLerHeight.bActive)
 		Tick_Stadium(fTimeDelta);
 
-	if (KEY_TAP(KEY::Q))
-	{
-		CCamera_CurlingGame* pCurlingGameCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CAMERA_CURLING));
-
-		if (nullptr != pCurlingGameCam)
-		{
-			if (FAILED(pCurlingGameCam->Change_Target(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner, 1.f)))
-				return;
-
-			if (FAILED(Set_UIs()))
-				return;
-
-			if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::MOVE)))
-				return;
-		}
-	}
+	//if (KEY_TAP(KEY::Q))
+	//{
+	//	CCamera_CurlingGame* pCurlingGameCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CAMERA_CURLING));
+	//
+	//	if (nullptr != pCurlingGameCam)
+	//	{
+	//		if (FAILED(pCurlingGameCam->Change_Target(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner, 1.f)))
+	//			return;
+	//
+	//		if (FAILED(Set_UIs()))
+	//			return;
+	//
+	//		if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::MOVE)))
+	//			return;
+	//	}
+	//}
 }
 
 void CState_CurlingGame_Intro::LateTick_State(const _float& fTimeDelta)
@@ -92,55 +92,64 @@ void CState_CurlingGame_Intro::Tick_Stadium(const _float& fTimeDelta)
 		if (nullptr != pTransform)
 		{
 			Vec4 vPos = pTransform->Get_Position();
+
 			vPos.y += fDeltaHeight;
 
 			pTransform->Set_State(CTransform::STATE::STATE_POSITION, vPos.OneW());
 		}
 	}
+	
+	m_tStadiumDesc.fPrevHeight = m_tStadiumDesc.tLerHeight.fCurValue;
 
 	/* 경기장이 다 올라왔다면 */
 	if (!m_tStadiumDesc.tLerHeight.bActive)
 	{
-		for (auto& pStadiumObject : m_pManager->m_pStadiumObjects)
-		{
-			if (FAILED(GI->Add_Building(pStadiumObject,
-				pStadiumObject->Get_Component<CModel>(L"Com_Model"),
-				pStadiumObject->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
-			{
-				MSG_BOX("피직스 빌딩 생성에 실패했습니다.");
-				return;
-			}
-		}
-
-		if (FAILED(Set_CharacterTransform()))
-			return;
-
-		if (FAILED(Set_CameraTransform()))
-			return;
+		//Finish_Stadium();
 	}
-
-	m_tStadiumDesc.fPrevHeight = m_tStadiumDesc.tLerHeight.fCurValue;
 }
 
-HRESULT CState_CurlingGame_Intro::Ready_Stauium()
+HRESULT CState_CurlingGame_Intro::Ready_Stadium()
 {
-	for (auto& iter : m_pManager->m_pStadiumObjects)
+	/* 경기장 올라오는 액션 시작 */
+	_bool bFindObject = false;
 	{
-		if (nullptr != iter && iter->Get_ObjectTag() == TEXT("Winter_MiniGameMap_Stair"))
+		for (auto& iter : m_pManager->m_pStadiumObjects)
 		{
-			CTransform* pTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
-			if (nullptr == pTransform)
-				return E_FAIL;
+			if (nullptr != iter && iter->Get_ObjectTag() == TEXT("Winter_MiniGameMap_Stair"))
+			{	
+				//m_tStadiumDesc.tLerHeight.Start(
+				//	m_tStadiumDesc.fStartHeitht,
+				//	m_tStadiumDesc.fTargetHeight,
+				//	m_tStadiumDesc.fLerpTime, 
+				//	m_tStadiumDesc.eLerpMode);
+				//
+				//bFindObject = true;
+			}
 
-			m_tStadiumDesc.tLerHeight.Start(0.f,
-				m_tStadiumDesc.fTargetHeight,
-				m_tStadiumDesc.fLerpTime, m_tStadiumDesc.eLerpMode);
-
-			return S_OK;
+			Vec4 vPos = iter->Get_Component_Transform()->Get_Position();
+			vPos.y += m_tStadiumDesc.fStartHeitht;
+			iter->Get_Component_Transform()->Set_Position(vPos);
 		}
-	}
 
-	return E_FAIL;
+		//if (!bFindObject)
+		//	return E_FAIL;
+
+		m_tStadiumDesc.tLerHeight.Start(
+			m_tStadiumDesc.fStartHeitht,
+			m_tStadiumDesc.fTargetHeight,
+			m_tStadiumDesc.fLerpTime,
+			m_tStadiumDesc.eLerpMode);
+	}
+	
+	/* 경기장 비추도록 카메라 트랜스폼 수정, 쉐이킹 시작 */
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr != pActionCam)
+	{
+		pActionCam->Start_Action_Stadium(m_tStadiumDesc.fLerpTime + 1.3f);
+		return S_OK;
+	}
+	else
+		return E_FAIL;
 }
 
 HRESULT CState_CurlingGame_Intro::Set_UIs()
@@ -234,7 +243,7 @@ HRESULT CState_CurlingGame_Intro::Set_CameraTransform()
 	return S_OK;
 }
 
-HRESULT CState_CurlingGame_Intro::Ready_Characters()
+HRESULT CState_CurlingGame_Intro::Ready_CharacterData()
 {
 	/* Player */
 	{
@@ -264,6 +273,28 @@ HRESULT CState_CurlingGame_Intro::Ready_Characters()
 		if (nullptr == m_pManager->m_tParticipants[i].pOwner)
 			return E_FAIL;
 	}
+	return S_OK;
+}
+
+HRESULT CState_CurlingGame_Intro::Finish_Stadium()
+{
+	for (auto& pStadiumObject : m_pManager->m_pStadiumObjects)
+	{
+		if (FAILED(GI->Add_Building(pStadiumObject,
+			pStadiumObject->Get_Component<CModel>(L"Com_Model"),
+			pStadiumObject->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
+		{
+			MSG_BOX("피직스 빌딩 생성에 실패했습니다.");
+			return E_FAIL;
+		}
+	}
+
+	if (FAILED(Set_CharacterTransform()))
+		return E_FAIL;
+
+	if (FAILED(Set_CameraTransform()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
