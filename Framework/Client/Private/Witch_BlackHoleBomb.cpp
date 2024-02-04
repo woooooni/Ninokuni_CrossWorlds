@@ -55,43 +55,7 @@ HRESULT CWitch_BlackHoleBomb::Initialize(void* pArg)
 
 void CWitch_BlackHoleBomb::Tick(_float fTimeDelta)
 {
-	if (m_pEffectBomb == nullptr)
-	{
-		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Stellia_Rage02_Explosion"), m_pTransformCom->Get_WorldMatrix(),
-			Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.f, 2.f), Vec3(0.f, 0.f, 0.f), nullptr, &m_pDecal, false);
-		Safe_AddRef(m_pDecal);
-	}
-	else
-	{
-		m_fTime += fTimeDelta;
-		//// 지우기 
-		//if (m_fTime >= m_pDecal->Get_DecalDesc().fLifeTime)
-		//{
-		//	this->Set_Dead(true);
-		//	// Effect Create
-		//
-		//	return;
-		//}
-		// 콜라이더 끄기
-		if (m_bIsExplosion && m_fTime >= 0.5f)
-		{
-			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
-			this->Set_Dead(true);
-		}
-
-		if (m_fTime >= m_pDecal->Get_DecalDesc().fLifeTime)
-		{
-			if (!m_bIsExplosion)
-			{
-				m_bIsExplosion = true;
-				Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
-				GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage02Explosion"), m_pTransformCom->Get_WorldMatrix(), nullptr);
-				m_fTime = 0.f;
-			}
-		}
-
-		__super::Tick(fTimeDelta);
-	}
+	__super::Tick(fTimeDelta);
 }
 
 void CWitch_BlackHoleBomb::LateTick(_float fTimeDelta)
@@ -196,11 +160,5 @@ CGameObject* CWitch_BlackHoleBomb::Clone(void* pArg)
 void CWitch_BlackHoleBomb::Free()
 {
 	__super::Free();
-
-	if (m_pDecal != nullptr)
-	{
-		m_pDecal->Set_Dead(true);
-		Safe_Release(m_pDecal);
-	}
 }
 
