@@ -74,7 +74,8 @@ private:
 	_bool m_bIsPlayers = { false };
 
 private:
-	CGameObject* m_pTarget = nullptr;
+	class CGameObject* m_pTarget = nullptr;
+	class CCamera_Follow* m_pCameraFollow = nullptr;
 
 private:
 	class CTrail* m_pTrails[BIPLANE_TRAIL::BIPLANE_TRAIL_END] = {};

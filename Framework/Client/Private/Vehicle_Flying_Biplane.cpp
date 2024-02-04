@@ -86,6 +86,10 @@ HRESULT CVehicle_Flying_Biplane::Initialize(void* pArg)
 	m_pRaderIcon = dynamic_cast<CUI_Grandprix_RaderIcon*>(pIcon);
 	m_pRaderIcon->Set_Owner(this);
 
+	m_pCameraFollow = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	if (nullptr == m_pCameraFollow)
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -501,6 +505,9 @@ void CVehicle_Flying_Biplane::Decide_Target()
 		if (true == pTarget->Is_ReserveDead() || true == pTarget->Is_Dead())
 			continue;
 
+		if (wstring::npos != pTarget->Get_ObjectTag().find(L"Vehicle_Flying_EnemyBiplane"))
+			continue;
+
 
 		CTransform* pTargetTransform = pTarget->Get_Component_Transform();
 		if (nullptr == pTargetTransform)
@@ -544,12 +551,12 @@ void CVehicle_Flying_Biplane::Tick_Target()
 
 	if (true == m_pTarget->Is_Dead() || true == m_pTarget->Is_ReserveDead())
 	{
-		CCamera_Follow* pCameraFollow = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-		if (nullptr != pCameraFollow)
+		
+		if (nullptr != m_pCameraFollow)
 		{
-			pCameraFollow->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-			pCameraFollow->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-			pCameraFollow->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			m_pCameraFollow->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			m_pCameraFollow->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			m_pCameraFollow->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 		}
 			
 
@@ -570,13 +577,11 @@ void CVehicle_Flying_Biplane::Tick_Target()
 	Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
 	if (vDir.Length() > 50.f)
 	{
-
-		CCamera_Follow* pCameraFollow = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-		if (nullptr != pCameraFollow)
+		if (nullptr != m_pCameraFollow)
 		{
-			pCameraFollow->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-			pCameraFollow->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-			pCameraFollow->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			m_pCameraFollow->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			m_pCameraFollow->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			m_pCameraFollow->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 		}
 			
 
