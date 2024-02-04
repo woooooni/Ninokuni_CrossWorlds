@@ -311,6 +311,7 @@ HRESULT CMonster::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 void CMonster::Search_Target(_float fTimeDelta)
 {
 	/* 타겟 설정 */
+	// 침공전
 	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_TOWERDEFENCE)
 	{
 		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
@@ -363,11 +364,71 @@ void CMonster::Search_Target(_float fTimeDelta)
 
 
 	}
-	// 타워 디펜스 상태가 아닐 때
+
+	// 마차 호위 퀘스트
+	else if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_ESCORT)
+	{
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+		CGameObject* pCarriage = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, (_uint)LAYER_NPC, TEXT("Carriage"));
+	
+		// 최초 한 번만
+		if (m_tTargetDesc.pTarget == nullptr)
+		{
+			m_tTargetDesc.pTarget = pCarriage;
+
+			if (m_tTargetDesc.pTarget != nullptr)
+			{
+				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
+				m_bIsStartDefence = true;
+			}
+		}
+
+		// 한 번이라도 플레이어게 맞았으면
+		if (!m_bIsEscortHitPlayer && m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT])
+		{
+			m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+			if(m_tTargetDesc.pTarget != nullptr)
+				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
+
+			m_bIsEscortHitPlayer = true;
+		}
+	}
+
+	// 루비 몬스터 웨이브 퀘스트
+	else if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_RUBY_DEFENCE)
+	{
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+		CGameObject* pRuby = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, (_uint)LAYER_NPC, TEXT("Ruby"));
+
+		// 최초 한 번만
+		if (m_tTargetDesc.pTarget == nullptr)
+		{
+			m_tTargetDesc.pTarget = pRuby;
+
+			if (m_tTargetDesc.pTarget != nullptr)
+			{
+				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
+				m_bIsStartDefence = true;
+			}
+		}
+
+		// 한 번이라도 플레이어게 맞았으면
+		if (!m_bIsEscortHitPlayer && m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT])
+		{
+			m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+			if (m_tTargetDesc.pTarget != nullptr)
+				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
+
+			m_bIsEscortHitPlayer = true;
+		}
+	}
+
+
+	// 퀘스트 상태가 아닐 때
 	else
 	{
 		m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-		m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+		m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
 	}
 
 }

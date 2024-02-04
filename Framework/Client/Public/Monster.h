@@ -204,6 +204,10 @@ protected:
 	_float m_fDistToTree = 0.f; // 가을 할아범과의 거리
 	_float m_fTargetSearchDist = 0.f;
 
+	// 호위 퀘스트 관련
+	_bool m_bIsEscort = false;
+	_bool m_bIsEscortHitPlayer = false;
+
 protected:
 	class CTrail* m_pTrails[SOCKET_TYPE::SOCKET_END];
 

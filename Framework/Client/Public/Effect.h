@@ -334,6 +334,7 @@ public:
 	class CRigidBody* Get_RigidBodyCom() { return m_pRigidBodyCom; }
 
 	_bool Get_DieEffect() { return m_bEffectDie; }
+	_float Get_EffectLifeTime() { return m_fLifeTime; }
 
 private:
 	EFFECT_DESC m_tEffectDesc = {};

@@ -64,6 +64,9 @@
 // Rage02
 #include "Vfx_Stellia_Skill_Rage02Explosion.h"
 
+/* Witch */
+#include "Vfx_Witch_Skill_BlackHole_Drain.h"
+
 // -------------------------------------------------
 // ANIMAL //
 #include "Vfx_Whale_Jump.h"

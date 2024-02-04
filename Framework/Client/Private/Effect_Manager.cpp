@@ -979,6 +979,14 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 
 	}
 
+	// Witch
+	{
+		// Prototype_Vfx_Witch_Skill_BlackHole_Drain
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Witch_Skill_BlackHole_Drain"),
+			CVfx_Witch_Skill_BlackHole_Drain::Create(m_pDevice, m_pContext, TEXT("Witch_Skill_BlackHole_Drain")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+	}
+
 	return S_OK;
 }
 

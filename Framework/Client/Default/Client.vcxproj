@@ -327,6 +327,7 @@
     <ClInclude Include="..\Public\MainQuest_Ending.h" />
     <ClInclude Include="..\Public\MainQuest_FinalBattle.h" />
     <ClInclude Include="..\Public\MainQuest_PlantKiller.h" />
+    <ClInclude Include="..\Public\NpcDMWState_Attack.h" />
     <ClInclude Include="..\Public\NpcDMWState_Base.h" />
     <ClInclude Include="..\Public\NpcDMWState_Following.h" />
     <ClInclude Include="..\Public\Skill_Biplane_Burst.h" />
@@ -386,6 +387,8 @@
     <ClInclude Include="..\Public\State_CurlingGame_Move_Character.h" />
     <ClInclude Include="..\Public\Manager_State.h" />
     <ClInclude Include="..\Public\Vfx_Whale_Jump.h" />
+    <ClInclude Include="..\Public\Vfx_Witch_Skill_BlackHole_Bomb.h" />
+    <ClInclude Include="..\Public\Vfx_Witch_Skill_BlackHole_Drain.h" />
     <ClInclude Include="..\Public\Winter_CurlingFloor.h" />
     <ClInclude Include="..\Public\StelliaState_AfterSpinTail.h" />
     <ClInclude Include="..\Public\StelliaState_BackStep.h" />
@@ -1213,6 +1216,8 @@
     <ClInclude Include="..\Public\Winter_MiniWalls.h" />
     <ClInclude Include="..\Public\WitchWater.h" />
     <ClInclude Include="..\Public\WitchWood.h" />
+    <ClInclude Include="..\Public\Witch_BlackHole.h" />
+    <ClInclude Include="..\Public\Witch_BlackHoleBomb.h" />
     <ClInclude Include="..\Public\Zehra.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="MainQuestNode_WitchForest04_2.h" />
@@ -1375,6 +1380,7 @@
     <ClCompile Include="..\Private\MainQuest_Ending.cpp" />
     <ClCompile Include="..\Private\MainQuest_FinalBattle.cpp" />
     <ClCompile Include="..\Private\MainQuest_PlantKiller.cpp" />
+    <ClCompile Include="..\Private\NpcDMWState_Attack.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Base.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Following.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_Burst.cpp" />
@@ -1434,6 +1440,8 @@
     <ClCompile Include="..\Private\State_CurlingGame_Move_Character.cpp" />
     <ClCompile Include="..\Private\Manager_State.cpp" />
     <ClCompile Include="..\Private\Vfx_Whale_Jump.cpp" />
+    <ClCompile Include="..\Private\Vfx_Witch_Skill_BlackHole_Bomb.cpp" />
+    <ClCompile Include="..\Private\Vfx_Witch_Skill_BlackHole_Drain.cpp" />
     <ClCompile Include="..\Private\Winter_CurlingFloor.cpp" />
     <ClCompile Include="..\Private\StelliaState_AfterSpinTail.cpp" />
     <ClCompile Include="..\Private\StelliaState_BackStep.cpp" />
@@ -2265,6 +2273,8 @@
     <ClCompile Include="..\Private\Winter_MiniWalls.cpp" />
     <ClCompile Include="..\Private\WitchWater.cpp" />
     <ClCompile Include="..\Private\WitchWood.cpp" />
+    <ClCompile Include="..\Private\Witch_BlackHole.cpp" />
+    <ClCompile Include="..\Private\Witch_BlackHoleBomb.cpp" />
     <ClCompile Include="..\Private\Zehra.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">
