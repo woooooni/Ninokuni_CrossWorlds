@@ -46,25 +46,29 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField05::Tick(const _float& fTimeDelt
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 	
-	if (0) // 만약 게임이 끝났다면 
+	if (CCurlingGame_Manager::GetInstance()->Finish_Game()) // 만약 게임이 끝났다면 
 	{
-		// 페이드 아웃 시작
-		if (!m_bFadeOut)
-		{
-			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 3.f);
-			m_bFadeOut = true;
-		}
+		// 페이드는 컬링 게임 매니저 쪽에서 처리한다. 
+		m_bIsClear = true;
+		return NODE_STATE::NODE_FAIL;
+
+		//// 페이드 아웃 시작
+		//if (!m_bFadeOut)
+		//{
+		//	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 3.f);
+		//	m_bFadeOut = true;
+		//}
 	}
 
 	// 페이드 아웃이 끝났다면 다음 노드로 넘어간다.
-	if (m_bFadeOut)
-	{
-		if (CUI_Manager::GetInstance()->Is_FadeFinished())
-		{
-			m_bIsClear = true;
-			return NODE_STATE::NODE_FAIL;
-		}
-	}
+	//if (m_bFadeOut)
+	//{
+	//	if (CUI_Manager::GetInstance()->Is_FadeFinished())
+	//	{
+	//		m_bIsClear = true;
+	//		return NODE_STATE::NODE_FAIL;
+	//	}
+	//}
 
 	return NODE_STATE::NODE_RUNNING;
 }

@@ -117,13 +117,15 @@ public:
 public:
 	HRESULT Ready_Game();
 	HRESULT Start_Game();
+	HRESULT Finish_Game();
 
 	HRESULT Change_Turn();
 	HRESULT Set_AiPath();
 
 	CGameObject* Get_CurParticipant() const { return m_pCurParticipant; }
 	
-
+	const _bool& Is_PlayerWin() const { return m_bPlayerWin; }
+	const _bool& Is_FinishGame() const { return m_bPlaying; }
 public:
 	vector<CGameObject*>* Get_Stadium() { return &m_pStadiumObjects; }
 
@@ -171,6 +173,10 @@ private:
 
 	/* Etc */
 	vector<CGameObject*>	m_pStadiumObjects;
+
+	/* Result, Ending */
+	_bool					m_bPlayerWin = false;
+	_bool					m_bFadeOut = false;
 
 #ifdef _DEBUG
 	const _bool	m_bDebugRender						= false;

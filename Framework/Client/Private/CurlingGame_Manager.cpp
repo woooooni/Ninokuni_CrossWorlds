@@ -6,6 +6,7 @@
 #include "Game_Manager.h"
 #include "UI_Manager.h"
 #include "UIMinigame_Manager.h"
+#include "UI_Fade.h"
 #include "Effect_Manager.h"
 
 #include "Camera_Group.h"
@@ -66,7 +67,35 @@ void CCurlingGame_Manager::Tick(const _float& fTimeDelta)
 
 	m_pManagerStateMachineCom->Tick(fTimeDelta);
 
-	Test(fTimeDelta);
+
+	// 엔딩 페이드 아웃이 끝났다면 
+	if (m_bFadeOut)
+	{
+		if (CUI_Manager::GetInstance()->Is_FadeFinished())
+		{
+			// 페이드 인 시작
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 2.f);
+
+			// 포지션 세팅 
+			{
+				// 각 캐릭터 트랜스폼 세팅 해준다. 
+
+
+				// 컬링 게임 시작위치 괜찮
+			}
+			
+			// 대화뷰로 전환 
+			{
+
+				// 체인지 토크 액션 호출해서 카메라 세팅 
+			}
+
+			// 컬링게임 UI off 
+			CUIMinigame_Manager::GetInstance()->OnOff_CurlingUI(true);
+
+			m_bPlaying = false;
+		}
+	}
 }
 
 void CCurlingGame_Manager::LateTick(const _float& fTimeDelta)
@@ -112,6 +141,18 @@ HRESULT CCurlingGame_Manager::Start_Game()
 		return E_FAIL;
 	
 	CUIMinigame_Manager::GetInstance()->OnOff_CurlingUI(true);
+
+	return S_OK;
+}
+
+HRESULT CCurlingGame_Manager::Finish_Game()
+{
+	// 페이드 아웃
+	if (!m_bFadeOut)
+	{
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 2.f);
+		m_bFadeOut = true;
+	}
 
 	return S_OK;
 }

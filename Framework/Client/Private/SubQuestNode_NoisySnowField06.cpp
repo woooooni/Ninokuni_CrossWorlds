@@ -8,6 +8,7 @@
 #include "UI_Fade.h"
 
 #include "Game_Manager.h"
+#include "CurlingGame_Group.h"
 
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
@@ -42,8 +43,14 @@ HRESULT CSubQuestNode_NoisySnowField06::Initialize()
 
 void CSubQuestNode_NoisySnowField06::Start()
 {
-	// 페이드 인
-	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
+	if (CCurlingGame_Manager::GetInstance()->Is_PlayerWin())
+	{
+		// 플레이어 승리
+	}
+	else
+	{
+		// NPC  승리
+	}
 
 	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
@@ -54,11 +61,6 @@ void CSubQuestNode_NoisySnowField06::Start()
 
 	m_vecTalker.push_back(m_pKuu);
 	m_vecTalker.push_back(m_pDestroyer);
-
-	/* 대화 카메라 세팅 */
-	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-	if (nullptr != pActionCam)
-		pActionCam->Start_Action_Talk(m_pDestroyer);
 
 	/* 대화 */
 	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);

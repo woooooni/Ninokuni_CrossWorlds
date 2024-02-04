@@ -107,15 +107,17 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 			}
 			else if (iPlayerScore > iNpcScore) 
 			{
-				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+				/* 플레이어 승리 (페이드 아웃 시작) */
+				m_pManager->m_bPlayerWin = true;
+				m_pManager->Finish_Game();
 				return;
-				/* 플레이어 승리 (성혁이형이랑 연동 필요) */
 			}
 			else if (iPlayerScore < iNpcScore) 
 			{
-				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+				/* 플레이어 패배 (페이드 아웃 시작)  */
+				m_pManager->Finish_Game();
+				m_pManager->m_bPlayerWin = false;
 				return;
-				/* 플레이어 패배 (성혁이형이랑 연동 필요)  */
 			}
 		}
 		else
