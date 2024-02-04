@@ -11,6 +11,8 @@
 #include "Mirror.h"
 #include "LensFlare.h"
 #include "Dog_FootPrints.h"
+#include "Moon.h"
+#include "Witch_Barricade.h"
 
 #include "Winter_MiniWall.h"
 #include "Winter_MiniStair.h"

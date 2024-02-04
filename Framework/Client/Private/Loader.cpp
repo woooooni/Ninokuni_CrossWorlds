@@ -852,8 +852,27 @@ HRESULT CLoader::Loading_For_Level_IceLand()
 
 HRESULT CLoader::Loading_For_Level_WitchForest()
 {
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_Moon"),
+		CMoon::Create(m_pDevice, m_pContext, TEXT("Common_Moon"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
+		return E_FAIL;
+
+	CMonster::MONSTER_STAT statDesc;
+	statDesc.fHp = 100;
+	statDesc.fMaxHp = 100;
+	statDesc.fMp = 100;
+	statDesc.fMaxMp = 100;
+
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Witch_Barricade"),
+		CWitch_Barricade::Create(m_pDevice, m_pContext, TEXT("Witch_Barricade"), statDesc), LAYER_TYPE::LAYER_MONSTER, true))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Witch_Barricade", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/Witch_Barricade/", L"Witch_Barricade")))
+		return E_FAIL;
+
+
 	g_bFirstLoading = true;
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Witch");
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Witch");
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
 		if (true == m_Threads[i].valid())
@@ -977,8 +996,22 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		CEntireGrass::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_EntireGrass")), LAYER_TYPE::LAYER_GRASS, true))
 		return E_FAIL;
 
+	CMonster::MONSTER_STAT statDesc;
+	statDesc.fHp = 100;
+	statDesc.fMaxHp = 100;
+	statDesc.fMp = 100;
+	statDesc.fMaxMp = 100;
+
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Witch_Barricade"),
+		CWitch_Barricade::Create(m_pDevice, m_pContext, TEXT("Witch_Barricade"), statDesc), LAYER_TYPE::LAYER_MONSTER, true))
+		return E_FAIL;
+
 	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LensFlare"),
 		CLensFlare::Create(m_pDevice, m_pContext, TEXT("Common_LensFlare"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
+		return E_FAIL;
+
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_Moon"),
+		CMoon::Create(m_pDevice, m_pContext, TEXT("Common_Moon"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Trigger"), CTrigger::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_PROP)))
@@ -1048,6 +1081,9 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Entire_GrassPlane", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/GrassPlane/", L"Common_Grass_Entire_Plane")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Witch_Barricade", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/Witch_Barricade/", L"Witch_Barricade")))
 		return E_FAIL;
 
 	switch (g_eLoadCharacter)

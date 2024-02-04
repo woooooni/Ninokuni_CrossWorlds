@@ -16,6 +16,7 @@ public:
 
 private:
 	class CGameObject* m_pWitchWood = nullptr;
+	class CGameObject* m_pMoon = nullptr;
 	_bool m_bIsDisAppear = false;
 
 public:

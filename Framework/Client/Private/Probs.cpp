@@ -128,19 +128,23 @@ HRESULT CProbs::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing
 	{
 		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 6)))
-			return E_FAIL;
 		if (FAILED(pInstancingShader->Bind_RawValue("fGrassAngle", &m_fAngle, sizeof(_float))))
+			return E_FAIL;
+		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 6)))
 			return E_FAIL;
 	}
 	else if (TEXT("WitchForest_Plant_01") == m_strObjectTag)
 	{
 		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 7)))
-			return E_FAIL;
 		if (FAILED(pInstancingShader->Bind_RawValue("fGrassAngle", &m_fAngle, sizeof(_float))))
 			return E_FAIL;
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(pInstancingShader, "WitchGrassMaskTexture", 0)))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 7)))
+			return E_FAIL;
+
 	}
 	else
 	{
@@ -214,6 +218,14 @@ HRESULT CProbs::Ready_Components()
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
+	if (TEXT("WitchForest_Plant_01") == m_strObjectTag)
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Grass_MaskMap"),
+			TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+			return E_FAIL;
+	}
+
+
 	return S_OK;
 }
 
@@ -285,4 +297,11 @@ CGameObject* CProbs::Clone(void* pArg)
 	}
 
 	return pInstance;
+}
+
+void CProbs::Free()
+{
+	__super::Free();
+
+	Safe_Release<CTexture*>(m_pTextureCom);
 }

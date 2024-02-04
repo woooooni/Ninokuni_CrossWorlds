@@ -28,18 +28,18 @@ void CState_Closed::Enter_State(void* pArg)
 
 void CState_Closed::Tick_State(_float fTimeDelta)
 {
-	//m_fTime += fTimeDelta;
-	//
-	//if (m_fTime >= 20.0f)
-	//{
-	//	if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish() && m_AnimIndices[0] == m_pModelCom->Get_CurrAnimationIndex())
-	//	{
-	//		m_pModelCom->Set_Animation(m_AnimIndices[1]);
-	//		m_fTime = 0.0f;
-	//	}
-	//	//else if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish() && m_AnimIndices[1] == m_pModelCom->Get_CurrAnimationIndex())
-	//	//	m_pStateMachineCom->Change_State(CWitchWood::WOOD_STATE::OPEN);
-	//}
+	m_fTime += fTimeDelta;
+	
+	if (m_fTime >= 20.0f)
+	{
+		if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish() && m_AnimIndices[0] == m_pModelCom->Get_CurrAnimationIndex())
+		{
+			m_pModelCom->Set_Animation(m_AnimIndices[1]);
+			m_fTime = 0.0f;
+		}
+		//else if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish() && m_AnimIndices[1] == m_pModelCom->Get_CurrAnimationIndex())
+		//	m_pStateMachineCom->Change_State(CWitchWood::WOOD_STATE::OPEN);
+	}
 
 	CWitchWood* pWood = static_cast<CWitchWood*>(m_pOwner);
 	_bool bClose = pWood->IsClose();

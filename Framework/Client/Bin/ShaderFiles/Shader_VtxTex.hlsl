@@ -66,6 +66,7 @@ struct PS_IN
 struct PS_OUT
 {
 	float4		vColor : SV_TARGET0;
+    float4		vBloom : SV_TARGET3;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -78,6 +79,19 @@ PS_OUT PS_MAIN(PS_IN In)
 		discard;
 
 	return Out;	
+}
+
+PS_OUT PS_MOON_MAIN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+    Out.vBloom = float4(0.65f, 0.65f, 0.65f, 1.0f);
+
+    if (0.0001f >= Out.vColor.a)
+        discard;
+
+    return Out;
 }
 
 PS_OUT PS_COLLIDER(PS_IN In)
@@ -259,5 +273,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_COLLIDER();
+    }
+
+    pass DefaultNonCullPass // 7
+    {
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MOON_MAIN();
     }
 }

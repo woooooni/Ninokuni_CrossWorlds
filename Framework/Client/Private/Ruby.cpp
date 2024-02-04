@@ -56,8 +56,7 @@ HRESULT CRuby::Initialize(void* pArg)
 	m_pTag->Set_Owner(this, m_strKorName, 2.f, true);
 
 	// LEVEL_TOOL or LEVEL_WITCH
-	_int iCurLevel = GI->Get_CurrentLevel();
-	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
+	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_DYNAMIC);
 
 	for (auto& pObj : pGameObjects)
 	{
@@ -82,13 +81,41 @@ void CRuby::Tick(_float fTimeDelta)
 			CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(m_pRidingObject);
 			pRubyCarriage->Set_TakeTheCarriage(true);
 
+			m_pStateCom->Change_State(NPC_STATE::NPC_UNIQUENPC_SEAT);		
+		}
+	}
+
+	if (KEY_HOLD(KEY::SHIFT) && KEY_HOLD(KEY::B))
+	{
+		// TEST
+		if (nullptr != m_pRidingObject)
+		{
+			CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(m_pRidingObject);
+			pRubyCarriage->Set_TakeTheCarriage(true);
+
 			_bool bTakeCarriage = pRubyCarriage->TakeTheCarriage();
 			if (true == bTakeCarriage)
-				m_pStateCom->Change_State(NPC_STATE::NPC_UNIQUENPC_SEAT);
+				Set_QuestSection(ESCORT_SECTION::SECTION1, false);
+		}
+	}
+
+	if (KEY_HOLD(KEY::SHIFT) && KEY_HOLD(KEY::N))
+	{
+		// TEST
+		if (nullptr != m_pRidingObject)
+		{
+			CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(m_pRidingObject);
+			pRubyCarriage->Set_TakeTheCarriage(true);
+
+			_bool bTakeCarriage = pRubyCarriage->TakeTheCarriage();
+			if (true == bTakeCarriage)
+				Set_QuestSection(ESCORT_SECTION::SECTION2, false);
 		}
 	}
 
 	__super::Tick(fTimeDelta);
+
+
 
 	if (nullptr != m_pTag)
 		m_pTag->Tick(fTimeDelta);

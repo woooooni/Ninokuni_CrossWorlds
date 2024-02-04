@@ -13,8 +13,11 @@
 #include "Character.h"
 #include "Player.h"
 #include "WitchWood.h"
+#include "Ruby.h"
+#include "RubyCarriage.h"
 
 #include "Quest_Manager.h"
+
 
 CTrigger::CTrigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext, L"Trigger", OBJ_TYPE::OBJ_TRIGGER)
@@ -90,7 +93,7 @@ HRESULT CTrigger::Render()
 void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
-	if (OBJ_TYPE::OBJ_CHARACTER == tInfo.pOther->Get_ObjectType() && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+	if ((OBJ_TYPE::OBJ_CHARACTER == tInfo.pOther->Get_ObjectType() && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY) || TEXT("Ruby_Carriage") == tInfo.pOther->Get_ObjectTag())
 	{
 		switch (m_eTriggerType)
 		{
@@ -111,30 +114,31 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 
 		case TRIGGER_TYPE::TRIGGER_BOSS_STELLIA_ENTER:
 			// TODO
-			Set_Dead(true); 
+			Set_Dead(true);
 			break;
 		case TRIGGER_TYPE::TRIGGER_WHALE_ENTER:
+		{
+			if (!m_bWhaleCutScene)
 			{
-				if (!m_bWhaleCutScene)
+				/* 컷신 카메라로 블렌딩 시작 */
+				CCamera_CutScene_Map* pCutSceneCam = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
+				if (nullptr != pCutSceneCam)
 				{
-					/* 컷신 카메라로 블렌딩 시작 */
-					CCamera_CutScene_Map* pCutSceneCam = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
-					if (nullptr != pCutSceneCam)
-					{
-						pCutSceneCam->Set_CutSceneTransform("Winter_Whale");
-						CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::CUTSCENE_MAP, 2.5f, LERP_MODE::SMOOTHER_STEP);
+					pCutSceneCam->Set_CutSceneTransform("Winter_Whale");
+					CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::CUTSCENE_MAP, 2.5f, LERP_MODE::SMOOTHER_STEP);
 
-						/* 플레이어 인풋 막기 */
-						CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+					/* 플레이어 인풋 막기 */
+					CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 
-						/* 플레이어 스테이트 변경 */
-						CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CCharacter::NEUTRAL_IDLE);
-					}
-					m_bWhaleCutScene = true;
+					/* 플레이어 스테이트 변경 */
+					CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CCharacter::NEUTRAL_IDLE);
 				}
-			break;
+				m_bWhaleCutScene = true;
 			}
+			break;
+		}
 		case TRIGGER_TYPE::TRIGGER_WITCH_WOOD_ENTER:
+		{
 			_uint iCurLevel = GI->Get_CurrentLevel();
 
 			// TODO
@@ -158,13 +162,46 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 						static_cast<CWitchWood*>(pObj)->Set_Close(false);
 				}
 			}
-
-
 			break;
+		}
+		case TRIGGER_TYPE::TRIGGER_WITCH_ESCORT1:
+			{
+				if (TEXT("Ruby_Carriage") == tInfo.pOther->Get_ObjectTag())
+				{
+					CRuby* pRuby = static_cast<CRuby*>(GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_NPC, TEXT("Ruby")));
+					_bool bIsSection = pRuby->Get_QuestSection(CRuby::ESCORT_SECTION::SECTION1);
+
+					if (false == bIsSection)
+					{
+						pRuby->Set_QuestSection(CRuby::ESCORT_SECTION::SECTION1, true);
+						static_cast<CRubyCarriage*>(pRuby->Get_RidingObject())->Set_TakeTheCarriage(false);
+						
+					}
+
+					Set_Dead(true);
+				}
+			break;
+			}
+		case TRIGGER_TYPE::TRIGGER_WITCH_ESCORT2:
+			{
+				if (TEXT("Ruby_Carriage") == tInfo.pOther->Get_ObjectTag())
+				{
+					CRuby* pRuby = static_cast<CRuby*>(GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_NPC, TEXT("Ruby")));
+					_bool bIsSection = pRuby->Get_QuestSection(CRuby::ESCORT_SECTION::SECTION2);
+
+					if (false == bIsSection)
+					{
+						pRuby->Set_QuestSection(CRuby::ESCORT_SECTION::SECTION2, true);
+						static_cast<CRubyCarriage*>(pRuby->Get_RidingObject())->Set_TakeTheCarriage(false);
+					}
+
+					Set_Dead(true);
+				}
+				break;
+			}
 		}
 	}
 }
-
 void CTrigger::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);

@@ -9,6 +9,7 @@
 #include "Quest_Manager.h"
 
 #include "WitchWood.h"
+#include "Moon.h"
 
 CMainQuestNode_FinalBattle01::CMainQuestNode_FinalBattle01()
 {
@@ -32,6 +33,7 @@ void CMainQuestNode_FinalBattle01::Start()
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	m_pWitchWood = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_BUILDING, L"Witch_Wood_Wall");
+	m_pMoon = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_SKYBOX, L"Common_Moon");
 
 	Vec4 vSpotPos = { 97.7f, -4.9f, 24.83f, 1.f };
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
@@ -75,6 +77,10 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle01::Tick(const _float& fTimeDelta)
 		{
 			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 			m_bIsClear = true;
+
+			// TODO
+			static_cast<CMoon*>(m_pMoon)->Set_AppearMoon(true);
+
 			return NODE_STATE::NODE_FAIL;
 		}
 	}

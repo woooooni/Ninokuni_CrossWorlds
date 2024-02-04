@@ -28,6 +28,11 @@ void CUniqueNpcState_Seat::Enter_State(void* pArg)
 
 void CUniqueNpcState_Seat::Tick_State(_float fTimeDelta)
 {
+	CRuby* pRuby = static_cast<CRuby*>(m_pOwner);
+
+	_bool bIsSection1 = pRuby->Get_QuestSection(CRuby::SECTION1);
+	_bool bIsSection2 = pRuby->Get_QuestSection(CRuby::SECTION2);
+
 	__super::Tick_State(fTimeDelta);
 	vector<Vec4>& vPoints = *m_pNpc->Get_RoamingArea();
 	_uint iRouteSize = m_pNpc->Get_RoamingArea()->size();
@@ -44,10 +49,9 @@ void CUniqueNpcState_Seat::Tick_State(_float fTimeDelta)
 
 	// 섹션별로 구간을 나눠서.
 
-	if (iRouteSize >= m_pNpc->Get_CurRoamingIndex())
+	if (false == bIsSection1 && false == bIsSection2)
 	{
-		// Size 7개
-		const _float fArriveTime = 15.0f;
+		const _float fArriveTime = 5.0f;
 		m_fTime += fTimeDelta;
 
 		if (fOneSectionDistance >= 4.0f && false == m_bSection[SECTION_ONE])
@@ -99,7 +103,7 @@ void CUniqueNpcState_Seat::Tick_State(_float fTimeDelta)
 			m_pTransformCom->LookAt(vAt);
 			m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pNpc->Get_Stat()->fSpeed, fTimeDelta);
 		}
-		else if(fFiveDistance >= 4.0f && false == m_bSection[SECTION_FIVE])
+		else if (fFiveDistance >= 4.0f && false == m_bSection[SECTION_FIVE])
 		{
 			if (false == m_bSection[SECTION_FOUR])
 			{
@@ -118,7 +122,6 @@ void CUniqueNpcState_Seat::Tick_State(_float fTimeDelta)
 			if (false == m_bSection[SECTION_FIVE])
 			{
 				m_bSection[SECTION_FIVE] = true;
-				CRuby* pRuby = static_cast<CRuby*>(m_pOwner);
 				static_cast<CRubyCarriage*>(pRuby->Get_RidingObject())->Set_TakeTheCarriage(false);
 				CStateMachine* pCarriageState = pRuby->Get_RidingObject()->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
 				pCarriageState->Change_State(CRubyCarriage::STATE_IDLE);

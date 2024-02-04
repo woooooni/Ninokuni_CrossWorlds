@@ -37,11 +37,16 @@ HRESULT CRubyCarriage::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Colliders()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
 void CRubyCarriage::Tick(_float fTimeDelta)
 {
+
+
 	m_pStateMachineCom->Tick_State(fTimeDelta);
 
 	if (m_pRigidBodyCom != nullptr && m_pControllerCom != nullptr)
@@ -50,6 +55,7 @@ void CRubyCarriage::Tick(_float fTimeDelta)
 		m_pControllerCom->Tick_Controller(fTimeDelta);
 	}
 
+	GI->Add_CollisionGroup(COLLISION_GROUP::DEFENCE_TOWER, this);
 	__super::Tick(fTimeDelta);
 }
 
@@ -65,10 +71,20 @@ void CRubyCarriage::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+
+#ifdef _DEBUG
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
+	m_pRendererCom->Add_Debug(m_pControllerCom);
+#endif // DEBUG
 }
 
 HRESULT CRubyCarriage::Render()
 {
+
 	if (FAILED(m_pAnimShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
 		return E_FAIL;
 	if (FAILED(m_pAnimShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
@@ -160,6 +176,32 @@ HRESULT CRubyCarriage::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"),
 		reinterpret_cast<CComponent**>(&m_pControllerCom), &ControllerDesc)))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRubyCarriage::Ready_Colliders()
+{
+	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
+	ZeroMemory(&OBBDesc, sizeof OBBDesc);
+
+	BoundingOrientedBox OBBBox;
+	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
+
+	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
+	OBBBox.Extents = { 150.0f, 190.f, 360.0f };
+
+	OBBDesc.tBox = OBBBox;
+	OBBDesc.pNode = nullptr;
+	OBBDesc.pOwnerTransform = m_pTransformCom;
+	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	OBBDesc.vOffsetPosition = Vec3(0.f, 190.0f, 0.f);
+
+	/* Body */
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
+		return E_FAIL;
+
+
 
 	return S_OK;
 }

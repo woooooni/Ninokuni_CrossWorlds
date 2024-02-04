@@ -29,6 +29,7 @@ public:
 
 public:
 	virtual HRESULT Ready_Components() override;
+	virtual HRESULT Ready_Colliders();
 	virtual HRESULT Ready_State();
 
 public:

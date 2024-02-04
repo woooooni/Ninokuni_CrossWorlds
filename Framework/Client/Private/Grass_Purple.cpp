@@ -27,7 +27,7 @@ HRESULT CGrass_Purple::Initialize(void* pArg)
 	m_CBGrass.fBendDelta = GI->RandomFloat(0.2f, 0.6f);
 	m_pModelCom->Get_Meshes()[0]->Set_Topology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 
-	m_CBGrass.fTessellationGrassDistance = 0.3f;
+	m_CBGrass.fTessellationGrassDistance = 0.15f;
 
 
 	return S_OK;

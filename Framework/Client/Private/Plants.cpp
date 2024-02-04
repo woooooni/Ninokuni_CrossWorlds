@@ -115,9 +115,9 @@ HRESULT CPlants::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancin
 			return E_FAIL;
 		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 5)))
-			return E_FAIL;
 		if (FAILED(pInstancingShader->Bind_RawValue("fGrassAngle", &m_fAngle, sizeof(_float))))
+			return E_FAIL;
+		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 5)))
 			return E_FAIL;
 	}
 	else if (TEXT("Common_BushA_01") == m_strObjectTag)
@@ -126,9 +126,9 @@ HRESULT CPlants::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancin
 			return E_FAIL;
 		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 6)))
-			return E_FAIL;
 		if (FAILED(pInstancingShader->Bind_RawValue("fGrassAngle", &m_fAngle, sizeof(_float))))
+			return E_FAIL;
+		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 6)))
 			return E_FAIL;
 	}
 	else
