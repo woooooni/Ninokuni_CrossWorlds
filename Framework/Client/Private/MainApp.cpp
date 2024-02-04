@@ -68,7 +68,7 @@ HRESULT CMainApp::Initialize()
 	{
 		g_eStartLevel = LEVELID::LEVEL_LOGO;					/* 시작 레벨 타입 */
 
-		g_iStartQuestLevel = 7;									/* 시작 퀘스트 레벨 */
+		g_iStartQuestLevel = 5;									/* 시작 퀘스트 레벨 */
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH;			/* 모델 로드할 캐릭터 타입 */
 
@@ -517,6 +517,16 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Grass_ShadeMap"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/GrassPlane/Blade_Shade.png")))))
+		return E_FAIL;
+
+	// Moon
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Moon_Diffuse"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/Skydom/T_Nightmare_Moon_01_D.png")))))
+		return E_FAIL;
+
+	// Grass Mask
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Grass_MaskMap"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/GrassPlane/Witch_Grass_MaskMap.dds")))))
 		return E_FAIL;
 
 

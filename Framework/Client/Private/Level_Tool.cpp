@@ -64,6 +64,21 @@ HRESULT CLevel_Tool::Initialize()
 	if (FAILED(CCurlingGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
+	//CTrigger::TRIGGER_DESC TriggerDesc;
+	//TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_WITCH_ESCORT1;
+	//TriggerDesc.vStartPosition = { 49.282f, -5.259f, -3.901f, 1.f };
+	//TriggerDesc.vExtents = { 30.f, 30.f, 30.f };
+
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
+
+	//TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_WITCH_ESCORT2;
+	//TriggerDesc.vStartPosition = { 7.889f, -6.283f, -22.237f, 1.f };
+	//TriggerDesc.vExtents = { 30.f, 30.f, 0.f };
+
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
+
 	return S_OK;
 }
 

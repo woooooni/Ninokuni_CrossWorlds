@@ -46,8 +46,8 @@ HRESULT CLevel_WitchForest::Initialize()
 	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
 		return E_FAIL;
 
-//	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
-//		return E_FAIL;
+	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
+		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Effect(LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
@@ -239,6 +239,21 @@ HRESULT CLevel_WitchForest::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
 		return E_FAIL;
 	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_WITCHFOREST, TEXT("Particle_Firefly_02"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
 		return E_FAIL;
+
+	WorldMatrix.r[3] = XMVectorSet(65.f, 4.f, 12.f, 1.f);
+	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_WITCHFOREST, TEXT("Particle_Firefly_01"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	WorldMatrix.r[3] = XMVectorSet(37.f, -3.f, -11.f, 1.f);
+	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_WITCHFOREST, TEXT("Witch_Grass_Particle_1"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+		return E_FAIL;
+	WorldMatrix.r[3] = XMVectorSet(50.f, 0.0f, 1.0f, 1.f);
+	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_WITCHFOREST, TEXT("Witch_Grass_Particle_2"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+		return E_FAIL;
+	WorldMatrix.r[3] = XMVectorSet(65.f, 4.f, 12.f, 1.f);
+	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_WITCHFOREST, TEXT("Witch_Grass_Particle_3"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -580,6 +595,20 @@ HRESULT CLevel_WitchForest::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	TriggerDesc.vExtents = { 5.f, 5.f, 5.f };
 
 	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, eLayerType, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+		return E_FAIL;
+
+	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_WITCH_ESCORT1;
+	TriggerDesc.vStartPosition = { 49.282f, -5.259f, -3.901f, 1.f };
+	TriggerDesc.vExtents = { 3.0f, 3.0f, 3.0f };
+
+	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+		return E_FAIL;
+
+	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_WITCH_ESCORT2;
+	TriggerDesc.vStartPosition = { 7.889f, -6.283f, -22.237f, 1.f };
+	TriggerDesc.vExtents = { 3.0f, 3.0f, 3.0f };
+
+	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
 		return E_FAIL;
 
 	return S_OK;

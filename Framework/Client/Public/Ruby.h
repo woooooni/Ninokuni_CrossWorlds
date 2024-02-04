@@ -5,6 +5,8 @@ BEGIN(Client)
 
 class CRuby final : public CGameNpc
 {
+public:
+	enum ESCORT_SECTION { SECTION1, SECTION2, SECTION_END };
 private:
 	CRuby(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CRuby(const CRuby& rhs);
@@ -28,6 +30,22 @@ public:
 
 public:
 	virtual CGameObject* Get_RidingObject() { return m_pRidingObject; }
+	const _bool& Get_QuestSection(_uint iIndex) const
+	{
+		if (iIndex >= ESCORT_SECTION::SECTION_END)
+			return false;
+		
+		return m_bQuestSection[iIndex];
+	}
+
+	
+	void Set_QuestSection(_uint iIndex, _bool curSection)
+	{
+		if (iIndex >= ESCORT_SECTION::SECTION_END)
+			return;
+
+		m_bQuestSection[iIndex] = curSection;
+	}
 
 private:
 	virtual HRESULT Ready_States() override;
@@ -39,6 +57,10 @@ private:
 private:
 	class CUI_World_NPCTag* m_pTag = { nullptr };
 	class CGameObject* m_pRidingObject = nullptr;
+
+private:
+	_bool m_bQuestSection[ESCORT_SECTION::SECTION_END] = { false, false };
+
 public:
 	static CRuby* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;

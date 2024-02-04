@@ -11,6 +11,7 @@ float4			g_vDissolveColor = { 0.6f, 0.039f, 0.039f, 1.f };
 
 //
 Texture2D GrassMaskTexture;
+Texture2D WitchGrassMaskTexture;
 
 float4 g_vClipPlane;
 
@@ -324,6 +325,28 @@ PS_OUT PS_MAIN(PS_IN In)
 		discard;
 
 	return Out;	
+}
+
+PS_OUT PS_WITCHGRASS_MAIN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vDiffuse = (vector) 1.f;
+
+    Out.vDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+
+    float4 vMaskColor = WitchGrassMaskTexture.Sample(LinearSampler, In.vTexUV);
+    
+    float4 vPurpleColor = float4(0.584f, 0.427f, 0.812f, 1.0f);
+
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
+    Out.vBloom = vMaskColor.r >= 0.5f ? Out.vBloom = vPurpleColor : float4(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    if (0.3 >= Out.vDiffuse.a)
+        discard;
+
+    return Out;
 }
 
 PS_OUT PS_NoneRight_GRASS_MAIN(PS_IN In)
@@ -899,7 +922,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN();
+        PixelShader = compile ps_5_0 PS_WITCHGRASS_MAIN();
     }
 
 	pass TessGrass

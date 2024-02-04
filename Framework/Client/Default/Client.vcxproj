@@ -327,6 +327,7 @@
     <ClInclude Include="..\Public\MainQuest_Ending.h" />
     <ClInclude Include="..\Public\MainQuest_FinalBattle.h" />
     <ClInclude Include="..\Public\MainQuest_PlantKiller.h" />
+    <ClInclude Include="..\Public\Moon.h" />
     <ClInclude Include="..\Public\NpcDMWState_Base.h" />
     <ClInclude Include="..\Public\NpcDMWState_Following.h" />
     <ClInclude Include="..\Public\Skill_Biplane_Burst.h" />
@@ -1225,6 +1226,7 @@
     <ClInclude Include="..\Public\Winter_MiniWalls.h" />
     <ClInclude Include="..\Public\WitchWater.h" />
     <ClInclude Include="..\Public\WitchWood.h" />
+    <ClInclude Include="..\Public\Witch_Barricade.h" />
     <ClInclude Include="..\Public\Zehra.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="MainQuestNode_WitchForest04_2.h" />
@@ -1387,6 +1389,7 @@
     <ClCompile Include="..\Private\MainQuest_Ending.cpp" />
     <ClCompile Include="..\Private\MainQuest_FinalBattle.cpp" />
     <ClCompile Include="..\Private\MainQuest_PlantKiller.cpp" />
+    <ClCompile Include="..\Private\Moon.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Base.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Following.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_Burst.cpp" />
@@ -2290,6 +2293,7 @@
     <ClCompile Include="..\Private\Winter_MiniWalls.cpp" />
     <ClCompile Include="..\Private\WitchWater.cpp" />
     <ClCompile Include="..\Private\WitchWood.cpp" />
+    <ClCompile Include="..\Private\Witch_Barricade.cpp" />
     <ClCompile Include="..\Private\Zehra.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">

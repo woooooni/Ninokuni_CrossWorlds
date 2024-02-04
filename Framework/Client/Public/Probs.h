@@ -37,11 +37,14 @@ private:
 	_bool m_bFirst = true;
 
 	class CParticle* m_pParticle = nullptr;
-
+	class CTexture* m_pTextureCom = nullptr;
 public:
 	static CProbs* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag,
 		const wstring& strFilePath, const wstring& strFileName, _int eObjType, _uint eModelType);
 	virtual CGameObject* Clone(void* pArg);
+
+public:
+	virtual void Free() override;
 };
 
 END

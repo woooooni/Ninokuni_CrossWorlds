@@ -6,7 +6,7 @@
 #include "WitchWood.h"
 
 #include "Ruby.h"
-
+#include "RubyCarriage.h"
 CState_CarriageMove::CState_CarriageMove(CStateMachine* pMachine)
 	: CState(pMachine)
 {
@@ -44,6 +44,13 @@ void CState_CarriageMove::Tick_State(_float fTimeDelta)
 		CTransform* pTransform = m_pRuby->Get_Component<CTransform>(TEXT("Com_Transform"));
 		Matrix RubyWorld = pTransform->Get_WorldMatrix();
 		m_pTransformCom->Set_WorldMatrix(RubyWorld);
+
+
+		if (true == m_pRuby->Get_QuestSection(CRuby::ESCORT_SECTION::SECTION1) || true == m_pRuby->Get_QuestSection(CRuby::ESCORT_SECTION::SECTION2))
+		{
+			if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
+				m_pStateMachineCom->Change_State(CRubyCarriage::STATE_IDLE);
+		}
 	}
 }
 

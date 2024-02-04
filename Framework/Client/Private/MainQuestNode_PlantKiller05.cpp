@@ -9,6 +9,8 @@
 #include "Quest_Manager.h"
 
 #include "GameNpc.h"
+#include "Ruby.h"
+#include "RubyCarriage.h"
 
 CMainQuestNode_PlantKiller05::CMainQuestNode_PlantKiller05()
 {
@@ -42,6 +44,18 @@ HRESULT CMainQuestNode_PlantKiller05::Initialize()
 void CMainQuestNode_PlantKiller05::Start()
 {
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+
+	CRuby* pRuby = static_cast<CRuby*>(GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_NPC, TEXT("Ruby")));
+	if (nullptr == pRuby)
+		return;
+
+
+	CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(pRuby->Get_RidingObject());
+	if (nullptr == pRubyCarriage)
+		return;
+
+	pRubyCarriage->Set_TakeTheCarriage(true);
+	pRuby->Get_Component_StateMachine()->Change_State(CGameNpc::NPC_STATE::NPC_UNIQUENPC_SEAT);
 }
 
 CBTNode::NODE_STATE CMainQuestNode_PlantKiller05::Tick(const _float& fTimeDelta)

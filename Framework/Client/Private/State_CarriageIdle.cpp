@@ -34,7 +34,10 @@ void CState_CarriageIdle::Tick_State(_float fTimeDelta)
 
 	_bool bTake = pRubyCarriage->TakeTheCarriage();
 	if (true == bTake)
-		m_pStateMachineCom->Change_State(CRubyCarriage::STATE_TYPE::STATE_MOVE);
+	{
+		if(true == m_pModelCom->Is_Finish() && false == m_pModelCom->Is_Tween())
+			m_pStateMachineCom->Change_State(CRubyCarriage::STATE_TYPE::STATE_MOVE);
+	}
 }
 
 void CState_CarriageIdle::Exit_State()
