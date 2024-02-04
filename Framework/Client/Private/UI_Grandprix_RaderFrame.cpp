@@ -58,7 +58,7 @@ void CUI_Grandprix_RaderFrame::Tick(_float fTimeDelta)
 				{
 					m_fTimeAcc = 0.f;
 
-					if (m_iTextureIndex == 12)
+					if (m_iTextureIndex >= 11)
 						m_iTextureIndex = 0;
 					else
 						m_iTextureIndex++;

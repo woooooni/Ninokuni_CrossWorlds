@@ -68,6 +68,14 @@ void CBiplane_Thunder_Cloud::Tick(_float fTimeDelta)
 	if (m_fAccDeletionTime >= 3.f)
 	{
 		Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
+		if (false == m_bGenEffect)
+		{
+			if (FAILED(CParticle_Manager::GetInstance()->Generate_Particle(L"Particle_Biplane_Thunder_0", m_pTransformCom->Get_WorldMatrix(),
+				Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
+				return;
+
+			m_bGenEffect = true;
+		}
 	}
 
 	if (nullptr != m_pTarget)

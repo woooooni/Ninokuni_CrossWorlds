@@ -62,7 +62,7 @@ void CState_Enemy_VehicleFlying_Trace::Tick_State(_float fTimeDelta)
     
     Vec3 vDestLook = XMVector3Normalize(vPlayerPos - vMyPos);
     Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
-    Vec3 vNewLook = Vec3::Lerp(vLook, vDestLook, fTimeDelta);
+    Vec3 vNewLook = Vec3::Lerp(vLook, vDestLook, 2.f * fTimeDelta);
 
     m_pTransformCom->Rotation_Look(vNewLook);
     m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fTraceSpeed, fTimeDelta);

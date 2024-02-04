@@ -32,6 +32,8 @@ private:
 
 	class CVehicle_Flying_Biplane* m_pVehicle_Flying_Biplane = nullptr;
 
+	class CCamera_Follow* m_pFollowCamera = nullptr;
+
 public:
 	static CState_VehicleFlying_Run* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

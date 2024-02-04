@@ -24,8 +24,9 @@ HRESULT CState_VehicleFlying_Run::Initialize(const list<wstring>& AnimationList)
     
     m_pVehicle = dynamic_cast<CVehicle*>(m_pStateMachineCom->Get_Owner());
 	m_pVehicle_Flying_Biplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pStateMachineCom->Get_Owner());
+	m_pFollowCamera = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 
-    if (nullptr == m_pVehicle || nullptr == m_pVehicle_Flying_Biplane)
+    if (nullptr == m_pVehicle || nullptr == m_pVehicle_Flying_Biplane || nullptr == m_pFollowCamera)
         return E_FAIL;
 
     return S_OK;
@@ -36,12 +37,11 @@ void CState_VehicleFlying_Run::Enter_State(void* pArg)
 	m_iCurrAnimIndex = m_AnimIndices[0];
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 
-	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-	if (nullptr != pFollowCam)
+	if (nullptr != m_pFollowCamera)
 	{
-		pFollowCam->Set_DampingBackLimitRad(XMConvertToRadians(90.f));
-		pFollowCam->Set_CanInput(true);
-		pFollowCam->Set_MinMaxLimitY(0.4f, 2.5f);
+		m_pFollowCamera->Set_DampingBackLimitRad(XMConvertToRadians(90.f));
+		m_pFollowCamera->Set_CanInput(true);
+		m_pFollowCamera->Set_MinMaxLimitY(0.4f, 2.5f);
 	}
 	
 
@@ -89,13 +89,41 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 	{
 		bMove = true;
 
-		_matrix CamWorld = GI->Get_TransformMatrixInverse(CPipeLine::D3DTS_VIEW);
-		Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
-		Vec3 vCamLook = XMVector3Normalize(CamWorld.r[CTransform::STATE_LOOK]);
-		vLook = XMVectorLerp(vLook, vCamLook, fTimeDelta);
+		if (false == m_pFollowCamera->Is_LockOn())
+		{
+			_matrix CamWorld = GI->Get_TransformMatrixInverse(CPipeLine::D3DTS_VIEW);
+			Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+			Vec3 vCamLook = XMVector3Normalize(CamWorld.r[CTransform::STATE_LOOK]);
+			vLook = XMVectorLerp(vLook, vCamLook, fTimeDelta);
 
-		m_pTransformCom->Rotation_Look(vLook);
+			m_pTransformCom->Rotation_Look(vLook);
+		}
+		else
+		{
+			if (nullptr != m_pVehicle_Flying_Biplane->Get_Target())
+			{
+				CTransform* pTargetTransform = m_pVehicle_Flying_Biplane->Get_Target()->Get_Component_Transform();
+				if (nullptr != pTargetTransform)
+				{
+					Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() - m_pTransformCom->Get_Position());
+					Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+
+					vLook = XMVectorLerp(vLook, vDir, fTimeDelta);
+					m_pTransformCom->Rotation_Look(vLook);
+				}
+			}
+			else
+			{
+				_matrix CamWorld = GI->Get_TransformMatrixInverse(CPipeLine::D3DTS_VIEW);
+				Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+				Vec3 vCamLook = XMVector3Normalize(CamWorld.r[CTransform::STATE_LOOK]);
+				vLook = XMVectorLerp(vLook, vCamLook, fTimeDelta);
+
+				m_pTransformCom->Rotation_Look(vLook);
+			}
+		}
 		m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed(), fTimeDelta);
+		
 	}
 
 

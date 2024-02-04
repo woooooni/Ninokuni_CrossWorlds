@@ -142,7 +142,7 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
             Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
             vVelocity.y = 0.f;
 
-            if (vVelocity.Length() >= 20.f) // 20.f -> 15.f 수정
+            if (vVelocity.Length() >= 15.f) // 20.f -> 15.f 수정
             {
                 Vec3 vVelocityDir = XMVector3Normalize(m_pTransformCom->Get_Look());
                 vVelocityDir.y = 0.8f;

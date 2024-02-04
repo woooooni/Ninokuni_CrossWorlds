@@ -89,9 +89,6 @@ HRESULT CVehicle_Flying_EnemyBoto::Initialize(void* pArg)
 
 void CVehicle_Flying_EnemyBoto::Tick(_float fTimeDelta)
 {
-	if (nullptr == m_pRider)
-		return;
-
 	if (true == m_bReserveDead)
 	{
 		Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
@@ -102,6 +99,9 @@ void CVehicle_Flying_EnemyBoto::Tick(_float fTimeDelta)
 			return;
 		}
 	}
+
+	if (nullptr == m_pRider)
+		return;
 
 	if (true == m_bOnBoard)
 	{
