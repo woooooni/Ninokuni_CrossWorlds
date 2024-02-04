@@ -154,7 +154,7 @@ public:
 
 	HRESULT Start_Action_Talk(CGameObject* pNpc); /* 처음 대화 시작시 호출 (쿠우 혼자면 nullptr, Npc 있으면 Npc 넘겨줌 */
 	HRESULT Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_TYPE& eType); /* 중간 화자 변경시 호출 */
-	HRESULT Finish_Action_Talk(); /* 대화 종료시 호출 */
+	HRESULT Finish_Action_Talk(const CAMERA_TYPE& eNextCameraType = CAMERA_TYPE::FOLLOW); /* 대화 종료시 호출 */
 
 public:
 	const _bool& Is_Finish_Action() const { return m_bAction; }

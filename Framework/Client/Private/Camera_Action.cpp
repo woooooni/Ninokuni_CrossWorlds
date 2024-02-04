@@ -235,19 +235,24 @@ HRESULT CCamera_Action::Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_T
 	return S_OK;
 }
 
-HRESULT CCamera_Action::Finish_Action_Talk()
+HRESULT CCamera_Action::Finish_Action_Talk(const CAMERA_TYPE& eNextCameraType)
 {
-	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-	if (nullptr != pFollowCam)
+	if (CAMERA_TYPE::FOLLOW == eNextCameraType)
 	{
-		pFollowCam->Reset_WideView_To_DefaultView(true);
-		pFollowCam->Set_Default_Position();
-		CCamera_Manager::GetInstance()->Change_Camera(pFollowCam->Get_Key());
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+		{
+			pFollowCam->Reset_WideView_To_DefaultView(true);
+			pFollowCam->Set_Default_Position();
+			CCamera_Manager::GetInstance()->Change_Camera(pFollowCam->Get_Key());
+		}
+	}
+	else if (CAMERA_TYPE::CAMERA_CURLING == eNextCameraType)
+	{
+
 	}
 
 	m_tActionTalkDesc.Clear();
-
-	//m_bAction = false;
 
 	return S_OK;
 }

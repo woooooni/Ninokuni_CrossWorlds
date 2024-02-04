@@ -118,8 +118,8 @@ HRESULT CUI_Minigame_Curling_Score::Ready_Default()
 		return E_FAIL;
 
 	const Vec2 vOriginSize	= { 256.f, 256.f };
-	const Vec2 vSizeMag		= { 0.4f, 0.4f };
-	const Vec2 vPosDelta	= { g_vWinCenter.x * 0.77f, g_vWinCenter.y * 0.69f };
+	const Vec2 vSizeMag		= { 0.35f, 0.35f };
+	const Vec2 vPosDelta	= { g_vWinCenter.x * 0.77f, g_vWinCenter.y * 0.7f };
 
 	if(m_bPlayerType)
 		m_tUIDesc_OriginLeft.fX = g_vWinCenter.x + vPosDelta.x;
