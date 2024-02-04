@@ -681,7 +681,7 @@ HRESULT CStellia::Ready_States()
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_Death");
 	m_pStateCom->Add_State(STELLIA_DEAD, CStelliaState_Dead::Create(m_pStateCom, strAnimationName));
 
-	m_pStateCom->Change_State(STELLIA_SPAWN);
+	m_pStateCom->Change_State(STELLIA_CHASE);
 	//m_pStateCom->Change_State(STELLIA_ATTACK2);
 
 	return S_OK;

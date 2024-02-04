@@ -18,6 +18,10 @@ public:
 	virtual void Tick_State(_float fTimeDelta);
 	virtual void Exit_State();
 
+private:
+	_float m_fAttackCoolTime = 0.f;
+	_float m_fAccTime = 0.f;
+
 public:
 	static CNpcDMWState_Following* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

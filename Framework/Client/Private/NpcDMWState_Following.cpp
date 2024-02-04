@@ -18,6 +18,8 @@ HRESULT CNpcDMWState_Following::Initialize(const list<wstring>& AnimationList)
 
 	m_iCurrAnimIndex = m_AnimIndices[0];
 
+	m_fAttackCoolTime = 7.f;
+
 	return S_OK;
 }
 
@@ -25,10 +27,22 @@ void CNpcDMWState_Following::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 	m_pWitch->Set_IsFollowing(true);
+
+	m_fAccTime = 0.f;
 }
 
 void CNpcDMWState_Following::Tick_State(_float fTimeDelta)
 {
+	if (m_pWitch->Get_IsBattle())
+	{
+		m_fAccTime += fTimeDelta;
+		if (m_fAccTime >= m_fAttackCoolTime)
+		{
+			m_fAccTime = m_fAttackCoolTime - m_fAccTime;
+			m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
+		}
+	}
+
 	__super::Tick_State(fTimeDelta);
 }
 

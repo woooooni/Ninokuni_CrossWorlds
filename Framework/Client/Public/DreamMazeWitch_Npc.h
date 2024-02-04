@@ -10,6 +10,7 @@ public:
 		WITCHSTATE_INVASION_IDLE,
 		WITCHSTATE_INVASION_APPEAR, WITCHSTATE_INVASION_DISAPPEARTURN, WITCHSTATE_INVASION_DISAPPEAR,
 		WITCHSTATE_BATTLE_FOLLOWING, 
+		WITCHSTATE_BATTLE_ATTACK,
 		WITCHSTATE_END
 	};
 
@@ -34,7 +35,10 @@ public:
 
 public:
 	void Witch_BattleSet(CGameObject* pStellia);
+
 	void Set_IsBattle(_bool bIsBattle) { m_bIsBattle = bIsBattle; }
+	_bool Get_IsBattle() { return m_bIsBattle; }
+
 	void Set_IsFollowing(_bool bIsFollowing) { m_bIsFollowing = bIsFollowing; }
 	_bool Get_IsFollowing() { return m_bIsFollowing; }
 
@@ -56,6 +60,7 @@ private:
 	/* Battle */
 	_bool m_bIsBattle = false;
 	_bool m_bIsFollowing = false;
+
 	/* Damping */
 	CGameObject* m_pStellia = nullptr;
 	CGameObject* m_pPlayer = nullptr;

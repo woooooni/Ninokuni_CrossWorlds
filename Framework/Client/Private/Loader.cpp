@@ -76,6 +76,7 @@
 
 #include "Criminal_Npc.h"
 #include "DreamMazeWitch_Npc.h"
+#include "Witch_BlackHole.h"
 
 #include "Door_Enter_FX.h"
 #include "HumanFAT01.h"
@@ -1946,8 +1947,13 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	// NPC
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Criminal_Npc", CCriminal_Npc::Create(m_pDevice, m_pContext, TEXT("Criminal")), LAYER_NPC, true)))
 		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_DreamMazeWitch_Npc", CDreamMazeWitch_Npc::Create(m_pDevice, m_pContext, TEXT("DreamMazeWitch")), LAYER_NPC, true)))
 		return E_FAIL;
+	// 툴 확인용으로 일단 npc
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_BlackHole", CWitch_BlackHole::Create(m_pDevice, m_pContext, TEXT("Witch_BlackHole")), LAYER_NPC, true)))
+		return E_FAIL;
+
 
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Engineer_Npc", CEngineer_Npc::Create(m_pDevice, m_pContext, TEXT("Engineer_Npc")), LAYER_NPC, true)))
 		return E_FAIL;
