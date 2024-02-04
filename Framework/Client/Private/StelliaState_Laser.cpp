@@ -31,7 +31,7 @@ void CStelliaState_Laser::Tick_State(_float fTimeDelta)
 	}
 
 	// Effect Create
-	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Spawn_Laser"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Laser"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Laser::Exit_State()

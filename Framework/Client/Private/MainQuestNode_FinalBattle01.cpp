@@ -51,6 +51,11 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle01::Tick(const _float& fTimeDelta)
 		{
 			m_pWitchWood = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_BUILDING, L"Witch_Wood_Wall");
 		}
+		if (m_pMoon == nullptr)
+		{
+			m_pMoon = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_SKYBOX, L"Common_Moon");
+		}
+
 
 		if (m_pQuestDestSpot != nullptr)
 		{

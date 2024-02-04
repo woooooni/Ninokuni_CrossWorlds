@@ -68,7 +68,7 @@ HRESULT CMainApp::Initialize()
 	{
 		g_eStartLevel = LEVELID::LEVEL_LOGO;					/* 시작 레벨 타입 */
 
-		g_iStartQuestLevel = 5;									/* 시작 퀘스트 레벨 */
+		g_iStartQuestLevel = 7;									/* 시작 퀘스트 레벨 */
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;	/* 모델 로드할 캐릭터 타입 */
 
