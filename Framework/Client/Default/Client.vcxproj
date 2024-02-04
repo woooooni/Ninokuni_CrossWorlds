@@ -592,7 +592,6 @@
     <ClInclude Include="..\Public\CurlingGame_Stone.h" />
     <ClInclude Include="..\Public\CurlingGame_Manager.h" />
     <ClInclude Include="..\Public\CurlingGame_Prop.h" />
-    <ClInclude Include="..\Public\State_Character_Vehicle.h" />
     <ClInclude Include="..\Public\State_Closed.h" />
     <ClInclude Include="..\Public\State_FlameTower_Attack.h" />
     <ClInclude Include="..\Public\State_CannonTower_Attack.h" />

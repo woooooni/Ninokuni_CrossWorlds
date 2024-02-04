@@ -44,6 +44,8 @@ void CState_VehicleFlying_Damaged::Enter_State(void* pArg)
 
     m_pVehicle->Set_ActiveColliders(CCollider::BODY, false);
     m_pFlying_Vehicle->Set_Infinite(true, 999.f);
+
+    CUIMinigame_Manager::GetInstance()->On_DamagedVignette();
 }
 
 void CState_VehicleFlying_Damaged::Tick_State(_float fTimeDelta)

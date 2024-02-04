@@ -2,6 +2,7 @@
 #include "UI_Grandprix_RaderFrame.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "UIMInigame_Manager.h"
 
 CUI_Grandprix_RaderFrame::CUI_Grandprix_RaderFrame(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_RADER eType)
 	: CUI(pDevice, pContext, L"UI_Grandprix_RaderFrame")
@@ -58,7 +59,7 @@ void CUI_Grandprix_RaderFrame::Tick(_float fTimeDelta)
 				{
 					m_fTimeAcc = 0.f;
 
-					if (m_iTextureIndex == 12)
+					if (11 <= m_iTextureIndex)
 						m_iTextureIndex = 0;
 					else
 						m_iTextureIndex++;
@@ -67,6 +68,13 @@ void CUI_Grandprix_RaderFrame::Tick(_float fTimeDelta)
 					m_bReverseAlpha = false;
 				}
 			}
+		}
+		else if (m_eType == RADER_BACKGROUND)
+		{
+			if (true == CUIMinigame_Manager::GetInstance()->Is_RaderError())
+				m_iTextureIndex = 1;
+			else
+				m_iTextureIndex = 0;
 		}
 
 		__super::Tick(fTimeDelta);
@@ -98,6 +106,29 @@ void CUI_Grandprix_RaderFrame::LateTick(_float fTimeDelta)
 				}
 			}
 		}
+		else if (m_eType == RADER_BACKGROUND && 1 == m_iTextureIndex)
+		{
+			if (true == m_bReverseAlpha)
+			{
+				m_fAlpha -= fTimeDelta * 1.2f ;
+
+				if (m_fAlpha <= 0.4f)
+				{
+					m_bReverseAlpha = false;
+					m_fAlpha = 0.4f;
+				}
+			}
+			else
+			{
+				m_fAlpha += fTimeDelta * 1.2f;
+
+				if (m_fAlpha >= 1.f)
+				{
+					m_bReverseAlpha = true;
+					m_fAlpha = 1.f;
+				}
+			}
+		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
@@ -126,17 +157,28 @@ HRESULT CUI_Grandprix_RaderFrame::Ready_Components()
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-	if (m_eType == RADER_CIRCLE)
+	switch (m_eType)
 	{
-		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Rader_Circle"),
-			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-			return E_FAIL;
-	}
-	else
-	{
+	case RADER_FRAME:
 		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Rader_Frame"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
+		break;
+
+	case RADER_BACKGROUND:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Rader_FrameBackground"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		break;
+
+	case RADER_CIRCLE:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Rader_Circle"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		break;
+
+	default:
+		break;
 	}
 	
 	return S_OK;
@@ -165,14 +207,14 @@ HRESULT CUI_Grandprix_RaderFrame::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (m_eType == RADER_CIRCLE)
+	if (RADER_FRAME == m_eType)
 	{
-		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
 			return E_FAIL;
 	}
 	else
 	{
-		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_eType))))
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
 			return E_FAIL;
 	}
 

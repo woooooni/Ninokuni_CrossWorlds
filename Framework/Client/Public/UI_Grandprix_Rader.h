@@ -18,6 +18,9 @@ public:
 	virtual HRESULT	Render();
 
 private:
+	class CUI_Minigame_Basic* m_pError = { nullptr };
+
+private:
 	virtual HRESULT	Ready_Components() override;
 
 private:

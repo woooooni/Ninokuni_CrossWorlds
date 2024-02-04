@@ -4,6 +4,7 @@
 #include "Game_Manager.h"
 #include "Player.h"
 #include "TowerDefence_Manager.h"
+#include "UIMinigame_Manager.h"
 
 CUI_Minigame_Basic::CUI_Minigame_Basic(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MINIGAMEBASIC eType)
 	: CUI(pDevice, pContext, L"UI_Minigame_Basic")
@@ -26,7 +27,7 @@ void CUI_Minigame_Basic::Set_Active(_bool bActive)
 	else
 	{
 		if (m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
-			m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END)
+			m_eType == GRANDPRIX_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END)
 		{
 			m_fAlpha = 0.f;
 
@@ -85,7 +86,7 @@ void CUI_Minigame_Basic::Tick(_float fTimeDelta)
 	if (m_bActive)
 	{
 		if (m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
-			m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END)
+			m_eType == GRANDPRIX_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END)
 			Tick_Count(fTimeDelta);
 
 		if (m_eType == GRANDPRIX_SPACE)
@@ -159,6 +160,10 @@ void CUI_Minigame_Basic::Tick(_float fTimeDelta)
 			}
 		}
 
+		if (m_eType == GRANDPRIX_ERROR)
+			m_fTimeAcc += fTimeDelta;
+
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -168,7 +173,7 @@ void CUI_Minigame_Basic::LateTick(_float fTimeDelta)
 	if (m_bActive)
 	{
 		if (m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
-			m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END)
+			m_eType == GRANDPRIX_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END)
 			LateTick_Count(fTimeDelta);
 
 		if (TOWERDEFENCE_GOLD == m_eType)
@@ -183,7 +188,14 @@ void CUI_Minigame_Basic::LateTick(_float fTimeDelta)
 			m_pRendererCom->Add_Text(TextDesc);
 		}
 
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		if (m_eType == GRANDPRIX_ERROR)
+		{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_MINIMAP_ICON, this);
+		}
+		else
+		{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		}
 	}
 }
 
@@ -197,6 +209,24 @@ HRESULT CUI_Minigame_Basic::Render()
 		m_pShaderCom->Begin(1);
 
 		m_pVIBufferCom->Render();
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Minigame_Basic::Render_Minimap()
+{
+	if (m_bActive)
+	{
+		if (true == CUIMinigame_Manager::GetInstance()->Is_RaderError())
+		{
+			if (FAILED(Bind_ShaderResources()))
+				return E_FAIL;
+
+			m_pShaderCom->Begin(21);
+
+			m_pVIBufferCom->Render();
+		}
 	}
 
 	return S_OK;
@@ -320,7 +350,7 @@ HRESULT CUI_Minigame_Basic::Ready_Components()
 		m_bEnd = false;
 		break;
 
-	case UI_MINIGAMEBASIC::GRANDPRIW_ONE:
+	case UI_MINIGAMEBASIC::GRANDPRIX_ONE:
 		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Text_Number"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
@@ -375,6 +405,12 @@ HRESULT CUI_Minigame_Basic::Ready_Components()
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
 		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIX_ERROR:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_TextError"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		break;
 	}
 	
 	return S_OK;
@@ -382,6 +418,16 @@ HRESULT CUI_Minigame_Basic::Ready_Components()
 
 HRESULT CUI_Minigame_Basic::Ready_State()
 {
+	if (UI_MINIGAMEBASIC::GRANDPRIX_ERROR == m_eType)
+	{
+		m_tInfo.fCX = g_iWinSizeX * 0.8f;
+		m_tInfo.fCY = 370.f * 0.8f;
+		m_tInfo.fX = g_iWinSizeX * 0.5f;
+		m_tInfo.fY = g_iWinSizeY * 0.5f;
+
+		m_bActive = true;
+	}
+
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
@@ -414,13 +460,19 @@ HRESULT CUI_Minigame_Basic::Bind_ShaderResources()
 			return E_FAIL;
 	}
 
+	if (GRANDPRIX_ERROR == m_eType)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_Time", &m_fTimeAcc, sizeof(_float))))
+			return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 HRESULT CUI_Minigame_Basic::Ready_TextInformation()
 {
 	if (!(m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
-		m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END))
+		m_eType == GRANDPRIX_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END))
 		return S_OK;
 
 	m_vOriginSize = _float2(m_tInfo.fCX, m_tInfo.fCY);

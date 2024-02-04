@@ -29,6 +29,8 @@ public: // Getter & Setter
 	_bool	Is_AimActive() { return m_bActiveAim; }
 	void	Set_GrandprixAimActive(_bool bOnOff) { m_bActiveAim = bOnOff; }
 
+	_bool	Is_RaderError() { return m_bError; }
+
 	class CUI_Minigame_Curling_Base* Get_MiniGame_Curling_Ui(const _uint& iObjTag);
 
 public:
@@ -58,6 +60,8 @@ public: // Level Evermore
 	void Use_GrandprixSkill(SKILL_TYPE eType);
 
 	void OnOff_RushVignette(_bool bOnOff);
+	void On_DamagedVignette();
+	void OnOff_RaderIcons(_bool bOnOff);
 
 public: // Level IceLand
 	void OnOff_CurlingUI(_bool bOnOff);
@@ -102,6 +106,7 @@ private: // Evermore Granprix
 
 	_bool									m_bFlying = { false };
 	_bool									m_bActiveAim = { false };
+	_bool									m_bError = { false };
 
 	vector<class CUI_Grandprix_Vignette*>	m_Vignette;
 

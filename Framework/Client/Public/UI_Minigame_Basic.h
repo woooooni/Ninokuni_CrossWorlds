@@ -8,8 +8,8 @@ class CUI_Minigame_Basic final : public CUI
 public:
 	enum UI_MINIGAMEBASIC {	TOWERDEFENCE_MENU, TOWERDEFENCE_START, TOWERDEFENCE_GOLD,
 		GRANDPRIX_FRAME, GRANDPRIX_CLASSFRAME, GRANDPRIX_SPECIALFRAME,
-		GRANDPRIX_READY, GRANDPRIX_THREE, GRANDPRIX_TWO, GRANDPRIW_ONE, GRANDPRIX_START, GRANDPRIX_END, 
-		GRANDPRIX_BIPLANE, GRANDPRIX_GAUGEBACK, GRANDPRIX_GAUGEGLOW, GRANDPRIX_SPACE, MINIGAME_END };
+		GRANDPRIX_READY, GRANDPRIX_THREE, GRANDPRIX_TWO, GRANDPRIX_ONE, GRANDPRIX_START, GRANDPRIX_END, 
+		GRANDPRIX_BIPLANE, GRANDPRIX_GAUGEBACK, GRANDPRIX_GAUGEGLOW, GRANDPRIX_SPACE, GRANDPRIX_ERROR, MINIGAME_END };
 
 protected:
 	CUI_Minigame_Basic(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MINIGAMEBASIC eType);
@@ -21,20 +21,20 @@ public:
 
 	_bool Is_End() {
 		if (!(m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
-			m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END))
+			m_eType == GRANDPRIX_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END))
 			return false;
 		return m_bEnd; }
 
 	void Set_Start(_bool bStart) {
 		if (!(m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
-			m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END))
+			m_eType == GRANDPRIX_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END))
 			return;
 		m_bStart = bStart;
 	}
 
 	_bool Is_Started() { 
 		if (!(m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
-			m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END))
+			m_eType == GRANDPRIX_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END))
 			return false; 
 		return m_bStart; }
 
@@ -44,6 +44,7 @@ public:
 	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT	Render();
+	virtual HRESULT Render_Minimap() override;
 
 public:
 	virtual void On_MouseEnter(_float fTimeDelta) override;
@@ -75,6 +76,8 @@ private:
 
 	// Grandprix Gauge¿ë º¯¼ö
 	_bool m_bResize = { false };
+
+	_float m_fTimeAcc = { 0.f };
 
 public:
 	static CUI_Minigame_Basic* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_MINIGAMEBASIC eType);

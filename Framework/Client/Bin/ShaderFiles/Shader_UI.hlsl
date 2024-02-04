@@ -78,6 +78,22 @@ VS_OUT VS_MAIN_CLOUD(VS_IN In)
 	return Out;
 }
 
+VS_OUT VS_MINIMAP_ERROR(VS_IN In)
+{
+	VS_OUT		Out = (VS_OUT)0;
+
+	matrix		matWV, matWVP;
+
+	matWV = mul(g_WorldMatrix, g_ViewMatrix);
+	matWVP = mul(matWV, g_ProjMatrix);
+
+	Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+	Out.vTexUV = In.vTexUV + float2(g_Time, 0);
+
+	return Out;
+}
+
+
 struct PS_IN
 {
 	float4		vPosition : SV_POSITION;
@@ -137,8 +153,6 @@ PS_OUT PS_MAIN_CLOUD(PS_IN In)
 
 	Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
 	Out.vColor.a *= g_Alpha;
-//	if (Out.vColor.r <= 0.2f && Out.vColor.g <= 0.2f && Out.vColor.b <= 0.2f)
-//		discard;
 
 	return Out;
 }
@@ -524,7 +538,7 @@ PS_OUT_MINIMAP PS_MINIMAP_ICON(PS_IN In)
 	return Out;
 }
 
-PS_OUT_MINIMAP PS_MINIMAP_CAMERA(PS_IN In)
+PS_OUT_MINIMAP PS_MINIMAP_ERROR(PS_IN In)
 {
 	PS_OUT_MINIMAP		Out = (PS_OUT_MINIMAP)0;
 
@@ -870,17 +884,17 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MINIMAP_ICON();
 	}
 
-	pass MinimapCamera // 21
+	pass MinimapError // 21
 	{
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_None, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
 
-		VertexShader = compile vs_5_0 VS_MAIN();
+		VertexShader = compile vs_5_0 VS_MINIMAP_ERROR();
 		GeometryShader = NULL;
 		HullShader = NULL;
 		DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MINIMAP_CAMERA();
+		PixelShader = compile ps_5_0 PS_MINIMAP_ERROR();
 	}
 
 	pass VerticalCoolTime // 22

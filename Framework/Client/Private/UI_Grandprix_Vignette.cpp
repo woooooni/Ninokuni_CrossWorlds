@@ -15,6 +15,20 @@ CUI_Grandprix_Vignette::CUI_Grandprix_Vignette(const CUI_Grandprix_Vignette& rhs
 {
 }
 
+void CUI_Grandprix_Vignette::Set_Active(_bool bActive)
+{
+	if (VIGNETTE_DAMAGED == m_eType)
+	{
+		if (true == bActive)
+		{
+			m_fAlpha = 0.f;
+			m_bSetAlpha = false;
+		}
+	}
+
+	m_bActive = bActive;
+}
+
 HRESULT CUI_Grandprix_Vignette::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -120,11 +134,13 @@ HRESULT CUI_Grandprix_Vignette::Ready_Components()
 		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Vignette_Rush"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
-
 		m_fAlpha = 0.1f;
 		break;
 
 	case VIGNETTE_DAMAGED:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Vignette_OnDamaged"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
 		break;
 
 	default:
