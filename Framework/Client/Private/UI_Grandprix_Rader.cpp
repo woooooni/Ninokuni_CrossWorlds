@@ -2,6 +2,8 @@
 #include "UI_Grandprix_Rader.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "UI_Minigame_Basic.h"
+#include "UIMinigame_Manager.h"
 
 CUI_Grandprix_Rader::CUI_Grandprix_Rader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_Grandprix_Rader")
@@ -32,6 +34,13 @@ HRESULT CUI_Grandprix_Rader::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
+	CGameObject* pTemp = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Error"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pTemp)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Minigame_Basic*>(pTemp))
+		return E_FAIL;
+	m_pError = dynamic_cast<CUI_Minigame_Basic*>(pTemp);
+
 	m_bActive = false;
 
 	return S_OK;
@@ -41,6 +50,11 @@ void CUI_Grandprix_Rader::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (true == CUIMinigame_Manager::GetInstance()->Is_RaderError())
+		{
+			if (nullptr != m_pError)
+				m_pError->Tick(fTimeDelta);
+		}
 
 		__super::Tick(fTimeDelta);
 	}
@@ -50,6 +64,11 @@ void CUI_Grandprix_Rader::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (true == CUIMinigame_Manager::GetInstance()->Is_RaderError())
+		{
+			if (nullptr != m_pError)
+				m_pError->LateTick(fTimeDelta);
+		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
@@ -144,5 +163,6 @@ void CUI_Grandprix_Rader::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pError);
 	Safe_Release(m_pTextureCom);
 }

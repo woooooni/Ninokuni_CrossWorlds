@@ -548,16 +548,42 @@ void CUIMinigame_Manager::Use_GrandprixSkill(SKILL_TYPE eType)
 
 void CUIMinigame_Manager::OnOff_RushVignette(_bool bOnOff)
 {
-	if (nullptr == m_Vignette[0])
+	if (nullptr == m_Vignette[CUI_Grandprix_Vignette::VIGNETTE_RUSH])
 		return;
 
 	if (true == bOnOff)
 	{
-		m_Vignette[0]->Set_Active(true);
+		m_Vignette[CUI_Grandprix_Vignette::VIGNETTE_RUSH]->Set_Active(true);
 	}
 	else
 	{
-		m_Vignette[0]->Set_Active(false);
+		m_Vignette[CUI_Grandprix_Vignette::VIGNETTE_RUSH]->Set_Active(false);
+	}
+}
+
+void CUIMinigame_Manager::On_DamagedVignette()
+{
+	if (nullptr == m_Vignette[CUI_Grandprix_Vignette::VIGNETTE_DAMAGED])
+		return;
+
+	if (true == m_Vignette[CUI_Grandprix_Vignette::VIGNETTE_DAMAGED]->Get_Active())
+		return;
+
+	m_Vignette[CUI_Grandprix_Vignette::VIGNETTE_DAMAGED]->Set_Active(true);
+}
+
+void CUIMinigame_Manager::OnOff_RaderIcons(_bool bOnOff)
+{
+	// 에러상태에 따른 UI 상태 세팅
+	if (true == bOnOff) // Error
+	{
+		m_bError = true;
+
+
+	}
+	else // Default
+	{
+		m_bError = false;
 	}
 }
 
@@ -692,7 +718,7 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_TWO), LAYER_UI)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_One"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIW_ONE), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_ONE), LAYER_UI)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Start"),
 		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_START), LAYER_UI)))
@@ -747,6 +773,12 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Vignette_Rush"),
 		CUI_Grandprix_Vignette::Create(m_pDevice, m_pContext, CUI_Grandprix_Vignette::UI_GRANDPRIX_VIGNETTE::VIGNETTE_RUSH), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Vignette_Damaged"),
+		CUI_Grandprix_Vignette::Create(m_pDevice, m_pContext, CUI_Grandprix_Vignette::UI_GRANDPRIX_VIGNETTE::VIGNETTE_DAMAGED), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Error"),
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_ERROR), LAYER_UI)))
 		return E_FAIL;
 
 
@@ -1372,6 +1404,13 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 	m_Vignette.push_back(dynamic_cast<CUI_Grandprix_Vignette*>(pBackground));
 	Safe_AddRef(pBackground);
 
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Vignette_Damaged"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_Vignette.push_back(dynamic_cast<CUI_Grandprix_Vignette*>(pBackground));
+	Safe_AddRef(pBackground);
+
 	return S_OK;
 }
 
@@ -1525,6 +1564,12 @@ void CUIMinigame_Manager::Tick_Grandprix(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::M))
 		End_Grandprix();
+
+	// Error Test
+	if (KEY_TAP(KEY::O))
+		OnOff_RaderIcons(false); // On Error
+	if (KEY_TAP(KEY::P))
+		OnOff_RaderIcons(true); // Off Error
 
 	if (0 < m_IntroIcons.size())
 	{

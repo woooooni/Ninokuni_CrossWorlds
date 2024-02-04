@@ -18,6 +18,9 @@ protected:
 	virtual ~CUI_Grandprix_Vignette() = default;
 
 public:
+	virtual void Set_Active(_bool bActive) override;
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);

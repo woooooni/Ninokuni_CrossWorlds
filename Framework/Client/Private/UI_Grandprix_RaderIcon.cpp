@@ -79,6 +79,9 @@ void CUI_Grandprix_RaderIcon::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (true == CUIMinigame_Manager::GetInstance()->Is_RaderError())
+			return;
+
 		if (nullptr == m_pOwner || true == m_pOwner->Is_Dead() || true == Is_Dead() || m_eType == RADERICON_END)
 			return;
 
@@ -96,6 +99,9 @@ void CUI_Grandprix_RaderIcon::LateTick(_float fTimeDelta)
 
 	if (m_bActive)
 	{
+		if (true == CUIMinigame_Manager::GetInstance()->Is_RaderError())
+			return;
+
 		if (nullptr == m_pOwner || true == m_pOwner->Is_Dead() || true == Is_Dead() || m_eType == RADERICON_END)
 			return;
 
@@ -118,21 +124,6 @@ void CUI_Grandprix_RaderIcon::LateTick(_float fTimeDelta)
 			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_MINIMAP_ICON, this);
 		}
 	}
-}
-
-HRESULT CUI_Grandprix_RaderIcon::Render()
-{
-	if (m_bActive)
-	{
-		if (FAILED(Bind_ShaderResources()))
-			return E_FAIL;
-
-		m_pShaderCom->Begin(20);
-
-		m_pVIBufferCom->Render();
-	}
-
-	return S_OK;
 }
 
 HRESULT CUI_Grandprix_RaderIcon::Render_Minimap()

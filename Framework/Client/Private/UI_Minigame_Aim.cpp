@@ -30,7 +30,7 @@ void CUI_Minigame_Aim::Set_Owner(CVehicle_Flying* pOwner)
 	CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
 
-	if (TEXT("Vehicle_EnemyBiplane") == m_pOwner->Get_ObjectTag())
+	if (TEXT("Vehicle_Flying_EnemyBiplane") == m_pOwner->Get_ObjectTag())
 		m_iTextureIndex = 1;
 }
 
