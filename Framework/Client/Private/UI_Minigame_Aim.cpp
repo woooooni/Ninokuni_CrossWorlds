@@ -323,6 +323,7 @@ CGameObject* CUI_Minigame_Aim::Clone(void* pArg)
 void CUI_Minigame_Aim::Free()
 {
 	__super::Free();
-
+	
+	Safe_Release(m_pTextureCom_Target);
 	Safe_Release(m_pTextureCom);
 }

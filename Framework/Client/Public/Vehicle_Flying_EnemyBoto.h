@@ -6,7 +6,7 @@ BEGIN(Client)
 class CVehicle_Flying_EnemyBoto final : public CVehicle_Flying
 {
 protected:
-	CVehicle_Flying_EnemyBoto(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVehicle_Flying_EnemyBoto(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CVehicle_Flying_EnemyBoto(const CVehicle_Flying_EnemyBoto& rhs);
 	virtual ~CVehicle_Flying_EnemyBoto() = default;
 
@@ -48,6 +48,7 @@ private:
 	void On_Damaged(const COLLISION_INFO& tInfo);
 
 private:
+	class CUI_Grandprix_RaderIcon* m_pRaderIcon = { nullptr };
 	class CUI_Minigame_WorldHP* m_pHP = { nullptr };
 	class CUI_Minigame_Aim* m_pAim = { nullptr };
 	_bool m_bUseRigidbody = { true };
@@ -73,7 +74,7 @@ private:
 	class CTexture* m_pDissolveTextureCom = nullptr;
 
 public:
-	static CVehicle_Flying_EnemyBoto* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CVehicle_Flying_EnemyBoto* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

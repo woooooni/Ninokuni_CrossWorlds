@@ -14,9 +14,10 @@
 #include "UIMinigame_Manager.h"
 #include "UI_Minigame_WorldHP.h"
 #include "UI_Minigame_Aim.h"
+#include "UI_Grandprix_RaderIcon.h"
 
-CVehicle_Flying_EnemyBiplane::CVehicle_Flying_EnemyBiplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CVehicle_Flying(pDevice, pContext, strObjectTag, OBJ_GRANDPRIX_ENEMY)
+CVehicle_Flying_EnemyBiplane::CVehicle_Flying_EnemyBiplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+	: CVehicle_Flying(pDevice, pContext, L"Vehicle_Flying_EnemyBiplane", OBJ_GRANDPRIX_ENEMY)
 {
 }
 
@@ -68,6 +69,15 @@ HRESULT CVehicle_Flying_EnemyBiplane::Initialize(void* pArg)
 	m_pAim = dynamic_cast<CUI_Minigame_Aim*>(pTemp);
 	m_pAim->Set_Owner(this);
 
+	CGameObject* pIcon = nullptr;
+	pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minigame_Granprix_RaderIcon"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pIcon)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Grandprix_RaderIcon*>(pIcon))
+		return E_FAIL;
+	m_pRaderIcon = dynamic_cast<CUI_Grandprix_RaderIcon*>(pIcon);
+	m_pRaderIcon->Set_Owner(this);
+
 	m_pRigidBodyCom->Set_Use_Gravity(false);
 
 	return S_OK;
@@ -87,6 +97,16 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 		
 		Update_RiderState();
 
+		if (nullptr != m_pRaderIcon)
+		{
+			if (true == CUI_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
+				m_pRaderIcon->Set_Active(true);
+			else
+				m_pRaderIcon->Set_Active(false);
+
+			m_pRaderIcon->Tick(fTimeDelta);
+		}
+
 		if (nullptr != m_pControllerCom)
 			m_pControllerCom->Tick_Controller(fTimeDelta);
 	}
@@ -105,6 +125,12 @@ void CVehicle_Flying_EnemyBiplane::LateTick(_float fTimeDelta)
 
 		if (nullptr != m_pAim)
 			m_pAim->LateTick(fTimeDelta);
+
+		if (nullptr != m_pRaderIcon)
+		{
+			if (true == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
+				m_pRaderIcon->LateTick(fTimeDelta);
+		}
 
 		Update_Rider(fTimeDelta);
 
@@ -243,9 +269,9 @@ HRESULT CVehicle_Flying_EnemyBiplane::Ready_Colliders()
 	return S_OK;
 }
 
-CVehicle_Flying_EnemyBiplane* CVehicle_Flying_EnemyBiplane::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CVehicle_Flying_EnemyBiplane* CVehicle_Flying_EnemyBiplane::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CVehicle_Flying_EnemyBiplane* pInstance = new CVehicle_Flying_EnemyBiplane(pDevice, pContext, strObjectTag);
+	CVehicle_Flying_EnemyBiplane* pInstance = new CVehicle_Flying_EnemyBiplane(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
@@ -273,6 +299,7 @@ void CVehicle_Flying_EnemyBiplane::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pRaderIcon);
 	Safe_Release(m_pAim);
 	Safe_Release(m_pHP);
 }

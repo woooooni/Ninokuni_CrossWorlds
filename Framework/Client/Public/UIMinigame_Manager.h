@@ -50,11 +50,14 @@ public: // Level Evermore
 	void OnOff_TowerDefence_Select(_bool bOnOff);
 	void OnOff_Grandprix(_bool bOnOff); // Grandprix Default Setting
 
+	void Intro_Grandprix();
 	void Start_Grandprix(); // Countdown
 	void OnOff_GrandprixGauge(_bool bOnOff);
 	void End_Grandprix(); // End Text
 
 	void Use_GrandprixSkill(SKILL_TYPE eType);
+
+	void OnOff_RushVignette(_bool bOnOff);
 
 public: // Level IceLand
 	void OnOff_CurlingUI(_bool bOnOff);
@@ -99,6 +102,18 @@ private: // Evermore Granprix
 
 	_bool									m_bFlying = { false };
 	_bool									m_bActiveAim = { false };
+
+	vector<class CUI_Grandprix_Vignette*>	m_Vignette;
+
+	// Intro Background
+	class CUI_Grandprix_IntroBackground*	m_pIntroBackground;
+	vector<class CUI_Grandprix_IntroIcons*> m_IntroIcons;
+	_bool									m_bIntroFinished = { true };
+	_float									m_fIntroAcc = { 0.f };
+
+	// Rader
+	vector<class CUI_Grandprix_RaderFrame*> m_RaderFrame;
+	class CUI_Grandprix_Rader*				m_pRader;
 
 private: // Iceland Curling
 	vector<class CUI_Minigame_Curling_Base*> m_CurlingGameUIs;

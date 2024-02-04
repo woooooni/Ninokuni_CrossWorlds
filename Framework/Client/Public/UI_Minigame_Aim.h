@@ -22,6 +22,7 @@ public:
 
 private:
 	class CVehicle_Flying* m_pOwner = { nullptr };
+	class CTexture* m_pTextureCom_Target = { nullptr };
 
 	_bool m_bRotate = { false };
 	_float m_fTimeAcc = { 0.f };
@@ -32,6 +33,7 @@ private:
 	_float2 m_vOriginSize = _float2(0.f, 0.f);
 	_float2 m_vMinSize = _float2(0.f, 0.f);
 
+	_bool m_bIsTarget = { false };
 	_float m_fDistance = { 0.f };
 	_uint m_iTextureIndex = { 0 };
 

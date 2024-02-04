@@ -10,6 +10,7 @@
 
 #include "UI_Minimap_Icon.h"
 #include "UI_Manager.h"
+#include "UIMinigame_Manager.h"
 
 
 CPortal::CPortal(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -91,7 +92,10 @@ void CPortal::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 
 	if (nullptr != m_pMinimapIcon)
-		m_pMinimapIcon->LateTick(fTimeDelta);
+	{
+		if (false == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
+			m_pMinimapIcon->LateTick(fTimeDelta);
+	}
 
 #ifdef _DEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
@@ -190,11 +194,7 @@ void CPortal::Free()
 {
 	__super::Free();
 
-	if (nullptr != m_pMinimapIcon)
-	{
-		m_pMinimapIcon->Set_Dead(true);
-		Safe_Release(m_pMinimapIcon);
-	}
+	Safe_Release(m_pMinimapIcon);
 	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);

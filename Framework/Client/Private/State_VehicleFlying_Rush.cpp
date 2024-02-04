@@ -44,6 +44,8 @@ void CState_VehicleFlying_Rush::Enter_State(void* pArg)
     CVehicle_Flying_Biplane* pFlyingBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pVehicle);
     if (nullptr != pFlyingBiplane)
         pFlyingBiplane->Generate_Trail(L"", L"", L"", Vec4(1.f, 1.f, 1.f, 0.5f), 22);
+
+    CUIMinigame_Manager::GetInstance()->OnOff_RushVignette(true);
 }
 
 void CState_VehicleFlying_Rush::Tick_State(_float fTimeDelta)
@@ -73,6 +75,8 @@ void CState_VehicleFlying_Rush::Exit_State()
     CVehicle_Flying_Biplane* pFlyingBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pVehicle);
     if (nullptr != pFlyingBiplane)
         pFlyingBiplane->Stop_Trail();
+
+    CUIMinigame_Manager::GetInstance()->OnOff_RushVignette(false);
 }
 
 CState_VehicleFlying_Rush* CState_VehicleFlying_Rush::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

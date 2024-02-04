@@ -24,27 +24,25 @@ void CGrandprix_ItemBox::Set_MinMaxPosition(Vec4 vOriginPos)
 	m_fSpeed = GI->RandomFloat(0.5f, 1.5f);
 	m_bReverse = GI->RandomInt(0, 1);
 
-	m_eItemType = ITEMBOX_SIZEUP; // Test
-
 	// 아이템 타입을 랜덤으로 세팅한다.
-//	switch (GI->RandomInt(0, ITEMBOX_END - 1))
-//	{
-//	case ITEMBOX_TYPE::ITEMBOX_SPEEDUP:
-//		m_eItemType = ITEMBOX_SPEEDUP;
-//		break;
-//
-//	case ITEMBOX_TYPE::ITEMBOX_SIZEUP:
-//		m_eItemType = ITEMBOX_SIZEUP;
-//		break;
-//
-//	case ITEMBOX_TYPE::ITEMBOX_BOMB:
-//		m_eItemType = ITEMBOX_BOMB;
-//		break;
-//
-//	case ITEMBOX_TYPE::ITEMBOX_SLOW:
-//		m_eItemType = ITEMBOX_SLOW;
-//		break;
-//	}
+	switch (GI->RandomInt(0, ITEMBOX_END - 1))
+	{
+	case ITEMBOX_TYPE::ITEMBOX_SPEEDUP:
+		m_eItemType = ITEMBOX_SPEEDUP;
+		break;
+
+	case ITEMBOX_TYPE::ITEMBOX_SIZEUP:
+		m_eItemType = ITEMBOX_SIZEUP;
+		break;
+
+	case ITEMBOX_TYPE::ITEMBOX_BOMB:
+		m_eItemType = ITEMBOX_BOMB;
+		break;
+
+	case ITEMBOX_TYPE::ITEMBOX_SLOW:
+		m_eItemType = ITEMBOX_SLOW;
+		break;
+	}
 }
 
 HRESULT CGrandprix_ItemBox::Initialize_Prototype()

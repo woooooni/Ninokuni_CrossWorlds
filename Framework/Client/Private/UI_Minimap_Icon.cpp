@@ -75,15 +75,6 @@ void CUI_Minimap_Icon::Set_Owner(CGameObject* pOwner, _bool bIsCamera)
 		return;
 }
 
-//void CUI_Minimap_Icon::Set_Position(_float2 vPos)
-//{
-//	if (vPos.x == 99999.f && vPos.y == 99999.f)
-//		return;
-//
-//	m_tInfo.fX = vPos.x;
-//	m_tInfo.fY = vPos.y;
-//}
-
 HRESULT CUI_Minimap_Icon::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))

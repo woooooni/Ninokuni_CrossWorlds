@@ -6484,14 +6484,12 @@ HRESULT CUI_Manager::OnOff_BossHP(_bool bOnOff)
 	}
 	else
 	{
-		//if (m_pBossHPBack->Get_Active())
-		{
-			m_pBossInfo->Set_Active(false);
-			m_pBossHPBack->Set_Active(false);
-			m_pBossHPBar->Set_Active(false);
+		m_pBossInfo->Set_Active(false);
+		m_pBossHPBack->Set_Active(false);
+		m_pBossHPBar->Set_Active(false);
 
+		if (nullptr == m_pBossHPBar->Get_Owner())
 			m_bBossActive = false;
-		}
 	}
 
 	return S_OK;

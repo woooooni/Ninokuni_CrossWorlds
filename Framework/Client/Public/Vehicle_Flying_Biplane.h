@@ -8,7 +8,7 @@ class CVehicle_Flying_Biplane final : public CVehicle_Flying
 public:
 	enum BIPLANE_TRAIL { LEFT_WING, RIGHT_WING, TAIL, BIPLANE_TRAIL_END };
 private:
-	CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CVehicle_Flying_Biplane(const CVehicle_Flying_Biplane& rhs);
 	virtual ~CVehicle_Flying_Biplane() = default;
 
@@ -66,9 +66,11 @@ private:
 
 private:
 	class CTrail* m_pTrails[BIPLANE_TRAIL::BIPLANE_TRAIL_END] = {};
+	class CUI_Grandprix_RaderIcon* m_pCameraIcon = { nullptr };
+	class CUI_Grandprix_RaderIcon* m_pRaderIcon = { nullptr };
 
 public:
-	static CVehicle_Flying_Biplane* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CVehicle_Flying_Biplane* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

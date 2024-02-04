@@ -37,7 +37,7 @@ void CState_Enemy_VehicleFlying_Enter::Enter_State(void* pArg)
 void CState_Enemy_VehicleFlying_Enter::Tick_State(_float fTimeDelta)
 {
     // 엔지니어만 우선 사용하도록 예외처리
-    if (m_pVehicle->Get_ObjectTag() != TEXT("Vehicle_EnemyBiplane"))
+    if (m_pVehicle->Get_ObjectTag() != TEXT("Vehicle_Flying_EnemyBiplane"))
         return;
     
     CVehicle_Flying* pBiplane = dynamic_cast<CVehicle_Flying*>(m_pVehicle);

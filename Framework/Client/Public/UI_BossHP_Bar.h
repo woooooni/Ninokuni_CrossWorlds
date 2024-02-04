@@ -12,6 +12,7 @@ protected:
 
 public:
 	void Set_Owner(class CBoss* pBoss);
+	class CBoss* Get_Owner() { return m_pOwner; }
 
 public:
 	virtual HRESULT	Initialize_Prototype();
