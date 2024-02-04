@@ -21,7 +21,12 @@
 #include "UI_Minigame_GaugeBar.h"
 #include "UI_Minigame_WorldHP.h"
 #include "UI_Minigame_Aim.h"
-
+#include "UI_Grandprix_IntroBackground.h"
+#include "UI_Grandprix_IntroIcons.h"
+#include "UI_Grandprix_RaderFrame.h"
+#include "UI_Grandprix_Rader.h"
+#include "UI_Grandprix_RaderIcon.h"
+#include "UI_Grandprix_Vignette.h"
 
 #include "CurlingGame_Group.h"
 
@@ -255,6 +260,49 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_ToLayer(LEVELID eID)
 		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pPlayerStat)))
 			return E_FAIL;
 		Safe_AddRef(m_pPlayerStat);
+
+		if (nullptr == m_pIntroBackground)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pIntroBackground)))
+			return E_FAIL;
+		Safe_AddRef(m_pIntroBackground);
+
+		for (auto& iter : m_IntroIcons)
+		{
+			if (nullptr == iter)
+				return E_FAIL;
+
+			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+				return E_FAIL;
+			Safe_AddRef(iter);
+		}
+
+		for (auto& iter : m_RaderFrame)
+		{
+			if (nullptr == iter)
+				return E_FAIL;
+
+			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+				return E_FAIL;
+			Safe_AddRef(iter);
+		}
+
+		if (nullptr == m_pRader)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pRader)))
+			return E_FAIL;
+		Safe_AddRef(m_pRader);
+
+		for (auto& iter : m_Vignette)
+		{
+			if (nullptr == iter)
+				return E_FAIL;
+
+			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+				return E_FAIL;
+			Safe_AddRef(iter);
+		}
+
 	}
 	else if (LEVELID::LEVEL_ICELAND == eID)
 	{
@@ -382,6 +430,13 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 			if (nullptr != pSkill)
 				pSkill->Set_Active(true);
 		}
+
+		for (auto& pFrame : m_RaderFrame)
+		{
+			if (nullptr != pFrame)
+				pFrame->Set_Active(true);
+		}
+		m_pRader->Set_Active(true);
 	}
 	else
 	{
@@ -405,20 +460,39 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 				pSkill->Set_Active(false);
 		}
 
+		for (auto& pFrame : m_RaderFrame)
+		{
+			if (nullptr != pFrame)
+				pFrame->Set_Active(false);
+		}
+		m_pRader->Set_Active(false);
+
 		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
 //		CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(true);
 	}
+}
+
+void CUIMinigame_Manager::Intro_Grandprix()
+{
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f, true);
+
+	m_fIntroAcc = 0.f;
+	m_bIntroFinished = false;
+
+	m_pIntroBackground->Set_Active(true);
 }
 
 void CUIMinigame_Manager::Start_Grandprix()
 {
 	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f, true);
 
+	if (true == CUI_Manager::GetInstance()->Is_DefaultSettingOn())
+		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+
 	m_bCountStart = true;
 	m_bGrandprixEnd = false;
 
 	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
-//	CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(false);
 	CGrandprix_Manager::GetInstance()->Ready_Grandprix_EnemyInfo(); // 라이더 태우는 작업도 같이 수행함.
 
 	// 플레이어 비행기 태우기
@@ -470,6 +544,21 @@ void CUIMinigame_Manager::Use_GrandprixSkill(SKILL_TYPE eType)
 		iIndex = 3;
 
 	m_Skill[iIndex]->Set_Clicked(true);
+}
+
+void CUIMinigame_Manager::OnOff_RushVignette(_bool bOnOff)
+{
+	if (nullptr == m_Vignette[0])
+		return;
+
+	if (true == bOnOff)
+	{
+		m_Vignette[0]->Set_Active(true);
+	}
+	else
+	{
+		m_Vignette[0]->Set_Active(false);
+	}
 }
 
 void CUIMinigame_Manager::OnOff_CurlingUI(_bool bOnOff)
@@ -629,6 +718,36 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Plane_HPBackground"),
 		CUI_Minigame_PlayerInfo::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Intro_Background"),
+		CUI_Grandprix_IntroBackground::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_IntroIcon_Swordman"),
+		CUI_Grandprix_IntroIcons::Create(m_pDevice, m_pContext, CUI_Grandprix_IntroIcons::GRANDPRIX_INTRO::SWORDMAN), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_IntroIcon_Engineer"),
+		CUI_Grandprix_IntroIcons::Create(m_pDevice, m_pContext, CUI_Grandprix_IntroIcons::GRANDPRIX_INTRO::ENGINEER), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_IntroIcon_Splitter"),
+		CUI_Grandprix_IntroIcons::Create(m_pDevice, m_pContext, CUI_Grandprix_IntroIcons::GRANDPRIX_INTRO::SPLITTER), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_IntroIcon_Vs"),
+		CUI_Grandprix_IntroIcons::Create(m_pDevice, m_pContext, CUI_Grandprix_IntroIcons::GRANDPRIX_INTRO::VS_ICON), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Rader_Frame"),
+		CUI_Grandprix_RaderFrame::Create(m_pDevice, m_pContext, CUI_Grandprix_RaderFrame::UI_RADER::RADER_FRAME), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Rader_FrameCircle"),
+		CUI_Grandprix_RaderFrame::Create(m_pDevice, m_pContext, CUI_Grandprix_RaderFrame::UI_RADER::RADER_CIRCLE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Rader_FrameBackground"),
+		CUI_Grandprix_RaderFrame::Create(m_pDevice, m_pContext, CUI_Grandprix_RaderFrame::UI_RADER::RADER_BACKGROUND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Rader"),
+		CUI_Grandprix_Rader::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Vignette_Rush"),
+		CUI_Grandprix_Vignette::Create(m_pDevice, m_pContext, CUI_Grandprix_Vignette::UI_GRANDPRIX_VIGNETTE::VIGNETTE_RUSH), LAYER_UI)))
+		return E_FAIL;
 
 
 	// 매니저 내에서는 프로토타입만 생성함
@@ -640,6 +759,9 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Plane_HPBar"),
 		CUI_Grandprix_PlaneHP::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_RaderIcon"),
+		CUI_Grandprix_RaderIcon::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;
@@ -1133,6 +1255,118 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 		return E_FAIL;
 	Safe_AddRef(m_pPlayerStat);
 
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = _float(g_iWinSizeX);
+	UIDesc.fCY = _float(g_iWinSizeY);
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	CGameObject* pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Intro_Background"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_pIntroBackground = dynamic_cast<CUI_Grandprix_IntroBackground*>(pBackground);
+	if (nullptr == m_pIntroBackground)
+		return E_FAIL;
+	Safe_AddRef(m_pIntroBackground);
+
+
+	m_IntroIcons.reserve(4);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = _float(g_iWinSizeX);
+	UIDesc.fCY = _float(g_iWinSizeY);
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	pIcon = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_IntroIcon_Swordman"), &UIDesc, &pIcon)))
+		return E_FAIL;
+	m_IntroIcons.push_back(dynamic_cast<CUI_Grandprix_IntroIcons*>(pIcon));
+	Safe_AddRef(pIcon);
+
+	pIcon = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_IntroIcon_Engineer"), &UIDesc, &pIcon)))
+		return E_FAIL;
+	m_IntroIcons.push_back(dynamic_cast<CUI_Grandprix_IntroIcons*>(pIcon));
+	Safe_AddRef(pIcon);
+
+	pIcon = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_IntroIcon_Splitter"), &UIDesc, &pIcon)))
+		return E_FAIL;
+	m_IntroIcons.push_back(dynamic_cast<CUI_Grandprix_IntroIcons*>(pIcon));
+	Safe_AddRef(pIcon);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 128.f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	pIcon = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_IntroIcon_Vs"), &UIDesc, &pIcon)))
+		return E_FAIL;
+	m_IntroIcons.push_back(dynamic_cast<CUI_Grandprix_IntroIcons*>(pIcon));
+	Safe_AddRef(pIcon);
+
+	m_RaderFrame.reserve(3);
+	_float fOffset = 35.f;
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 512.f * 0.45f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f + fOffset);
+	UIDesc.fY = UIDesc.fCY * 0.5f + fOffset;
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Rader_FrameBackground"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_RaderFrame.push_back(dynamic_cast<CUI_Grandprix_RaderFrame*>(pBackground));
+	Safe_AddRef(pBackground);
+
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Rader_FrameCircle"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_RaderFrame.push_back(dynamic_cast<CUI_Grandprix_RaderFrame*>(pBackground));
+	Safe_AddRef(pBackground);
+
+	UIDesc.fCX = 409.6f;
+	UIDesc.fCY = 230.4f; // 512 * 0.45
+	CGameObject* pRader = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Rader"), &UIDesc, &pRader)))
+		return E_FAIL;
+	m_pRader = dynamic_cast<CUI_Grandprix_Rader*>(pRader);
+	Safe_AddRef(m_pRader);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 512.f * 0.45f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f + fOffset);
+	UIDesc.fY = UIDesc.fCY * 0.5f + fOffset;
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Rader_Frame"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_RaderFrame.push_back(dynamic_cast<CUI_Grandprix_RaderFrame*>(pBackground));
+	Safe_AddRef(pBackground);
+
+	m_Vignette.reserve(2);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = g_iWinSizeX;
+	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Vignette_Rush"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_Vignette.push_back(dynamic_cast<CUI_Grandprix_Vignette*>(pBackground));
+	Safe_AddRef(pBackground);
+
 	return S_OK;
 }
 
@@ -1272,10 +1506,68 @@ void CUIMinigame_Manager::Tick_Grandprix(_float fTimeDelta)
 	if (KEY_TAP(KEY::M))
 		End_Grandprix();
 
+	if (0 < m_IntroIcons.size())
+	{
+		if (false == m_bIntroFinished)
+		{
+//			if (true == m_pIntroBackground->Get_Active())
+//			{
+//				CUI_Manager::GetInstance()->OnOff_TextUI(false);
+//			}
+
+			if (false == m_IntroIcons[CUI_Grandprix_IntroIcons::SWORDMAN]->Get_Active())
+			{
+				m_IntroIcons[CUI_Grandprix_IntroIcons::SWORDMAN]->Set_Active(true);
+			}
+
+			if (true == m_IntroIcons[CUI_Grandprix_IntroIcons::SWORDMAN]->Is_Finished())
+			{
+				if (false == m_IntroIcons[CUI_Grandprix_IntroIcons::ENGINEER]->Get_Active())
+				{
+					m_IntroIcons[CUI_Grandprix_IntroIcons::ENGINEER]->Set_Active(true);
+				}
+
+				if (true == m_IntroIcons[CUI_Grandprix_IntroIcons::ENGINEER]->Is_Finished())
+				{
+					if (false == m_IntroIcons[CUI_Grandprix_IntroIcons::SPLITTER]->Get_Active())
+					{
+						m_IntroIcons[CUI_Grandprix_IntroIcons::SPLITTER]->Set_Active(true);
+					}
+
+					if (true == m_IntroIcons[CUI_Grandprix_IntroIcons::SPLITTER]->Is_Finished())
+					{
+						if (false == m_IntroIcons[CUI_Grandprix_IntroIcons::VS_ICON]->Get_Active())
+						{
+							m_IntroIcons[CUI_Grandprix_IntroIcons::VS_ICON]->Set_Active(true);
+						}
+						else
+						{
+							m_fIntroAcc += fTimeDelta;
+
+							if (3.f < m_fIntroAcc)
+							{
+								m_bIntroFinished = true;
+								m_fIntroAcc = 0.f;
+
+								for (auto& iter : m_IntroIcons)
+									iter->Set_Active(false);
+
+								m_pIntroBackground->Set_Active(false);
+
+								Start_Grandprix();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	if (true == m_bCountStart && false == m_bGrandprixEnd)
 	{
 		if (true == CUI_Manager::GetInstance()->Is_FadeFinished())
 		{
+
 			if (m_iCountIndex == 5)
 			{
 				//OnOff_Grandprix(true);
@@ -1359,6 +1651,17 @@ void CUIMinigame_Manager::Free()
 		Safe_Release(pBack);
 	m_GaugeBack.clear();
 	Safe_Release(m_pBiplaneIcon);
+	Safe_Release(m_pIntroBackground);
+	for (auto& pIcon : m_IntroIcons)
+		Safe_Release(pIcon);
+	m_IntroIcons.clear();
+	for (auto& pFrame : m_RaderFrame)
+		Safe_Release(pFrame);
+	m_RaderFrame.clear();
+	Safe_Release(m_pRader);
+	for (auto& pVignette : m_Vignette)
+		Safe_Release(pVignette);
+	m_Vignette.clear();
 
 	// 컬링
 	for (auto& pUI : m_CurlingGameUIs)

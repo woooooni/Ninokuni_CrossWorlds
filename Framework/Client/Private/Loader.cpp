@@ -682,6 +682,27 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_HPBar_Lerp"),
 			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Granprix_HP_Back.png")))))
 			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_IntroBackground"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Intro/UI_Grandprix_Intro_Background.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_IntroIcons"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Intro/UI_Grandprix_Intro_%d.png"), 4))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Rader_Frame"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Rader/UI_Grandprix_Minimap_%d.png"), 2))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Rader_MaskTexture"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Rader/UI_Grandprix_Minimap_MaskRatioTest.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Grandprix_Rader_Icons"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Rader/UI_Grandprix_Rader_Icon_%d.png"), 4))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Rader_Circle"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Rader/UI_Grandprix_RaderCircle_SampleB_%d.png"), 12))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Vignette_Rush"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Vignette/UI_Grandprix_Vignette_Speed_%d.png"), 7))))
+			return E_FAIL;
 
 		// 미니게임용 프로토타입
 		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_Prototypes(LEVELID::LEVEL_EVERMORE)))
@@ -704,13 +725,13 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			return E_FAIL;
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Biplane"),
-			CVehicle_Flying_Biplane::Create(m_pDevice, m_pContext, TEXT("Vehicle_Biplane")), LAYER_TYPE::LAYER_CHARACTER))
+			CVehicle_Flying_Biplane::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_EnemyBiplane"),
-			CVehicle_Flying_EnemyBiplane::Create(m_pDevice, m_pContext, TEXT("Vehicle_EnemyBiplane")), LAYER_TYPE::LAYER_MONSTER))
+			CVehicle_Flying_EnemyBiplane::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_MONSTER))
 			return E_FAIL;
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_EnemyBoto"),
-			CVehicle_Flying_EnemyBoto::Create(m_pDevice, m_pContext, TEXT("Vehicle_EnemyBoto")), LAYER_TYPE::LAYER_MONSTER))
+			CVehicle_Flying_EnemyBoto::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_MONSTER))
 			return E_FAIL;
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Character_Biplane_Bullet"),

@@ -38,6 +38,14 @@ HRESULT CGrandprix_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceC
 
 void CGrandprix_Manager::Tick(_float fTimeDelta)
 {
+//	if (KEY_TAP(KEY::N))
+//		Start_Grandprix();
+//
+//	if (KEY_TAP(KEY::M))
+//		End_Grandprix();
+//
+	// 그랑프리가 시작되었는지 확인한다. false면 return;
+
 	if (true == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP])
 	{
 		m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP] += fTimeDelta;
@@ -347,7 +355,7 @@ HRESULT CGrandprix_Manager::Prepare_Grandprix()
 
 void CGrandprix_Manager::Start_Grandprix()
 {
-
+//	CUIMinigame_Manager::GetInstance()->Intro_Grandprix();
 }
 
 void CGrandprix_Manager::Finish_Grandprix()
@@ -356,6 +364,8 @@ void CGrandprix_Manager::Finish_Grandprix()
 
 void CGrandprix_Manager::End_Grandprix()
 {
+//	CUIMinigame_Manager::GetInstance()->End_Grandprix();
+
 	// 남아 있는 적이 있다면, Set_Dead 처리한다.
 
 	if (nullptr != m_pEnemyPlane)

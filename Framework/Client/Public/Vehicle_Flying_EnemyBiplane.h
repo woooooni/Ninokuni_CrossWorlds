@@ -6,7 +6,7 @@ BEGIN(Client)
 class CVehicle_Flying_EnemyBiplane final : public CVehicle_Flying
 {
 protected:
-	CVehicle_Flying_EnemyBiplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVehicle_Flying_EnemyBiplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CVehicle_Flying_EnemyBiplane(const CVehicle_Flying_EnemyBiplane& rhs);
 	virtual ~CVehicle_Flying_EnemyBiplane() = default;
 
@@ -38,12 +38,13 @@ private:
 	void Update_RiderState();
 
 private:
+	class CUI_Grandprix_RaderIcon* m_pRaderIcon = { nullptr };
 	class CUI_Minigame_WorldHP* m_pHP = { nullptr };
 	class CUI_Minigame_Aim* m_pAim = { nullptr };
 	_bool m_bUseRigidbody = { true };
 
 public:
-	static CVehicle_Flying_EnemyBiplane* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CVehicle_Flying_EnemyBiplane* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

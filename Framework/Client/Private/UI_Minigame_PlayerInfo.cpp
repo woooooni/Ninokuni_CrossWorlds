@@ -4,6 +4,7 @@
 #include "UI_Grandprix_PlaneHP.h"
 #include "Riding_Manager.h"
 #include "Vehicle_Flying.h"
+#include "Vehicle_Flying_Biplane.h"
 
 #include "Game_Manager.h"
 #include "Player.h"
@@ -63,7 +64,7 @@ HRESULT CUI_Minigame_PlayerInfo::Initialize(void* pArg)
 
 	if (nullptr != CRiding_Manager::GetInstance()->Get_Character_Biplane())
 	{
-//		Set_Owner(CRiding_Manager::GetInstance()->Get_Character_Biplane());
+		Set_Owner(CRiding_Manager::GetInstance()->Get_Character_Biplane());
 	}
 
 	if (nullptr != m_pOwner)

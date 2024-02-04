@@ -328,7 +328,6 @@ PS_OUT PS_MAIN_LIMITED_VERTICAL(PS_IN In)
 
 	float fY = In.vPosition.y / In.vPosition.w;
 
-
 	if (fY > g_LimitY)
 		discard;
 

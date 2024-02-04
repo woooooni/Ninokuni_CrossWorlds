@@ -161,7 +161,7 @@ HRESULT CVehicle_Flying::Ready_Routes()
 	m_RoutePoints.push_back({ 35.f, 102.5f, 107.8f, 1.f });
 
 	if(m_tStat.bIsEnemy == true
-		&& Get_ObjectTag() == TEXT("Vehicle_EnemyBiplane"))
+		&& Get_ObjectTag() == TEXT("Vehicle_Flying_EnemyBiplane"))
 	{
 		// 엔지니어 Start Route
 		m_TakeOffPoints.reserve(13);

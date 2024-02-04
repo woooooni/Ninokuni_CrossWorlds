@@ -10,9 +10,10 @@
 
 #include "UIMinigame_Manager.h"
 #include "Trail.h"
+#include "UI_Grandprix_RaderIcon.h"
 
-CVehicle_Flying_Biplane::CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CVehicle_Flying(pDevice, pContext, strObjectTag, OBJ_GRANDPRIX_CHARACTER)
+CVehicle_Flying_Biplane::CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+	: CVehicle_Flying(pDevice, pContext, L"Vehicle_Flying_PlayerBiplane", OBJ_GRANDPRIX_CHARACTER)
 {
 }
 
@@ -54,6 +55,23 @@ HRESULT CVehicle_Flying_Biplane::Initialize(void* pArg)
 	if (FAILED(Ready_Trails()))
 		return E_FAIL;
 
+	CGameObject* pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minigame_Granprix_RaderIcon"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pIcon)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Grandprix_RaderIcon*>(pIcon))
+		return E_FAIL;
+	m_pCameraIcon = dynamic_cast<CUI_Grandprix_RaderIcon*>(pIcon);
+	m_pCameraIcon->Set_Owner(this, true);
+
+	pIcon = nullptr;
+	pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minigame_Granprix_RaderIcon"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pIcon)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Grandprix_RaderIcon*>(pIcon))
+		return E_FAIL;
+	m_pRaderIcon = dynamic_cast<CUI_Grandprix_RaderIcon*>(pIcon);
+	m_pRaderIcon->Set_Owner(this);
+
 	return S_OK;
 }
 
@@ -63,7 +81,7 @@ void CVehicle_Flying_Biplane::Tick(_float fTimeDelta)
 	{
 		__super::Tick(fTimeDelta);
 		GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_BODY, this);
-		
+
 		Update_RiderState();
 
 		if (false == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
@@ -80,9 +98,6 @@ void CVehicle_Flying_Biplane::Tick(_float fTimeDelta)
 				m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 		}
 
-		if (nullptr != m_pControllerCom)
-			m_pControllerCom->Tick_Controller(fTimeDelta);
-
 		for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
 		{
 			if (nullptr != m_pTrails[i])
@@ -91,6 +106,25 @@ void CVehicle_Flying_Biplane::Tick(_float fTimeDelta)
 				m_pTrails[i]->Tick(fTimeDelta);
 			}
 				
+		}
+
+		if (nullptr != m_pControllerCom)
+			m_pControllerCom->Tick_Controller(fTimeDelta);
+
+		if (nullptr != m_pCameraIcon)
+		{
+			if (true == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
+ 				m_pCameraIcon->Tick(fTimeDelta);
+		}
+
+		if (nullptr != m_pRaderIcon)
+		{
+			if (true == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
+				m_pRaderIcon->Set_Active(true);
+			else
+				m_pRaderIcon->Set_Active(false);
+
+			m_pRaderIcon->Tick(fTimeDelta);
 		}
 	}
 }
@@ -108,6 +142,18 @@ void CVehicle_Flying_Biplane::LateTick(_float fTimeDelta)
 		}
 
 		Update_Rider(fTimeDelta);
+
+		if (nullptr != m_pCameraIcon)
+		{
+			if (true == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
+				m_pCameraIcon->LateTick(fTimeDelta);
+		}
+
+		if (nullptr != m_pRaderIcon)
+		{
+			if (true == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
+				m_pRaderIcon->LateTick(fTimeDelta);
+		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
@@ -341,7 +387,7 @@ HRESULT CVehicle_Flying_Biplane::Ready_States()
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN, CState_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_RUSH, CState_VehicleFlying_Rush::Create(m_pStateCom, strAnimationNames));
 
 
@@ -432,6 +478,12 @@ void CVehicle_Flying_Biplane::Update_RiderState()
 				CCharacter::STATE::FLYING_RUNSTART != pStateCom->Get_CurrState())
 				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::FLYING_STAND);
 		}
+
+		if (CVehicle::VEHICLE_STATE::VEHICLE_RUSH == m_pStateCom->Get_CurrState())
+		{
+			if (CCharacter::STATE::FLYING_STAND != pStateCom->Get_CurrState())
+				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::FLYING_STAND);
+		}
 	}
 }
 
@@ -461,9 +513,9 @@ HRESULT CVehicle_Flying_Biplane::Ready_Colliders()
 	return S_OK;
 }
 
-CVehicle_Flying_Biplane* CVehicle_Flying_Biplane::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CVehicle_Flying_Biplane* CVehicle_Flying_Biplane::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CVehicle_Flying_Biplane* pInstance = new CVehicle_Flying_Biplane(pDevice, pContext, strObjectTag);
+	CVehicle_Flying_Biplane* pInstance = new CVehicle_Flying_Biplane(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
@@ -490,6 +542,8 @@ CGameObject* CVehicle_Flying_Biplane::Clone(void* pArg)
 void CVehicle_Flying_Biplane::Free()
 {
 	__super::Free();
+	Safe_Release(m_pCameraIcon);
+	Safe_Release(m_pRaderIcon);
 	for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
 		Safe_Release(m_pTrails[i]);
 }

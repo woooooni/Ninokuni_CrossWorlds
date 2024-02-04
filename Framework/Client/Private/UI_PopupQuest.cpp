@@ -213,6 +213,10 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 
 			if (m_bProgressing)
 			{
+				// 문제 생기면 지우기. 24.02.03
+//				if (false == CUI_Manager::GetInstance()->Is_FadeFinished())
+//					return;
+
 				if (0 < m_Quest.size() && 4 >= m_Quest.size())
 				{
 					if (TEXT("[메인]") == m_Quest[0].strType)
