@@ -925,7 +925,7 @@ HRESULT CLoader::Loading_For_Level_WitchForest()
 
 	g_bFirstLoading = true;
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Witch");
-	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Witch");
+	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Witch");
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
 		if (true == m_Threads[i].valid())
