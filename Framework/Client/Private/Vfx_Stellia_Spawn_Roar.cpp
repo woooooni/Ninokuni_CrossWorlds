@@ -29,10 +29,24 @@ HRESULT CVfx_Stellia_Spawn_Roar::Initialize_Prototype()
 	m_pScaleOffset    = new _float3[m_iMaxCount];
 	m_pRotationOffset = new _float3[m_iMaxCount];
 	
-	m_pFrameTriger[TYPE_ET1_] = 0;
-	m_pPositionOffset[TYPE_ET1_] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_ET1_]    = _float3(1.f, 1.f, 1.f);
-	m_pRotationOffset[TYPE_ET1_] = _float3(0.f, 0.f, 0.f);
+	{
+		m_pFrameTriger[TYPE_ET1_P_SMOKE] = 31;
+		m_pPositionOffset[TYPE_ET1_P_SMOKE] = _float3(0.f, 0.7f, 0.f);
+		m_pScaleOffset[TYPE_ET1_P_SMOKE]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET1_P_SMOKE] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_ET1_P_CIRCLES] = 32;
+		m_pPositionOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 0.5f, 0.f);
+		m_pScaleOffset[TYPE_ET1_P_CIRCLES]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
+	}
+
+	{
+		m_pFrameTriger[TYPE_ET2_E_ROAR] = 47;
+		m_pPositionOffset[TYPE_ET2_E_ROAR] = _float3(30.f, 0.f, -10.f);
+		m_pScaleOffset[TYPE_ET2_E_ROAR]    = _float3(0.2f, 0.2f, 0.2f);
+		m_pRotationOffset[TYPE_ET2_E_ROAR] = _float3(0.f, 0.f, 0.f);
+	}
 
  	return S_OK;
 }
@@ -48,9 +62,42 @@ void CVfx_Stellia_Spawn_Roar::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
-		if (m_iCount == TYPE_ET1_ && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_])
+		if (m_iCount == TYPE_ET1_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_SMOKE])
 		{
+			CTransform* pCTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
+			if (pCTransform != nullptr)
+				m_WorldMatrix = pCTransform->Get_WorldFloat4x4();
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Spawn_Smoke"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_SMOKE], m_pScaleOffset[TYPE_ET1_P_SMOKE], m_pRotationOffset[TYPE_ET1_P_SMOKE]);
 			m_iCount++;
+		}
+		else if (m_iCount == TYPE_ET1_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_CIRCLES])
+		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Spawn_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_CIRCLES], m_pScaleOffset[TYPE_ET1_P_CIRCLES], m_pRotationOffset[TYPE_ET1_P_CIRCLES]);
+			
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Spawn_Circle_02"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_CIRCLES], m_pScaleOffset[TYPE_ET1_P_CIRCLES], m_pRotationOffset[TYPE_ET1_P_CIRCLES]);
+
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_ET2_E_ROAR && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_ROAR])
+		{
+			m_fTimeAcc += fTimeDelta;
+			if (m_fTimeAcc >= 0.2f) // 47 65 95 117 131 166 176 /0.5 0.0 0.0 0.0
+			{
+				CModel* pOwnerModel = m_pOwnerObject->Get_Component<CModel>(L"Com_Model");
+				if (pOwnerModel != nullptr)
+				{
+					m_fTimeAcc = 0.f;
+
+					Matrix TongueMatrix = pOwnerModel->Get_SocketLocalMatrix(2) * m_WorldMatrix; // 뼈 행렬 x 플레이어 월드 행렬 = 뼈 월드 행렬
+					GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Roar_TrailLine_01"), TongueMatrix, m_pPositionOffset[TYPE_ET2_E_ROAR], m_pScaleOffset[TYPE_ET2_E_ROAR], m_pRotationOffset[TYPE_ET2_E_ROAR]);
+				}				
+			}
+
+			if(m_iOwnerFrame >= 71)
+				m_iCount++;
 		}
 
 		else if (m_iCount == TYPE_END)

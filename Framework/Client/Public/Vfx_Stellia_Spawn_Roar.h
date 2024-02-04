@@ -11,8 +11,14 @@ BEGIN(Client)
 class CVfx_Stellia_Spawn_Roar final : public CVfx
 {
 private:
-	enum TYPE {
-		TYPE_ET1_,
+	enum TYPE { // L"SKM_Stellia.ao|Stellia_Spawn"
+		// 31 ÂøÁö
+		TYPE_ET1_P_SMOKE,
+		TYPE_ET1_P_CIRCLES,
+
+		// 47 - 71 Æ÷È¿
+		TYPE_ET2_E_ROAR,
+
 		TYPE_END
 	};
 
