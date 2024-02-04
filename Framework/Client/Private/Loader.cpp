@@ -354,6 +354,9 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Bullet_Orange", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Grandprix/Bullets/", L"Bullet_Orange")))
 		return E_FAIL;
 
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Bullet", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Bullet/", L"Engineer_Bullet")))
+		return E_FAIL;
+
 	
 	switch (g_eLoadCharacter)
 	{
@@ -1783,16 +1786,12 @@ HRESULT CLoader::Loading_For_Character(CHARACTER_TYPE eCharacterType)
 
 	else if (eCharacterType == CHARACTER_TYPE::ENGINEER)
 	{
-		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Bullet", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Bullet/", L"Engineer_Bullet")))
-			return E_FAIL;
 
 		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_BurstSkill_Cannon", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Skill/", L"Engineer_BurstSkill_Cannon")))
 			return E_FAIL;
 
 		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_BurstSkill_CannonBomb", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/TowerDefence/Projectile/", L"Cannon_Ball")))
 			return E_FAIL;
-
-		
 		
 		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Engineer/Dummy/", L"Engineer_Dummy")))
 			return E_FAIL;
