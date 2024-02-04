@@ -13,6 +13,7 @@
 #include "Player.h"
 #include "Character.h"
 #include "Transform.h"
+#include "Effect_Manager.h"
 
 CGlanixState_Berserk::CGlanixState_Berserk(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -61,6 +62,8 @@ void CGlanixState_Berserk::Enter_State(void* pArg)
 
 		pCutSceneCam->Start_Lerp_Fov(Cam_Fov_CutScene_Map_Default, XMConvertToRadians(60.f), 2.5f, LERP_MODE::SMOOTHER_STEP);
 	}
+
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Intro_Roar"), m_pTransformCom->Get_WorldMatrix(), m_pGlanix);
 }
 
 void CGlanixState_Berserk::Tick_State(_float fTimeDelta)

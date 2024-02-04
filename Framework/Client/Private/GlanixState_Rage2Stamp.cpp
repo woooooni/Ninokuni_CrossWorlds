@@ -15,6 +15,8 @@
 
 #include "UI_Manager.h"
 
+#include "Effect_Manager.h"
+
 CGlanixState_Rage2Stamp::CGlanixState_Rage2Stamp(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -30,6 +32,7 @@ HRESULT CGlanixState_Rage2Stamp::Initialize(const list<wstring>& AnimationList)
 void CGlanixState_Rage2Stamp::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_RageFinalStamp"));
+	m_bDownEffectCreate = false;
 }
 
 void CGlanixState_Rage2Stamp::Tick_State(_float fTimeDelta)
@@ -39,7 +42,7 @@ void CGlanixState_Rage2Stamp::Tick_State(_float fTimeDelta)
 	if (m_pModelCom->Get_CurrAnimationFrame() <= 13)
 		m_pTransformCom->Move(m_pTransformCom->Get_Look(), 40.f, fTimeDelta);
 
-	if (m_pModelCom->Get_CurrAnimationFrame() == 15)
+	else if (m_pModelCom->Get_CurrAnimationFrame() == 15)
 	{
 		/* 남아있는 화염정령 제거 */
 		for (auto iter : GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_PROP))
@@ -49,9 +52,15 @@ void CGlanixState_Rage2Stamp::Tick_State(_float fTimeDelta)
 				iter->Set_Dead(true);
 			}
 		}
+
+		if (false == m_bDownEffectCreate)
+		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_RageStamp"), m_pTransformCom->Get_WorldMatrix(), m_pGlanix);
+			m_bDownEffectCreate = true;
+		}
 	}
 
-	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
+	else if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_TURN);
 	}

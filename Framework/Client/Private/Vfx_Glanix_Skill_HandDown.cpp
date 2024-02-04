@@ -41,8 +41,8 @@ HRESULT CVfx_Glanix_Skill_HandDown::Initialize_Prototype()
 		m_pRotationOffset[TYPE_P_PREACT_BIGSMOKE] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TYPE_E_PREACT_CIRCLELINE]    = 17;
-		m_pPositionOffset[TYPE_E_PREACT_CIRCLELINE] = _float3(0.f, 4.f, 1.f);
-		m_pScaleOffset[TYPE_E_PREACT_CIRCLELINE]    = _float3(1.f, 1.f, 1.f);
+		m_pPositionOffset[TYPE_E_PREACT_CIRCLELINE] = _float3(0.f, 25.f, 0.f);
+		m_pScaleOffset[TYPE_E_PREACT_CIRCLELINE]    = _float3(0.2f, 0.2f, 0.2f);
 		m_pRotationOffset[TYPE_E_PREACT_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TYPE_P_PREACT_CIRCLES]    = 18;
@@ -114,9 +114,11 @@ void CVfx_Glanix_Skill_HandDown::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_E_PREACT_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_PREACT_CIRCLELINE])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_HandDown_TrailLine"),
+			GET_INSTANCE(CEffect_Manager)->Tick_Generate_Effect(&m_fTimeAcc, 0.2f, fTimeDelta, TEXT("Effect_Glanix_Roar_TrailLine"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_PREACT_CIRCLELINE], m_pScaleOffset[TYPE_E_PREACT_CIRCLELINE], m_pRotationOffset[TYPE_E_PREACT_CIRCLELINE]);
-			m_iCount++;
+			
+			if (m_iOwnerFrame >= m_pFrameTriger[TYPE_E_PREACT_CIRCLELINE] + 15)
+				m_iCount++;
 		}
 		else if (m_iCount == TYPE_P_PREACT_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_PREACT_CIRCLES])
 		{

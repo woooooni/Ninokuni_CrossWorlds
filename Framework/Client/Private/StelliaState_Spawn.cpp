@@ -2,6 +2,7 @@
 #include "StelliaState_Spawn.h"
 
 #include "Stellia.h"
+#include "Effect_Manager.h"
 
 CStelliaState_Spawn::CStelliaState_Spawn(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
@@ -23,6 +24,9 @@ void CStelliaState_Spawn::Enter_State(void* pArg)
 
 	//if (m_pPlayer != nullptr)
 	//	m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+
+	// Effect Create
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Spawn_Roar"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Spawn::Tick_State(_float fTimeDelta)

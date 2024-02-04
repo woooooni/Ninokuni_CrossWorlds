@@ -19,6 +19,8 @@ public:
 
 private:
 	_vector vDestPos = {};
+	_bool m_bJumpEffectCreate = false;
+	_bool m_bDownEffectCreate = false;
 
 public:
 	static CGlanixState_Rage2StartJump* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);

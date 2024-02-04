@@ -2,6 +2,7 @@
 #include "StelliaState_TripleLaser.h"
 
 #include "Stellia.h"
+#include "Effect_Manager.h"
 
 CStelliaState_TripleLaser::CStelliaState_TripleLaser(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
@@ -18,6 +19,9 @@ HRESULT CStelliaState_TripleLaser::Initialize(const list<wstring>& AnimationList
 void CStelliaState_TripleLaser::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill03_New"));
+
+	// Effect Create
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Spawn_TripleLaser"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_TripleLaser::Tick_State(_float fTimeDelta)
