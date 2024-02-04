@@ -91,8 +91,10 @@ void CCurlingGame_Manager::Render_Debug()
 
 }
 
-HRESULT CCurlingGame_Manager::Start_Game()
+HRESULT CCurlingGame_Manager::Ready_Game()
 {
+	// 호출시, 경기장 비춰주는 카메라 액션 시작 
+
 	if (m_bPlaying)
 		return E_FAIL;
 
@@ -100,7 +102,19 @@ HRESULT CCurlingGame_Manager::Start_Game()
 
 	if (FAILED(m_pManagerStateMachineCom->Change_State(INTRO)))
 		return E_FAIL;
+}
+
+HRESULT CCurlingGame_Manager::Start_Game()
+{
+	// 호출시 플레이어 턴으로 게임 시작 세팅 
+
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CAMERA_CURLING);
+
+	if (FAILED(m_pManagerStateMachineCom->Change_State(MOVE)))
+		return E_FAIL;
 	
+	CUIMinigame_Manager::GetInstance()->OnOff_CurlingUI(true);
+
 	return S_OK;
 }
 

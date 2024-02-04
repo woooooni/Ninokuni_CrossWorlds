@@ -341,6 +341,7 @@
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Stand.h" />
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Trace.h" />
     <ClInclude Include="..\Public\State_VehicleFlying_Rush.h" />
+    <ClInclude Include="..\Public\SubQuestNode_NoisySnowField04_2.h" />
     <ClInclude Include="..\Public\UI_Grandprix_PlaneHP.h" />
     <ClInclude Include="..\Public\Stellia_Explosion.h" />
     <ClInclude Include="..\Public\UI_Minigame_Aim.h" />
@@ -1390,6 +1391,7 @@
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Stand.cpp" />
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Trace.cpp" />
     <ClCompile Include="..\Private\State_VehicleFlying_Rush.cpp" />
+    <ClCompile Include="..\Private\SubQuestNode_NoisySnowField04_2.cpp" />
     <ClCompile Include="..\Private\UI_Grandprix_PlaneHP.cpp" />
     <ClCompile Include="..\Private\Stellia_Explosion.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Aim.cpp" />

@@ -5,7 +5,11 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_Fade.h"
+
 #include "Game_Manager.h"
+
+#include "CurlingGame_Group.h"
 
 CSubQuestNode_NoisySnowField05::CSubQuestNode_NoisySnowField05()
 {
@@ -29,19 +33,37 @@ HRESULT CSubQuestNode_NoisySnowField05::Initialize()
 void CSubQuestNode_NoisySnowField05::Start()
 {
 	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+
+	// 게임 시작 함수 추가
+	CCurlingGame_Manager::GetInstance()->Start_Game();
+
+	// 페이드 인
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 2.f);
 }
 
 CBTNode::NODE_STATE CSubQuestNode_NoisySnowField05::Tick(const _float& fTimeDelta)
 {
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
-
-	// 여기서 게임 로직.
-	if (KEY_TAP(KEY::N))
+	
+	if (0) // 만약 게임이 끝났다면 
 	{
-		m_bIsClear = true;
+		// 페이드 아웃 시작
+		if (!m_bFadeOut)
+		{
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 3.f);
+			m_bFadeOut = true;
+		}
+	}
 
-		return NODE_STATE::NODE_FAIL;
+	// 페이드 아웃이 끝났다면 다음 노드로 넘어간다.
+	if (m_bFadeOut)
+	{
+		if (CUI_Manager::GetInstance()->Is_FadeFinished())
+		{
+			m_bIsClear = true;
+			return NODE_STATE::NODE_FAIL;
+		}
 	}
 
 	return NODE_STATE::NODE_RUNNING;

@@ -45,23 +45,6 @@ void CState_CurlingGame_Intro::Tick_State(const _float& fTimeDelta)
 {
 	if (m_tStadiumDesc.tLerHeight.bActive)
 		Tick_Stadium(fTimeDelta);
-
-	//if (KEY_TAP(KEY::Q))
-	//{
-	//	CCamera_CurlingGame* pCurlingGameCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CAMERA_CURLING));
-	//
-	//	if (nullptr != pCurlingGameCam)
-	//	{
-	//		if (FAILED(pCurlingGameCam->Change_Target(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner, 1.f)))
-	//			return;
-	//
-	//		if (FAILED(Set_UIs()))
-	//			return;
-	//
-	//		if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::MOVE)))
-	//			return;
-	//	}
-	//}
 }
 
 void CState_CurlingGame_Intro::LateTick_State(const _float& fTimeDelta)
@@ -104,7 +87,7 @@ void CState_CurlingGame_Intro::Tick_Stadium(const _float& fTimeDelta)
 	/* 경기장이 다 올라왔다면 */
 	if (!m_tStadiumDesc.tLerHeight.bActive)
 	{
-		//Finish_Stadium();
+		Finish_Stadium();
 	}
 }
 
@@ -152,18 +135,6 @@ HRESULT CState_CurlingGame_Intro::Ready_Stadium()
 		return E_FAIL;
 }
 
-HRESULT CState_CurlingGame_Intro::Set_UIs()
-{
-	/* Input */
-	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Attack_Input(false);
-	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Skill_Input(false);
-
-	/* UI */
-	CUIMinigame_Manager::GetInstance()->OnOff_CurlingUI(true);
-
-
-	return S_OK;
-}
 
 HRESULT CState_CurlingGame_Intro::Ready_Decals()
 {
@@ -192,52 +163,6 @@ HRESULT CState_CurlingGame_Intro::Ready_Decals()
 		if (FAILED(CEffect_Manager::GetInstance()->Generate_Decal(m_pManager->m_tStandardDesc.wstrStartLineName, matWorld,
 			Vec3::Zero, vScale, m_pManager->m_tStandardDesc.vStartLineRotation, nullptr, nullptr, false)))
 			return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CState_CurlingGame_Intro::Set_CameraTransform()
-{
-	CCamera_CurlingGame* pCurlingGameCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CAMERA_CURLING));
-	
-	if (nullptr == pCurlingGameCam)
-		return E_FAIL;
-
-	/* CurlingGame Camera */
-	{
-		if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CAMERA_CURLING)))
-			return E_FAIL;
-	
-		const Vec4 vTargetPos = (m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner->Get_Component_Transform()->Get_Position() 
-								+ m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].pOwner->Get_Component_Transform()->Get_Position())
-								* 0.5f;
-
-		/* 컬링 미니게임 시작 카메라 세팅 */
-		{
-			const Vec4 vLookAt = pCurlingGameCam->Calculate_LookAt(vTargetPos).OneW();
-
-			// 기초 작업 1
-			{
-				const Vec4 vCamPosForLook = Vec4(m_pManager->m_tStandardDesc.vStartLinePosition + (m_pManager->m_tStandardDesc.vStartLook * -5.f)).OneW();
-				pCurlingGameCam->Get_Transform()->Set_State(CTransform::STATE_POSITION, vCamPosForLook);
-				pCurlingGameCam->Get_Transform()->LookAt(vLookAt);
-			}
-
-			// 기초 작업 2
-			{
-				const Vec4 vCamPosForLook = pCurlingGameCam->Calculate_Position(vTargetPos).OneW();
-				pCurlingGameCam->Get_Transform()->Set_State(CTransform::STATE_POSITION, vCamPosForLook);
-			}
-
-			// 파이널 룩앳 세팅 
-			pCurlingGameCam->Get_Transform()->LookAt(vLookAt);
-
-			// 파이널 포지션 세팅
-			const Vec4 vCamPos = pCurlingGameCam->Calculate_Position(vTargetPos).OneW();
-			pCurlingGameCam->Get_Transform()->Set_State(CTransform::STATE_POSITION, vCamPos);
-
-		}
 	}
 
 	return S_OK;
@@ -289,40 +214,80 @@ HRESULT CState_CurlingGame_Intro::Finish_Stadium()
 		}
 	}
 
-	if (FAILED(Set_CharacterTransform()))
-		return E_FAIL;
-
-	if (FAILED(Set_CameraTransform()))
-		return E_FAIL;
-
 	return S_OK;
 }
 
-HRESULT CState_CurlingGame_Intro::Set_CharacterTransform()
-{
-	const Vec3 vLook = m_pManager->m_tStandardDesc.vStartLook;
+//HRESULT CState_CurlingGame_Intro::Set_CharacterTransform()
+//{
+//	const Vec3 vLook = m_pManager->m_tStandardDesc.vStartLook;
+//
+//	const Vec3 vRight = Vec3(XMVector3Cross(Vec3::UnitY, vLook)).ZeroY().Normalized();
+//
+//	for (_uint i = 0; i < CCurlingGame_Manager::PARTICIPANT_TYPEEND; i++)
+//	{
+//		Vec3 vStartPosition = m_pManager->m_tStandardDesc.vStartLinePosition + (vLook * -3.f);
+//
+//		if (CCurlingGame_Manager::PARTICIPANT_PLAYER == i)
+//		{
+//			vStartPosition += vRight * m_pManager->m_tStandardDesc.vStartPosDelta;
+//		}
+//		else if (CCurlingGame_Manager::PARTICIPANT_NPC == i)
+//		{
+//			vStartPosition += -vRight * m_pManager->m_tStandardDesc.vStartPosDelta;
+//		}
+//
+//		m_pManager->m_tParticipants[i].pOwner->Get_Component_Transform()->Set_State(CTransform::STATE_POSITION, Vec4(vStartPosition).OneW());
+//
+//		m_pManager->m_tParticipants[i].pOwner->Get_Component_Transform()->LookAt_ForLandObject(m_pManager->m_tStandardDesc.vGoalPosition);
+//	}
+//	return S_OK;
+//}
 
-	const Vec3 vRight = Vec3(XMVector3Cross(Vec3::UnitY, vLook)).ZeroY().Normalized();
-
-	for (_uint i = 0; i < CCurlingGame_Manager::PARTICIPANT_TYPEEND; i++)
-	{
-		Vec3 vStartPosition = m_pManager->m_tStandardDesc.vStartLinePosition + (vLook * -3.f);
-
-		if (CCurlingGame_Manager::PARTICIPANT_PLAYER == i)
-		{
-			vStartPosition += vRight * m_pManager->m_tStandardDesc.vStartPosDelta;
-		}
-		else if (CCurlingGame_Manager::PARTICIPANT_NPC == i)
-		{
-			vStartPosition += -vRight * m_pManager->m_tStandardDesc.vStartPosDelta;
-		}
-
-		m_pManager->m_tParticipants[i].pOwner->Get_Component_Transform()->Set_State(CTransform::STATE_POSITION, Vec4(vStartPosition).OneW());
-
-		m_pManager->m_tParticipants[i].pOwner->Get_Component_Transform()->LookAt_ForLandObject(m_pManager->m_tStandardDesc.vGoalPosition);
-	}
-	return S_OK;
-}
+//HRESULT CState_CurlingGame_Intro::Set_CameraTransform()
+//{
+//	CCamera_CurlingGame* pCurlingGameCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CAMERA_CURLING));
+//
+//	if (nullptr == pCurlingGameCam)
+//		return E_FAIL;
+//
+//	/* CurlingGame Camera */
+//	{
+//		if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CAMERA_CURLING)))
+//			return E_FAIL;
+//
+//		const Vec4 vTargetPos = (m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner->Get_Component_Transform()->Get_Position()
+//			+ m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].pOwner->Get_Component_Transform()->Get_Position())
+//			* 0.5f;
+//
+//		/* 컬링 미니게임 시작 카메라 세팅 */
+//		{
+//			const Vec4 vLookAt = pCurlingGameCam->Calculate_LookAt(vTargetPos).OneW();
+//
+//			// 기초 작업 1
+//			{
+//				const Vec4 vCamPosForLook = Vec4(m_pManager->m_tStandardDesc.vStartLinePosition + (m_pManager->m_tStandardDesc.vStartLook * -5.f)).OneW();
+//				pCurlingGameCam->Get_Transform()->Set_State(CTransform::STATE_POSITION, vCamPosForLook);
+//				pCurlingGameCam->Get_Transform()->LookAt(vLookAt);
+//			}
+//
+//			// 기초 작업 2
+//			{
+//				const Vec4 vCamPosForLook = pCurlingGameCam->Calculate_Position(vTargetPos).OneW();
+//				pCurlingGameCam->Get_Transform()->Set_State(CTransform::STATE_POSITION, vCamPosForLook);
+//			}
+//
+//			// 파이널 룩앳 세팅 
+//			pCurlingGameCam->Get_Transform()->LookAt(vLookAt);
+//
+//			// 파이널 포지션 세팅
+//			const Vec4 vCamPos = pCurlingGameCam->Calculate_Position(vTargetPos).OneW();
+//			pCurlingGameCam->Get_Transform()->Set_State(CTransform::STATE_POSITION, vCamPos);
+//
+//		}
+//	}
+//
+//	return S_OK;
+//}
 
 CState_CurlingGame_Intro* CState_CurlingGame_Intro::Create(CManager_StateMachine* pStateMachine)
 {

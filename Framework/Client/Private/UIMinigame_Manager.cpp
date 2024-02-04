@@ -687,10 +687,10 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_IceLand()
 		CUI_Minigame_Curling_Score::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::SCORE_PLAYER], true), LAYER_UI)))
 		return E_FAIL;
 
-	/* TurnArrow */
-	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::SCORE_PLAYER],
-		CUI_Minigame_Curling_TurnArrow::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::TURNARROW]), LAYER_UI)))
-		return E_FAIL;
+	///* TurnArrow */
+	//if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::SCORE_PLAYER],
+	//	CUI_Minigame_Curling_TurnArrow::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::TURNARROW]), LAYER_UI)))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -1267,19 +1267,19 @@ HRESULT CUIMinigame_Manager::Ready_Curling()
 	}
 
 	/* TurnArrow */
-	{
-		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::TURNARROW], nullptr, &pClone)))
-			return E_FAIL;
-
-		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
-		if (nullptr == pUi)
-			return E_FAIL;
-
-		m_CurlingGameUIs.push_back(pUi);
-		Safe_AddRef(pUi);
-
-		pClone = pUi = nullptr;
-	}
+	//{
+	//	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::TURNARROW], nullptr, &pClone)))
+	//		return E_FAIL;
+	//
+	//	pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+	//	if (nullptr == pUi)
+	//		return E_FAIL;
+	//
+	//	m_CurlingGameUIs.push_back(pUi);
+	//	Safe_AddRef(pUi);
+	//
+	//	pClone = pUi = nullptr;
+	//}
 
 	return S_OK;
 }

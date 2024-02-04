@@ -114,9 +114,7 @@ void CCamera_Action::LateTick(_float fTimeDelta)
 }
 
 HRESULT CCamera_Action::Start_Action_Stadium(const _float& fDuration)
-{
-	m_bAction = true;
-	
+{	
 	m_eCurActionType = CAMERA_ACTION_TYPE::STADIUM;
 	
 	/* 토크 이벤트 데이터 보관 */
@@ -141,8 +139,8 @@ HRESULT CCamera_Action::Start_Action_Stadium(const _float& fDuration)
 
 	/* Shake */
 	{
-		Start_Shake(0.1f, 150.f, fDuration);
-		// 페이드 인아웃
+		// Start_Shake(0.1f, 150.f, fDuration);
+		// 쉐이킹 페이드 인아웃 예약
 	}
 
 	return S_OK;
@@ -150,7 +148,7 @@ HRESULT CCamera_Action::Start_Action_Stadium(const _float& fDuration)
 
 HRESULT CCamera_Action::Finish_Action_Stadium()
 {
-	m_bAction = false;
+	m_eCurActionType = CAMERA_ACTION_TYPE::TALK;
 
 	/* 이전 데이터로 복귀*/
 	{
@@ -526,7 +524,7 @@ void CCamera_Action::Tick_Stadium(_float fTimeDelta)
 		/* Increase View Type */
 		if (ACTION_STADIUM_DESC::VIEW_NUM::VIEW_NUM_END == m_tActionStadiumDesc.iCurViewNum)
 		{
-			//Finish_Action_Stadium();
+			Finish_Action_Stadium();
 			return;
 		}
 

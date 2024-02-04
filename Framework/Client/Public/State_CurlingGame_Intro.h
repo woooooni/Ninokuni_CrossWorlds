@@ -42,10 +42,9 @@ private:
 
 	HRESULT Finish_Stadium();
 
-private:
-	HRESULT Set_UIs();
-	HRESULT Set_CameraTransform();
-	HRESULT Set_CharacterTransform();
+//private:
+//	HRESULT Set_CameraTransform();
+//	HRESULT Set_CharacterTransform();
 
 private:
 	/* Stadium */

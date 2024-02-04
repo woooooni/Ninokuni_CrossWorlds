@@ -115,7 +115,9 @@ public:
 	void Render_Debug();
 
 public:
+	HRESULT Ready_Game();
 	HRESULT Start_Game();
+
 	HRESULT Change_Turn();
 	HRESULT Set_AiPath();
 
