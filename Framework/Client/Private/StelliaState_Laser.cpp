@@ -2,6 +2,7 @@
 #include "StelliaState_Laser.h"
 
 #include "Stellia.h"
+#include "Effect_Manager.h"
 
 CStelliaState_Laser::CStelliaState_Laser(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
@@ -28,6 +29,9 @@ void CStelliaState_Laser::Tick_State(_float fTimeDelta)
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
 	}
+
+	// Effect Create
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Spawn_Laser"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Laser::Exit_State()

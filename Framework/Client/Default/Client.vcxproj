@@ -369,6 +369,10 @@
     <ClInclude Include="..\Public\Vfx_Engineer_Skill_Destruction_Boom.h" />
     <ClInclude Include="..\Public\Vfx_Glanix_Skill_RageStamp.h" />
     <ClInclude Include="..\Public\Vfx_Glanix_Skill_Spawn.h" />
+    <ClInclude Include="..\Public\Vfx_Stellia_Skill_BigBang.h" />
+    <ClInclude Include="..\Public\Vfx_Stellia_Skill_Laser.h" />
+    <ClInclude Include="..\Public\Vfx_Stellia_Skill_TripleLaser.h" />
+    <ClInclude Include="..\Public\Vfx_Stellia_Spawn_Roar.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_ClawDouble.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_ClawRight.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_JumpStamp.h" />
@@ -1417,6 +1421,10 @@
     <ClCompile Include="..\Private\Vfx_Engineer_Skill_Destruction_Boom.cpp" />
     <ClCompile Include="..\Private\Vfx_Glanix_Skill_RageStamp.cpp" />
     <ClCompile Include="..\Private\Vfx_Glanix_Skill_Spawn.cpp" />
+    <ClCompile Include="..\Private\Vfx_Stellia_Skill_BigBang.cpp" />
+    <ClCompile Include="..\Private\Vfx_Stellia_Skill_Laser.cpp" />
+    <ClCompile Include="..\Private\Vfx_Stellia_Skill_TripleLaser.cpp" />
+    <ClCompile Include="..\Private\Vfx_Stellia_Spawn_Roar.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_ClawDouble.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_ClawRight.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_JumpStamp.cpp" />

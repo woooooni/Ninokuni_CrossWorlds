@@ -940,6 +940,11 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 
 	// Stellia
 	{
+		// Prototype_Vfx_Stellia_Spawn_Roar
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Spawn_Roar"),
+			CVfx_Stellia_Spawn_Roar::Create(m_pDevice, m_pContext, TEXT("Stellia_Spawn_Roar")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
 		// Prototype_Vfx_Stellia_Skill_ClawRight
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_RightClaw"),
 			CVfx_Stellia_Skill_ClawRight::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_RightClaw")), LAYER_TYPE::LAYER_EFFECT)))
@@ -955,6 +960,18 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 		// Prototype_Vfx_Stellia_Skill_JumpStamp
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_JumpStamp"),
 			CVfx_Stellia_Skill_JumpStamp::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_JumpStamp")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+		// Prototype_Vfx_Stellia_Skill_Laser
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_Laser"),
+			CVfx_Stellia_Skill_Laser::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_Laser")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+		// Prototype_Vfx_Stellia_Skill_TripleLaser
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_TripleLaser"),
+			CVfx_Stellia_Skill_TripleLaser::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_TripleLaser")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+		// Prototype_Vfx_Stellia_Skill_BigBang
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_BigBang"),
+			CVfx_Stellia_Skill_BigBang::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_BigBang")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
 		
 		/* Rage01 */
