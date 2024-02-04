@@ -77,7 +77,7 @@ void CState_Enemy_VehicleFlying_Attack::Tick_State(_float fTimeDelta)
     {
         m_fTimeAcc += fTimeDelta;
 
-        if (0.01f < m_fTimeAcc)
+        if (1.f < m_fTimeAcc)
         {
             m_bShoot = true;
             m_fTimeAcc = 0.f;

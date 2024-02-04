@@ -115,7 +115,6 @@ void CPhysX_Manager::LateTick(_float fTimeDelta)
 	
 	m_pScene->simulate(fTimeDelta);
 	m_pScene->fetchResults(true);
-	m_pScene->fetchResultsParticleSystem();
 }
 #ifdef _DEBUG
 HRESULT CPhysX_Manager::Render()
@@ -211,6 +210,7 @@ HRESULT CPhysX_Manager::Remove_Actor(class CGameObject* pGameObject)
 	auto iterGround = m_GroundObjects.find(pGameObject->Get_ObjectID());
 	for (auto& Desc : iterGround->second)
 	{
+		
 		m_pScene->removeActor(*Desc.pActor);
 		Safe_Release(Desc.pObject);
 	}
@@ -237,7 +237,6 @@ PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Ma
 	CapsuleDesc.reportCallback = pCallBack;
 
 	
-	m_pScene->fetchResults(true);
 
 	PxController* pController = m_pController_Manager->createController(CapsuleDesc);
 	pController->getActor()->setName("Controller");
@@ -265,7 +264,7 @@ PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix
 	BoxDesc.userData = &m_eObjectTypes[pGameObject->Get_ObjectType()];
 	BoxDesc.reportCallback = pCallBack;
 
-	m_pScene->fetchResults(true);
+	
 	PxController* pController = m_pController_Manager->createController(BoxDesc);
 	pController->getActor()->setName("Controller");
 
@@ -752,7 +751,7 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		pActor->attachShape(*pShape);
 		pActor->userData = pGameObject;
 
-		m_pScene->fetchResults(true);
+		
 		m_pScene->addActor(*pActor);
 
 		PHYSX_STATIC_OBJECT_DESC ObjectDesc;
@@ -845,7 +844,7 @@ HRESULT CPhysX_Manager::Add_Building(CGameObject* pGameObject, CModel* pModel, M
 		pActor->attachShape(*pShape);
 		pActor->userData = pGameObject;
 		
-		m_pScene->fetchResults(true);
+		
 		m_pScene->addActor(*pActor);
 		
 
@@ -875,7 +874,7 @@ HRESULT CPhysX_Manager::Clear_PhysX_Ground()
 	{
 		for (auto& Desc : iter.second)
 		{
-			m_pScene->fetchResults(true);
+			
 			m_pScene->removeActor(*Desc.pActor);
 
 			Desc.pActor->release();
@@ -1129,7 +1128,7 @@ HRESULT CPhysX_Manager::Reset_PhysX()
 	{
 		for (_uint i = 0; i < iter.second.size(); ++i)
 		{
-			m_pScene->fetchResults(true);
+			
 			m_pScene->removeActor(*iter.second[i].pActor);
 			
 			Safe_Release(iter.second[i].pObject);
@@ -1169,7 +1168,7 @@ void CPhysX_Manager::Free()
 	{
 		for (_uint i = 0; i < iter.second.size(); ++i)
 		{
-			m_pScene->fetchResults(true);
+			
 			m_pScene->removeActor(*iter.second[i].pActor);
 
 			Safe_Release(iter.second[i].pObject);

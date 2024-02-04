@@ -10,6 +10,8 @@
 #include "Character_Biplane_Bullet.h"
 #include "Vehicle_Flying_Biplane.h"
 
+#include "Pool.h"
+
 CState_VehicleFlying_Run::CState_VehicleFlying_Run(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
 {
@@ -21,8 +23,9 @@ HRESULT CState_VehicleFlying_Run::Initialize(const list<wstring>& AnimationList)
         return E_FAIL;
     
     m_pVehicle = dynamic_cast<CVehicle*>(m_pStateMachineCom->Get_Owner());
+	m_pVehicle_Flying_Biplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pStateMachineCom->Get_Owner());
 
-    if (nullptr == m_pVehicle)
+    if (nullptr == m_pVehicle || nullptr == m_pVehicle_Flying_Biplane)
         return E_FAIL;
 
     return S_OK;
@@ -203,12 +206,18 @@ void CState_VehicleFlying_Run::Shoot()
 	ProjectileDesc.pOwner = dynamic_cast<CVehicle_Flying*>(m_pVehicle);
 
 	// Left Side Bullet
-	CGameObject* pLeftBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+	
+	CGameObject* pLeftBullet = CPool<CCharacter_Biplane_Bullet>::Get_Obj();
+
+	if (nullptr == pLeftBullet)	
+		pLeftBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+		
 	if (nullptr == pLeftBullet)
 		return;
 
 	CTransform* pLeftTransform = pLeftBullet->Get_Component<CTransform>(L"Com_Transform");
 	Vec3 vLeftScale = pLeftTransform->Get_Scale();
+
 	pLeftTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
 	pLeftTransform->Set_Scale(vLeftScale);
 
@@ -219,12 +228,27 @@ void CState_VehicleFlying_Run::Shoot()
 	vLeftStartPos += XMVector3Normalize(m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Look()) * 0.5f;
 	pLeftTransform->Set_State(CTransform::STATE_POSITION, vLeftStartPos);
 
+	if (nullptr != m_pVehicle_Flying_Biplane->Get_Target())
+	{
+		CTransform* pTargetTransform = m_pVehicle_Flying_Biplane->Get_Target()->Get_Component_Transform();
+		if (nullptr != pTargetTransform)
+		{
+			Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() - pLeftTransform->Get_Position());
+			pLeftTransform->Rotation_Look(vDir);
+		}
+	}
+
 	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pLeftBullet)))
 		MSG_BOX("Generate Bullet Failed.");
 
 
 	// Right Side Bullet
+
 	CGameObject* pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+
+	if (nullptr == pRightBullet)
+		pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+	
 	if (nullptr == pRightBullet)
 		return;
 
@@ -237,6 +261,16 @@ void CState_VehicleFlying_Run::Shoot()
 	Vec4 vRightStartPos = MatRight.r[CTransform::STATE_POSITION];
 	vRightStartPos += XMVector3Normalize(m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Look()) * 0.5f;
 	pRightTransform->Set_State(CTransform::STATE_POSITION, vRightStartPos);
+
+	if (nullptr != m_pVehicle_Flying_Biplane->Get_Target())
+	{
+		CTransform* pTargetTransform = m_pVehicle_Flying_Biplane->Get_Target()->Get_Component_Transform();
+		if (nullptr != pTargetTransform)
+		{
+			Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() - pRightTransform->Get_Position());
+			pRightTransform->Rotation_Look(vDir);
+		}
+	}
 
 	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pRightBullet)))
 		MSG_BOX("Generate Bullet Failed.");

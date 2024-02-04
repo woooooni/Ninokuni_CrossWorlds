@@ -64,7 +64,7 @@ HRESULT CCamera_Follow::Initialize(void * pArg)
 void CCamera_Follow::Tick(_float fTimeDelta)
 {
 	if (!m_bActive || nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
-		return;		
+		return;
 
 	__super::Tick(fTimeDelta); 
 
@@ -481,6 +481,10 @@ void CCamera_Follow::Tick_Transform(const _float fDeltaTime)
 	const Vec4 vCamPos = Calculate_WorldPosition(fDeltaTime);
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPos);
 
+
+	if (nullptr == m_pLookAtObj)
+		return;
+
 	/* Look & Shake */
 	const Vec4 vLookAtPos = Calculate_Look();
 	{
@@ -612,6 +616,7 @@ Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 Vec4 CCamera_Follow::Calculate_Look()
 {
 	Vec4 vLookAt, vLookAtOffset;
+
 
 	CTransform* pTargetTransform = m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform");
 

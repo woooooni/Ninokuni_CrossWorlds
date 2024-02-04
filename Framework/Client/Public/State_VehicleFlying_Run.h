@@ -30,6 +30,8 @@ private:
 	_bool m_bShoot = { false };
 	_float m_fTimeAcc = { 0.f };
 
+	class CVehicle_Flying_Biplane* m_pVehicle_Flying_Biplane = nullptr;
+
 public:
 	static CState_VehicleFlying_Run* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

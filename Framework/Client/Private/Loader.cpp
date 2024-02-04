@@ -347,6 +347,12 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Entire_GrassPlane", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/GrassPlane/", L"Common_Grass_Entire_Plane")))
 		return E_FAIL;
 
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Bullet_Blue", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Grandprix/Bullets/", L"Bullet_Blue")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Bullet_Orange", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Grandprix/Bullets/", L"Bullet_Orange")))
+		return E_FAIL;
+
 	
 	switch (g_eLoadCharacter)
 	{
@@ -736,7 +742,6 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			return E_FAIL;
 
 
-
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Biplane_GuidedMissile"),
 			CBiplane_GuidedMissile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
@@ -754,6 +759,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			return E_FAIL;
 		
 		g_bLevelFirst[LEVEL_EVERMORE] = true;
+
 	}
 
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
@@ -1602,6 +1608,7 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 #pragma endregion
 
 
+	
 #pragma region Animal
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Cat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/Cat/", L"Animal_Cat")))
 		return E_FAIL;

@@ -32,6 +32,9 @@ private:
 
 	_float m_fTimeAcc = { 0.f };
 
+private:
+	CVehicle_Flying* m_pVehicle_Flying = nullptr;
+
 public:
 	static CState_Enemy_VehicleFlying_Enter* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

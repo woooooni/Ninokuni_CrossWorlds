@@ -16,6 +16,12 @@
 #include "Character_Biplane_Bullet.h"
 #include "VehicleFlying_Projectile.h"
 
+#include "Camera_Follow.h"
+
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
+
 CVehicle_Flying_Biplane::CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVehicle_Flying(pDevice, pContext, strObjectTag, OBJ_GRANDPRIX_CHARACTER)
 {
@@ -69,6 +75,8 @@ void CVehicle_Flying_Biplane::Tick(_float fTimeDelta)
 {
 	if (true == m_bOnBoard)
 	{
+		Tick_Target();
+
 		__super::Tick(fTimeDelta);
 		GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_BODY, this);
 		
@@ -240,11 +248,19 @@ void CVehicle_Flying_Biplane::Collision_Enter(const COLLISION_INFO& tInfo)
 			On_Damaged(tInfo);
 		}
 	}
+	
 }
 
 void CVehicle_Flying_Biplane::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);
+	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+	{
+		if (OBJ_TYPE::OBJ_GRANDPRIX_ENEMY == tInfo.pOther->Get_ObjectType())
+		{
+			Decide_Target();
+		}
+	}
 }
 
 void CVehicle_Flying_Biplane::Collision_Exit(const COLLISION_INFO& tInfo)
@@ -394,10 +410,12 @@ HRESULT CVehicle_Flying_Biplane::Ready_Trails()
 	TrailDesc.bUV_Cut = false;
 	TrailDesc.fAccGenTrail = 0.f;
 	TrailDesc.fGenTrailTime = 0.1f;
-	TrailDesc.vDiffuseColor = { 1.f, 1.f, 1.f, 1.f };
+	TrailDesc.vDiffuseColor = { 1.f, 1.f, 1.f, 0.2f };
 	TrailDesc.vDistortion = { 0.1f, 0.1f };
 	TrailDesc.vUVAcc = { 0.f, 0.f };
 	TrailDesc.vUV_FlowSpeed = { 0.f, 0.f };
+	TrailDesc.fAlphaDiscard = 0.1f;
+	TrailDesc.vBlackDiscard = { -1.f, -1.f, -1.f };
 
 	m_pTrails[BIPLANE_TRAIL::LEFT_WING] = CTrail::Create(m_pDevice, m_pContext, L"Prototype_GameObject_Trail", TrailDesc);
 	m_pTrails[BIPLANE_TRAIL::RIGHT_WING] = CTrail::Create(m_pDevice, m_pContext, L"Prototype_GameObject_Trail", TrailDesc);
@@ -421,6 +439,106 @@ HRESULT CVehicle_Flying_Biplane::Ready_Trails()
 
 
 	return S_OK;
+}
+
+void CVehicle_Flying_Biplane::Decide_Target()
+{
+	list<CGameObject*>& Targets = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER);
+	CGameObject* pDecidedTarget = nullptr;
+	_float fMinDistance = 50.f;
+
+	for (auto& pTarget : Targets)
+	{
+		if (pTarget->Get_ObjectType() != OBJ_TYPE::OBJ_GRANDPRIX_ENEMY)
+			continue;
+
+		if (true == pTarget->Is_ReserveDead() || true == pTarget->Is_Dead())
+			continue;
+
+
+		CTransform* pTargetTransform = pTarget->Get_Component_Transform();
+		if (nullptr == pTargetTransform)
+			continue;
+		
+		Vec3 vDir = m_pTransformCom->Get_Position() - pTargetTransform->Get_Position();
+
+		if (fMinDistance > vDir.Length())
+		{
+			pDecidedTarget = pTarget;
+			fMinDistance = vDir.Length();
+		}
+	}
+
+	if (nullptr == pDecidedTarget)
+		return;
+
+	if (nullptr != m_pTarget)
+	{
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+	}
+
+	CCamera_Follow* pCameraFollow = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	if (nullptr != pCameraFollow)
+	{
+		pCameraFollow->Start_LockOn(pDecidedTarget, Vec4(0.f, 0.f, -15.f, 1.f), Vec4(0.f, 0.f, 0.f, 1.f));
+	}
+		
+
+	m_pTarget = pDecidedTarget;
+	Safe_AddRef(m_pTarget);
+}
+
+void CVehicle_Flying_Biplane::Tick_Target()
+{
+	if (nullptr == m_pTarget)
+	{
+		return;
+	}
+
+	if (true == m_pTarget->Is_Dead() || true == m_pTarget->Is_ReserveDead())
+	{
+		CCamera_Follow* pCameraFollow = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pCameraFollow)
+		{
+			pCameraFollow->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			pCameraFollow->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			pCameraFollow->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		}
+			
+
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+
+		return;
+	}
+
+	CTransform* pTargetTransform = m_pTarget->Get_Component_Transform();
+	if (nullptr == pTargetTransform)
+	{
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+		return;
+	}
+
+	Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+	if (vDir.Length() > 50.f)
+	{
+
+		CCamera_Follow* pCameraFollow = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pCameraFollow)
+		{
+			pCameraFollow->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			pCameraFollow->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			pCameraFollow->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		}
+			
+
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+
+		return;
+	}
 }
 
 void CVehicle_Flying_Biplane::Update_RiderState()
@@ -474,7 +592,7 @@ HRESULT CVehicle_Flying_Biplane::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 5.f;
+	tSphere.Radius = 50.f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
@@ -482,8 +600,17 @@ HRESULT CVehicle_Flying_Biplane::Ready_Colliders()
 	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
 	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
 
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &SphereDesc)))
+		return E_FAIL;
+
+
+
+	SphereDesc.tSphere.Radius = 2.f;
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &SphereDesc)))
 		return E_FAIL;
+
+
+	
 
 	return S_OK;
 }

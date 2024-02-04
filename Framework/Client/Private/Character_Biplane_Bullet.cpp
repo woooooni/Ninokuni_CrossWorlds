@@ -49,8 +49,6 @@ HRESULT CCharacter_Biplane_Bullet::Initialize(void* pArg)
 void CCharacter_Biplane_Bullet::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
-
-	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Smoke"), this);
 	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
 
 	if (true == m_bDead)

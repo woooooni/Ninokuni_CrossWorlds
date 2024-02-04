@@ -146,7 +146,7 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
             {
                 Vec3 vVelocityDir = XMVector3Normalize(m_pTransformCom->Get_Look());
                 vVelocityDir.y = 0.8f;
-                m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), 20.f, true);
+                m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), 200.f * fTimeDelta, false);
                 m_pRigidBodyCom->Set_Use_Gravity(false);
             }
             else
