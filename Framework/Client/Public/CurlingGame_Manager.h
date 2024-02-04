@@ -40,7 +40,7 @@ private:
 		/* 수치 바꾸면 z 파이팅 발생 -> 데칼이라 높이 적용 안됨 */
 		const _float	fRingScalesForRender[RING_TYPE::RING_TYPEEND]		= { 4.f, 9.f, 19.3f };
 		const _float	fRingScalesForDetection[RING_TYPE::RING_TYPEEND]	= { 1.9f, 4.25f, 9.25f };
-		const _uint		iPoints[RING_TYPE::RING_TYPEEND]					= { 50, 30, 10 };
+		const _uint		iPoints[RING_TYPE::RING_TYPEEND]					= { 50, 30, 15 };
 
 		const _float	fHeight = 3.f;
 
@@ -115,7 +115,9 @@ public:
 	void Render_Debug();
 
 public:
+	HRESULT Ready_Game();
 	HRESULT Start_Game();
+
 	HRESULT Change_Turn();
 	HRESULT Set_AiPath();
 

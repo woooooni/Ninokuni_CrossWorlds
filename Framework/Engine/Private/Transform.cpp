@@ -124,6 +124,20 @@ void CTransform::Set_Position(_vector vState)
 	Set_State(STATE::STATE_POSITION, vState);
 }
 
+Vec4 CTransform::Get_LookAt()
+{
+	/* 현재 바라보고 있는 '위치'를 반환 */
+
+	return (Vec4(Get_Position()).OneW()) + (Vec4(Get_Look()).ZeroW().Normalized() * 10000.f);
+}
+
+void CTransform::Set_LookAtByDir(Vec4 vLook)
+{
+	/* 디렉션을 이용하여 룩앳을 지정함 */
+
+	LookAt(Vec4(Get_Position()) + (vLook.ZeroW().Normalized() * 10000.f));
+}
+
 
 
 void CTransform::Set_Scale(_vector vScale)

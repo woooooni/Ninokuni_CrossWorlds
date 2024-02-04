@@ -344,6 +344,7 @@
     <ClInclude Include="..\Public\State_VehicleFlying_Rush.h" />
     <ClInclude Include="..\Public\UI_Grandprix_IntroBackground.h" />
     <ClInclude Include="..\Public\UI_Grandprix_IntroIcons.h" />
+    <ClInclude Include="..\Public\SubQuestNode_NoisySnowField04_2.h" />
     <ClInclude Include="..\Public\UI_Grandprix_PlaneHP.h" />
     <ClInclude Include="..\Public\Stellia_Explosion.h" />
     <ClInclude Include="..\Public\UI_Grandprix_Rader.h" />
@@ -356,6 +357,7 @@
     <ClInclude Include="..\Public\StelliaState_SpawnIdle.h" />
     <ClInclude Include="..\Public\StelliaState_SpawnRoar.h" />
     <ClInclude Include="..\Public\StelliaState_SpawnStand.h" />
+    <ClInclude Include="..\Public\UI_Minigame_Curling_TurnArrow.h" />
     <ClInclude Include="..\Public\UI_Minigame_PlayerInfo.h" />
     <ClInclude Include="..\Public\UI_Minigame_Curling_Base.h" />
     <ClInclude Include="..\Public\UI_Minigame_Curling_Gauge.h" />
@@ -1399,6 +1401,7 @@
     <ClCompile Include="..\Private\State_VehicleFlying_Rush.cpp" />
     <ClCompile Include="..\Private\UI_Grandprix_IntroBackground.cpp" />
     <ClCompile Include="..\Private\UI_Grandprix_IntroIcons.cpp" />
+    <ClCompile Include="..\Private\SubQuestNode_NoisySnowField04_2.cpp" />
     <ClCompile Include="..\Private\UI_Grandprix_PlaneHP.cpp" />
     <ClCompile Include="..\Private\Stellia_Explosion.cpp" />
     <ClCompile Include="..\Private\UI_Grandprix_Rader.cpp" />
@@ -1411,6 +1414,7 @@
     <ClCompile Include="..\Private\StelliaState_SpawnIdle.cpp" />
     <ClCompile Include="..\Private\StelliaState_SpawnRoar.cpp" />
     <ClCompile Include="..\Private\StelliaState_SpawnStand.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_Curling_TurnArrow.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_PlayerInfo.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Curling_Base.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Curling_Gauge.cpp" />

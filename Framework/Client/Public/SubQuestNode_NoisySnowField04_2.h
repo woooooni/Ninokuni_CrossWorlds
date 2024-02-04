@@ -2,11 +2,11 @@
 
 #include "QuestNode_Base.h"
 
-class CSubQuestNode_NoisySnowField04 final : public CQuestNode_Base
+class CSubQuestNode_NoisySnowField04_2 final : public CQuestNode_Base
 {
 private:
-	CSubQuestNode_NoisySnowField04();
-	virtual ~CSubQuestNode_NoisySnowField04() = default;
+	CSubQuestNode_NoisySnowField04_2();
+	virtual ~CSubQuestNode_NoisySnowField04_2() = default;
 
 public:
 	virtual HRESULT Initialize();
@@ -21,10 +21,10 @@ private:
 	CGameObject* m_pNoisyMan = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
-	_bool		m_bCameraAction = false;
+	_bool		m_bFadeOut = false;
 
 public:
-	static CSubQuestNode_NoisySnowField04* Create();
+	static CSubQuestNode_NoisySnowField04_2* Create();
 	virtual void Free() override;
 };
 

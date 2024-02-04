@@ -28,7 +28,7 @@ HRESULT CUI_Minigame_Curling_Stones::Initialize(void* pArg)
 {
 	CUI::UI_INFO UIDesc = {};
 	{
-		const Vec2 vPosDelta	= { g_vWinCenter.x * 0.815f, g_vWinCenter.y * 0.475f };
+		const Vec2 vPosDelta	= { g_vWinCenter.x * 0.81f, g_vWinCenter.y * 0.475f };
 		const Vec2 vOriginSize	= { 1100.f, 220.f };
 		const Vec2 vSizeMag		= { 0.275f, 0.275f };
 

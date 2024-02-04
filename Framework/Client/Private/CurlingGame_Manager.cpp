@@ -91,8 +91,10 @@ void CCurlingGame_Manager::Render_Debug()
 
 }
 
-HRESULT CCurlingGame_Manager::Start_Game()
+HRESULT CCurlingGame_Manager::Ready_Game()
 {
+	// 호출시, 경기장 비춰주는 카메라 액션 시작 
+
 	if (m_bPlaying)
 		return E_FAIL;
 
@@ -100,7 +102,19 @@ HRESULT CCurlingGame_Manager::Start_Game()
 
 	if (FAILED(m_pManagerStateMachineCom->Change_State(INTRO)))
 		return E_FAIL;
+}
+
+HRESULT CCurlingGame_Manager::Start_Game()
+{
+	// 호출시 플레이어 턴으로 게임 시작 세팅 
+
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CAMERA_CURLING);
+
+	if (FAILED(m_pManagerStateMachineCom->Change_State(MOVE)))
+		return E_FAIL;
 	
+	CUIMinigame_Manager::GetInstance()->OnOff_CurlingUI(true);
+
 	return S_OK;
 }
 
@@ -616,83 +630,7 @@ void CCurlingGame_Manager::Test(const _float& fTimeDelta)
 
 void CCurlingGame_Manager::Debug()
 {
-	Vec2		vPos = { g_iWinSizeX * 0.2f, g_iWinSizeY * 0.75f };
-	const Vec2	vDelta = { 0.f, 30.f };
-	const Vec2	vScale(0.4f);
-	const wstring wstrFont = L"Default_Bold";
-	CRenderer*	pRenderer = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CRenderer>(L"Com_Renderer");
 
-	/* Debug */
-	CRenderer::TEXT_DESC desc = {};
-	{
-		vPos += vDelta;
-
-		desc.strText = L"Debug Data";
-		desc.strFontTag = wstrFont;
-		desc.vScale = vScale * 1.5f;
-		desc.vPosition = vPos;
-		desc.vColor = (Vec4)DirectX::Colors::Black;
-	}
-	pRenderer->Add_Text(desc);
-
-	/* Score */
-	{
-		/* Player */
-		{
-			vPos += vDelta;
-
-			desc.strText = L"Score Player : " + to_wstring(m_tParticipants[PARTICIPANT_PLAYER].iScore);
-			desc.vPosition = vPos;
-			desc.vColor = (Vec4)DirectX::Colors::DarkBlue;
-		}
-		pRenderer->Add_Text(desc);
-
-		/* Npc */
-		{
-			vPos += vDelta;
-
-			desc.strText = L"Score Npc : " + to_wstring(m_tParticipants[PARTICIPANT_NPC].iScore);
-			desc.vPosition = vPos;
-			desc.vColor = (Vec4)DirectX::Colors::DarkGreen;
-		}
-		pRenderer->Add_Text(desc);
-	}
-
-	/* Transform */
-	{
-		if (nullptr != m_pCurParticipant)
-		{
-			/* Pos */
-			{
-				vPos += vDelta;
-
-				Vec3 vPlayerPos = m_pCurParticipant->Get_Component_Transform()->Get_Position();
-			
-				desc.strText = L"Pos - x : " + to_wstring(vPlayerPos.x) 
-								+ L", y : " + to_wstring(vPlayerPos.y) 
-								+ L", z : " + to_wstring(vPlayerPos.z);
-			
-				desc.vPosition = vPos;
-				desc.vColor = (Vec4)DirectX::Colors::Black;
-			}
-			pRenderer->Add_Text(desc);
-
-			/* Look */
-			{
-				vPos += vDelta;
-
-				Vec3 vLook = m_vCurStoneLook;
-			
-				desc.strText = L"Look - x : " + to_wstring(vLook.x)
-								+ L", y : " + to_wstring(vLook.y)
-								+ L", z : " + to_wstring(vLook.z);
-
-				desc.vPosition = vPos;
-				desc.vColor = (Vec4)DirectX::Colors::Black;
-			}
-			pRenderer->Add_Text(desc);
-		}
-	}
 }
 #ifdef _DEBUG
 HRESULT CCurlingGame_Manager::Ready_DebugDraw()

@@ -70,10 +70,10 @@ HRESULT CUI_Minigame_Curling_Score::Render()
 	{
 		/* Bind */
 		{
-			m_pTransformCom->Set_Scale(XMVectorSet(desc.tUIDesc.fCX, desc.tUIDesc.fCY, 1.f, 0.f));
+			memcpy(&m_tInfo, &desc.tUIDesc, sizeof(CUI::UI_INFO));
 
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-				XMVectorSet(desc.tUIDesc.fX, desc.tUIDesc.fY, 0.f, 1.f));
+			if (FAILED(Ready_Transform()))
+				return E_FAIL;
 
 			if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 				return E_FAIL;
@@ -118,8 +118,8 @@ HRESULT CUI_Minigame_Curling_Score::Ready_Default()
 		return E_FAIL;
 
 	const Vec2 vOriginSize	= { 256.f, 256.f };
-	const Vec2 vSizeMag		= { 0.5f, 0.5f };
-	const Vec2 vPosDelta	= { g_vWinCenter.x * 0.815f, g_vWinCenter.y * 0.475f };
+	const Vec2 vSizeMag		= { 0.35f, 0.35f };
+	const Vec2 vPosDelta	= { g_vWinCenter.x * 0.77f, g_vWinCenter.y * 0.7f };
 
 	if(m_bPlayerType)
 		m_tUIDesc_OriginLeft.fX = g_vWinCenter.x + vPosDelta.x;
@@ -127,6 +127,7 @@ HRESULT CUI_Minigame_Curling_Score::Ready_Default()
 		m_tUIDesc_OriginLeft.fX = g_vWinCenter.x - vPosDelta.x;
 
 	m_tUIDesc_OriginLeft.fY = g_vWinCenter.y + vPosDelta.y;
+
 	m_tUIDesc_OriginLeft.fCX = vOriginSize.x * vSizeMag.x;
 	m_tUIDesc_OriginLeft.fCY = vOriginSize.y * vSizeMag.y;
 
@@ -138,15 +139,17 @@ HRESULT CUI_Minigame_Curling_Score::Bind_ShaderResources()
 	if (FAILED(__super::Bind_ShaderResources()))
 		return E_FAIL;
 
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
 const vector<CUI_Minigame_Curling_Score::BIND_DESC> CUI_Minigame_Curling_Score::Get_BindDesc()
 {
-	// 현재 점수를 통해, 자릿수를 분석한 뒤 하나의 숫자에 해당하는 텍스처 인덱스와 Ui Info 정보를 벡터에 저장한다. 
-
 	vector<CUI_Minigame_Curling_Score::BIND_DESC> Descs;
 
+	/* 현재 점수를 자릿수 별로 나누어 벡터에 저장한다. */
 	vector<_uint> iNums;
 	{
 		_uint iRemainScore = m_iCurScore;
@@ -163,6 +166,7 @@ const vector<CUI_Minigame_Curling_Score::BIND_DESC> CUI_Minigame_Curling_Score::
 		reverse(iNums.begin(), iNums.end());
 	}
 
+	/* 캐릭터 타입과 자릿수에 맞는 위치를 구조체에 저장한다. */
 	for (size_t i = 0; i < iNums.size(); i++)
 	{
 		CUI_Minigame_Curling_Score::BIND_DESC desc;
@@ -172,9 +176,9 @@ const vector<CUI_Minigame_Curling_Score::BIND_DESC> CUI_Minigame_Curling_Score::
 		memcpy(&desc.tUIDesc, &m_tUIDesc_OriginLeft, sizeof(CUI::UI_INFO));
 
 		if (m_bPlayerType) 
-			desc.tUIDesc.fX - ((iNums.size() - i) * m_iInterdigitSpacing);
+			desc.tUIDesc.fX -= ((iNums.size() - 1 - i) * m_iInterdigitSpacing);
 		else 
-			desc.tUIDesc.fX + (i * m_iInterdigitSpacing); 
+			desc.tUIDesc.fX += (i * m_iInterdigitSpacing); 
 
 		Descs.push_back(desc);
 	}

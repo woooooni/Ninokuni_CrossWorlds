@@ -33,7 +33,7 @@
 #include "UI_Minigame_Curling_Stones.h"
 #include "UI_Minigame_Curling_Title.h"
 #include "UI_Minigame_Curling_Score.h"
-
+#include "UI_Minigame_Curling_TurnArrow.h"
 
 /* Globals */
 static const enum class MG_CL_UI_TYPE 
@@ -46,6 +46,7 @@ static const enum class MG_CL_UI_TYPE
 	TITLE,
 	SCORE_NPC,
 	SCORE_PLAYER,
+	TURNARROW,
 	TYPEEND
 };
 
@@ -58,7 +59,8 @@ static const wstring g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::TYPEEN
 	L"Prototype_GameObject_UI_Minigame_Curling_Stones_Player",
 	L"Prototype_GameObject_UI_Minigame_Curling_Title",
 	L"Prototype_GameObject_UI_Minigame_Curling_Score_Npc",
-	L"Prototype_GameObject_UI_Minigame_Curling_Score_Player"
+	L"Prototype_GameObject_UI_Minigame_Curling_Score_Player",
+	L"Prototype_GameObject_UI_Minigame_Curling_TurnArrow"
 };
 
 static const wstring g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::TYPEEND] =
@@ -70,7 +72,8 @@ static const wstring g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::TYPEEND]
 	L"UI_Minigame_Curling_Stones_Player",
 	L"UI_Minigame_Curling_Title",
 	L"UI_Minigame_Curling_Score_Npc",
-	L"UI_Minigame_Curling_Score_Player"
+	L"UI_Minigame_Curling_Score_Player",
+	L"UI_Minigame_Curling_TurnArrow"
 };
 
 static const _uint g_iMaxStoneCount = 5;

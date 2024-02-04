@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_Fade.h"
 
 #include "Game_Manager.h"
 
@@ -41,6 +42,9 @@ HRESULT CSubQuestNode_NoisySnowField06::Initialize()
 
 void CSubQuestNode_NoisySnowField06::Start()
 {
+	// 페이드 인
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
+
 	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 

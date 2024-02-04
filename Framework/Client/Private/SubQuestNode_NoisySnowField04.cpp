@@ -85,25 +85,35 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField04::Tick(const _float& fTimeDelt
 			{
 				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 
+				// 1. 경기장 비춰주는 카메라 액션을 시작한다.
+				if (!m_bCameraAction)
+				{
+					m_bCameraAction = true;
+					CCurlingGame_Manager::GetInstance()->Ready_Game();
+				}
+			}
+
+			if (m_iTalkIndex < m_vecTalkDesc.size())
+			{
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+			}
+		}
+
+		// 2.경기장 비춰주는 카메라 액션이 종료되었다면 다음 노드로 넘어간다.
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		if (nullptr != pActionCam)
+		{
+			if (m_bCameraAction && CCamera_Action::CAMERA_ACTION_TYPE::STADIUM != pActionCam->Get_Camera_ActionType())
+			{
 				m_bIsClear = true;
-
-				/* 컬링 미니게임 시작 */
-				CCurlingGame_Manager::GetInstance()->Start_Game();
-
-				///* 대화 카메라 종료 */
-				//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-				//if (nullptr != pActionCam)
-				//	pActionCam->Finish_Action_Talk();
 
 				return NODE_STATE::NODE_FAIL;
 			}
-
-			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-			CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-			TalkEvent();
 		}
 	}
 
