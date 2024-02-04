@@ -168,7 +168,7 @@ HRESULT CGrandprix_ItemBox::Render_Instance_Shadow(CShader* pInstancingShader, C
 
 void CGrandprix_ItemBox::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER)
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
 		CGrandprix_Manager::GetInstance()->Add_ItemBox(m_eItemType);
 		Set_Dead(true);

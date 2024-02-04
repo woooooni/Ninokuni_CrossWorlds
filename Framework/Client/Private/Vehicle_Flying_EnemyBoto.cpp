@@ -450,7 +450,7 @@ HRESULT CVehicle_Flying_EnemyBoto::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 1.f;
+	tSphere.Radius = 2.f;
 
 	SphereDesc.tSphere = tSphere;
 	SphereDesc.pNode = nullptr;

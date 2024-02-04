@@ -25,6 +25,8 @@ CVehicleFlying_Projectile::CVehicleFlying_Projectile(const CVehicleFlying_Projec
 }
 
 
+
+
 HRESULT CVehicleFlying_Projectile::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -42,7 +44,7 @@ HRESULT CVehicleFlying_Projectile::Initialize(void* pArg)
 		return E_FAIL;
 
 	GRANDPRIX_PROJECTILE_DESC* pProjectileDesc = (GRANDPRIX_PROJECTILE_DESC*)pArg;
-	if (nullptr == pProjectileDesc->pOwner)
+	if (false == pProjectileDesc->bPool && nullptr == pProjectileDesc->pOwner)
 		return E_FAIL;
 
 	m_pOwner = pProjectileDesc->pOwner;
@@ -129,6 +131,12 @@ HRESULT CVehicleFlying_Projectile::Render_Instance(CShader* pInstancingShader, C
 			return E_FAIL;
 	}
 	return S_OK;
+}
+
+void CVehicleFlying_Projectile::Set_Owner(CVehicle_Flying* pOwner)
+{
+	m_pOwner = pOwner;
+	Safe_AddRef(m_pOwner);
 }
 
 

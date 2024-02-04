@@ -198,6 +198,8 @@ namespace Client
 	static const Vec4	Cam_Target_Offset_LockOn_Glanix		= Vec4{ 0.7f, 2.f, -6.f, 1.f };
 	static const Vec4	Cam_LookAt_Offset_LockOn_Glanix		= Vec4{ 0.f, 0.5f, 0.f, 1.f };
 
+	static const Vec4 Cam_Target_Offset_LockOn_GrandPrix	= Vec4{ 0.f, 0.f, 0.f, 0.f };
+
 	/* Item Pattern */
 	static const _float Cam_LerpTime_LockOn_Glanix_ItemPattern_Blending_In = 0.8f;
 	static const _float Cam_LerpTime_LockOn_Glanix_ItemPattern_Blending_Out = 0.5f;

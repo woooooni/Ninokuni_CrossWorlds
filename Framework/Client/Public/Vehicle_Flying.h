@@ -49,6 +49,14 @@ public:
 	HRESULT Render_ShadowDepth();
 
 public:
+	void Set_Infinite(_bool bInfinite, _float fTime)
+	{
+		m_bInfinite = bInfinite;
+		m_fAccInfinite = 0.f;
+		m_fInfiniteTime = fTime;
+	}
+
+public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
@@ -77,6 +85,11 @@ protected:
 
 	_float m_fAccEffect = { 0.f };
 	_bool m_bPass[13];
+
+protected:
+	_bool m_bInfinite = false;
+	_float m_fInfiniteTime = 0.f;
+	_float m_fAccInfinite = 0.f;
 
 public:
 	virtual void Free() override;

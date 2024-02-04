@@ -42,6 +42,7 @@ public:
 		VEHICLE_RUSH,
 		VEHICLE_LEFT_EVASIVE, // 왼쪽으로 회피
 		VEHICLE_RIGHT_EVASIVE, // 오른쪽으로 회피.
+		VEHICLE_DAMAGED,
 
 		// 미니게임용 상태(적)
 		VEHICLE_TRACE,

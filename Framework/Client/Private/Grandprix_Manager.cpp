@@ -73,15 +73,18 @@ void CGrandprix_Manager::Tick(_float fTimeDelta)
 			for (auto& pVehicle : m_Botos)
 			{
 				if (nullptr != pVehicle &&
-					(false == pVehicle->Is_ReserveDead() || false == pVehicle->Is_Dead()))
+					(false == pVehicle->Is_ReserveDead() && false == pVehicle->Is_Dead()))
 				{
 					pVehicle->Get_Component<CTransform>(L"Com_Transform")->Set_Scale(Vec3(1.f));
+
+					for (auto& pCollider : pVehicle->Get_Collider(CCollider::DETECTION_TYPE::BODY))
+						pCollider->Set_Radius(2.f);
 				}
 			}
 			for (auto& pGhost : m_Enemies)
 			{
 				if (nullptr != pGhost &&
-					(false == pGhost->Is_ReserveDead() || false == pGhost->Is_Dead()))
+					(false == pGhost->Is_ReserveDead() && false == pGhost->Is_Dead()))
 				{
 					pGhost->Get_Component<CTransform>(L"Com_Transform")->Set_Scale(Vec3(1.f));
 				}
@@ -436,16 +439,19 @@ void CGrandprix_Manager::Add_ItemBox(_uint iType)
 			// 적과 적의 탈 것의 사이즈를 키운다.
 			for (auto& pVehicle : m_Botos)
 			{
-				if (nullptr != pVehicle &&
-					(false == pVehicle->Is_ReserveDead() || false == pVehicle->Is_Dead()))
+				if (nullptr != pVehicle && (false == pVehicle->Is_ReserveDead() && false == pVehicle->Is_Dead()))
 				{
 					pVehicle->Get_Component<CTransform>(L"Com_Transform")->Set_Scale(Vec3(5.f));
+					for (auto& pCollider : pVehicle->Get_Collider(CCollider::DETECTION_TYPE::BODY))
+					{
+						pCollider->Set_Radius(5.f);
+					}
 				}
 			}
 			for (auto& pGhost : m_Enemies)
 			{
 				if (nullptr != pGhost &&
-					(false == pGhost->Is_ReserveDead() || false == pGhost->Is_Dead()))
+					(false == pGhost->Is_ReserveDead() && false == pGhost->Is_Dead()))
 				{
 					pGhost->Get_Component<CTransform>(L"Com_Transform")->Set_Scale(Vec3(5.f));
 				}

@@ -47,11 +47,20 @@ public:
 		return m_pTrails[eTrailType]; 
 	}
 
+public:
+	class CGameObject* Get_Target() { return m_pTarget; }
+
+private:
+	void Decide_Target();
+	void Tick_Target();
+
 private:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT	Ready_Colliders();
 	virtual HRESULT Ready_States();
 	virtual HRESULT Ready_Trails();
+	
+	
 
 private:
 	void Update_RiderState();
@@ -63,6 +72,9 @@ private:
 	//class CTexture* m_pTextureCom = { nullptr };
 	_bool m_bUseRigidbody = { true };
 	_bool m_bIsPlayers = { false };
+
+private:
+	CGameObject* m_pTarget = nullptr;
 
 private:
 	class CTrail* m_pTrails[BIPLANE_TRAIL::BIPLANE_TRAIL_END] = {};

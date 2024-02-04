@@ -70,8 +70,17 @@ HRESULT CBiplane_BlackHole::Initialize(void* pArg)
 
 void CBiplane_BlackHole::Tick(_float fTimeDelta)
 {
-	if(true == m_bArrive)
+	if (true == m_bArrive)
+	{
 		__super::Tick(fTimeDelta);
+		m_fAccColliderOnOffDamage += fTimeDelta;
+		if (m_fAccColliderOnOffDamage >= m_fColliderOnOffDamageTime)
+		{
+			m_fAccColliderOnOffDamage = 0.f;
+			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, !Get_Collider(CCollider::DETECTION_TYPE::ATTACK)[0]->Is_Active());
+		}
+		
+	}
 	else
 	{
 		m_fAccArrive += fTimeDelta;

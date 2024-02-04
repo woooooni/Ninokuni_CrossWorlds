@@ -25,9 +25,14 @@ public:
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
 
+public:
+	virtual void Return_Pool() override;
+
 private:
 	_float m_fAccEffect = 0.f;
 	_float m_fGenEffectTime = 0.5f;
+
+	
 
 public:
 	static CCharacter_Biplane_Bullet* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

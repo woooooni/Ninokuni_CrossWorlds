@@ -30,10 +30,6 @@ void CState_Vehicle_Idle::Enter_State(void* pArg)
     
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
-
-    CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-    if (nullptr != pFollowCam)
-        pFollowCam->Set_CanInput(false);
 }
 
 void CState_Vehicle_Idle::Tick_State(_float fTimeDelta)

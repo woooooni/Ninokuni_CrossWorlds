@@ -12,6 +12,8 @@
 #include "Character.h"
 #include "Player.h"
 
+#include "Pool.h"
+#include "Enemy_Biplane_Bullet.h"
 CState_Enemy_VehicleFlying_Attack::CState_Enemy_VehicleFlying_Attack(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
 {
@@ -75,7 +77,7 @@ void CState_Enemy_VehicleFlying_Attack::Tick_State(_float fTimeDelta)
     {
         m_fTimeAcc += fTimeDelta;
 
-        if (0.5f < m_fTimeAcc)
+        if (1.f < m_fTimeAcc)
         {
             m_bShoot = true;
             m_fTimeAcc = 0.f;
@@ -93,12 +95,21 @@ void CState_Enemy_VehicleFlying_Attack::Exit_State()
 
 void CState_Enemy_VehicleFlying_Attack::Shoot()
 {
-    CCharacter_Biplane_Bullet::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
+    CVehicleFlying_Projectile::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
     ProjectileDesc.pOwner = dynamic_cast<CVehicle_Flying*>(m_pVehicle);
 
-    CGameObject* pBullet = GI->Clone_GameObject(L"Prototype_GameObject_Enemy_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+    CEnemy_Biplane_Bullet* pBullet = CPool<CEnemy_Biplane_Bullet>::Get_Obj();
+
+    if (nullptr == pBullet)
+    {
+        pBullet = dynamic_cast<CEnemy_Biplane_Bullet*>(GI->Clone_GameObject(L"Prototype_GameObject_Enemy_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc));
+    }
+    
+
     if (nullptr == pBullet)
         return;
+
+    pBullet->Set_Owner(dynamic_cast<CVehicle_Flying*>(m_pVehicle));
 
     CTransform* pTransform = pBullet->Get_Component<CTransform>(L"Com_Transform");
     Vec3 vScale = pTransform->Get_Scale();

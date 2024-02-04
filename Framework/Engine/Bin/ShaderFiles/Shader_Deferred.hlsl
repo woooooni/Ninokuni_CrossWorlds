@@ -499,7 +499,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
     //// 0~1000
     //int iIndex = min(vDepthDesc.y * 10.f - 1.f, 9.f);
     
-    float3 vTexCoord = float3(int3(vWorldPos.xyz * 100.f) % 12800) / 12800.f;
+    float3 vTexCoord = float3((vWorldPos.xyz * 100.f) % 12800.f) / 12800.f;
     vTexCoord.x += g_vFogUVAcc.x;
     vTexCoord.y += g_vFogUVAcc.y;
     

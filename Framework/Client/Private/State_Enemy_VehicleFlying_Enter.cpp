@@ -25,6 +25,10 @@ HRESULT CState_Enemy_VehicleFlying_Enter::Initialize(const list<wstring>& Animat
     if (nullptr == m_pVehicle)
         return E_FAIL;
 
+    m_pVehicle_Flying = dynamic_cast<CVehicle_Flying*>(m_pVehicle);
+    if (nullptr == m_pVehicle_Flying)
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -39,13 +43,11 @@ void CState_Enemy_VehicleFlying_Enter::Tick_State(_float fTimeDelta)
     // 엔지니어만 우선 사용하도록 예외처리
     if (m_pVehicle->Get_ObjectTag() != TEXT("Vehicle_Flying_EnemyBiplane"))
         return;
-    
-    CVehicle_Flying* pBiplane = dynamic_cast<CVehicle_Flying*>(m_pVehicle);
 
-    _uint iCurIndex = pBiplane->Get_CurTakeOffIndex();
-    _uint iMaxIndex = pBiplane->Get_TakeOffRoutes()->size() - 1;
+    _uint iCurIndex = m_pVehicle_Flying->Get_CurTakeOffIndex();
+    _uint iMaxIndex = m_pVehicle_Flying->Get_TakeOffRoutes()->size() - 1;
     _float4 vDestPos;
-    XMStoreFloat4(&vDestPos, pBiplane->Get_TakeOffRoutePoint(iCurIndex));
+    XMStoreFloat4(&vDestPos, m_pVehicle_Flying->Get_TakeOffRoutePoint(iCurIndex));
    
     Vec4 vMyPos = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
 
@@ -73,17 +75,17 @@ void CState_Enemy_VehicleFlying_Enter::Tick_State(_float fTimeDelta)
                 return;
             }
 
-            if (false == pBiplane->Is_Pass(iCurIndex))
+            if (false == m_pVehicle_Flying->Is_Pass(iCurIndex))
             {
                 m_bUpdate = true; // 불변수 제어
-                pBiplane->Set_Pass(iCurIndex, true);
-                pBiplane->Set_CurTakeOffIndex(iCurIndex + 1); // 다음 경로를 세팅하고
+                m_pVehicle_Flying->Set_Pass(iCurIndex, true);
+                m_pVehicle_Flying->Set_CurTakeOffIndex(iCurIndex + 1); // 다음 경로를 세팅하고
             }
         }
     }
     else
     {
-        if (false == pBiplane->Is_Pass(iCurIndex))
+        if (false == m_pVehicle_Flying->Is_Pass(iCurIndex))
             Move(fTimeDelta);
     }
 }

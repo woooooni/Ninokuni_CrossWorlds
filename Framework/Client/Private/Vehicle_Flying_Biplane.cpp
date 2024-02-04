@@ -5,12 +5,23 @@
 #include "State_VehicleFlying_Stand.h"
 #include "State_VehicleFlying_Run.h"
 #include "State_VehicleFlying_Rush.h"
+#include "State_VehicleFlying_Damaged.h"
 
 #include "Character.h"
 
 #include "UIMinigame_Manager.h"
 #include "Trail.h"
 #include "UI_Grandprix_RaderIcon.h"
+
+#include "Pool.h"
+#include "Character_Biplane_Bullet.h"
+#include "VehicleFlying_Projectile.h"
+
+#include "Camera_Follow.h"
+
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
 
 CVehicle_Flying_Biplane::CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CVehicle_Flying(pDevice, pContext, L"Vehicle_Flying_PlayerBiplane", OBJ_GRANDPRIX_CHARACTER)
@@ -24,7 +35,8 @@ CVehicle_Flying_Biplane::CVehicle_Flying_Biplane(const CVehicle_Flying_Biplane& 
 
 HRESULT CVehicle_Flying_Biplane::Initialize_Prototype()
 {
-	__super::Initialize_Prototype();
+	if (FAILED(__super::Initialize_Prototype()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -40,6 +52,9 @@ HRESULT CVehicle_Flying_Biplane::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Trails()))
+		return E_FAIL;
+
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 	
@@ -52,8 +67,7 @@ HRESULT CVehicle_Flying_Biplane::Initialize(void* pArg)
 			m_bIsPlayers = true;
 	}
 
-	if (FAILED(Ready_Trails()))
-		return E_FAIL;
+	
 
 	CGameObject* pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minigame_Granprix_RaderIcon"), LAYER_TYPE::LAYER_UI);
 	if (nullptr == pIcon)
@@ -79,24 +93,16 @@ void CVehicle_Flying_Biplane::Tick(_float fTimeDelta)
 {
 	if (true == m_bOnBoard)
 	{
+		Tick_Target();
+
 		__super::Tick(fTimeDelta);
 		GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_BODY, this);
 
 		Update_RiderState();
 
-		if (false == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
-		{
-			if (false == m_bUseRigidbody)
-				m_bUseRigidbody = true;
-		}
-		else
-			m_bUseRigidbody = false;
 
-		if (true == m_bUseRigidbody)
-		{
-			if (nullptr != m_pRigidBodyCom)
-				m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-		}
+		if (nullptr != m_pRigidBodyCom)
+			m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 
 		for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
 		{
@@ -186,6 +192,9 @@ HRESULT CVehicle_Flying_Biplane::Render()
 			return E_FAIL;
 
 		_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+
+		if (true == m_bInfinite)
+			vRimColor = { 0.f, 1.f, 1.f, 1.f };
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
 			return E_FAIL;
@@ -278,11 +287,26 @@ HRESULT CVehicle_Flying_Biplane::Render_ShadowDepth()
 void CVehicle_Flying_Biplane::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
+	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+	{
+		if (OBJ_TYPE::OBJ_GRANDPRIX_ENEMY_PROJECTILE == tInfo.pOther->Get_ObjectType())
+		{
+			On_Damaged(tInfo);
+		}
+	}
+	
 }
 
 void CVehicle_Flying_Biplane::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);
+	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+	{
+		if (OBJ_TYPE::OBJ_GRANDPRIX_ENEMY == tInfo.pOther->Get_ObjectType())
+		{
+			Decide_Target();
+		}
+	}
 }
 
 void CVehicle_Flying_Biplane::Collision_Exit(const COLLISION_INFO& tInfo)
@@ -390,6 +414,10 @@ HRESULT CVehicle_Flying_Biplane::Ready_States()
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_RUSH, CState_VehicleFlying_Rush::Create(m_pStateCom, strAnimationNames));
 
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_DAMAGED, CState_VehicleFlying_Damaged::Create(m_pStateCom, strAnimationNames));
+
 
 
 	/*strAnimationNames.clear();
@@ -428,10 +456,12 @@ HRESULT CVehicle_Flying_Biplane::Ready_Trails()
 	TrailDesc.bUV_Cut = false;
 	TrailDesc.fAccGenTrail = 0.f;
 	TrailDesc.fGenTrailTime = 0.1f;
-	TrailDesc.vDiffuseColor = { 1.f, 1.f, 1.f, 1.f };
+	TrailDesc.vDiffuseColor = { 1.f, 1.f, 1.f, 0.2f };
 	TrailDesc.vDistortion = { 0.1f, 0.1f };
 	TrailDesc.vUVAcc = { 0.f, 0.f };
 	TrailDesc.vUV_FlowSpeed = { 0.f, 0.f };
+	TrailDesc.fAlphaDiscard = 0.1f;
+	TrailDesc.vBlackDiscard = { -1.f, -1.f, -1.f };
 
 	m_pTrails[BIPLANE_TRAIL::LEFT_WING] = CTrail::Create(m_pDevice, m_pContext, L"Prototype_GameObject_Trail", TrailDesc);
 	m_pTrails[BIPLANE_TRAIL::RIGHT_WING] = CTrail::Create(m_pDevice, m_pContext, L"Prototype_GameObject_Trail", TrailDesc);
@@ -446,15 +476,115 @@ HRESULT CVehicle_Flying_Biplane::Ready_Trails()
 			return E_FAIL;
 
 		if(i <= BIPLANE_TRAIL::RIGHT_WING)
-			m_pTrails[i]->SetUp_Position(XMVectorSet(-0.5f, 0.f, 0.f, 1.f), XMVectorSet(0.5f, 0.f, 0.f, 1.f));
+			m_pTrails[i]->SetUp_Position(XMVectorSet(-0.05f, 0.f, 0.f, 1.f), XMVectorSet(0.05f, 0.f, 0.f, 1.f));
 		else
-			m_pTrails[i]->SetUp_Position(XMVectorSet(0.f, -0.5f, 0.f, 1.f), XMVectorSet(0.f, 0.5f, 0.f, 1.f));
+			m_pTrails[i]->SetUp_Position(XMVectorSet(0.f, -0.05f, 0.f, 1.f), XMVectorSet(0.f, 0.05f, 0.f, 1.f));
 
 		m_pTrails[i]->Stop_Trail();
 	}
 
 
 	return S_OK;
+}
+
+void CVehicle_Flying_Biplane::Decide_Target()
+{
+	list<CGameObject*>& Targets = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER);
+	CGameObject* pDecidedTarget = nullptr;
+	_float fMinDistance = 50.f;
+
+	for (auto& pTarget : Targets)
+	{
+		if (pTarget->Get_ObjectType() != OBJ_TYPE::OBJ_GRANDPRIX_ENEMY)
+			continue;
+
+		if (true == pTarget->Is_ReserveDead() || true == pTarget->Is_Dead())
+			continue;
+
+
+		CTransform* pTargetTransform = pTarget->Get_Component_Transform();
+		if (nullptr == pTargetTransform)
+			continue;
+		
+		Vec3 vDir = m_pTransformCom->Get_Position() - pTargetTransform->Get_Position();
+
+		if (fMinDistance > vDir.Length())
+		{
+			pDecidedTarget = pTarget;
+			fMinDistance = vDir.Length();
+		}
+	}
+
+	if (nullptr == pDecidedTarget)
+		return;
+
+	if (nullptr != m_pTarget)
+	{
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+	}
+
+	CCamera_Follow* pCameraFollow = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	if (nullptr != pCameraFollow)
+	{
+		pCameraFollow->Start_LockOn(pDecidedTarget, Vec4(0.f, 0.f, -15.f, 1.f), Vec4(0.f, 0.f, 0.f, 1.f));
+	}
+		
+
+	m_pTarget = pDecidedTarget;
+	Safe_AddRef(m_pTarget);
+}
+
+void CVehicle_Flying_Biplane::Tick_Target()
+{
+	if (nullptr == m_pTarget)
+	{
+		return;
+	}
+
+	if (true == m_pTarget->Is_Dead() || true == m_pTarget->Is_ReserveDead())
+	{
+		CCamera_Follow* pCameraFollow = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pCameraFollow)
+		{
+			pCameraFollow->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			pCameraFollow->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			pCameraFollow->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		}
+			
+
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+
+		return;
+	}
+
+	CTransform* pTargetTransform = m_pTarget->Get_Component_Transform();
+	if (nullptr == pTargetTransform)
+	{
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+		return;
+	}
+
+	Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+	if (vDir.Length() > 50.f)
+	{
+
+		CCamera_Follow* pCameraFollow = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pCameraFollow)
+		{
+			pCameraFollow->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			pCameraFollow->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			pCameraFollow->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		}
+			
+
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+
+		return;
+	}
 }
 
 void CVehicle_Flying_Biplane::Update_RiderState()
@@ -489,7 +619,22 @@ void CVehicle_Flying_Biplane::Update_RiderState()
 
 void CVehicle_Flying_Biplane::On_Damaged(const COLLISION_INFO& tInfo)
 {
-	// 데미지 처리.
+	if (true == m_bInfinite)
+		return;
+
+	wstring strAttackerName = tInfo.pOther->Get_PrototypeTag();
+
+	if (wstring::npos != strAttackerName.find(L"Enemy_Biplane_Bullet"))
+	{
+		CTransform* pOtherTransform = tInfo.pOther->Get_Component_Transform();
+		Vec3 vDir = m_pTransformCom->Get_Position() - pOtherTransform->Get_Position();
+		vDir = XMVector3Normalize(vDir);
+
+		m_pRigidBodyCom->Set_FrictionScale(2.f);
+		m_pRigidBodyCom->Add_Velocity(vDir, 20.f, true);
+	}
+
+	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_DAMAGED);
 }
 
 HRESULT CVehicle_Flying_Biplane::Ready_Colliders()
@@ -499,7 +644,7 @@ HRESULT CVehicle_Flying_Biplane::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 5.f;
+	tSphere.Radius = 50.f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
@@ -507,8 +652,17 @@ HRESULT CVehicle_Flying_Biplane::Ready_Colliders()
 	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
 	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
 
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &SphereDesc)))
+		return E_FAIL;
+
+
+
+	SphereDesc.tSphere.Radius = 2.f;
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &SphereDesc)))
 		return E_FAIL;
+
+
+	
 
 	return S_OK;
 }
@@ -544,6 +698,7 @@ void CVehicle_Flying_Biplane::Free()
 	__super::Free();
 	Safe_Release(m_pCameraIcon);
 	Safe_Release(m_pRaderIcon);
+
 	for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
 		Safe_Release(m_pTrails[i]);
 }
