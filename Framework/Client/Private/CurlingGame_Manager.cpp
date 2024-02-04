@@ -108,8 +108,6 @@ HRESULT CCurlingGame_Manager::Start_Game()
 {
 	// 호출시 플레이어 턴으로 게임 시작 세팅 
 
-	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CAMERA_CURLING);
-
 	if (FAILED(m_pManagerStateMachineCom->Change_State(MOVE)))
 		return E_FAIL;
 	
