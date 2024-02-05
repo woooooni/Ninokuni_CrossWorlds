@@ -18,6 +18,9 @@ private:
 		TYPE_E_SPHERE_SMALLER,
 		TYPE_E_DRAND_SMALLER,
 
+		TYPE_E_SPHERE_SMALLER02,
+		TYPE_E_DRAND_SMALLER02,
+
 		TYPE_END
 	};
 
@@ -39,6 +42,12 @@ protected:
 private:
 	class CEffect* m_pBlackHole = nullptr;
 	class CEffect* m_pBlackHoleSmaller = nullptr;
+	class CEffect* m_pBlackHoleSmaller02 = nullptr;
+
+	_bool m_bIsCreate = false;
+	_bool m_bIsSmaller = false;
+	_bool m_bIsSmaller02 = false;
+
 
 public:
 	static CVfx_Witch_Skill_BlackHole_Drain* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

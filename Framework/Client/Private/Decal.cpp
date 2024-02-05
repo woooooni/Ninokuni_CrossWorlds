@@ -88,8 +88,7 @@ void CDecal::LateTick(_float fTimeDelta)
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position() + ::XMLoadFloat4(&m_vOffsetPos));
 	}
 
-	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 10.f))
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_DECAL, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_DECAL, this);
 }
 
 HRESULT CDecal::Render()

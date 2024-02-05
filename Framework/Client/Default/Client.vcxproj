@@ -331,6 +331,8 @@
     <ClInclude Include="..\Public\NpcDMWState_Attack.h" />
     <ClInclude Include="..\Public\NpcDMWState_Base.h" />
     <ClInclude Include="..\Public\NpcDMWState_Following.h" />
+    <ClInclude Include="..\Public\NpcDMWState_Rage2Sphere.h" />
+    <ClInclude Include="..\Public\NpcDMWState_Rage3Laser.h" />
     <ClInclude Include="..\Public\Skill_Biplane_Burst.h" />
     <ClInclude Include="..\Public\State_Enemy.h" />
     <ClInclude Include="..\Public\State_Enemy_Flying_Run.h" />
@@ -403,6 +405,8 @@
     <ClInclude Include="..\Public\Vfx_Whale_Jump.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_BlackHole_Bomb.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_BlackHole_Drain.h" />
+    <ClInclude Include="..\Public\Vfx_Witch_Skill_Laser_Warning.h" />
+    <ClInclude Include="..\Public\Vfx_Witch_Skill_Rage02Sphere_Ready.h" />
     <ClInclude Include="..\Public\Winter_CurlingFloor.h" />
     <ClInclude Include="..\Public\StelliaState_AfterSpinTail.h" />
     <ClInclude Include="..\Public\StelliaState_BackStep.h" />
@@ -1231,7 +1235,8 @@
     <ClInclude Include="..\Public\WitchWood.h" />
     <ClInclude Include="..\Public\Witch_Barricade.h" />
     <ClInclude Include="..\Public\Witch_BlackHole.h" />
-    <ClInclude Include="..\Public\Witch_BlackHoleBomb.h" />
+    <ClInclude Include="..\Public\Witch_Laser.h" />
+    <ClInclude Include="..\Public\Witch_Rage02Sphere.h" />
     <ClInclude Include="..\Public\Zehra.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="MainQuestNode_WitchForest04_2.h" />
@@ -1398,6 +1403,8 @@
     <ClCompile Include="..\Private\NpcDMWState_Attack.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Base.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Following.cpp" />
+    <ClCompile Include="..\Private\NpcDMWState_Rage2Sphere.cpp" />
+    <ClCompile Include="..\Private\NpcDMWState_Rage3Laser.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_Burst.cpp" />
     <ClCompile Include="..\Private\State_Enemy.cpp" />
     <ClCompile Include="..\Private\State_Enemy_Flying_Run.cpp" />
@@ -1470,6 +1477,8 @@
     <ClCompile Include="..\Private\Vfx_Whale_Jump.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_BlackHole_Bomb.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_BlackHole_Drain.cpp" />
+    <ClCompile Include="..\Private\Vfx_Witch_Skill_Laser_Warning.cpp" />
+    <ClCompile Include="..\Private\Vfx_Witch_Skill_Rage02Sphere_Ready.cpp" />
     <ClCompile Include="..\Private\Winter_CurlingFloor.cpp" />
     <ClCompile Include="..\Private\StelliaState_AfterSpinTail.cpp" />
     <ClCompile Include="..\Private\StelliaState_BackStep.cpp" />
@@ -2303,7 +2312,8 @@
     <ClCompile Include="..\Private\WitchWood.cpp" />
     <ClCompile Include="..\Private\Witch_Barricade.cpp" />
     <ClCompile Include="..\Private\Witch_BlackHole.cpp" />
-    <ClCompile Include="..\Private\Witch_BlackHoleBomb.cpp" />
+    <ClCompile Include="..\Private\Witch_Laser.cpp" />
+    <ClCompile Include="..\Private\Witch_Rage02Sphere.cpp" />
     <ClCompile Include="..\Private\Zehra.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -29,8 +29,10 @@ void CStelliaState_Rage3ClawCharge::Enter_State(void* pArg)
 
 void CStelliaState_Rage3ClawCharge::Tick_State(_float fTimeDelta)
 {
+	__super::Tick_State(fTimeDelta);
+
 	// 스텔리아를 공격 가능한 거리까지 앞으로 보낸다.
-	m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+	m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position());
 	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRage3AroundSpeed, fTimeDelta);
 
 	// 스텔리아가 공격 가능한 거리까지 도달하면 공격한다.

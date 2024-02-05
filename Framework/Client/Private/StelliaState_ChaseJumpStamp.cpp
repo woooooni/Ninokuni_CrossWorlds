@@ -37,7 +37,7 @@ void CStelliaState_ChaseJumpStamp::Tick_State(_float fTimeDelta)
 	__super::Tick_State(fTimeDelta);
 
 	if (m_pModelCom->Get_CurrAnimationFrame() < 29)
-		vDestPos = m_pPlayerTransform->Get_Position();
+		vDestPos = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position();
 
 	if (m_pModelCom->Get_CurrAnimationFrame() >= 29 && m_pModelCom->Get_CurrAnimationFrame() <= 60)
 	{

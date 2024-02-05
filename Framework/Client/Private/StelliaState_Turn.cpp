@@ -27,7 +27,7 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 		return;
 	}
 
-	//// 레이지1 패턴
+	// 레이지1 패턴
 	if (!m_bIsRageInit && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.75f)
 	{
 		m_bIsRageInit = true;
@@ -35,7 +35,7 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE1START_TURN_OC);
 		return;
 	}
-
+	
 	// 레이지2 패턴 (위에게 진짜 조건문)
 	if (!m_bIsRage2Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.40f &&
 		m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
@@ -49,6 +49,7 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 	// 레이지3 패턴 (위에게 진짜 조건문)
 	if (!m_bIsRage3Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.15f &&
 		m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
+	//if (!m_bIsRage3Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.95f)
 	{
 		m_bIsRage3Init = true;
 		m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE3, true);
@@ -61,7 +62,7 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Run"));
 
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
-	_vector vDestNormal = XMVector3Normalize(m_pPlayerTransform->Get_Position() - m_pTransformCom->Get_Position());
+	_vector vDestNormal = XMVector3Normalize(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position() - m_pTransformCom->Get_Position());
 
 	/* 보스위 look과 플레이어 위치 - 보스 위치로 나온 방향 벡터의 각도를 구함. */
 	_float fDotProduct = XMVectorGetX(XMVector3Dot(vLookNormal, vDestNormal));
@@ -92,7 +93,7 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 		}
 	}
 
-	m_vDestPos = m_pPlayerTransform->Get_Position();
+	m_vDestPos = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position();
 }
 
 void CStelliaState_Turn::Tick_State(_float fTimeDelta)
@@ -101,7 +102,7 @@ void CStelliaState_Turn::Tick_State(_float fTimeDelta)
 
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
 	//_vector vDestNormal = XMVector3Normalize(m_vDestPos - m_pTransformCom->Get_Position());
-	_vector vDestNormal = XMVector3Normalize(m_pPlayerTransform->Get_Position() - m_pTransformCom->Get_Position());
+	_vector vDestNormal = XMVector3Normalize(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position() - m_pTransformCom->Get_Position());
 
 	/* 보스의 look을 기준으로 플레이어가 왼쪽, 오른쪽에 위치하는지를 판별. */
 	_vector vCrossProduct = XMVector3Cross(vLookNormal, vDestNormal);

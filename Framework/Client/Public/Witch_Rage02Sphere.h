@@ -3,12 +3,12 @@
 #include "MonsterProjectile.h"
 
 BEGIN(Client)
-class CWitch_BlackHole final : public CMonsterProjectile
+class CWitch_Rage02Sphere final : public CMonsterProjectile
 {
 private:
-	CWitch_BlackHole(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CWitch_BlackHole(const CWitch_BlackHole& rhs);
-	virtual ~CWitch_BlackHole() = default;
+	CWitch_Rage02Sphere(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CWitch_Rage02Sphere(const CWitch_Rage02Sphere& rhs);
+	virtual ~CWitch_Rage02Sphere() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -26,17 +26,17 @@ private:
 	virtual HRESULT Ready_Colliders();
 
 private:
-	class CVfx* m_pBlackHole = nullptr;
-	class CVfx* m_pEffectBomb = nullptr;
+	class CVfx* m_pSphere = nullptr;
+	class CVfx* m_pBomb = nullptr;
 
-	_bool m_bIsBlackHoleCreate = false;
+	_bool m_bIsSphereCreate = false;
 	_bool m_bIsBombCreate = false;
 
 	_float m_fAccTime = 0.f;
 	_float m_fActiveTime = 0.f;
 
 public:
-	static CWitch_BlackHole* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CWitch_Rage02Sphere* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

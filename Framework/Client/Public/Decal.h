@@ -108,6 +108,8 @@ public:
 		m_tDecalDesc.fColorAdd_02 = fColor02;
 	}
 
+	_bool Get_DecalDead() { return m_bDecalDie; }
+
 private:
 	void Tick_Alpha(_float fTimeDelta);
 	void Tick_Scale(_float fTimeDelta);

@@ -35,8 +35,8 @@ HRESULT CWitch_BlackHole::Initialize_Prototype()
 HRESULT CWitch_BlackHole::Initialize(void* pArg)
 {
 	// Å×½ºÆ® ³¡³ª¸é Ç®ÀÚ.
-	//if (pArg == nullptr)
-	//	return E_FAIL;
+	if (pArg == nullptr)
+		return E_FAIL;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -44,27 +44,44 @@ HRESULT CWitch_BlackHole::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_BlackHole_Drain"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pBlackHole);
+	if (FAILED(Ready_Colliders()))
+		return E_FAIL;
+
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
+
+	m_fActiveTime = 0.5f;
 
 	return S_OK;
 }
 
 void CWitch_BlackHole::Tick(_float fTimeDelta)
 {
-	if (m_pBlackHole != nullptr)
+	if (m_pBlackHole == nullptr && !m_bIsBlackHoleCreate)
 	{
-		if(m_pBlackHole->Is_Dead())
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_BlackHole_Drain"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pBlackHole);
+
+		m_bIsBlackHoleCreate = true;
+	}
+	else
+	{
+		if (m_pBlackHole->Is_Dead() && !m_bIsBombCreate)
 		{
 			// ºí·¢È¦ Æø¹ß »ý¼º
-			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_BlackHole_Drain"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pEffectBomb);
+			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_BlackHole_Bomb"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pEffectBomb);
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
+			m_bIsBombCreate = true;
 		}
 	}
 
-	// Æø¹ß ÀÌÆåÆ®°¡ ³¡³µÀ¸¸é 
+	// Æø¹ß ÀÌÆåÆ®
 	if (m_pEffectBomb != nullptr)
 	{
+		m_fAccTime += fTimeDelta;
+		if (m_fAccTime > m_fActiveTime)
+		{
+			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
+		}
+
 		if (m_pEffectBomb->Is_Dead())
 		{
 			Set_Dead(true);
@@ -113,7 +130,7 @@ HRESULT CWitch_BlackHole::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(143.436f, 2.311f, 120.378f, 1.f));
+
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -129,6 +146,22 @@ HRESULT CWitch_BlackHole::Ready_Components()
 #pragma region Ready_Colliders
 HRESULT CWitch_BlackHole::Ready_Colliders()
 {
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	ZeroMemory(&SphereDesc, sizeof SphereDesc);
+
+	BoundingSphere tSphere;
+	ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	tSphere.Radius = 1.5f;
+	SphereDesc.tSphere = tSphere;
+
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = {};
+	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
+
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
+		return E_FAIL;
+
 	return S_OK;
 }
 

@@ -46,7 +46,7 @@ void CStelliaState_Chase::Tick_State(_float fTimeDelta)
 	}
 
 	if (m_pPlayer != nullptr)
-		m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+		m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position());
 
 	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fSprintSpeed, fTimeDelta);
 

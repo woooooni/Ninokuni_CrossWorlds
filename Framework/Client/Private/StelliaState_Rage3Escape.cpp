@@ -33,6 +33,8 @@ void CStelliaState_Rage3Escape::Enter_State(void* pArg)
 
 void CStelliaState_Rage3Escape::Tick_State(_float fTimeDelta)
 {
+	__super::Tick_State(fTimeDelta);
+
 	m_fAccTurnTime += fTimeDelta;
 
 	// 스텔리아가 도망간다.
@@ -40,13 +42,16 @@ void CStelliaState_Rage3Escape::Tick_State(_float fTimeDelta)
 	{
 		m_pTransformCom->Turn(Vec3(0.f, 1.f, 0.f), m_fTurnSpeed, fTimeDelta);
 	}
-	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRage3AroundSpeed, fTimeDelta);
 
 
 	Vec4 vCenterToStellia = m_pStellia->Get_OriginPos() - (Vec4)m_pTransformCom->Get_Position();
 	if (fabs(vCenterToStellia.Length()) > m_fAroundDist)
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE3CHARGE_BREAK);
+	}
+	else
+	{
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRage3AroundSpeed, fTimeDelta);
 	}
 }
 
