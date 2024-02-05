@@ -60,6 +60,8 @@ void CNpcState_Idle::Tick_State(_float fTimeDelta)
 			}
 		}
 	}
+
+	
 }
 
 void CNpcState_Idle::Exit_State()

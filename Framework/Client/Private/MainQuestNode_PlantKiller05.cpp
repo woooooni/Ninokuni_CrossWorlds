@@ -43,19 +43,19 @@ HRESULT CMainQuestNode_PlantKiller05::Initialize()
 
 void CMainQuestNode_PlantKiller05::Start()
 {
+	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::GetInstance()->QUESTEVENT_ESCORT);
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
-	CRuby* pRuby = static_cast<CRuby*>(GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_NPC, TEXT("Ruby")));
-	if (nullptr == pRuby)
+	m_pRuby = static_cast<CRuby*>(GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_NPC, TEXT("Ruby")));
+	if (nullptr == m_pRuby)
 		return;
 
-
-	CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(pRuby->Get_RidingObject());
+	CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(m_pRuby->Get_RidingObject());
 	if (nullptr == pRubyCarriage)
 		return;
 
 	pRubyCarriage->Set_TakeTheCarriage(true);
-	pRuby->Get_Component_StateMachine()->Change_State(CGameNpc::NPC_STATE::NPC_UNIQUENPC_SEAT);
+	//m_pRuby->Get_Component_StateMachine()->Change_State(CGameNpc::NPC_STATE::NPC_UNIQUENPC_SEAT);
 }
 
 CBTNode::NODE_STATE CMainQuestNode_PlantKiller05::Tick(const _float& fTimeDelta)
@@ -63,13 +63,30 @@ CBTNode::NODE_STATE CMainQuestNode_PlantKiller05::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	// 임시
-	// 추후에는 호송 이벤트가 종료되면 넘어가기. 또한 퀘스트 팝업도 첫 몬스터 웨이브 소환 후 바꿔준다.
-	if (KEY_TAP(KEY::X))
+	if (m_pRuby != nullptr && m_pRuby->Get_Component_StateMachine()->Get_CurrState() == CGameNpc::NPC_IDLE && m_pQuestDestSpot == nullptr)
 	{
-		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
-		m_bIsClear = true;
-		return NODE_STATE::NODE_FAIL;
+		Vec4 vSpotPos = Set_DestSpot(m_pRuby);
+
+		// 임시로 monster에 
+		m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
+
+	}
+
+
+	if (m_pQuestDestSpot != nullptr)
+	{
+		m_pQuestDestSpot->Tick(fTimeDelta);
+		m_pQuestDestSpot->LateTick(fTimeDelta);
+
+		if (m_pQuestDestSpot->Get_IsCol())
+		{
+			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+
+			m_bIsClear = true;
+			m_pQuestDestSpot->Set_ReadyDelete(true);
+			Safe_Release(m_pQuestDestSpot);
+			return NODE_STATE::NODE_FAIL;
+		}
 	}
 
 	return NODE_STATE::NODE_RUNNING;

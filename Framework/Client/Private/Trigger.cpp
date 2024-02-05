@@ -17,7 +17,8 @@
 #include "RubyCarriage.h"
 
 #include "Quest_Manager.h"
-
+#include "FileUtils.h"
+#include "Utils.h"
 
 CTrigger::CTrigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext, L"Trigger", OBJ_TYPE::OBJ_TRIGGER)
@@ -175,9 +176,10 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 					{
 						pRuby->Set_QuestSection(CRuby::ESCORT_SECTION::SECTION1, true);
 						static_cast<CRubyCarriage*>(pRuby->Get_RidingObject())->Set_TakeTheCarriage(false);
+						Load_Monster_Data(TEXT("Witch"), 1);
+
 						
 					}
-
 					Set_Dead(true);
 				}
 			break;
@@ -193,6 +195,7 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 					{
 						pRuby->Set_QuestSection(CRuby::ESCORT_SECTION::SECTION2, true);
 						static_cast<CRubyCarriage*>(pRuby->Get_RidingObject())->Set_TakeTheCarriage(false);
+						Load_Monster_Data(TEXT("Witch"), 2);
 					}
 
 					Set_Dead(true);
@@ -242,6 +245,70 @@ HRESULT CTrigger::Ready_Collider()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CTrigger::Load_Monster_Data(const wstring& strFilePath, _uint Section)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strFilePath + L"/" + strFilePath + L"_Escort_" + to_wstring(Section) + L".map";
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strMapFilePath, FileMode::Read);
+
+	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+	{
+		if (LAYER_TYPE::LAYER_MONSTER != i)
+			continue;
+
+		_uint iObjectCount = File->Read<_uint>();
+
+		for (_uint j = 0; j < iObjectCount; ++j)
+		{
+			// 3. Object_Prototype_Tag
+			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+			wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+			// 6. Obejct States
+			_float4 vRight, vUp, vLook, vPos;
+
+			File->Read<_float4>(vRight);
+			File->Read<_float4>(vUp);
+			File->Read<_float4>(vLook);
+			File->Read<_float4>(vPos);
+
+
+			OBJECT_INIT_DESC Init_Data = {};
+			Init_Data.vStartPosition = vPos;
+			CGameObject* pObj = nullptr;
+
+			if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_WITCHFOREST, i, strPrototypeTag, &Init_Data, &pObj, true)))
+			{
+				MSG_BOX("Load_Objects_Failed.");
+				return;
+			}
+
+			if (nullptr == pObj)
+			{
+				MSG_BOX("Add_Object_Failed.");
+				return;
+			}
+			pObj->Set_ObjectTag(strObjectTag);
+
+			CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == pTransform)
+			{
+				MSG_BOX("Get_Transform_Failed.");
+				return;
+			}
+
+
+
+			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+			pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+			pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+		}
+
+	}
 }
 
 

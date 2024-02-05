@@ -342,6 +342,7 @@
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Run.h" />
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Stand.h" />
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Trace.h" />
+    <ClInclude Include="..\Public\State_RubyIdle.h" />
     <ClInclude Include="..\Public\State_VehicleFlying_Damaged.h" />
     <ClInclude Include="..\Public\State_VehicleFlying_Rush.h" />
     <ClInclude Include="..\Public\UI_Grandprix_IntroBackground.h" />
@@ -1409,6 +1410,7 @@
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Run.cpp" />
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Stand.cpp" />
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Trace.cpp" />
+    <ClCompile Include="..\Private\State_RubyIdle.cpp" />
     <ClCompile Include="..\Private\State_VehicleFlying_Damaged.cpp" />
     <ClCompile Include="..\Private\State_VehicleFlying_Rush.cpp" />
     <ClCompile Include="..\Private\UI_Grandprix_IntroBackground.cpp" />

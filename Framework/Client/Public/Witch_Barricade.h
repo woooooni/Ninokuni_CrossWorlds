@@ -35,9 +35,10 @@ public:
 public:
 
 public:
-	virtual HRESULT Ready_Components();
+	virtual HRESULT Ready_Components(void* pArg);
+	virtual HRESULT Ready_Components() { return S_OK; };
 	virtual HRESULT Ready_Colliders();
-	virtual HRESULT Ready_States() { return S_OK; }
+	virtual HRESULT Ready_States();
 private:
 	_bool m_bSunDisappear = false;
 

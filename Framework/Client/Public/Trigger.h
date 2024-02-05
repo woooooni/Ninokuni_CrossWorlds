@@ -52,6 +52,9 @@ private:
 	HRESULT Ready_Collider();
 
 private:
+	void Load_Monster_Data(const wstring& strFilePath, _uint Section);
+
+private:
 	TRIGGER_TYPE m_eTriggerType = TRIGGER_TYPE::TRIGGER_END;
 	Vec3 m_vExtents = { 100.f, 100.f, 100.f };
 	

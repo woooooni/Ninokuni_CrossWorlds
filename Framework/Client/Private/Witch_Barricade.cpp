@@ -26,10 +26,13 @@ HRESULT CWitch_Barricade::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Components()))
+	if (FAILED(Ready_Components(pArg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Colliders()))
+		return E_FAIL;
+
+	if (FAILED(Ready_States()))
 		return E_FAIL;
 
 	return S_OK;
@@ -37,6 +40,16 @@ HRESULT CWitch_Barricade::Initialize(void* pArg)
 
 void CWitch_Barricade::Tick(_float fTimeDelta)
 {
+	if (true == m_bDead)
+		return;
+
+
+	if (m_tStat.fHp <= 0.0f)
+	{
+		Set_Dead(true);	
+		return;
+	}
+
 	if (m_pControllerCom != nullptr)
 		m_pControllerCom->Tick_Controller(fTimeDelta);
 
@@ -46,7 +59,6 @@ void CWitch_Barricade::Tick(_float fTimeDelta)
 void CWitch_Barricade::LateTick(_float fTimeDelta)
 {
 	LateUpdate_Collider(fTimeDelta);
-	//__super::LateTick(fTimeDelta);
 
 	if (m_pControllerCom != nullptr)
 		m_pControllerCom->LateTick_Controller(fTimeDelta);
@@ -67,7 +79,12 @@ void CWitch_Barricade::LateTick(_float fTimeDelta)
 
 HRESULT CWitch_Barricade::Render()
 {
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+	if (true == m_bDead)
+		return S_OK;
+
+	Matrix WorldMatrix = m_pTransformCom->Get_WorldFloat4x4();
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &WorldMatrix.Transpose(), sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
@@ -115,20 +132,27 @@ void CWitch_Barricade::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 }
 
-HRESULT CWitch_Barricade::Ready_Components()
+HRESULT CWitch_Barricade::Ready_Components(void* pArg)
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"),
 		TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 		return E_FAIL;
+	OBJECT_INIT_DESC Init_Data = {};
+
+	if (pArg != nullptr)
+		Init_Data.vStartPosition = static_cast<OBJECT_INIT_DESC*>(pArg)->vStartPosition;
+
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"),
-		TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
+		TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom),&Init_Data)))
 		return E_FAIL;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"),
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		return E_FAIL;
-	
+
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Init_Data.vStartPosition);
+
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Witch_Barricade"),
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
@@ -137,8 +161,8 @@ HRESULT CWitch_Barricade::Ready_Components()
 	CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
 	ControllerDesc.eType = CPhysX_Controller::BOX;
 	ControllerDesc.pTransform = m_pTransformCom;
-	ControllerDesc.vOffset = { 0.f, 1.3f, 0.f };
-	ControllerDesc.vExtents = { 2.f, 4.f, 8.f };
+	ControllerDesc.vOffset = { 0.f, 0.0f, 0.f };
+	ControllerDesc.vExtents = { 2.f, 3.f, 10.f };
 	//ControllerDesc.fHeight = 1.f;
 	//ControllerDesc.fMaxJumpHeight = 10.f;
 	//ControllerDesc.fRaidus = 5.f;
@@ -178,6 +202,20 @@ HRESULT CWitch_Barricade::Ready_Colliders()
 	/* Body */
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CWitch_Barricade::Ready_States()
+{
+	strKorName = TEXT("πŸ∏Æ∞‘¿Ã∆Æ");
+	strSubName = TEXT("∏∂≥‡¿« Ω£");
+	m_tStat.eElementType = ELEMENTAL_TYPE::WOOD;
+
+	m_tStat.iLv = 1;
+	m_tStat.fMaxHp = 40000.0f;
+	m_tStat.fHp = 40000.0f;
+
 
 	return S_OK;
 }
