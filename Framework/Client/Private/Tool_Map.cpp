@@ -2594,9 +2594,6 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 				CGameNpc::NPC_STAT eStat;
 				File->Read<CGameNpc::NPC_STAT>(eStat); // 0 
 
-				if (pNpc->Get_ObjectTag() == TEXT("Ruby"))
-					eState = CRuby::RUBY_STATE::RUBY_IDLE;
-
 				pNpc->Set_NpcState(static_cast<CGameNpc::NPC_STATE>(eState));
 				pNpc->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(eState);
 				pNpc->Set_Stat(eStat);
