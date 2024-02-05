@@ -50,8 +50,8 @@ void CGrandprix_Manager::Tick(_float fTimeDelta)
 	{
 		m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP] += fTimeDelta;
 
-		// 5초가 지나면 복구
-		if (5.f < m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP])
+		// 10초가 지나면 복구
+		if (10.f < m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP])
 		{
 			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP] = false;
 			m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP] = 0.f;
@@ -96,7 +96,13 @@ void CGrandprix_Manager::Tick(_float fTimeDelta)
 	{
 		m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB] += fTimeDelta;
 
-		// ?
+		if (10.f < m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB])
+		{
+			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB] = false;
+			m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB] = 0.f;
+
+			CUIMinigame_Manager::GetInstance()->OnOff_RaderIcons(true);
+		}
 	}
 
 	if (true == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SLOW])
@@ -330,10 +336,10 @@ HRESULT CGrandprix_Manager::Prepare_Grandprix()
 		}
 	}
 
-	m_Items.reserve(8);
+	m_Items.reserve(10);
 	CGameObject* pItem;
 
-	for (_uint i = 0; i < 8; ++i)
+	for (_uint i = 0; i < 10; ++i)
 	{
 		pItem = nullptr;
 		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_ETC, TEXT("Prototype_GameObject_Grandprix_ItemBox"), nullptr, &pItem)))
@@ -345,9 +351,9 @@ HRESULT CGrandprix_Manager::Prepare_Grandprix()
 		m_Items.push_back(dynamic_cast<CGrandprix_ItemBox*>(pItem));
 		Safe_AddRef(pItem);
 
-		_float fX = GI->RandomFloat(-200.f, 175.f);
-		_float fY = GI->RandomFloat(70.f, 120.f);
-		_float fZ = GI->RandomFloat(-200.f, 200.f);
+		_float fX = GI->RandomFloat(-200.f, 185.f);
+		_float fY = GI->RandomFloat(70.f, 130.f);
+		_float fZ = GI->RandomFloat(-210.f, 200.f);
 
 		pItem->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, Vec4(fX, fY, fZ, 1.f));
 		dynamic_cast<CGrandprix_ItemBox*>(pItem)->Set_MinMaxPosition(Vec4(fX, fY, fZ, 1.f));
@@ -428,7 +434,9 @@ void CGrandprix_Manager::Add_ItemBox(_uint iType)
 		{
 			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP] = true; // 5초
 			// 플레이어 탈 것의 스피드를 제어한다.
-			CRiding_Manager::GetInstance()->Set_Character_BiplaneSpeed((CRiding_Manager::GetInstance()->Get_Character_BiplaneSpeed()) * 2.f);
+			CRiding_Manager::GetInstance()->Set_Character_BiplaneSpeed((CRiding_Manager::GetInstance()->Get_Character_BiplaneSpeed()) * 3.f);
+			// UI 연결
+			CUIMinigame_Manager::GetInstance()->On_GrandprixPopup(CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP);
 		}
 		break;
 
@@ -456,14 +464,20 @@ void CGrandprix_Manager::Add_ItemBox(_uint iType)
 					pGhost->Get_Component<CTransform>(L"Com_Transform")->Set_Scale(Vec3(5.f));
 				}
 			}
+			// UI 연결
+			CUIMinigame_Manager::GetInstance()->On_GrandprixPopup(CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP);
 		}
 		break;
 
 	case CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB:
-		if (false == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB])
+		if (false == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB]) // 10초간 Error
 		{
 			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB] = true;
+			CUIMinigame_Manager::GetInstance()->OnOff_RaderIcons(false);
 			// 플레이어 탈 것을 멀리 밀어낸다.
+			// ~~~~~~~~~~~~~~~~ 구현 전 ~~~~~~~~~~~~~~~~~~~~~~~
+			// UI 연결
+			CUIMinigame_Manager::GetInstance()->On_GrandprixPopup(CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB);
 		}
 		break;
 
@@ -471,9 +485,10 @@ void CGrandprix_Manager::Add_ItemBox(_uint iType)
 		if (false == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SLOW]) // 5초
 		{
 			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SLOW] = true;
-			// 시간이 느리게 흐르도록 세팅한다.
-			//GI->Set_Slow(TIMER_TYPE::GAME_PLAY, )
-			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 5.f, 0.5f, true);
+			// 시간이 느리게 가도록 세팅한다.
+			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 5.f, 0.3f, true);
+			// UI 연결
+			CUIMinigame_Manager::GetInstance()->On_GrandprixPopup(CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SLOW);
 		}
 		break;
 	}

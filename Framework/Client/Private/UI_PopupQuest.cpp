@@ -2,6 +2,7 @@
 #include "UI_PopupQuest.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "UIMinigame_Manager.h"
 
 CUI_PopupQuest::CUI_PopupQuest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_QUESTPOPUP eType, UI_POPUP_SEPARATOR eSeparatorType)
 	: CUI(pDevice, pContext, L"UI_PopupQuest")
@@ -216,6 +217,10 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 				// 문제 생기면 지우기. 24.02.03
 //				if (false == CUI_Manager::GetInstance()->Is_FadeFinished())
 //					return;
+
+				if (LEVELID::LEVEL_EVERMORE == GI->Get_CurrentLevel() &&
+					true == CUIMinigame_Manager::GetInstance()->Is_GrandprixIntroStarted())
+					return;
 
 				if (0 < m_Quest.size() && 4 >= m_Quest.size())
 				{

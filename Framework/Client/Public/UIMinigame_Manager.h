@@ -23,6 +23,7 @@ private:
 public: // Getter & Setter
 	void	Set_HPOwner(CGameObject* pOwner, _uint eEnemyID);
 
+	_bool	Is_GrandprixIntroStarted() { return m_bIntroStarted; }
 	_bool	Is_BiplaneFlying() { return m_bFlying; }
 	void	Set_Flyable(_bool bFlyable);
 
@@ -62,6 +63,7 @@ public: // Level Evermore
 	void OnOff_RushVignette(_bool bOnOff);
 	void On_DamagedVignette();
 	void OnOff_RaderIcons(_bool bOnOff);
+	void On_GrandprixPopup(_uint iIndex);
 
 public: // Level IceLand
 	void OnOff_CurlingUI(_bool bOnOff);
@@ -111,14 +113,17 @@ private: // Evermore Granprix
 	vector<class CUI_Grandprix_Vignette*>	m_Vignette;
 
 	// Intro Background
+	_bool			m_bIntroStarted = { false };
 	class CUI_Grandprix_IntroBackground*	m_pIntroBackground;
 	vector<class CUI_Grandprix_IntroIcons*> m_IntroIcons;
-	_bool									m_bIntroFinished = { true };
+	_bool									m_bIntroFinished = { false };
 	_float									m_fIntroAcc = { 0.f };
 
 	// Rader
 	vector<class CUI_Grandprix_RaderFrame*> m_RaderFrame;
 	class CUI_Grandprix_Rader*				m_pRader;
+
+	vector<class CUI_Grandprix_Popup*>		m_Popup;
 
 private: // Iceland Curling
 	vector<class CUI_Minigame_Curling_Base*> m_CurlingGameUIs;

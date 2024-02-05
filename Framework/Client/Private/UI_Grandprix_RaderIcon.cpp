@@ -5,6 +5,8 @@
 #include "UIMinigame_Manager.h"
 #include "Camera_Manager.h"
 #include "Camera.h"
+#include "Riding_Manager.h"
+#include "Vehicle_Flying_Biplane.h"
 
 CUI_Grandprix_RaderIcon::CUI_Grandprix_RaderIcon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_Grandprix_RaderIcon")
@@ -86,7 +88,44 @@ void CUI_Grandprix_RaderIcon::Tick(_float fTimeDelta)
 			return;
 
 		if (UI_RADERICON::ICON_SWORDMAN == m_eType || UI_RADERICON::ICON_CAMERA == m_eType)
+		{
 			Rotation_Icon(fTimeDelta);
+		}
+		// GHOST나 ENGINEER중 TARGET으로 확인되었을때 아이콘을 교체해야 한다.
+		else if (UI_RADERICON::ICON_GHOST == m_eType || UI_RADERICON::ICON_ENGINEER == m_eType)
+		{
+			CVehicle_Flying_Biplane* pBiplane = CRiding_Manager::GetInstance()->Get_Character_Biplane();
+			if (nullptr == pBiplane)
+				return;
+
+			CGameObject* pTarget = pBiplane->Get_Target();
+			if (nullptr != pTarget)
+			{
+				if (m_pOwner == pTarget)
+					m_eType = UI_RADERICON::ICON_TARGET;
+			}
+		}
+		else if (UI_RADERICON::ICON_TARGET == m_eType)
+		{
+			CVehicle_Flying_Biplane* pBiplane = CRiding_Manager::GetInstance()->Get_Character_Biplane();
+			if (nullptr == pBiplane)
+				return;
+
+			CGameObject* pTarget = pBiplane->Get_Target();
+			if (nullptr == pTarget || m_pOwner != pTarget)
+			{
+				if (TEXT("Vehicle_Flying_EnemyBiplane") == pTarget->Get_ObjectTag())
+				{
+					m_eType = UI_RADERICON::ICON_ENGINEER;
+				}
+				else if (TEXT("Vehicle_Flying_EnemyBoto") == pTarget->Get_ObjectTag())
+				{
+					m_eType = UI_RADERICON::ICON_GHOST;
+				}
+				else
+					return;
+			}
+		}
 
 		__super::Tick(fTimeDelta);
 	}

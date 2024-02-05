@@ -135,6 +135,10 @@ void CUI_Minigame_Aim::LateTick(_float fTimeDelta)
 	{
 		if (m_bActive)
 		{
+			// Error상태면 return
+			if (true == CUIMinigame_Manager::GetInstance()->Is_RaderError()) // 확인 필요함.
+				return;
+
 			_float4 vCamPos = GI->Get_CamPosition();
 			_vector vTempForDistance = m_pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos);
 			_float fDistance = XMVectorGetX(XMVector3Length(vTempForDistance));

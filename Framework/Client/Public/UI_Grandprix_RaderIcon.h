@@ -6,7 +6,7 @@ BEGIN(Client)
 class CUI_Grandprix_RaderIcon final : public CUI
 {
 public:
-	enum UI_RADERICON { ICON_SWORDMAN, ICON_ENGINEER, ICON_GHOST, ICON_CAMERA, RADERICON_END };
+	enum UI_RADERICON { ICON_SWORDMAN, ICON_ENGINEER, ICON_GHOST, ICON_CAMERA, ICON_TARGET, RADERICON_END };
 
 protected:
 	CUI_Grandprix_RaderIcon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -5,6 +5,7 @@
 
 BEGIN(Engine)
 class CTransform;
+class CRenderer;
 END
 
 BEGIN(Client)
