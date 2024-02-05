@@ -466,9 +466,6 @@ HRESULT CLevel_WitchForest::Ready_Layer_Npc(const LAYER_TYPE eLayerType)
 				CGameNpc::NPC_STAT eStat;
 				File->Read<CGameNpc::NPC_STAT>(eStat);
 
-				if (pNpc->Get_ObjectTag() == TEXT("Ruby"))
-					eState = CRuby::RUBY_STATE::RUBY_IDLE;
-
                 pNpc->Set_NpcState(static_cast<CGameNpc::NPC_STATE>(eState));
 				CStateMachine* pStateMachine = pNpc->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
 				if (pStateMachine != nullptr)
