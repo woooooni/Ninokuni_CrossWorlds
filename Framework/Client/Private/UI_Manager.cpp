@@ -12,6 +12,7 @@
 #include "Camera_Follow.h"
 #include "Character_Manager.h"
 #include "Game_Manager.h"
+#include "UIMinigame_Manager.h"
 #include "Player.h"
 #include "Monster.h"
 #include "Weapon.h"

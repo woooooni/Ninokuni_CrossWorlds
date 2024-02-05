@@ -85,6 +85,21 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 		return;
 	}
 
+//	if (KEY_HOLD(KEY::Q))
+//	{
+//		bMove = true;
+//
+//		_matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+//
+//		_vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
+//		_vector vUp = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_UP));
+//		_vector vLook = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+//
+//		_float fRadian = XMVectorGetX(XMVector3Dot(vLook, vRight)) * 10.f * fTimeDelta;
+//
+//		m_pTransformCom->Rotation_Acc(vLook, fRadian);
+//	}
+
 	if (KEY_HOLD(KEY::W))
 	{
 		bMove = true;
@@ -95,7 +110,7 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 			Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 			Vec3 vCamLook = XMVector3Normalize(CamWorld.r[CTransform::STATE_LOOK]);
 			vLook = XMVectorLerp(vLook, vCamLook, fTimeDelta);
-
+			
 			m_pTransformCom->Rotation_Look(vLook);
 		}
 		else
@@ -144,23 +159,6 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed(), fTimeDelta);
 
 		bMove = true;
-	}
-
-	if (KEY_HOLD(KEY::Q))
-	{
-		bMove = true;
-
-		_matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-		_vector vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
-		_vector vCamLook = vCamWolrd.r[CTransform::STATE_LOOK];
-
-		vRight = XMVector3Normalize(vRight);
-		vCamLook = XMVector3Normalize(vCamLook);
-
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
-
-		m_pTransformCom->Rotation_Acc(vRight, fRadian);
-		m_pTransformCom->Move(vCamLook, m_pVehicle->Get_Speed(), fTimeDelta);
 	}
 
 	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // //

@@ -216,7 +216,6 @@ HRESULT CGrandprix_ItemBox::Ready_Components()
 	return S_OK;
 }
 
-#pragma region Ready_Colliders
 HRESULT CGrandprix_ItemBox::Ready_Colliders()
 {
 	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
@@ -259,10 +258,6 @@ void CGrandprix_ItemBox::Update_Position(_float fTimeDelta)
 
 void CGrandprix_ItemBox::Update_Rotation(_float fTimeDelta)
 {
-//	fRoll += XMConvertToRadians(45.f * fTimeDelta);
-//	fPitch += XMConvertToRadians(45.f * fTimeDelta);
-//	fYaw += XMConvertToRadians(45.f * fTimeDelta);
-
 	m_vRotationAngle.x += XMConvertToRadians(45.f * fTimeDelta);
 	m_vRotationAngle.y += XMConvertToRadians(45.f * fTimeDelta);
 	m_vRotationAngle.z += XMConvertToRadians(45.f * fTimeDelta);
@@ -277,7 +272,6 @@ void CGrandprix_ItemBox::Update_Rotation(_float fTimeDelta)
 
 	// 쿼터니언을 행렬로 변환
 	_matrix rotationMatrix = XMMatrixRotationQuaternion(vQuaternion);
-
 	Vec3 vScale = m_pTransformCom->Get_Scale();
 
 	// 행렬을 상태에 적용
@@ -285,8 +279,6 @@ void CGrandprix_ItemBox::Update_Rotation(_float fTimeDelta)
 	m_pTransformCom->Set_State(CTransform::STATE_UP, rotationMatrix.r[1] * vScale.y);
 	m_pTransformCom->Set_State(CTransform::STATE_LOOK, rotationMatrix.r[2] * vScale.z);
 }
-
-#pragma endregion
 
 CGrandprix_ItemBox* CGrandprix_ItemBox::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 {

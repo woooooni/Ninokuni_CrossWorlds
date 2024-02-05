@@ -27,6 +27,7 @@
 #include "UI_Grandprix_Rader.h"
 #include "UI_Grandprix_RaderIcon.h"
 #include "UI_Grandprix_Vignette.h"
+#include "UI_Grandprix_Popup.h"
 
 #include "CurlingGame_Group.h"
 
@@ -94,6 +95,8 @@ HRESULT CUIMinigame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11Device
 
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
+
+//	fill(begin(m_bIntro), end(m_bIntro), false);
 	
 	return S_OK;
 }
@@ -303,6 +306,16 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_ToLayer(LEVELID eID)
 			Safe_AddRef(iter);
 		}
 
+		for (auto& iter : m_Popup)
+		{
+			if (nullptr == iter)
+				return E_FAIL;
+
+			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+				return E_FAIL;
+			Safe_AddRef(iter);
+		}
+
 	}
 	else if (LEVELID::LEVEL_ICELAND == eID)
 	{
@@ -468,13 +481,13 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 		m_pRader->Set_Active(false);
 
 		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
-//		CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(true);
 	}
 }
 
 void CUIMinigame_Manager::Intro_Grandprix()
 {
-	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f, true);
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
+	m_bIntroStarted = true;
 
 	m_fIntroAcc = 0.f;
 	m_bIntroFinished = false;
@@ -575,15 +588,25 @@ void CUIMinigame_Manager::On_DamagedVignette()
 void CUIMinigame_Manager::OnOff_RaderIcons(_bool bOnOff)
 {
 	// 에러상태에 따른 UI 상태 세팅
-	if (true == bOnOff) // Error
+	if (true == bOnOff) // 레이더 아이콘을 켠다 -> Error 끔
 	{
-		m_bError = true;
-
-
+		m_bError = false;
 	}
 	else // Default
 	{
-		m_bError = false;
+		m_bError = true;
+	}
+}
+
+void CUIMinigame_Manager::On_GrandprixPopup(_uint iIndex)
+{
+	if (0 == m_Popup.size())
+		return;
+
+	for (auto& iter : m_Popup)
+	{
+		if (nullptr != iter)
+			iter->Set_TextureIndex(iIndex);
 	}
 }
 
@@ -780,7 +803,12 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Error"),
 		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_ERROR), LAYER_UI)))
 		return E_FAIL;
-
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Popup_Background"),
+		CUI_Grandprix_Popup::Create(m_pDevice, m_pContext, CUI_Grandprix_Popup::UI_GRANDPRIX_POPUP::POPUP_BACKGROUND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Popup_Main"),
+		CUI_Grandprix_Popup::Create(m_pDevice, m_pContext, CUI_Grandprix_Popup::UI_GRANDPRIX_POPUP::POPUP_MAIN), LAYER_UI)))
+		return E_FAIL;
 
 	// 매니저 내에서는 프로토타입만 생성함
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Enemy_WorldHP"),
@@ -1411,6 +1439,26 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 	m_Vignette.push_back(dynamic_cast<CUI_Grandprix_Vignette*>(pBackground));
 	Safe_AddRef(pBackground);
 
+	m_Popup.reserve(2);
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 512.f;
+	UIDesc.fCY = 256.f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = 200.f;
+	CGameObject* pPopup = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Popup_Background"), &UIDesc, &pPopup)))
+		return E_FAIL;
+	m_Popup.push_back(dynamic_cast<CUI_Grandprix_Popup*>(pPopup));
+	Safe_AddRef(pPopup);
+
+	pPopup = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Popup_Main"), &UIDesc, &pPopup)))
+		return E_FAIL;
+	m_Popup.push_back(dynamic_cast<CUI_Grandprix_Popup*>(pPopup));
+	Safe_AddRef(pPopup);
+
 	return S_OK;
 }
 
@@ -1560,25 +1608,26 @@ HRESULT CUIMinigame_Manager::Ready_Curling()
 void CUIMinigame_Manager::Tick_Grandprix(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::N))
-		Start_Grandprix();
+		Intro_Grandprix();
 
 	if (KEY_TAP(KEY::M))
 		End_Grandprix();
 
-	// Error Test
-	if (KEY_TAP(KEY::O))
-		OnOff_RaderIcons(false); // On Error
-	if (KEY_TAP(KEY::P))
-		OnOff_RaderIcons(true); // Off Error
+	if (true == m_bError)
+	{
+		// Error로 레이더를 볼 수 없을 때 계속 비네트를 켠다
+		if (false == m_Vignette[CUI_Grandprix_Vignette::VIGNETTE_DAMAGED]->Get_Active())
+			On_DamagedVignette();
+	}
 
 	if (0 < m_IntroIcons.size())
 	{
-		if (false == m_bIntroFinished)
+		if (true == m_bIntroStarted && false == m_bIntroFinished)
 		{
-//			if (true == m_pIntroBackground->Get_Active())
-//			{
-//				CUI_Manager::GetInstance()->OnOff_TextUI(false);
-//			}
+			if (true == m_pIntroBackground->Get_Active())
+			{
+				CUI_Manager::GetInstance()->OnOff_TextUI(false);
+			}
 
 			if (false == m_IntroIcons[CUI_Grandprix_IntroIcons::SWORDMAN]->Get_Active())
 			{
@@ -1630,30 +1679,25 @@ void CUIMinigame_Manager::Tick_Grandprix(_float fTimeDelta)
 
 	if (true == m_bCountStart && false == m_bGrandprixEnd)
 	{
-		if (true == CUI_Manager::GetInstance()->Is_FadeFinished())
+		if (m_iCountIndex == 5)
 		{
+			OnOff_GrandprixGauge(true);
+		}
 
-			if (m_iCountIndex == 5)
-			{
-				//OnOff_Grandprix(true);
-				OnOff_GrandprixGauge(true);
-			}
+		if (0 == m_Counts.size() || m_iCountIndex > m_Counts.size() - 2)
+			return;
 
-			if (0 == m_Counts.size() || m_iCountIndex > m_Counts.size() - 2)
-				return;
+		if (false == m_Counts[m_iCountIndex]->Get_Active()) // 만약 객체가 활성화가 되어있지 않다면
+			m_Counts[m_iCountIndex]->Set_Active(true); // 활성화를 시킨다.
 
-			if (false == m_Counts[m_iCountIndex]->Get_Active()) // 만약 객체가 활성화가 되어있지 않다면
-				m_Counts[m_iCountIndex]->Set_Active(true); // 활성화를 시킨다.
+		if (true == m_Counts[m_iCountIndex]->Get_Active() && // 활성화 되어있는 상황에서
+			false == m_Counts[m_iCountIndex]->Is_Started()) // 아직 resize를 진행하지 않았다면
+			m_Counts[m_iCountIndex]->Set_Start(true); // 시작하도록 세팅한다.
 
-			if (true == m_Counts[m_iCountIndex]->Get_Active() && // 활성화 되어있는 상황에서
-				false == m_Counts[m_iCountIndex]->Is_Started()) // 아직 resize를 진행하지 않았다면
-				m_Counts[m_iCountIndex]->Set_Start(true); // 시작하도록 세팅한다.
-
-			if (true == m_Counts[m_iCountIndex]->Is_End()) // 사이즈 조정이 끝났다면
-			{
-				m_Counts[m_iCountIndex]->Set_Active(false); // 비활성화 시키고
-				m_iCountIndex++; // 다음 인덱스로 넘어간다.
-			}
+		if (true == m_Counts[m_iCountIndex]->Is_End()) // 사이즈 조정이 끝났다면
+		{
+			m_Counts[m_iCountIndex]->Set_Active(false); // 비활성화 시키고
+			m_iCountIndex++; // 다음 인덱스로 넘어간다.
 		}
 	}
 }
@@ -1727,6 +1771,9 @@ void CUIMinigame_Manager::Free()
 	for (auto& pVignette : m_Vignette)
 		Safe_Release(pVignette);
 	m_Vignette.clear();
+	for (auto& pPopup : m_Popup)
+		Safe_Release(pPopup);
+	m_Popup.clear();
 
 	// 컬링
 	for (auto& pUI : m_CurlingGameUIs)

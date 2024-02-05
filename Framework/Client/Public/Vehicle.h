@@ -43,6 +43,7 @@ public:
 		VEHICLE_LEFT_EVASIVE, // 왼쪽으로 회피
 		VEHICLE_RIGHT_EVASIVE, // 오른쪽으로 회피.
 		VEHICLE_DAMAGED,
+		VEHICLE_BACKFLIP, // 아이템 박스 Bomb 충돌
 
 		// 미니게임용 상태(적)
 		VEHICLE_TRACE,

@@ -6,12 +6,14 @@
 #include "State_VehicleFlying_Run.h"
 #include "State_VehicleFlying_Rush.h"
 #include "State_VehicleFlying_Damaged.h"
+#include "State_VehicleFlying_Backflip.h"
 
 #include "Character.h"
 
 #include "UIMinigame_Manager.h"
 #include "Trail.h"
 #include "UI_Grandprix_RaderIcon.h"
+#include "Grandprix_ItemBox.h"
 
 #include "Pool.h"
 #include "Character_Biplane_Bullet.h"
@@ -297,8 +299,24 @@ void CVehicle_Flying_Biplane::Collision_Enter(const COLLISION_INFO& tInfo)
 		{
 			On_Damaged(tInfo);
 		}
+
+		if (tInfo.pOther->Get_ObjectTag() == TEXT("Grandprix_ItemBox"))
+		{
+			if (nullptr == dynamic_cast<CGrandprix_ItemBox*>(tInfo.pOther))
+				return;
+
+			if (dynamic_cast<CGrandprix_ItemBox*>(tInfo.pOther)->Get_ItemType()
+				!= CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB)
+				return;
+
+			Vec4 vItemPos = tInfo.pOther->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+			Vec4 vMyPos = m_pTransformCom->Get_Position();
+
+			m_pRigidBodyCom->Add_Velocity(XMVector4Normalize(vMyPos - vItemPos), 40.f, true);
+			m_pStateCom->Change_State(VEHICLE_BACKFLIP);
+		}
 	}
-	
+
 }
 
 void CVehicle_Flying_Biplane::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -422,7 +440,9 @@ HRESULT CVehicle_Flying_Biplane::Ready_States()
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_DAMAGED, CState_VehicleFlying_Damaged::Create(m_pStateCom, strAnimationNames));
 
-
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_BACKFLIP, CState_VehicleFlying_Backflip::Create(m_pStateCom, strAnimationNames));
 
 	/*strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");

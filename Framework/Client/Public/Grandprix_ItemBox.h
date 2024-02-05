@@ -16,6 +16,7 @@ public:
 	void Set_MinMaxPosition(Vec4 vOriginPos);
 	void Set_Active(_bool bActive) { m_bActive = bActive; }
 	_bool Is_Active() { return m_bActive; }
+	const ITEMBOX_TYPE& Get_ItemType() { return m_eItemType; }
 
 public:
 	virtual HRESULT Initialize_Prototype() override;

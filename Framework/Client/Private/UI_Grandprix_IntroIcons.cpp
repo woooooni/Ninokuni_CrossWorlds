@@ -73,7 +73,7 @@ HRESULT CUI_Grandprix_IntroIcons::Initialize(void* pArg)
 		m_tInfo.fX = m_vStart.x;
 		m_tInfo.fY = m_vStart.y;
 
-		m_fSpeed = 800.f;
+		m_fSpeed = 900.f;
 		break;
 
 	case GRANDPRIX_INTRO::ENGINEER:
@@ -83,7 +83,7 @@ HRESULT CUI_Grandprix_IntroIcons::Initialize(void* pArg)
 		m_tInfo.fX = m_vStart.x;
 		m_tInfo.fY = m_vStart.y;
 
-		m_fSpeed = 800.f;
+		m_fSpeed = 1000.f;
 		break;
 
 	case GRANDPRIX_INTRO::SPLITTER:
@@ -99,7 +99,7 @@ HRESULT CUI_Grandprix_IntroIcons::Initialize(void* pArg)
 		m_vStart = { m_tInfo.fCX, m_tInfo.fCY };
 		m_vGoal = { m_tInfo.fCX * 1.5f, m_tInfo.fCY * 1.5f };
 
-		m_fSpeed = 200.f;
+		m_fSpeed = 300.f;
 		break;
 
 	default:

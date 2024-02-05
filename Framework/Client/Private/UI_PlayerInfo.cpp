@@ -4,6 +4,7 @@
 #include "UI_Manager.h"
 #include "Game_Manager.h"
 #include "Player.h"
+#include "UIMinigame_Manager.h"
 
 CUI_PlayerInfo::CUI_PlayerInfo(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_PlayerInfo")
@@ -97,6 +98,10 @@ void CUI_PlayerInfo::LateTick(_float fTimeDelta)
 		//{
 			if (m_bAddText)
 			{
+				//if (LEVELID::LEVEL_EVERMORE == GI->Get_CurrentLevel() &&
+				//	true == CUIMinigame_Manager::GetInstance()->Is_GrandprixIntroStarted())
+				//	return;
+
 				CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
 				if (nullptr == pPlayer)
 					return;

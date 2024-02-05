@@ -153,7 +153,7 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
             {
                 Vec3 vVelocityDir = m_pTransformCom->Get_Look();
                 vVelocityDir.y = 0.f;
-                m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), 200.f * fTimeDelta, false); // 200.f -> 100.f·Î ¼öÁ¤
+                m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), 200.f * fTimeDelta, false);
                 m_pRigidBodyCom->Set_Ground(false);
                 m_pRigidBodyCom->Set_Use_Gravity(true);
             }
@@ -176,22 +176,25 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
             pFollowCam->Set_CanInput(false);
     }
 
-    if (KEY_HOLD(KEY::Q))
-    {
-        bMove = true;
-
-        _matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-        _vector vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
-        _vector vCamLook = vCamWolrd.r[CTransform::STATE_LOOK];
-
-        vRight = XMVector3Normalize(vRight);
-        vCamLook = XMVector3Normalize(vCamLook);
-
-        _float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
-
-        m_pTransformCom->Rotation_Acc(vRight, fRadian);
-        m_pTransformCom->Move(vCamLook, m_pVehicle->Get_Speed(), fTimeDelta);
-    }
+//    if (KEY_HOLD(KEY::Q))
+//    {
+//        bMove = true;
+//
+//        _matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+//        _vector vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
+//        //_vector vCamLook = vCamWolrd.r[CTransform::STATE_LOOK];
+//        _vector vUp = m_pTransformCom->Get_State(CTransform::STATE_UP);
+//
+//        vRight = XMVector3Normalize(vRight);
+//        //vCamLook = XMVector3Normalize(vCamLook);
+//        vUp = XMVector3Normalize(vUp);
+//
+//        //_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
+//        _float fRadian = XMVectorGetX(XMVector3Dot(vRight, vUp)) * 10.f * fTimeDelta;
+//
+//        m_pTransformCom->Rotation_Acc(vUp, fRadian);
+//        //m_pTransformCom->Move(vUp, m_pVehicle->Get_Speed(), fTimeDelta);
+//    }
 
     if (KEY_HOLD(KEY::RBTN))
     {
