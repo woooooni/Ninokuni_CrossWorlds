@@ -84,7 +84,7 @@ void CVfx_Stellia_Spawn_Roar::Tick(_float fTimeDelta)
 		else if (m_iCount == TYPE_ET2_E_ROAR && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_ROAR])
 		{
 			m_fTimeAcc += fTimeDelta;
-			if (m_fTimeAcc >= 0.2f) // 47 65 95 117 131 166 176 /0.5 0.0 0.0 0.0
+			if (m_fTimeAcc >= 0.225f) // 47 65 95 117 131 166 176 /0.5 0.0 0.0 0.0
 			{
 				CModel* pOwnerModel = m_pOwnerObject->Get_Component<CModel>(L"Com_Model");
 				if (pOwnerModel != nullptr)
