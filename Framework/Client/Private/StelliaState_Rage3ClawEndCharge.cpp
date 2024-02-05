@@ -29,6 +29,8 @@ void CStelliaState_Rage3ClawEndCharge::Enter_State(void* pArg)
 
 void CStelliaState_Rage3ClawEndCharge::Tick_State(_float fTimeDelta)
 {
+	__super::Tick_State(fTimeDelta);
+
 	// 스텔리아를 다시 AroundDist 까지 달린다.
 	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRage3AroundSpeed, fTimeDelta);
 

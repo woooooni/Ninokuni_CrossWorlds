@@ -71,6 +71,11 @@
 
 /* Witch */
 #include "Vfx_Witch_Skill_BlackHole_Drain.h"
+#include "Vfx_Witch_Skill_BlackHole_Bomb.h"
+
+#include "Vfx_Witch_Skill_Rage02Sphere_Ready.h"
+
+#include "Vfx_Witch_Skill_Laser_Warning.h"
 
 // -------------------------------------------------
 // ANIMAL //

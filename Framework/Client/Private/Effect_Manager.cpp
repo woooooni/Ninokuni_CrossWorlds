@@ -1002,6 +1002,22 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Witch_Skill_BlackHole_Drain"),
 			CVfx_Witch_Skill_BlackHole_Drain::Create(m_pDevice, m_pContext, TEXT("Witch_Skill_BlackHole_Drain")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
+
+		// Prototype_Vfx_Witch_Skill_BlackHole_Bomb
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Witch_Skill_BlackHole_Bomb"),
+			CVfx_Witch_Skill_BlackHole_Bomb::Create(m_pDevice, m_pContext, TEXT("Witch_Skill_BlackHole_Bomb")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Witch_Skill_Rage02Sphere_Ready
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Witch_Skill_Rage02Sphere_Ready"),
+			CVfx_Witch_Skill_Rage02Sphere_Ready::Create(m_pDevice, m_pContext, TEXT("Witch_Skill_Rage02Sphere_Ready")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Witch_Skill_Laser_Warning
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Witch_Skill_Laser_Warning"),
+			CVfx_Witch_Skill_Laser_Warning::Create(m_pDevice, m_pContext, TEXT("Witch_Skill_Laser_Warning")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
 	}
 
 	return S_OK;

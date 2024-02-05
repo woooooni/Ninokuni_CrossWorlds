@@ -3,12 +3,12 @@
 #include "MonsterProjectile.h"
 
 BEGIN(Client)
-class CWitch_BlackHoleBomb final : public CMonsterProjectile
+class CWitch_Laser final : public CMonsterProjectile
 {
 private:
-	CWitch_BlackHoleBomb(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CWitch_BlackHoleBomb(const CWitch_BlackHoleBomb& rhs);
-	virtual ~CWitch_BlackHoleBomb() = default;
+	CWitch_Laser(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CWitch_Laser(const CWitch_Laser& rhs);
+	virtual ~CWitch_Laser() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -26,10 +26,17 @@ private:
 	virtual HRESULT Ready_Colliders();
 
 private:
-	class CVfx* m_pEffectBomb = nullptr;
+	class CVfx* m_pLaserWarning = nullptr;
+	class CVfx* m_pLaser = nullptr;
+
+	_bool m_bIsLaserWarningCreate = false;
+	_bool m_bIsLaserCreate = false;
+
+	_float m_fAccTime = 0.f;
+	_float m_fActiveTime = 0.f;
 
 public:
-	static CWitch_BlackHoleBomb* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CWitch_Laser* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

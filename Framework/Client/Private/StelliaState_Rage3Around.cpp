@@ -49,9 +49,18 @@ void CStelliaState_Rage3Around::Enter_State(void* pArg)
 
 void CStelliaState_Rage3Around::Tick_State(_float fTimeDelta)
 {
+	__super::Tick_State(fTimeDelta);
+
 	m_fAccAroundTime += fTimeDelta;
 
-	m_pTransformCom->RevolutionRotation(Vec3(m_pStellia->Get_OriginPos()), Vec3(0.f, 1.f, 0.f), XMConvertToRadians(0.6f));
+	m_pTransformCom->RevolutionRotation(Vec3(m_pStellia->Get_OriginPos()), Vec3(0.f, 1.f, 0.f), XMConvertToRadians(1.f));
+
+	Vec4 vCenterToStellia = m_pStellia->Get_OriginPos() - (Vec4)m_pTransformCom->Get_Position();
+	if (fabs(vCenterToStellia.Length()) > m_fAroundDist)
+	{
+		m_pTransformCom->Move(m_pTransformCom->Get_Right(), 1.f, fTimeDelta);
+	}
+
 
 	// OriginPos를 바라보며 계속 돈다.
 	//m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_OriginPos());

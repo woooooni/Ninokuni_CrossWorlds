@@ -39,12 +39,14 @@ void CStelliaState_Rage3Charge::Enter_State(void* pArg)
 
 void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 {
+	__super::Tick_State(fTimeDelta);
+
 	m_fAccChargeTime += fTimeDelta;
 
 	if (m_pStellia->Get_IsPlayerGuardEvent())
 	{
-		m_pPlayerTransform->LookAt_ForLandObject(m_pTransformCom->Get_Position());
-		m_pPlayerTransform->Move(-m_pPlayerTransform->Get_Look(), 3.f, fTimeDelta);
+		m_pStellia->Get_TargetDesc().pTragetTransform->LookAt_ForLandObject(m_pTransformCom->Get_Position());
+		m_pStellia->Get_TargetDesc().pTragetTransform->Move(-m_pStellia->Get_TargetDesc().pTragetTransform->Get_Look(), 3.f, fTimeDelta);
 
 		m_fAccClickTime += fTimeDelta;
 		m_fAccShakeTime += fTimeDelta;
@@ -78,16 +80,16 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 			{
 				Vec3 m_vRightRot = XMVector3Rotate(vLookNormal, XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians(45.f), 0.0f));
 
-				m_pPlayer->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(m_vRightRot, 10.f, false);
-				m_pPlayer->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity({ 0.f, 1.f, 0.f }, 10.f, false);
+				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(m_vRightRot, 10.f, false);
+				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity({ 0.f, 1.f, 0.f }, 10.f, false);
 			}
 			/* 보스가 바라보는 방향을 기준으로 왼쪽에 위치. */
 			else if (fCrossProductY < 0.f)
 			{
 				Vec3 m_vLeftRot = XMVector3Rotate(vLookNormal, XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians(-45.f), 0.0f));
 
-				m_pPlayer->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(m_vLeftRot, 10.f, false);
-				m_pPlayer->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity({ 0.f, 1.f, 0.f }, 10.f, false);
+				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(m_vLeftRot, 10.f, false);
+				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity({ 0.f, 1.f, 0.f }, 10.f, false);
 			}
 
 			m_pStellia->Set_IsPlayerGuardEvent(false);
@@ -96,7 +98,7 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		// 파훼 성공
 		if (m_iClickPower >= m_iClickDest)
 		{
-			if (m_iBreakCount < 3)
+			if (m_iBreakCount < 2)
 			{
 				m_iBreakCount += 1;
 				m_pStellia->Set_IsPlayerGuardEvent(false);
@@ -106,8 +108,8 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 			else
 			{
 				// 레이지 종료
-				_int iStunTime = 15.f;
-				m_pStateMachineCom->Change_State(CStellia::STELLIA_COUNTERSTART, &iStunTime);
+				_float fStunTime = 15.f;
+				m_pStateMachineCom->Change_State(CStellia::STELLIA_COUNTERSTART, &fStunTime);
 				return;
 			}
 		}
@@ -115,11 +117,11 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		// 파훼 실패(중간에 가드 해제)
 		else if (m_pPlayer->Get_CharacterStateCom()->Get_CurrState() != CCharacter::BATTLE_GUARD)
 		{
-			m_pPlayer->Get_CharacterStateCom()->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
-			m_pPlayer->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
-				-m_pPlayer->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Look(), 10.f, false);
+			dynamic_cast<CCharacter*>(m_pStellia->Get_TargetDesc().pTarget)->Get_CharacterStateCom()->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
+			m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
+				-m_pStellia->Get_TargetDesc().pTarget->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Look(), 10.f, false);
 
-			m_pPlayer->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
+			m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
 				{ 0.f, 1.f, 0.f }, 10.f, false);
 
 			m_pStellia->Set_IsPlayerGuardEvent(false);

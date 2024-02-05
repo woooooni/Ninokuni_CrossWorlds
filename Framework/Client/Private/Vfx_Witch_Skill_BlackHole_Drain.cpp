@@ -29,13 +29,13 @@ HRESULT CVfx_Witch_Skill_BlackHole_Drain::Initialize_Prototype()
 
 	// 0
 	m_pFrameTriger[TYPE_E_SPHERE] = 0;
-	m_pPositionOffset[TYPE_E_SPHERE] = _float3(0.f, 1.f, 0.f);
+	m_pPositionOffset[TYPE_E_SPHERE] = _float3(0.f, 0.f, 0.f);
 	m_pScaleOffset[TYPE_E_SPHERE] = _float3(0.1f, 0.1f, 0.1f);
 	m_pRotationOffset[TYPE_E_SPHERE] = _float3(0.f, 0.f, 0.f);
 
 	// 1
 	m_pFrameTriger[TYPE_E_DRAIN] = 0;
-	m_pPositionOffset[TYPE_E_DRAIN] = _float3(0.f, 0.f, 0.f); 
+	m_pPositionOffset[TYPE_E_DRAIN] = _float3(0.f, 0.f, 0.f);
 	m_pScaleOffset[TYPE_E_DRAIN] = _float3(2.5f, 2.5f, 2.5f);  
 	m_pRotationOffset[TYPE_E_DRAIN] = _float3(0.f, 0.f, 0.f); 
 
@@ -51,6 +51,18 @@ HRESULT CVfx_Witch_Skill_BlackHole_Drain::Initialize_Prototype()
 	m_pScaleOffset[TYPE_E_DRAND_SMALLER] = _float3(2.5f, 2.5f, 2.5f);
 	m_pRotationOffset[TYPE_E_DRAND_SMALLER] = _float3(0.f, 0.f, 0.f);
 
+	// 4
+	m_pFrameTriger[TYPE_E_SPHERE_SMALLER02] = 0;
+	m_pPositionOffset[TYPE_E_SPHERE_SMALLER02] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_E_SPHERE_SMALLER02] = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_E_SPHERE_SMALLER02] = _float3(0.f, 0.f, 0.f);
+
+	// 5
+	m_pFrameTriger[TYPE_E_DRAND_SMALLER02] = 0;
+	m_pPositionOffset[TYPE_E_DRAND_SMALLER02] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_E_DRAND_SMALLER02] = _float3(2.5f, 2.5f, 2.5f);
+	m_pRotationOffset[TYPE_E_DRAND_SMALLER02] = _float3(0.f, 0.f, 0.f);
+
 
 	return S_OK;
 }
@@ -63,35 +75,53 @@ HRESULT CVfx_Witch_Skill_BlackHole_Drain::Initialize(void* pArg)
 void CVfx_Witch_Skill_BlackHole_Drain::Tick(_float fTimeDelta)
 {
 	// 블랙홀 최초 생성
-	if (m_pBlackHole == nullptr)
+	if (!m_bIsCreate && m_pBlackHole == nullptr)
 	{
 		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_BalckHole_Sphere"),
 			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_SPHERE], m_pScaleOffset[TYPE_E_SPHERE], m_pRotationOffset[TYPE_E_SPHERE], nullptr, &m_pBlackHole);
 	
 		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_BalckHole_Drain"),
 			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_DRAIN], m_pScaleOffset[TYPE_E_DRAIN], m_pRotationOffset[TYPE_E_DRAIN]);
+	
+		m_bIsCreate = true;
 	}
-	else
+	else if(!m_bIsSmaller && m_pBlackHoleSmaller == nullptr)
 	{
 		// 블랙홀 이펙트가 끝났다면
 		if (m_pBlackHole->Is_Dead() || m_pBlackHole->Get_DieEffect())
 		{
 			// 작아지는 블랙홀 생성
-			if (m_pBlackHoleSmaller == nullptr)
+			if (!m_bIsSmaller && m_pBlackHoleSmaller == nullptr)
 			{
 				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_BalckHole_Sphere_Smaller"),
 					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_SPHERE_SMALLER], m_pScaleOffset[TYPE_E_SPHERE_SMALLER], m_pRotationOffset[TYPE_E_SPHERE_SMALLER], nullptr, &m_pBlackHoleSmaller);
 
 				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_BalckHole_Drain_Smaller"),
 					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_DRAND_SMALLER], m_pScaleOffset[TYPE_E_DRAND_SMALLER], m_pRotationOffset[TYPE_E_DRAND_SMALLER]);
+		
+				m_bIsSmaller = true;
 			}
 		}
 	}
-
-	if (m_pBlackHoleSmaller != nullptr)
+	// 작아지는 이펙트가 끝났다면
+	else if (!m_bIsSmaller02 && m_pBlackHoleSmaller02 == nullptr)
 	{
-		// 작아지는 블랙홀이 끝났다면 
-		if (m_pBlackHoleSmaller->Is_Dead() || m_pBlackHole->Get_DieEffect())
+		if (m_pBlackHoleSmaller->Is_Dead() || m_pBlackHoleSmaller->Get_DieEffect())
+		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_BalckHole_Sphere_Smaller02"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_SPHERE_SMALLER02], m_pScaleOffset[TYPE_E_SPHERE_SMALLER02], m_pRotationOffset[TYPE_E_SPHERE_SMALLER02], nullptr, &m_pBlackHoleSmaller02);
+
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_BalckHole_Drain_Smaller02"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_DRAND_SMALLER], m_pScaleOffset[TYPE_E_DRAND_SMALLER02], m_pRotationOffset[TYPE_E_DRAND_SMALLER02]);
+
+			m_bIsSmaller02 = true;
+		}
+	}
+
+	// 모든 블랙홀이 끝났다면 
+	if (m_pBlackHoleSmaller02 != nullptr)
+	{
+		if (m_pBlackHoleSmaller02->Is_Dead() || m_pBlackHoleSmaller02->Get_DieEffect())
 		{
 			Set_Dead(true);
 		}

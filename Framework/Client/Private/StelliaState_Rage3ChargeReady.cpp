@@ -29,7 +29,9 @@ void CStelliaState_Rage3ChargeReady::Enter_State(void* pArg)
 
 void CStelliaState_Rage3ChargeReady::Tick_State(_float fTimeDelta)
 {
-	m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+	__super::Tick_State(fTimeDelta);
+
+	m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position());
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{

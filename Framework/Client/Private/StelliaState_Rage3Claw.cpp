@@ -34,7 +34,7 @@ void CStelliaState_Rage3Claw::Tick_State(_float fTimeDelta)
 	}
 
 	if (m_pModelCom->Get_CurrAnimationFrame() == 21)
-		m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+		m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position());
 
 	if (m_pModelCom->Get_CurrAnimationFrame() >= 22 && m_pModelCom->Get_CurrAnimationFrame() <= 27)
 	{

@@ -20,7 +20,7 @@ HRESULT CStelliaState_Rage3ChargeBreak::Initialize(const list<wstring>& Animatio
 void CStelliaState_Rage3ChargeBreak::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill06_New_End"));
-	m_tChargeLerp.Start(m_fSprintSpeed * 2.f, 0.f, 1.f, LERP_MODE::EASE_IN);
+	m_tChargeLerp.Start(m_fSprintSpeed, 0.f, 1.f, LERP_MODE::EASE_IN);
 }
 
 void CStelliaState_Rage3ChargeBreak::Tick_State(_float fTimeDelta)

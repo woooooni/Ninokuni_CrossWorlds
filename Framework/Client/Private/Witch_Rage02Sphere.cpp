@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Witch_BlackHoleBomb.h"
+#include "Witch_Rage02Sphere.h"
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
@@ -10,18 +10,20 @@
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 
-CWitch_BlackHoleBomb::CWitch_BlackHoleBomb(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+#include "Vfx.h"
+
+CWitch_Rage02Sphere::CWitch_Rage02Sphere(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CMonsterProjectile(pDevice, pContext, strObjectTag)
 {
 }
 
-CWitch_BlackHoleBomb::CWitch_BlackHoleBomb(const CWitch_BlackHoleBomb& rhs)
+CWitch_Rage02Sphere::CWitch_Rage02Sphere(const CWitch_Rage02Sphere& rhs)
 	: CMonsterProjectile(rhs)
 {
 
 }
 
-HRESULT CWitch_BlackHoleBomb::Initialize_Prototype()
+HRESULT CWitch_Rage02Sphere::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -30,8 +32,9 @@ HRESULT CWitch_BlackHoleBomb::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CWitch_BlackHoleBomb::Initialize(void* pArg)
+HRESULT CWitch_Rage02Sphere::Initialize(void* pArg)
 {
+	// 테스트 끝나면 풀자.
 	if (pArg == nullptr)
 		return E_FAIL;
 
@@ -44,21 +47,56 @@ HRESULT CWitch_BlackHoleBomb::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	Set_Collider_Elemental(m_pOwner->Get_Stat().eElementType);
-	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 50.f, true);
-	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
+	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
 
-	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_BlackHole_Drain"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pEffectBomb);
+	m_fActiveTime = 0.5f;
 
 	return S_OK;
 }
 
-void CWitch_BlackHoleBomb::Tick(_float fTimeDelta)
+void CWitch_Rage02Sphere::Tick(_float fTimeDelta)
 {
+	if (m_pSphere == nullptr && !m_bIsSphereCreate)
+	{
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_Rage02Sphere_Ready"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pSphere);
+
+		m_bIsSphereCreate = true;
+	}
+	else
+	{
+		if (m_pSphere->Is_Dead() && !m_bIsBombCreate)
+		{
+			Vec4 vPos = m_pTransformCom->Get_Position();
+			vPos.y = 1.7f;
+			m_pTransformCom->Set_Position(vPos);
+
+			// 폭발 생성
+			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_BlackHole_Bomb"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pBomb);
+			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
+			m_bIsBombCreate = true;
+		}
+	}
+
+	// 폭발 이펙트
+	if (m_pBomb != nullptr)
+	{
+		m_fAccTime += fTimeDelta;
+		if (m_fAccTime > m_fActiveTime)
+		{
+			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
+
+		}
+
+		if (m_pBomb->Is_Dead())
+		{
+			Set_Dead(true);
+		}
+	}
+
 	__super::Tick(fTimeDelta);
 }
 
-void CWitch_BlackHoleBomb::LateTick(_float fTimeDelta)
+void CWitch_Rage02Sphere::LateTick(_float fTimeDelta)
 {
 	LateUpdate_Collider(fTimeDelta);
 
@@ -71,7 +109,7 @@ void CWitch_BlackHoleBomb::LateTick(_float fTimeDelta)
 #endif
 }
 
-void CWitch_BlackHoleBomb::Collision_Enter(const COLLISION_INFO& tInfo)
+void CWitch_Rage02Sphere::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
 		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
@@ -81,21 +119,23 @@ void CWitch_BlackHoleBomb::Collision_Enter(const COLLISION_INFO& tInfo)
 	}
 }
 
-void CWitch_BlackHoleBomb::Collision_Continue(const COLLISION_INFO& tInfo)
+void CWitch_Rage02Sphere::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 
 }
 
-void CWitch_BlackHoleBomb::Collision_Exit(const COLLISION_INFO& tInfo)
+void CWitch_Rage02Sphere::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 
 }
 
-HRESULT CWitch_BlackHoleBomb::Ready_Components()
+HRESULT CWitch_Rage02Sphere::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
+
+
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -109,14 +149,14 @@ HRESULT CWitch_BlackHoleBomb::Ready_Components()
 }
 
 #pragma region Ready_Colliders
-HRESULT CWitch_BlackHoleBomb::Ready_Colliders()
+HRESULT CWitch_Rage02Sphere::Ready_Colliders()
 {
 	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
 	ZeroMemory(&SphereDesc, sizeof SphereDesc);
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 1.f;
+	tSphere.Radius = 1.5f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
@@ -132,32 +172,32 @@ HRESULT CWitch_BlackHoleBomb::Ready_Colliders()
 
 #pragma endregion
 
-CWitch_BlackHoleBomb* CWitch_BlackHoleBomb::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CWitch_Rage02Sphere* CWitch_Rage02Sphere::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 {
-	CWitch_BlackHoleBomb* pInstance = new CWitch_BlackHoleBomb(pDevice, pContext, strObjectTag);
+	CWitch_Rage02Sphere* pInstance = new CWitch_Rage02Sphere(pDevice, pContext, strObjectTag);
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Create Failed : CWitch_BlackHoleBomb");
+		MSG_BOX("Create Failed : CWitch_Rage02Sphere");
 		Safe_Release(pInstance);
 		return nullptr;
 	}
 	return pInstance;
 }
 
-CGameObject* CWitch_BlackHoleBomb::Clone(void* pArg)
+CGameObject* CWitch_Rage02Sphere::Clone(void* pArg)
 {
-	CWitch_BlackHoleBomb* pInstance = new CWitch_BlackHoleBomb(*this);
+	CWitch_Rage02Sphere* pInstance = new CWitch_Rage02Sphere(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Cloned : CWitch_BlackHoleBomb");
+		MSG_BOX("Failed to Cloned : CWitch_Rage02Sphere");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CWitch_BlackHoleBomb::Free()
+void CWitch_Rage02Sphere::Free()
 {
 	__super::Free();
 }

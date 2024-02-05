@@ -84,6 +84,7 @@
 #include "Stellia_Crystal_Controller.h"
 
 #include "UI_Manager.h"
+#include "Game_Manager.h"
 #include "Player.h"
 
 CStellia::CStellia(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
@@ -146,6 +147,9 @@ HRESULT CStellia::Initialize(void* pArg)
 
 void CStellia::Tick(_float fTimeDelta)
 {
+	m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+	m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
+
 	/* 최초 등장 대기 시간 */
 	//if (!m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_INTRO])
 	//{
@@ -364,7 +368,7 @@ HRESULT CStellia::Ready_Components()
 
 		m_vOriginPos = m_pTransformCom->Get_Position();
 		m_vOriginLook = m_pTransformCom->Get_Look();
-		m_vRage3StartPos = Vec4(143.436f, -0.5f, 150.378, 1.f);
+		m_vRage3StartPos = Vec4(143.436f, 2.311f, 150.378, 1.f);
 
 	//}
 

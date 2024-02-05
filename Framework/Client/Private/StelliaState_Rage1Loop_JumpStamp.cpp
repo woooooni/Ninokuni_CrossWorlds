@@ -46,7 +46,7 @@ void CStelliaState_Rage1Loop_JumpStamp::Tick_State(_float fTimeDelta)
 	}
 
 	if (m_pModelCom->Get_CurrAnimationFrame() < 25)
-		vDestPos = m_pPlayerTransform->Get_Position();
+		vDestPos = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position();
 	else
 	{
 		if (m_pDecal != nullptr)

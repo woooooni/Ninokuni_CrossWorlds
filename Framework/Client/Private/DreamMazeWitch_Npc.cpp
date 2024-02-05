@@ -12,6 +12,8 @@
 #include "NpcDMWState_InvasionDisappear.h"
 
 #include "NpcDMWState_Following.h"
+#include "NpcDMWState_Attack.h"
+#include "NpcDMWState_Rage3Laser.h"
 
 #include "Game_Manager.h"
 #include "Player.h"
@@ -187,7 +189,15 @@ HRESULT CDreamMazeWitch_Npc::Ready_States()
 	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Walk");
 	m_pStateCom->Add_State(WITCHSTATE_BATTLE_FOLLOWING, CNpcDMWState_Following::Create(m_pStateCom, strAnimationName));
 
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Attack02");
+	m_pStateCom->Add_State(WITCHSTATE_BATTLE_ATTACK, CNpcDMWState_Attack::Create(m_pStateCom, strAnimationName));
 
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Attack02");
+	m_pStateCom->Add_State(WITCHSTATE_BATTLE_LASER, CNpcDMWState_Rage3Laser::Create(m_pStateCom, strAnimationName));
+
+	//m_pStateCom->Change_State(WITCHSTATE_BATTLE_FOLLOWING);
 	m_pStateCom->Change_State(WITCHSTATE_INVASION_IDLE);
 
 	return S_OK;

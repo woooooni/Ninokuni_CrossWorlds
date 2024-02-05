@@ -39,7 +39,13 @@ void CNpcDMWState_Following::Tick_State(_float fTimeDelta)
 		if (m_fAccTime >= m_fAttackCoolTime)
 		{
 			m_fAccTime = m_fAttackCoolTime - m_fAccTime;
-			m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
+
+			if (m_iAtkIndex >= m_vecAtkState.size())
+				m_iAtkIndex = 0;
+
+			m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
+
+			//m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
 		}
 	}
 
