@@ -19,6 +19,7 @@ public:
 
 private:
 	_vector vDestPos = {};
+	_bool m_bJumpEffect = false;
 
 public:
 	static CStelliaState_Rage1StartJump* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);

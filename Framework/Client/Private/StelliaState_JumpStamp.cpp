@@ -24,32 +24,17 @@ void CStelliaState_JumpStamp::Enter_State(void* pArg)
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill02_New"));
 
 	// Effect Create
-	CTransform* pTransformCom = m_pStellia->Get_Component<CTransform>(L"Com_Transform");
-	if (pTransformCom == nullptr)
-		return;
-	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_JumpStamp"), pTransformCom->Get_WorldMatrix(), m_pStellia);
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_JumpStamp"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pDecal == nullptr && m_pModelCom->Get_CurrAnimationFrame() <= 70)
-	{
-		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_Warning"), m_pTransformCom->Get_WorldMatrix(),
-			Vec3(0.f, 0.f, 0.f), Vec3(12.f, 2.f, 12.f), Vec3(0.f, 0.f, 0.f), m_pPlayer, &m_pDecal, false);
-		Safe_AddRef(m_pDecal);
-	}
-
 	if (m_pModelCom->Get_CurrAnimationFrame() < 35)
 		vDestPos = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position();
-	else
-	{
-		if (m_pDecal != nullptr)
-			m_pDecal->Set_Owner(nullptr);
-	}
 
-	if (m_pModelCom->Get_CurrAnimationFrame() >= 35 && m_pModelCom->Get_CurrAnimationFrame() <= 80)
+	else if (m_pModelCom->Get_CurrAnimationFrame() >= 35 && m_pModelCom->Get_CurrAnimationFrame() <= 80)
 	{
 		m_pTransformCom->LookAt_ForLandObject(vDestPos);
 
@@ -61,16 +46,7 @@ void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCurVector);
 	}
 
-	if (m_pModelCom->Get_CurrAnimationFrame() == 80)
-	{
-		if (m_pDecal != nullptr)
-		{
-			m_pDecal->Set_Dead(true);
-			Safe_Release(m_pDecal);
-		}
-	}
-
-	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
+	else if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
 		//m_pStateMachineCom->Change_State(CStellia::STELLIA_JUMPSTAMP);
@@ -90,11 +66,6 @@ void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 
 void CStelliaState_JumpStamp::Exit_State()
 {
-	if (m_pDecal != nullptr)
-	{
-		m_pDecal->Set_Dead(true);
-		Safe_Release(m_pDecal);
-	}
 }
 
 CStelliaState_JumpStamp* CStelliaState_JumpStamp::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

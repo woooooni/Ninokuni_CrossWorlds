@@ -144,7 +144,4 @@ void CStelliaState_Base::Generate_Explosion(_uint iCount)
 void CStelliaState_Base::Free()
 {
 	__super::Free();
-
-	if(nullptr != m_pDecal)
-		Safe_Release(m_pDecal);
 }

@@ -12,15 +12,20 @@ class CVfx_Stellia_Skill_JumpStamp final : public CVfx
 {
 private:
 	enum TYPE {
+		TYPE_D_WARNING,
+
 		TYPE_E_RISING_00,
 		TYPE_E_RISING_01,
 
-		TYPE_D_DECAL_00,
+		TYPE_V_DELETE,
 
+		TYPE_D_DECAL_00,
 		TYPE_E_SHOCK_00,
 		TYPE_E_SHOCK_01,
-
 		TYPE_E_SMOKE_00,
+
+		TYPE_P_SMOKE,
+		TYPE_P_CIRCLES,
 
 		TYPE_END
 	};
@@ -41,6 +46,7 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	class CDecal*  m_pWarningDecal = nullptr;
 	class CEffect* m_pRising01Effect = nullptr;
 	class CEffect* m_pRising02Effect = nullptr;
 	class CEffect* m_pShock01Effect = nullptr;
