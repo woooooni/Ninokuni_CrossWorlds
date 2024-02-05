@@ -33,23 +33,26 @@ void CNpcDMWState_Following::Enter_State(void* pArg)
 
 void CNpcDMWState_Following::Tick_State(_float fTimeDelta)
 {
+	__super::Tick_State(fTimeDelta);
+
 	if (m_pWitch->Get_IsBattle())
 	{
-		m_fAccTime += fTimeDelta;
-		if (m_fAccTime >= m_fAttackCoolTime)
+		if (!m_bIsRage02 && !m_bIsRage03)
 		{
-			m_fAccTime = m_fAttackCoolTime - m_fAccTime;
+			m_fAccTime += fTimeDelta;
+			if (m_fAccTime >= m_fAttackCoolTime)
+			{
+				m_fAccTime = m_fAttackCoolTime - m_fAccTime;
 
-			if (m_iAtkIndex >= m_vecAtkState.size())
-				m_iAtkIndex = 0;
+				if (m_iAtkIndex >= m_vecAtkState.size())
+					m_iAtkIndex = 0;
 
-			m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
+				m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
 
-			//m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
+				//m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
+			}
 		}
 	}
-
-	__super::Tick_State(fTimeDelta);
 }
 
 void CNpcDMWState_Following::Exit_State()
