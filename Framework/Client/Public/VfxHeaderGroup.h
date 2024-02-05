@@ -61,6 +61,7 @@
 #include "Vfx_Stellia_Skill_JumpStamp.h"
 #include "Vfx_Stellia_Skill_Laser.h"
 #include "Vfx_Stellia_Skill_TripleLaser.h"
+#include "Vfx_Stellia_Skill_Charge.h"
 #include "Vfx_Stellia_Skill_BigBang.h"
 // Rage01
 #include "Vfx_Stellia_Skill_Rage01Explosion.h"
