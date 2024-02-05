@@ -24,6 +24,8 @@
 #include "Particle_Manager.h"
 #include "Ruby.h"
 
+#include "Camera_Action.h"
+
 CLevel_WitchForest::CLevel_WitchForest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
 {
@@ -71,6 +73,16 @@ HRESULT CLevel_WitchForest::Initialize()
 
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 5.f);
+
+	/* Camera Action */
+	{
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
+		if (nullptr != pActionCam)
+		{
+			pActionCam->Start_Action_Door();
+		}
+	}
 
 	GI->Play_BGM(TEXT("BGM_Field_Village_Winter_Po_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
 
