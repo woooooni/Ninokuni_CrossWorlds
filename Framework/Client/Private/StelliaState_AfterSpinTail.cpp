@@ -38,13 +38,6 @@ void CStelliaState_AfterSpinTail::Tick_State(_float fTimeDelta)
 		m_bIsSkipFrame = true;
 	}
 
-	if (m_pDecal == nullptr)
-	{
-		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_Warning"), m_pTransformCom->Get_WorldMatrix(),
-			Vec3(0.f, 0.f, 0.f), Vec3(20.f, 5.f, 20.f), Vec3(0.f, 0.f, 0.f), m_pStellia, &m_pDecal, false);
-		Safe_AddRef(m_pDecal);
-	}
-
 	if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_Stellia.ao|Stellia_BossSkill01"))
 	{
 		if (m_pModelCom->Get_CurrAnimationFrame() <= 50)
@@ -53,17 +46,6 @@ void CStelliaState_AfterSpinTail::Tick_State(_float fTimeDelta)
 		else
 			m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, false);
 	}
-
-
-	if (m_pModelCom->Get_CurrAnimationFrame() == 60)
-	{
-		if (m_pDecal != nullptr)
-		{
-			m_pDecal->Set_Dead(true);
-			Safe_Release(m_pDecal);
-		}
-	}
-
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
@@ -74,12 +56,6 @@ void CStelliaState_AfterSpinTail::Tick_State(_float fTimeDelta)
 
 void CStelliaState_AfterSpinTail::Exit_State()
 {
-	if (m_pDecal != nullptr)
-	{
-		m_pDecal->Set_Dead(true);
-		Safe_Release(m_pDecal);
-	}
-
 	//m_pModelCom->Get_CurrAnimation()->Set_OriginSpeed(m_fOriginStelliaAnimSpeed);
 }
 

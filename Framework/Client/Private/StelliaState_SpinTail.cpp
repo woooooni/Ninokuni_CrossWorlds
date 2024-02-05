@@ -24,23 +24,12 @@ void CStelliaState_SpinTail::Enter_State(void* pArg)
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill01"));
 
 	// Effect Create
-	CTransform* pTransformCom = m_pStellia->Get_Component<CTransform>(L"Com_Transform");
-	if (pTransformCom == nullptr)
-		return;
-	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_SpinTail"), pTransformCom->Get_WorldMatrix(), m_pStellia);
-
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_SpinTail"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_SpinTail::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
-
-	if (m_pDecal == nullptr && m_pModelCom->Get_CurrAnimationFrame() <= 50)
-	{
-		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_Warning"), m_pTransformCom->Get_WorldMatrix(),
-			Vec3(0.f, 0.f, 0.f), Vec3(24.f, 5.f, 24.f), Vec3(0.f, 0.f, 0.f), m_pStellia, &m_pDecal, false);
-		Safe_AddRef(m_pDecal);
-	}
 
 	if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_Stellia.ao|Stellia_BossSkill01"))
 	{
@@ -51,16 +40,6 @@ void CStelliaState_SpinTail::Tick_State(_float fTimeDelta)
 			m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, false);
 	}
 
-	if (m_pModelCom->Get_CurrAnimationFrame() == 60)
-	{
-		if (m_pDecal != nullptr)
-		{
-			m_pDecal->Set_Dead(true);
-			Safe_Release(m_pDecal);
-		}
-	}
-
-
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
@@ -70,11 +49,6 @@ void CStelliaState_SpinTail::Tick_State(_float fTimeDelta)
 
 void CStelliaState_SpinTail::Exit_State()
 {
-	if (m_pDecal != nullptr)
-	{
-		m_pDecal->Set_Dead(true);
-		Safe_Release(m_pDecal);
-	}
 }
 
 CStelliaState_SpinTail* CStelliaState_SpinTail::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
