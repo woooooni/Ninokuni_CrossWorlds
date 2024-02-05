@@ -791,6 +791,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			return E_FAIL;
 
 		if (FAILED(CPool<CEnemy_GuidedMissile>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_Enemy_Biplane_GuidedMissile", LAYER_TYPE::LAYER_CHARACTER, &CharacterProjectileDesc, 500)))
+			return E_FAIL;
 		
 
 		// 플레이어용.

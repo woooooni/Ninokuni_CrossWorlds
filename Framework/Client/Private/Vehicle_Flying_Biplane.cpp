@@ -562,7 +562,11 @@ void CVehicle_Flying_Biplane::Decide_Target()
 	CCamera_Follow* pCameraFollow = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 	if (nullptr != pCameraFollow)
 	{
-		pCameraFollow->Start_LockOn(pDecidedTarget, Vec4(0.f, 0.f, -15.f, 1.f), Vec4(0.f, 0.f, 0.f, 1.f));
+		if (nullptr == pCameraFollow->Get_LookAtObj() 
+			|| pCameraFollow->Get_LookAtObj()->Get_ObjectType() != OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER_PROJECTILE)
+		{
+			pCameraFollow->Start_LockOn(pDecidedTarget, Vec4(0.f, 0.f, -15.f, 1.f), Vec4(0.f, 0.f, 0.f, 1.f));
+		}
 	}
 		
 

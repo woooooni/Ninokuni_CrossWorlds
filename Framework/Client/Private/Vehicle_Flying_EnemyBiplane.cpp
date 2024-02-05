@@ -52,6 +52,9 @@ HRESULT CVehicle_Flying_EnemyBiplane::Initialize_Prototype()
 
 HRESULT CVehicle_Flying_EnemyBiplane::Initialize(void* pArg)
 {
+	if (FAILED(__super::Initialize(pArg)))
+		return E_FAIL;
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -486,6 +489,9 @@ void CVehicle_Flying_EnemyBiplane::Update_RiderState()
 
 void CVehicle_Flying_EnemyBiplane::On_Damaged(const COLLISION_INFO& tInfo)
 {
+	if (true == m_bInfinite)
+		return;
+
 	wstring strAttackerName = tInfo.pOther->Get_ObjectTag();
 
 	_int iDamage = 300;
