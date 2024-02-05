@@ -54,8 +54,11 @@ void CState_CurlingGame_Launch_Stone::Enter_State(void* pArg)
 void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 {
 	/* 모든 스톤이 움직임을 멈췄는지 체크한다. */
-	if (!Check_AllStoneStop())
+	if(!m_bStopStones)
+	{
+		m_bStopStones = Check_AllStoneStop();
 		return;
+	}
 
 	/* 데이터를 취합하여 게임 종료 여부를 판별한다. */
 	if (!m_bCheckFinishGame)
@@ -115,6 +118,8 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 		if (FAILED(m_pManager->Change_Turn()))
 			return;
 
+		m_vCharacterPos = m_pManager->m_pCurParticipant->Get_Component_Transform()->Get_Position();
+
 		/* 카메라 리셋 블렌딩 시작 */
 		CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
 		if (nullptr != pCurlingCam)
@@ -145,6 +150,11 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 		}
 	}
 
+	/* 피직스로 인해 포지션 세팅 튀는 현상 방지*/
+	{
+		m_pManager->m_pCurParticipant->Get_Component_Transform()->Set_Position(m_vCharacterPos);
+	}
+
 	/* 카메라 타겟 변경 블렌딩 완료 여부 체크 */
 	CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
 	if (!pCurlingCam->Is_ChagingTarget())
@@ -164,6 +174,8 @@ void CState_CurlingGame_Launch_Stone::Exit_State()
 	m_bCheckFinishGame	= false;
 	m_bChangeTarget		= false;
 	m_bResetTurn		= false;
+
+	m_bStopStones		= false;
 
 	m_bSetNpcStoneTransform	= false;
 	m_fAcc = 0.f;

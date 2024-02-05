@@ -44,6 +44,9 @@ private:
 
 
 	_bool	m_bCheckFinishGame = false;
+	_bool	m_bStopStones = false;
+
+	Vec4	m_vCharacterPos = {};
 
 public:
 	static CState_CurlingGame_Launch_Stone* Create(CManager_StateMachine* pStateMachine);

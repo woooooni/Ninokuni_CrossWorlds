@@ -491,9 +491,6 @@ HRESULT CCurlingGame_Manager::Change_Turn()
 
 			m_pCurParticipant->Get_Component_Transform()->Set_Position(vPos);
 			m_pCurParticipant->Get_Component_Transform()->LookAt_ForLandObject(m_tStandardDesc.vGoalPosition);
-
-			m_pCurParticipant->Get_Component_Transform()->Set_Position(vPos);
-			m_pCurParticipant->Get_Component_Transform()->LookAt_ForLandObject(m_tStandardDesc.vGoalPosition);
 		}
 
 		/* 애니메이션 설정 */
