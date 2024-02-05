@@ -63,7 +63,7 @@ HRESULT CCamera_Follow::Initialize(void * pArg)
 
 void CCamera_Follow::Tick(_float fTimeDelta)
 {
-	if (!m_bActive || nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
+	if (!m_bActive || Is_Target_Exception())
 		return;
 
 	__super::Tick(fTimeDelta); 
@@ -98,7 +98,7 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 
 void CCamera_Follow::LateTick(_float fTimeDelta)
 {
-	if (!m_bActive || nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
+	if (!m_bActive || Is_Target_Exception())
 		return;
 
 	//if (nullptr != m_pControllerCom && !m_bBlending)
@@ -481,10 +481,6 @@ void CCamera_Follow::Tick_Transform(const _float fDeltaTime)
 	const Vec4 vCamPos = Calculate_WorldPosition(fDeltaTime);
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPos);
 
-
-	if (nullptr == m_pLookAtObj)
-		return;
-
 	/* Look & Shake */
 	const Vec4 vLookAtPos = Calculate_Look();
 	{
@@ -777,6 +773,14 @@ void CCamera_Follow::Set_WideView(const _bool& bWideView, const _float& fMag)
 
 	m_bWideView = bWideView;
 	m_fAccForWideView = 0.f;
+}
+
+const _bool CCamera_Follow::Is_Target_Exception()
+{
+	if (nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
+		return true;
+
+	return false;
 }
 
 void CCamera_Follow::Test(_float fTimeDelta)

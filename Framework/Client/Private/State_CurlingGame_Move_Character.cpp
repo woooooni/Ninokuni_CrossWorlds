@@ -38,11 +38,7 @@ void CState_CurlingGame_Move_Character::Enter_State(void* pArg)
 			return;
 	}
 	
-	if (m_pManager->m_bPlayerTurn)
-	{
-
-	}
-	else
+	if (!m_pManager->m_bPlayerTurn)
 	{
 		if (FAILED(m_pManager->Set_AiPath()))
 			return;

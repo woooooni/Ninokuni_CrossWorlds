@@ -34,7 +34,7 @@ void CSubQuestNode_NoisySnowField05::Start()
 {
 	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
-	// 게임 시작 함수 추가
+	// 게임 시작 
 	CCurlingGame_Manager::GetInstance()->Start_Game();
 
 	// 페이드 인
@@ -46,18 +46,8 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField05::Tick(const _float& fTimeDelt
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 	
-	if (0) // 만약 게임이 끝났다면 
-	{
-		// 페이드 아웃 시작
-		if (!m_bFadeOut)
-		{
-			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 3.f);
-			m_bFadeOut = true;
-		}
-	}
-
-	// 페이드 아웃이 끝났다면 다음 노드로 넘어간다.
-	if (m_bFadeOut)
+	// 게임이 종료된후 페이드 아웃 인(컬링 게임 매니저에서 처리)까지 끝난 상태라면 다음 노드로 넘어간다. 
+	if (CCurlingGame_Manager::GetInstance()->Is_FinishGame())
 	{
 		if (CUI_Manager::GetInstance()->Is_FadeFinished())
 		{

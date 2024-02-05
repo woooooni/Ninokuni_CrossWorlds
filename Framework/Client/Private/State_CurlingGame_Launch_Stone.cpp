@@ -42,7 +42,7 @@ void CState_CurlingGame_Launch_Stone::Enter_State(void* pArg)
 	}
 
 	/* 스톤 갯수 감소 */
-	if(m_pManager->m_bPlayerTurn)
+	if (m_pManager->m_bPlayerTurn)
 		m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iNumStone--;
 	else
 		m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iNumStone--;
@@ -53,17 +53,72 @@ void CState_CurlingGame_Launch_Stone::Enter_State(void* pArg)
 
 void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 {
-	/* 발사된 모든 스톤이 정지상태라면 */
-	if (!m_bResetTurn && Check_AllStoneStop())
+	/* 모든 스톤이 움직임을 멈췄는지 체크한다. */
+	if(!m_bStopStones)
 	{
-		m_bResetTurn = true;
+		m_bStopStones = Check_AllStoneStop();
+		return;
+	}
+
+	/* 데이터를 취합하여 게임 종료 여부를 판별한다. */
+	if (!m_bCheckFinishGame)
+	{
+		m_bCheckFinishGame = true;
 
 		/* 점수를 갱신한다. */
-		Calculate_Score(); 
+		Calculate_Score();
+
+		/* 아웃된 스톤을 정리한다. */
+		for (auto& pStone : m_pManager->m_pStonesLaunched)
+		{
+			if (pStone->Is_Outted() && pStone->Is_Active())
+				pStone->Set_Active(false);
+		}
+
+		/* 게이지 UI를 초기화 한다. */
+		{
+			CUI_Minigame_Curling_Base* pUi = CUIMinigame_Manager::GetInstance()->Get_MiniGame_Curling_Ui((_uint)MG_CL_UI_TYPE::GUAGE);
+			if (nullptr != pUi)
+				pUi->Send_Message();
+		}
+
+		/* 남은 스톤개수를 바탕으로 게임 종료 여부를 결정한다. */
+		if (Check_FinishGame())
+		{
+			const _uint iPlayerScore = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iScore;
+			const _uint iNpcScore = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iScore;
+
+			if (iPlayerScore == iNpcScore) /* 비기면 스톤 추가*/
+			{
+				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iNumStone = 2;
+				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iNumStone = 2;
+				Send_To_Ui();
+			}
+			else
+			{
+				if (iPlayerScore > iNpcScore)		/* 플레이어 승리 */
+					m_pManager->m_bPlayerWin = true;
+				else if (iPlayerScore < iNpcScore)	/* 플레이어 패배 */
+					m_pManager->m_bPlayerWin = false;
+
+				/* 게임이 종료될 것이라면 바로 엔딩스테이트 전환 */
+				if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::ENDING)))
+					return;
+
+				return;
+			}
+		}
+	}
+
+	if (!m_bResetTurn)
+	{
+		m_bResetTurn = true;
 
 		/* 턴 갱신 */
 		if (FAILED(m_pManager->Change_Turn()))
 			return;
+
+		m_vCharacterPos = m_pManager->m_pCurParticipant->Get_Component_Transform()->Get_Position();
 
 		/* 카메라 리셋 블렌딩 시작 */
 		CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
@@ -73,83 +128,40 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 			pCurlingCam->Finish_StoneAction(m_fTargetChangeLerpDuration);
 			pCurlingCam->Change_Target(m_pManager->m_pCurParticipant, m_fTargetChangeLerpDuration);
 		}
+	}
 
-		/* 아웃된 스톤을 정리한다. */
-		for (auto& pStone : m_pManager->m_pStonesLaunched)
+	/* Npc의 경우 스톤 트랜스폼 설정 */
+	if (!m_pManager->m_bPlayerTurn && !m_bSetNpcStoneTransform)
+	{
+		m_fAcc += fTimeDelta;
+		if (m_fNpcStoneLimit <= m_fAcc)
 		{
-			if (pStone->Is_Outted() && pStone->Is_Active())
-				pStone->Set_Active(false);
-		}
+			m_bSetNpcStoneTransform = true;
 
-		/* Send To Ui */
-		{
-			CUI_Minigame_Curling_Base* pUi = CUIMinigame_Manager::GetInstance()->Get_MiniGame_Curling_Ui((_uint)MG_CL_UI_TYPE::GUAGE);
-			if (nullptr != pUi)
-				pUi->Send_Message();
+			m_pManager->m_pCurParticipant->Get_Component_Model()->Set_KeyFrame_By_Progress(0.8f);
+
+			CManager_State* pState = m_pManager->m_pManagerStateMachineCom->Get_State(CCurlingGame_Manager::CURLINGGAME_STATE::MOVE);
+			if (nullptr != pState)
+			{
+				CState_CurlingGame_Move_Character* pMoveState = dynamic_cast<CState_CurlingGame_Move_Character*>(pState);
+				if (nullptr != pMoveState)
+					pMoveState->Set_NpcStoneTransform();
+			}
 		}
 	}
 
-	if (m_bResetTurn)
+	/* 피직스로 인해 포지션 세팅 튀는 현상 방지*/
 	{
-		if (Check_FinishGame())
-		{
+		m_pManager->m_pCurParticipant->Get_Component_Transform()->Set_Position(m_vCharacterPos);
+	}
 
-			// 게임이 끝난 경우
-			const _uint iPlayerScore = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iScore;
-			const _uint iNpcScore = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iScore;
-
-			if (iPlayerScore == iNpcScore)
-			{
-				/* 비기면 스톤 추가*/
-				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iNumStone = 2;
-				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iNumStone = 2;
-				Send_To_Ui();
-			}
-			else if (iPlayerScore > iNpcScore) 
-			{
-				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
-				return;
-				/* 플레이어 승리 (성혁이형이랑 연동 필요) */
-			}
-			else if (iPlayerScore < iNpcScore) 
-			{
-				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
-				return;
-				/* 플레이어 패배 (성혁이형이랑 연동 필요)  */
-			}
-		}
-		else
-		{
-			/* Npc 스톤 트랜스폼 설정 */
-			if (!m_pManager->m_bPlayerTurn && !m_bSetNpcStoneTransform)
-			{
-				m_fAcc += fTimeDelta;
-				if (m_fNpcStoneLimit <= m_fAcc)
-				{
-					m_bSetNpcStoneTransform = true;
-
-					m_pManager->m_pCurParticipant->Get_Component_Model()->Set_KeyFrame_By_Progress(0.8f);
-				
-					CManager_State* pState = m_pManager->m_pManagerStateMachineCom->Get_State(CCurlingGame_Manager::CURLINGGAME_STATE::MOVE);
-					if (nullptr != pState)
-					{
-						CState_CurlingGame_Move_Character* pMoveState = dynamic_cast<CState_CurlingGame_Move_Character*>(pState);
-						if (nullptr != pMoveState)
-							pMoveState->Set_NpcStoneTransform();
-					}
-				}
-			}
-
-			CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-			if (nullptr != pCurlingCam)
-			{
-				if (!pCurlingCam->Is_ChagingTarget())
-				{
-					if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::MOVE)))
-						return;
-				}
-			}
-		}
+	/* 카메라 타겟 변경 블렌딩 완료 여부 체크 */
+	CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+	if (!pCurlingCam->Is_ChagingTarget())
+	{
+		/* 다음 턴으로 스테이트 변경 */
+		if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::MOVE)))
+			return;
 	}
 }
 
@@ -159,8 +171,13 @@ void CState_CurlingGame_Launch_Stone::LateTick_State(const _float& fTimeDelta)
 
 void CState_CurlingGame_Launch_Stone::Exit_State()
 {
-	m_bResetTurn = false;
-	m_bSetNpcStoneTransform = false;
+	m_bCheckFinishGame	= false;
+	m_bChangeTarget		= false;
+	m_bResetTurn		= false;
+
+	m_bStopStones		= false;
+
+	m_bSetNpcStoneTransform	= false;
 	m_fAcc = 0.f;
 }
 
@@ -287,6 +304,10 @@ void CState_CurlingGame_Launch_Stone::Send_To_Ui()
 			pUi->Send_Message_Int(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_TYPE::PARTICIPANT_NPC].iNumStone);
 	}
 
+}
+
+void CState_CurlingGame_Launch_Stone::Change_Turn()
+{
 }
 
 CState_CurlingGame_Launch_Stone* CState_CurlingGame_Launch_Stone::Create(CManager_StateMachine* pStateMachine)

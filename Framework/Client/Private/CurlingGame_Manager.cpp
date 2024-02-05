@@ -6,6 +6,7 @@
 #include "Game_Manager.h"
 #include "UI_Manager.h"
 #include "UIMinigame_Manager.h"
+#include "UI_Fade.h"
 #include "Effect_Manager.h"
 
 #include "Camera_Group.h"
@@ -66,7 +67,23 @@ void CCurlingGame_Manager::Tick(const _float& fTimeDelta)
 
 	m_pManagerStateMachineCom->Tick(fTimeDelta);
 
-	Test(fTimeDelta);
+	// 엔딩 페이드 아웃이 끝났다면 
+	if (m_bFadeOut)
+	{
+		if (CUI_Manager::GetInstance()->Is_FadeFinished())
+		{
+			// 페이드 인 시작
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 2.f);
+
+			// 캐릭터과 카메라 포지션 세팅 (대화뷰)
+			Ready_EndingTransform();
+
+			// 컬링게임 UI off 
+			CUIMinigame_Manager::GetInstance()->OnOff_CurlingUI(false);
+
+			m_bPlaying = false;
+		}
+	}
 }
 
 void CCurlingGame_Manager::LateTick(const _float& fTimeDelta)
@@ -108,12 +125,22 @@ HRESULT CCurlingGame_Manager::Start_Game()
 {
 	// 호출시 플레이어 턴으로 게임 시작 세팅 
 
-	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CAMERA_CURLING);
-
 	if (FAILED(m_pManagerStateMachineCom->Change_State(MOVE)))
 		return E_FAIL;
 	
 	CUIMinigame_Manager::GetInstance()->OnOff_CurlingUI(true);
+
+	return S_OK;
+}
+
+HRESULT CCurlingGame_Manager::Finish_Game()
+{
+	// 페이드 아웃
+	if (!m_bFadeOut)
+	{
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 2.f);
+		m_bFadeOut = true;
+	}
 
 	return S_OK;
 }
@@ -145,6 +172,9 @@ HRESULT CCurlingGame_Manager::Ready_Components()
 			return E_FAIL;
 
 		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::LAUNCH, CState_CurlingGame_Launch_Stone::Create(m_pManagerStateMachineCom))))
+			return E_FAIL;
+
+		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::ENDING, CState_CurlingGame_Ending::Create(m_pManagerStateMachineCom))))
 			return E_FAIL;
 	}
 
@@ -361,8 +391,56 @@ HRESULT CCurlingGame_Manager::Ready_AiPathQueue()
 	m_StartPointDeltas.push_back(vRight * fDelta * 3.f);
 	m_StartPointDeltas.push_back(vRight * fDelta * -3.f);
 	
+	return S_OK;
+}
 
-	
+HRESULT CCurlingGame_Manager::Ready_EndingTransform()
+{
+	// 각 캐릭터 포지션 세팅 
+	{
+		const Vec3 vLook = m_tStandardDesc.vStartLook;
+
+		const Vec3 vRight = Vec3(XMVector3Cross(Vec3::UnitY, vLook)).ZeroY().Normalized();
+
+		for (_uint i = 0; i < CCurlingGame_Manager::PARTICIPANT_TYPEEND; i++)
+		{
+			Vec3 vStartPosition = m_tStandardDesc.vStartLinePosition + (vLook * -4.f);
+
+			if (CCurlingGame_Manager::PARTICIPANT_PLAYER == i)
+			{
+				vStartPosition += vRight * m_tStandardDesc.vStartPosDelta;
+			}
+			else if (CCurlingGame_Manager::PARTICIPANT_NPC == i)
+			{
+				vStartPosition += -vRight * m_tStandardDesc.vStartPosDelta;
+			}
+
+			m_tParticipants[i].pOwner->Get_Component_Transform()->Set_Position(Vec4(vStartPosition).OneW());
+		}
+
+		m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_NPC].pOwner->Get_Component_Transform()->LookAt_ForLandObject
+		(m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_PLAYER].pOwner->Get_Component_Transform()->Get_Position());
+	}
+
+	/* 대화 카메라 세팅 */
+	{
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		if (nullptr != pActionCam)
+			pActionCam->Start_Action_Talk(m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_NPC].pOwner);
+	}
+
+	/* 모든 스톤 비활성화 */
+	{
+		for (auto& pStone : m_pStonesLaunched)
+		{
+			if (nullptr != pStone)
+				pStone->Set_Active(false);
+		}
+
+		if (nullptr != m_pCurStone && m_pCurStone->Is_Active())
+			m_pCurStone->Set_Active(false);
+	}
+
 	return S_OK;
 }
 
@@ -468,23 +546,23 @@ HRESULT CCurlingGame_Manager::Change_Turn()
 
 		/* 애니메이션 설정 */
 		{
-			m_pPrevParticipant->Get_Component_Model()->Set_CanChangeAnimation(true);
-			if (m_bPlayerTurn)
-			{
-				m_pPrevParticipant->Get_Component_Model()->Set_Animation(L"SKM_Destroyer_Merge.ao|Destroyer_ChairSitLoop", MIN_TWEEN_DURATION);
-				CAnimation* pAnim = m_pPrevParticipant->Get_Component_Model()->Get_Animation("SKM_Destroyer_Merge.ao|Destroyer_ChairSitLoop");
-				if (nullptr != pAnim)
-					pAnim->Set_Loop(true);
-			}
-			else
-			{
-				m_pPrevParticipant = m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner;
-				m_pPrevParticipant->Get_Component_Model()->Set_Animation(L"SKM_Swordsman_Merge.ao|Swordsman_ChairSitLoop", MIN_TWEEN_DURATION);
-				CAnimation* pAnim = m_pPrevParticipant->Get_Component_Model()->Get_Animation("SKM_Swordsman_Merge.ao|Swordsman_ChairSitLoop");
-				if (nullptr != pAnim)
-					pAnim->Set_Loop(true);
-			}
-			m_pPrevParticipant->Get_Component_Model()->Set_CanChangeAnimation(false);
+			//m_pPrevParticipant->Get_Component_Model()->Set_CanChangeAnimation(true);
+			//if (m_bPlayerTurn)
+			//{
+			//	m_pPrevParticipant->Get_Component_Model()->Set_Animation(L"SKM_Destroyer_Merge.ao|Destroyer_ChairSitLoop", MIN_TWEEN_DURATION);
+			//	CAnimation* pAnim = m_pPrevParticipant->Get_Component_Model()->Get_Animation("SKM_Destroyer_Merge.ao|Destroyer_ChairSitLoop");
+			//	if (nullptr != pAnim)
+			//		pAnim->Set_Loop(true);
+			//}
+			//else
+			//{
+			//	m_pPrevParticipant = m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner;
+			//	m_pPrevParticipant->Get_Component_Model()->Set_Animation(L"SKM_Swordsman_Merge.ao|Swordsman_ChairSitLoop", MIN_TWEEN_DURATION);
+			//	CAnimation* pAnim = m_pPrevParticipant->Get_Component_Model()->Get_Animation("SKM_Swordsman_Merge.ao|Swordsman_ChairSitLoop");
+			//	if (nullptr != pAnim)
+			//		pAnim->Set_Loop(true);
+			//}
+			//m_pPrevParticipant->Get_Component_Model()->Set_CanChangeAnimation(false);
 		}
 	}
 

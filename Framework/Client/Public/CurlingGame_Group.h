@@ -16,6 +16,7 @@
 #include "State_CurlingGame_Choose_Direction.h"
 #include "State_CurlingGame_Adjust_Intensity.h"
 #include "State_CurlingGame_Launch_Stone.h"
+#include "State_CurlingGame_Ending.h"
 
 
 /* GameObjects */

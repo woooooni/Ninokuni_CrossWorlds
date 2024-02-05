@@ -8,6 +8,7 @@
 #include "UI_Fade.h"
 
 #include "Game_Manager.h"
+#include "CurlingGame_Group.h"
 
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
@@ -42,8 +43,14 @@ HRESULT CSubQuestNode_NoisySnowField06::Initialize()
 
 void CSubQuestNode_NoisySnowField06::Start()
 {
-	// 페이드 인
-	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
+	if (CCurlingGame_Manager::GetInstance()->Is_PlayerWin())
+	{
+		// 플레이어가 승리했다면 
+	}
+	else
+	{
+		// NPC가 승리 했다면
+	}
 
 	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
@@ -54,11 +61,6 @@ void CSubQuestNode_NoisySnowField06::Start()
 
 	m_vecTalker.push_back(m_pKuu);
 	m_vecTalker.push_back(m_pDestroyer);
-
-	/* 대화 카메라 세팅 */
-	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-	if (nullptr != pActionCam)
-		pActionCam->Start_Action_Talk(m_pDestroyer);
 
 	/* 대화 */
 	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
@@ -130,7 +132,7 @@ void CSubQuestNode_NoisySnowField06::TalkEvent()
 		m_pDestroyer->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pDestroyer->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Destroyer_Merge.ao|Destroyer_ClassBoostingSendComplete"));
 		/* 대화 카메라 타겟 변경 */
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER_FROM_BACK_NPC);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_LEFT);
 		break;
 	case 1:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("01_KuuSay_Uh.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);

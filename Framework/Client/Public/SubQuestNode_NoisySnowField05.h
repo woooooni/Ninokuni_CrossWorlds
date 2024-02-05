@@ -14,9 +14,6 @@ public:
 	virtual CBTNode::NODE_STATE	Tick(const _float& fTimeDelta);
 	virtual void	LateTick(const _float& fTimeDelta);
 
-private:
-	_bool			m_bFadeOut = false;
-
 public:
 	static CSubQuestNode_NoisySnowField05* Create();
 	virtual void Free() override;

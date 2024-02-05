@@ -107,6 +107,8 @@ private:
 
 	void Set_WideView(const _bool& bWideView, const _float& fMag = 1.f);
 
+	const _bool Is_Target_Exception();
+
 	void Test(_float fTimeDelta);
 
 private:
