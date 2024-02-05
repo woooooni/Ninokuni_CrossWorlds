@@ -28,6 +28,10 @@ private:
 	void Calculate_Score();
 	void Send_To_Ui();
 
+
+private:
+	void Change_Turn();
+
 private:
 	_bool m_bResetTurn = false;
 	_bool m_bSetNpcStoneTransform = false;
@@ -35,6 +39,11 @@ private:
 	const _float m_fTargetChangeLerpDuration = 0.75f;
 	const _float m_fNpcStoneLimit = 0.5f;
 	_float m_fAcc = 0.f;
+
+	_bool	m_bChangeTarget = false;
+
+
+	_bool	m_bCheckFinishGame = false;
 
 public:
 	static CState_CurlingGame_Launch_Stone* Create(CManager_StateMachine* pStateMachine);

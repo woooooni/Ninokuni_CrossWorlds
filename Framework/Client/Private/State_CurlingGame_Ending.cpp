@@ -30,7 +30,7 @@ HRESULT CState_CurlingGame_Ending::Initialize()
 
 void CState_CurlingGame_Ending::Enter_State(void* pArg)
 {
-
+	m_pManager->Finish_Game();
 }
 
 void CState_CurlingGame_Ending::Tick_State(const _float& fTimeDelta)

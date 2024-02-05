@@ -416,8 +416,10 @@ HRESULT CCurlingGame_Manager::Ready_EndingTransform()
 			}
 
 			m_tParticipants[i].pOwner->Get_Component_Transform()->Set_Position(Vec4(vStartPosition).OneW());
-			//m_tParticipants[i].pOwner->Get_Component_Transform()->LookAt_ForLandObject(m_tStandardDesc.vGoalPosition);
 		}
+
+		m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_NPC].pOwner->Get_Component_Transform()->LookAt_ForLandObject
+		(m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_PLAYER].pOwner->Get_Component_Transform()->Get_Position());
 	}
 
 	/* 대화 카메라 세팅 */
@@ -428,10 +430,15 @@ HRESULT CCurlingGame_Manager::Ready_EndingTransform()
 	}
 
 	/* 모든 스톤 비활성화 */
-	for (auto& pStone : m_pStonesLaunched)
 	{
-		if (nullptr != pStone)
-			pStone->Set_Active(false);
+		for (auto& pStone : m_pStonesLaunched)
+		{
+			if (nullptr != pStone)
+				pStone->Set_Active(false);
+		}
+
+		if (nullptr != m_pCurStone && m_pCurStone->Is_Active())
+			m_pCurStone->Set_Active(false);
 	}
 
 	return S_OK;
@@ -481,6 +488,9 @@ HRESULT CCurlingGame_Manager::Change_Turn()
 		/* 트랜스폼 설정 */
 		{
 			const Vec4 vPos = Vec4(m_tStandardDesc.vStartLinePosition + (m_tStandardDesc.vStartLook * -5.f)).OneW();
+
+			m_pCurParticipant->Get_Component_Transform()->Set_Position(vPos);
+			m_pCurParticipant->Get_Component_Transform()->LookAt_ForLandObject(m_tStandardDesc.vGoalPosition);
 
 			m_pCurParticipant->Get_Component_Transform()->Set_Position(vPos);
 			m_pCurParticipant->Get_Component_Transform()->LookAt_ForLandObject(m_tStandardDesc.vGoalPosition);
