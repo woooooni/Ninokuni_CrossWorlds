@@ -511,6 +511,14 @@ HRESULT CVehicle_Flying_Biplane::Ready_Trails()
 	return S_OK;
 }
 
+void CVehicle_Flying_Biplane::Look_For_Target()
+{
+	CTransform* pTargetTransform = m_pTarget->Get_Component_Transform();
+	Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() - m_pTransformCom->Get_Position());
+
+	m_pTransformCom->Rotation_Look(vDir);
+}
+
 void CVehicle_Flying_Biplane::Decide_Target()
 {
 	list<CGameObject*>& Targets = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER);

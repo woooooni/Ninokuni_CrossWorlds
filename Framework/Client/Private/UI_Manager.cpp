@@ -664,7 +664,7 @@ HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext*
 	if (nullptr == pRenderer)
 		return E_FAIL;
 
-	m_pRendererCom = dynamic_cast<CRenderer*>(pRenderer);
+	m_pRendererCom = dynamic_cast<Engine::CRenderer*>(pRenderer);
 	if (nullptr == m_pRendererCom)
 		return E_FAIL;
 	

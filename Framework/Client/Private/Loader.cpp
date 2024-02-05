@@ -166,6 +166,7 @@
 #include "Biplane_GuidedMissile.h"
 #include "Biplane_ThunderCloud.h"
 #include "Biplane_BlackHole.h"
+#include "Enemy_Biplane_BulletBall.h"
 
 #include "Grandprix_Engineer.h"
 #include "Grandprix_Enemy_Ghost2.h"
@@ -783,7 +784,14 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		if (FAILED(CPool<CEnemy_Biplane_Bullet>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_Enemy_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &EnemyProjectileDesc, 500)))
 			return E_FAIL;
 
+		// Enemy용.
 
+		/*if (GI->Add_Prototype(TEXT("Prototype_GameObject_Enemy_Biplane_BulletBall"),
+			CEnemy_Biplane_BulletBall::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			return E_FAIL;*/
+		
+
+		// 플레이어용.
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Biplane_GuidedMissile"),
 			CBiplane_GuidedMissile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;

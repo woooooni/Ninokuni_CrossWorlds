@@ -373,7 +373,7 @@ private:
 
 	// Minimap Manager ภฬป็
 private:
-	CRenderer* m_pRendererCom = { nullptr };
+	class CRenderer* m_pRendererCom = { nullptr };
 
 private:
 	HRESULT		Ready_UIStaticPrototypes();

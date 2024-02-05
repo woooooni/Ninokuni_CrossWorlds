@@ -29,6 +29,14 @@ public:
 	virtual void Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo) override;
 	virtual void Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo) override;
 
+public:
+	const Vec2& Get_Trace_StartEnd_Distance() { return m_vTraceStartEndDistance; }
+	const Vec2& Get_Attack_StartEnd_Distance() { return m_vAttackStartEndDistance; }
+
+public:
+	class CGameObject* Get_Target() { return m_pTarget; }
+
+
 private:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT	Ready_Colliders();
@@ -42,6 +50,15 @@ private:
 	class CUI_Minigame_WorldHP* m_pHP = { nullptr };
 	class CUI_Minigame_Aim* m_pAim = { nullptr };
 	_bool m_bUseRigidbody = { true };
+
+private:
+	class CGameObject* m_pTarget = nullptr;
+
+private:
+	Vec2 m_vTraceStartEndDistance = { 70.f, 100.f };
+	Vec2 m_vAttackStartEndDistance = { 15.f, 20.f };
+
+
 
 public:
 	static CVehicle_Flying_EnemyBiplane* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

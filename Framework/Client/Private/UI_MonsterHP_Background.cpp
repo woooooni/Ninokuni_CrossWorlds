@@ -46,7 +46,7 @@ void CUI_MonsterHP_Background::Tick(_float fTimeDelta)
 			iOffsetX = (m_strName.length() - 3.f) * 6.f;
 		}
 
-		CRenderer::TEXT_DESC MaxHPDesc;
+		Engine::CRenderer::TEXT_DESC MaxHPDesc;
 		MaxHPDesc.strText = m_strName;
 		MaxHPDesc.strFontTag = L"Default_Bold";
 		MaxHPDesc.vScale = { 0.4f, 0.4f };
