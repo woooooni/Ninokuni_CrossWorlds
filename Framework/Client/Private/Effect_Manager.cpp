@@ -977,6 +977,10 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_BigBang"),
 			CVfx_Stellia_Skill_BigBang::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_BigBang")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
+		// Prototype_Vfx_Stellia_Skill_ChaseJumpStamp
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_ChaseJumpStamp"),
+			CVfx_Stellia_Skill_ChaseJumpStamp::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_ChaseJumpStamp")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
 		
 		/* Rage01 */
 		// Prototype_Vfx_Stellia_Skill_Rage01Explosion
