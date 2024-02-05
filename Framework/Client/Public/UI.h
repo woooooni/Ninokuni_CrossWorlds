@@ -4,13 +4,14 @@
 
 
 BEGIN(Engine)
+class CRenderer;
 class CShader;
 class CTexture;
-class CRenderer;
 class CTransform;
 class CVIBuffer_Rect;
 END
 
+BEGIN(Client)
 class CUI abstract : public CGameObject
 {
 public:
@@ -81,11 +82,11 @@ protected:
 	virtual HRESULT Ready_Components();
 
 protected:
-	CShader* m_pShaderCom = nullptr;
-	CRenderer* m_pRendererCom = nullptr;
-	CTransform* m_pTransformCom = nullptr;
-	CTexture* m_pTextureCom = nullptr;
-	CVIBuffer_Rect* m_pVIBufferCom = nullptr;
+	class CShader* m_pShaderCom = nullptr;
+	class CRenderer* m_pRendererCom = nullptr;
+	class CTransform* m_pTransformCom = nullptr;
+	class CTexture* m_pTextureCom = nullptr;
+	class CVIBuffer_Rect* m_pVIBufferCom = nullptr;
 
 protected:
 	CHARACTER_TYPE m_eCurPlayerType = { CHARACTER_TYPE::SWORD_MAN };
@@ -110,4 +111,4 @@ protected:
 public:
 	virtual void Free() override;
 };
-
+END

@@ -102,6 +102,8 @@ HRESULT CCurlingGame_Manager::Ready_Game()
 
 	if (FAILED(m_pManagerStateMachineCom->Change_State(INTRO)))
 		return E_FAIL;
+
+	return S_OK;
 }
 
 HRESULT CCurlingGame_Manager::Start_Game()

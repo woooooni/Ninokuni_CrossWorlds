@@ -43,6 +43,8 @@ void CState_Enemy_VehicleFlying_Run::Enter_State(void* pArg)
     m_pTarget = pCharacter;
     m_bUpdate = false;
 
+    m_bEngineer = (wstring::npos != m_pVehicle->Get_ObjectTag().find(L"Vehicle_Flying_EnemyBiplane"));
+
     
 }
 
@@ -95,6 +97,12 @@ void CState_Enemy_VehicleFlying_Run::Tick_State(_float fTimeDelta)
         else
         {
             m_bUpdate = false;
+        }
+
+        if (true == m_bEngineer && (GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER).size() <= 1))
+        {
+            m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND);
+            return;
         }
     }
 }

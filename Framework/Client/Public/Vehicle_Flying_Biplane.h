@@ -48,6 +48,9 @@ public:
 	}
 
 public:
+	void Look_For_Target();
+
+public:
 	class CGameObject* Get_Target() { return m_pTarget; }
 
 private:

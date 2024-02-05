@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GameInstance.h"
-#include "Biplane_GuidedMissile.h"
+#include "Enemy_GuidedMissile.h"
 
 #include "Utils.h"
 #include "Effect_Manager.h"
@@ -13,19 +13,19 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
-CBiplane_GuidedMissile::CBiplane_GuidedMissile(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	:CVehicleFlying_Projectile(pDevice, pContext, L"Biplane_GuidedMissile", OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER_PROJECTILE)
+CEnemy_GuidedMissile::CEnemy_GuidedMissile(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+	:CVehicleFlying_Projectile(pDevice, pContext, L"Enemy_GuidedMissile", OBJ_TYPE::OBJ_GRANDPRIX_ENEMY_PROJECTILE)
 {
 
 }
 
-CBiplane_GuidedMissile::CBiplane_GuidedMissile(const CBiplane_GuidedMissile& rhs)
+CEnemy_GuidedMissile::CEnemy_GuidedMissile(const CEnemy_GuidedMissile& rhs)
 	: CVehicleFlying_Projectile(rhs)
 {
 }
 
 
-HRESULT CBiplane_GuidedMissile::Initialize_Prototype()
+HRESULT CEnemy_GuidedMissile::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -33,7 +33,7 @@ HRESULT CBiplane_GuidedMissile::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CBiplane_GuidedMissile::Initialize(void* pArg)
+HRESULT CEnemy_GuidedMissile::Initialize(void* pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -52,7 +52,7 @@ HRESULT CBiplane_GuidedMissile::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CBiplane_GuidedMissile::Tick(_float fTimeDelta)
+void CEnemy_GuidedMissile::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
@@ -98,12 +98,12 @@ void CBiplane_GuidedMissile::Tick(_float fTimeDelta)
 	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
 }
 
-void CBiplane_GuidedMissile::LateTick(_float fTimeDelta)
+void CEnemy_GuidedMissile::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 }
 
-HRESULT CBiplane_GuidedMissile::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CEnemy_GuidedMissile::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	__super::Render();
 
@@ -117,7 +117,7 @@ HRESULT CBiplane_GuidedMissile::Render_Instance(CShader* pInstancingShader, CVIB
 
 
 
-HRESULT CBiplane_GuidedMissile::Ready_Components()
+HRESULT CEnemy_GuidedMissile::Ready_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 		return E_FAIL;
@@ -125,7 +125,7 @@ HRESULT CBiplane_GuidedMissile::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Biplane_GuidedMissile"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Enemy_GuidedMissile"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
 
@@ -149,7 +149,7 @@ HRESULT CBiplane_GuidedMissile::Ready_Components()
 	return S_OK;
 }
 
-void CBiplane_GuidedMissile::Collision_Enter(const COLLISION_INFO& tInfo)
+void CEnemy_GuidedMissile::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
 	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_ENEMY) && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
@@ -167,7 +167,7 @@ void CBiplane_GuidedMissile::Collision_Enter(const COLLISION_INFO& tInfo)
 	}
 }
 
-void CBiplane_GuidedMissile::Tick_Target(_float fTimeDelta)
+void CEnemy_GuidedMissile::Tick_Target(_float fTimeDelta)
 {
 	if (nullptr == m_pTarget)
 		return;
@@ -177,7 +177,7 @@ void CBiplane_GuidedMissile::Tick_Target(_float fTimeDelta)
 		m_pTarget = nullptr;
 }
 
-void CBiplane_GuidedMissile::Find_Target(_float fTimeDelta)
+void CEnemy_GuidedMissile::Find_Target(_float fTimeDelta)
 {
 	list<CGameObject*>& TargetObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER);
 
@@ -201,34 +201,34 @@ void CBiplane_GuidedMissile::Find_Target(_float fTimeDelta)
 }
 
 
-CBiplane_GuidedMissile* CBiplane_GuidedMissile::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CEnemy_GuidedMissile* CEnemy_GuidedMissile::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CBiplane_GuidedMissile* pInstance = new CBiplane_GuidedMissile(pDevice, pContext);
+	CEnemy_GuidedMissile* pInstance = new CEnemy_GuidedMissile(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Create Failed to ProtoType : CBiplane_GuidedMissile");
-		Safe_Release<CBiplane_GuidedMissile*>(pInstance);
+		MSG_BOX("Create Failed to ProtoType : CEnemy_GuidedMissile");
+		Safe_Release<CEnemy_GuidedMissile*>(pInstance);
 		return nullptr;
 	}
 
 	return pInstance;
 }
 
-CGameObject* CBiplane_GuidedMissile::Clone(void* pArg)
+CGameObject* CEnemy_GuidedMissile::Clone(void* pArg)
 {
-	CBiplane_GuidedMissile* pInstance = new CBiplane_GuidedMissile(*this);
+	CEnemy_GuidedMissile* pInstance = new CEnemy_GuidedMissile(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Create Failed to Cloned : CBiplane_GuidedMissile");
-		Safe_Release<CBiplane_GuidedMissile*>(pInstance);
+		MSG_BOX("Create Failed to Cloned : CEnemy_GuidedMissile");
+		Safe_Release<CEnemy_GuidedMissile*>(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CBiplane_GuidedMissile::Free()
+void CEnemy_GuidedMissile::Free()
 {
 	__super::Free();
 }

@@ -5,9 +5,16 @@
 #include "State_Enemy_VehicleFlying_Enter.h"
 #include "State_Enemy_VehicleFlying_Stand.h"
 #include "State_Enemy_VehicleFlying_Run.h"
-#include "State_Enemy_VehicleFlying_Trace.h"
-#include "State_Enemy_VehicleFlying_Attack.h"
-#include "State_Enemy_VehicleFlying_Dead.h"
+
+#include "State_EnemyBiplane_Attack.h"
+#include "State_EnemyBiplane_Finish_Attack.h"
+#include "State_EnemyBiplane_Run.h"
+#include "State_EnemyBiplane_RunAway.h"
+#include "State_EnemyBiplane_Skill_0.h"
+#include "State_EnemyBiplane_Skill_1.h"
+#include "State_EnemyBiplane_Skill_2.h"
+#include "State_EnemyBiplane_Trace.h"
+#include "State_EnemyBiplane_Dead.h"
 
 #include "Grandprix_Enemy.h"
 
@@ -15,6 +22,13 @@
 #include "UI_Minigame_WorldHP.h"
 #include "UI_Minigame_Aim.h"
 #include "UI_Grandprix_RaderIcon.h"
+
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
+
+
+
 
 CVehicle_Flying_EnemyBiplane::CVehicle_Flying_EnemyBiplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CVehicle_Flying(pDevice, pContext, L"Vehicle_Flying_EnemyBiplane", OBJ_GRANDPRIX_ENEMY)
@@ -88,6 +102,8 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 	if (true == m_bOnBoard)
 	{
 		__super::Tick(fTimeDelta);
+
+		m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 
 		if (nullptr != m_pHP)
 			m_pHP->Tick(fTimeDelta);
@@ -219,17 +235,52 @@ HRESULT CVehicle_Flying_EnemyBiplane::Ready_States()
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
 
-	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
-	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_TRACE, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
+	
+	/*"State_EnemyBiplane_Skill_0.h"
+	"State_EnemyBiplane_Skill_1.h"
+	"State_EnemyBiplane_Skill_2.h"*/
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
-	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ATTACK, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND, CState_EnemyBiplane_Trace::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
-	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_DEAD, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_TRACE, CState_EnemyBiplane_Trace::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_ATTACK, CState_EnemyBiplane_Attack::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK, CState_EnemyBiplane_Finish_Attack::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_0, CState_EnemyBiplane_Skill_0::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_1, CState_EnemyBiplane_Skill_1::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_2, CState_EnemyBiplane_Skill_2::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_RUN, CState_EnemyBiplane_Run::Create(m_pStateCom, strAnimationNames));
+
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_RUNAWAY, CState_EnemyBiplane_RunAway::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_DEAD, CState_EnemyBiplane_Dead::Create(m_pStateCom, strAnimationNames));
+
 
 	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENTER);
 

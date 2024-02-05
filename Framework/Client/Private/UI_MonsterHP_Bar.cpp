@@ -138,7 +138,7 @@ void CUI_MonsterHP_Bar::LateTick(_float fTimeDelta)
 
 		_float fX = g_iWinSizeX * 0.5f + 5.f;
 		// ±âÁØÁ¡
-		CRenderer::TEXT_DESC  MAXHPDesc;
+		Engine::CRenderer::TEXT_DESC  MAXHPDesc;
 		MAXHPDesc.strText = L"/";
 		MAXHPDesc.strFontTag = L"Default_Medium";
 		MAXHPDesc.vScale = { 0.4f, 0.4f };
@@ -157,7 +157,7 @@ void CUI_MonsterHP_Bar::LateTick(_float fTimeDelta)
 		MAXHPDesc.vPosition = m_vDefaultPosition;
 		m_pRendererCom->Add_Text(MAXHPDesc);
 
-		CRenderer::TEXT_DESC CurHPDesc;
+		Engine::CRenderer::TEXT_DESC CurHPDesc;
 		wstring strCurTemp = to_wstring(_int(m_fCurHP));
 		_int iLength = (strCurTemp.length() - 1.f) * 10.f;
 		CurHPDesc.strText = strCurTemp;
@@ -178,7 +178,7 @@ void CUI_MonsterHP_Bar::LateTick(_float fTimeDelta)
 		CurHPDesc.vPosition = _float2(m_vCurHPPosition.x - iLength, m_vCurHPPosition.y);
 		m_pRendererCom->Add_Text(CurHPDesc);
 
-		CRenderer::TEXT_DESC MaxHPDesc;
+		Engine::CRenderer::TEXT_DESC MaxHPDesc;
 		wstring strMaxTemp = to_wstring(_int(m_fMaxHP));
 		iLength = strMaxTemp.length() - 1.f;
 		MaxHPDesc.strText = strMaxTemp;

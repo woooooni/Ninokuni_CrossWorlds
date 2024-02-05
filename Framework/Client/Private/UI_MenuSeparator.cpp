@@ -51,7 +51,7 @@ void CUI_MenuSeparator::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		m_pRendererCom->Add_RenderGroup(Engine::CRenderer::RENDER_UI, this);
 	}
 }
 

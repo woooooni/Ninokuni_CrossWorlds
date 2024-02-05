@@ -105,7 +105,7 @@ void CUI_MapName::LateTick(_float fTimeDelta)
 			m_bSetAlpha = true; // 알파값을 줄인다.
 		}
 
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		m_pRendererCom->Add_RenderGroup(Engine::CRenderer::RENDER_UI, this);
 	}
 }
 

@@ -9,11 +9,11 @@ END
 
 BEGIN(Client)
 
-class CState_Enemy_VehicleFlying_Run : public CState_Vehicle
+class CState_EnemyBiplane_Dead : public CState_Vehicle
 {
 private:
-	CState_Enemy_VehicleFlying_Run(class CStateMachine* pMachine);
-	~CState_Enemy_VehicleFlying_Run() = default;
+	CState_EnemyBiplane_Dead(class CStateMachine* pMachine);
+	~CState_EnemyBiplane_Dead() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -25,17 +25,10 @@ public:
 
 private:
 	class CCharacter* m_pTarget = { nullptr };
-	_bool m_bUpdate = { false };
-	_float m_fMovingSpeed = { 5.f };
-
-private:
-	void Move(_float fTimeDelta);
-
-private:
-	_bool m_bEngineer = false;
+	class CVehicle_Flying_EnemyBiplane* m_pEngineerPlane = nullptr;
 
 public:
-	static CState_Enemy_VehicleFlying_Run* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CState_EnemyBiplane_Dead* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 END
