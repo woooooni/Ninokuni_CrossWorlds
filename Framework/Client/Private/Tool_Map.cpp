@@ -48,10 +48,10 @@ HRESULT CTool_Map::Initialize()
 void CTool_Map::Tick(_float fTimeDelta)
 {
 	ImGuiWindowFlags WindowFlags = 0;
-	if (!m_bWindowResizeFlag)
-		WindowFlags |= ImGuiWindowFlags_NoResize;
-	if (!m_bWindowMoveFlag)
-		WindowFlags |= ImGuiWindowFlags_NoMove;
+	//if (!m_bWindowResizeFlag)
+	//	WindowFlags |= ImGuiWindowFlags_NoResize;
+	//if (!m_bWindowMoveFlag)
+	//	WindowFlags |= ImGuiWindowFlags_NoMove;
 
 	if (ImGui::Begin("Inspector", NULL, WindowFlags))
 	{

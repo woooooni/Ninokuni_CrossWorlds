@@ -56,7 +56,7 @@ void CCamera_Free::LateTick(_float fTimeDelta)
 
 	//__super::LateTick(fTimeDelta);
 
-	Debug();
+	//Debug();
 }
 
 HRESULT CCamera_Free::Render()

@@ -102,7 +102,7 @@ namespace Client
 
 	enum QUEST_LEVEL
 	{
-		QL_1_INTRO_TOUR = 1,
+		QL_1_INTRO_TOUR,
 		QL_2_KING_CALL,
 		QL_3_ICELAND,
 		QL_4_BOSS_GLANIX,

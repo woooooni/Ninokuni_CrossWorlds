@@ -415,7 +415,7 @@ void CTool_Camera::Show_Camera_Prop_CutScene_Map(_float fTimeDelta)
 				{
 					if (m_bPlayCutScene)
 					{
-						if (!pCutSceneCam->Is_Playing_CutScenc())
+						if (!pCutSceneCam->Is_Playing_CutScenc() && 0 <= m_iCurCutSceneIndex)
 						{
 							m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
 							m_bPlayCutScene = false;
