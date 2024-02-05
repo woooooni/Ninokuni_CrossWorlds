@@ -6,7 +6,8 @@ BEGIN(Client)
 class CRuby final : public CGameNpc
 {
 public:
-	enum ESCORT_SECTION { SECTION1, SECTION2, SECTION_END };
+	enum RUBY_STATE { RUBY_IDLE, RUBY_WALK, RUBY_TALK, RUBY_SEAT, RUBY_STATE_END };
+	enum ESCORT_SECTION { SECTION1, SECTION2, SECTION3, SECTION_END };
 private:
 	CRuby(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CRuby(const CRuby& rhs);
@@ -57,6 +58,9 @@ private:
 private:
 	class CUI_World_NPCTag* m_pTag = { nullptr };
 	class CGameObject* m_pRidingObject = nullptr;
+	class CGameObject* m_pQuestItem = nullptr;
+
+	
 
 private:
 	_bool m_bQuestSection[ESCORT_SECTION::SECTION_END] = { false, false };

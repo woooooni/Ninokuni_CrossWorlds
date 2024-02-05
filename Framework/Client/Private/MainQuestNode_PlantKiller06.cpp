@@ -10,6 +10,7 @@
 
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
+#include "Quest_Manager.h"
 
 CMainQuestNode_PlantKiller06::CMainQuestNode_PlantKiller06()
 {
@@ -33,6 +34,8 @@ HRESULT CMainQuestNode_PlantKiller06::Initialize()
 
 void CMainQuestNode_PlantKiller06::Start()
 {
+	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::GetInstance()->QUESTEVENT_END);
+
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 
 	/* 현재 퀘스트에 연관있는 객체들 */

@@ -120,11 +120,16 @@ void CUniqueNpcState_Seat::Tick_State(_float fTimeDelta)
 		else
 		{
 			if (false == m_bSection[SECTION_FIVE])
-			{
-				m_bSection[SECTION_FIVE] = true;
-				static_cast<CRubyCarriage*>(pRuby->Get_RidingObject())->Set_TakeTheCarriage(false);
-				CStateMachine* pCarriageState = pRuby->Get_RidingObject()->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
-				pCarriageState->Change_State(CRubyCarriage::STATE_IDLE);
+			{				
+				if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
+				{
+					m_bSection[SECTION_FIVE] = true;
+					static_cast<CRubyCarriage*>(pRuby->Get_RidingObject())->Set_TakeTheCarriage(false);
+
+					m_pStateMachineCom->Change_State(CGameNpc::NPC_STATE::NPC_IDLE);
+					m_pTransformCom->Set_Position(Vec4(-75.662f, 11.771f, 57.336f, 1.0f));
+					m_pTransformCom->FixRotation(0.0f, 180.0f, 0.0f);
+				}
 			}
 		}
 	}

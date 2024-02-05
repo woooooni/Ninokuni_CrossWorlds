@@ -3,11 +3,11 @@
 
 #include "GameInstance.h"
 
-#include "NpcState_Idle.h"
 #include "UniqueNpcState_Walk.h"
 #include "UniqueNpcState_Run.h"
 #include "UniqueNpcState_Talk.h"
 #include "UniqueNpcState_Seat.h"
+#include "State_RubyIdle.h"
 
 #include "UI_World_NPCTag.h"
 
@@ -33,6 +33,29 @@ HRESULT CRuby::Initialize_Prototype()
 
 HRESULT CRuby::Initialize(void* pArg)
 {
+	// LEVEL_TOOL or LEVEL_WITCH
+	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_DYNAMIC);
+
+	for (auto& pObj : pGameObjects)
+	{
+		if (pObj->Get_ObjectTag() == TEXT("Ruby_Carriage"))
+		{
+			m_pRidingObject = pObj;
+			break;
+		}
+	}
+
+
+	pGameObjects = GI->Find_GameObjects(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_GRASS);
+	for (auto& pObj : pGameObjects)
+	{
+		if (pObj->Get_ObjectTag() == TEXT("Common_PlantC_01b"))
+		{
+			m_pQuestItem = pObj;
+			break;
+		}
+	}
+
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
@@ -55,70 +78,52 @@ HRESULT CRuby::Initialize(void* pArg)
 	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
 	m_pTag->Set_Owner(this, m_strKorName, 2.f, true);
 
-	// LEVEL_TOOL or LEVEL_WITCH
-	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_DYNAMIC);
-
-	for (auto& pObj : pGameObjects)
-	{
-		if (pObj->Get_ObjectTag() == TEXT("Ruby_Carriage"))
-		{
-			m_pRidingObject = pObj;
-			break;
-		}
-	}
-	
-
 	return S_OK;
 }
 
 void CRuby::Tick(_float fTimeDelta)
 {
-	if (KEY_HOLD(KEY::SHIFT) && KEY_HOLD(KEY::V))
+	if (nullptr != m_pRidingObject)
 	{
-		// TEST
-		if (nullptr != m_pRidingObject)
+		if (true == m_bQuestSection[ESCORT_SECTION::SECTION1])
 		{
-			CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(m_pRidingObject);
-			pRubyCarriage->Set_TakeTheCarriage(true);
-
-			m_pStateCom->Change_State(NPC_STATE::NPC_UNIQUENPC_SEAT);		
-		}
-	}
-
-	if (KEY_HOLD(KEY::SHIFT) && KEY_HOLD(KEY::B))
-	{
-		// TEST
-		if (nullptr != m_pRidingObject)
-		{
-			CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(m_pRidingObject);
-			pRubyCarriage->Set_TakeTheCarriage(true);
-
-			_bool bTakeCarriage = pRubyCarriage->TakeTheCarriage();
-			if (true == bTakeCarriage)
+			list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_MONSTER);
+			if (pGameObjects.size() == 1)
+			{
+				CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(m_pRidingObject);
+				pRubyCarriage->Set_TakeTheCarriage(true);
 				Set_QuestSection(ESCORT_SECTION::SECTION1, false);
+
+				
+			}
+		}
+		else if (true == m_bQuestSection[ESCORT_SECTION::SECTION2])
+		{
+			list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_MONSTER);
+			if (pGameObjects.size() == 0)
+			{
+				CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(m_pRidingObject);
+				pRubyCarriage->Set_TakeTheCarriage(true);
+				Set_QuestSection(ESCORT_SECTION::SECTION2, false);
+			}
 		}
 	}
 
-	if (KEY_HOLD(KEY::SHIFT) && KEY_HOLD(KEY::N))
+	if (nullptr != m_pQuestItem)
 	{
-		// TEST
-		if (nullptr != m_pRidingObject)
+		if (true == m_bQuestSection[ESCORT_SECTION::SECTION3])
 		{
-			CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(m_pRidingObject);
-			pRubyCarriage->Set_TakeTheCarriage(true);
 
-			_bool bTakeCarriage = pRubyCarriage->TakeTheCarriage();
-			if (true == bTakeCarriage)
-				Set_QuestSection(ESCORT_SECTION::SECTION2, false);
 		}
 	}
 
 	__super::Tick(fTimeDelta);
 
 
-
 	if (nullptr != m_pTag)
 		m_pTag->Tick(fTimeDelta);
+
+
 }
 
 void CRuby::LateTick(_float fTimeDelta)
@@ -167,9 +172,9 @@ HRESULT CRuby::Ready_States()
 
 	list<wstring> strAnimationName;
 
-	strAnimationName.clear();
-	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_BattleRun");
-	m_pStateCom->Add_State(NPC_UNIQUENPC_RUN, CUniqueNpcState_Run::Create(m_pStateCom, strAnimationName));
+	//strAnimationName.clear();
+	//strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_BattleRun");
+	//m_pStateCom->Add_State(NPC_UNIQUENPC_RUN, CUniqueNpcState_Run::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_BattleWalk");
@@ -197,7 +202,7 @@ HRESULT CRuby::Ready_States()
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_NeutralStand");
-	m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
+	m_pStateCom->Add_State(RUBY_STATE::RUBY_IDLE, CState_RubyIdle::Create(m_pStateCom, strAnimationName));
 
 	//strAnimationName.clear();
 	//strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Stun");
@@ -213,10 +218,10 @@ HRESULT CRuby::Ready_States()
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Seat");
-	m_pStateCom->Add_State(NPC_UNIQUENPC_SEAT, CUniqueNpcState_Seat::Create(m_pStateCom, strAnimationName));
+	m_pStateCom->Add_State(RUBY_STATE::RUBY_SEAT, CUniqueNpcState_Seat::Create(m_pStateCom, strAnimationName));
 
 
-	m_pStateCom->Change_State(NPC_IDLE);
+	m_pStateCom->Change_State(RUBY_STATE::RUBY_IDLE);
 
 	return S_OK;
 }

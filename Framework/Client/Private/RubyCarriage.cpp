@@ -7,6 +7,9 @@
 #include "State_CarriageIdle.h"
 #include "State_CarriageMove.h"
 
+#include "Monster.h"
+#include "MonsterProjectile.h"
+
 CRubyCarriage::CRubyCarriage(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CDynamicObject(pDevice, pContext, strObjectTag, eType)
 {
@@ -37,6 +40,9 @@ HRESULT CRubyCarriage::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
+	if (FAILED(Ready_States()))
+		return E_FAIL;
+
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
@@ -45,7 +51,14 @@ HRESULT CRubyCarriage::Initialize(void* pArg)
 
 void CRubyCarriage::Tick(_float fTimeDelta)
 {
+	if (true == m_bDead)
+		return;
 
+	if (m_tStat.fHp <= 0.0f)
+	{
+		Set_Dead(true);
+		return;
+	}
 
 	m_pStateMachineCom->Tick_State(fTimeDelta);
 
@@ -61,6 +74,8 @@ void CRubyCarriage::Tick(_float fTimeDelta)
 
 void CRubyCarriage::LateTick(_float fTimeDelta)
 {
+	if (true == m_bDead)
+		return;
 
 	if (nullptr != m_pModelCom)
 		m_pModelCom->LateTick(fTimeDelta);
@@ -84,6 +99,9 @@ void CRubyCarriage::LateTick(_float fTimeDelta)
 
 HRESULT CRubyCarriage::Render()
 {
+	if (true == m_bDead)
+		return S_OK;
+
 
 	if (FAILED(m_pAnimShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
 		return E_FAIL;
@@ -120,7 +138,15 @@ HRESULT CRubyCarriage::Render_ShadowDepth()
 
 void CRubyCarriage::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-
+	if (m_tStat.fHp > 0.f)
+	{
+		if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER_PROJECTILE) &&
+			tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
+		{
+			if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+				On_Damaged(tInfo);
+		}
+	}
 }
 
 void CRubyCarriage::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -219,8 +245,50 @@ HRESULT CRubyCarriage::Ready_State()
 	m_pStateMachineCom->Add_State(STATE_TYPE::STATE_MOVE, CState_CarriageMove::Create(m_pStateMachineCom, strAnimationNames));
 
 	m_pStateMachineCom->Change_State(STATE_TYPE::STATE_IDLE);
+	
+	return S_OK;
+}
+
+HRESULT CRubyCarriage::Ready_States()
+{
+	m_strKorName = TEXT("·çºñÀÇ ¸¶Â÷");
+	m_strSubName = TEXT("¸¶³àÀÇ ½£");
+	m_tStat.eElementType = ELEMENTAL_TYPE::WOOD;
+
+	m_tStat.fMaxHp = 30000.0f;
+	m_tStat.fHp = 30000.0f;
+	m_tStat.iDef = 50.0f;
 
 	return S_OK;
+}
+
+void CRubyCarriage::On_Damaged(const COLLISION_INFO& tInfo)
+{
+	if (m_tStat.fHp <= 0.0f)
+		return;
+
+	CMonster* pMonster = nullptr;
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER_PROJECTILE)
+	{
+		CMonsterProjectile* pProjectile = dynamic_cast<CMonsterProjectile*>(tInfo.pOther);
+		if (nullptr == pProjectile)
+		{
+			MSG_BOX("CMonsterProjectile Cast Failed.");
+			return;
+		}
+		pMonster = pProjectile->Get_Owner();
+	}
+	else
+	{
+		pMonster = dynamic_cast<CMonster*>(tInfo.pOther);
+	}
+
+	if (nullptr == pMonster)
+		return;
+
+	_int iDamage = max(0, pMonster->Get_Stat().iAtk - (m_tStat.iDef * 0.2f));
+
+	m_tStat.fHp = max(0, m_tStat.fHp - iDamage);
 }
 
 CRubyCarriage* CRubyCarriage::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)

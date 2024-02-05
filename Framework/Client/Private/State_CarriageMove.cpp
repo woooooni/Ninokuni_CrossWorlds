@@ -41,12 +41,21 @@ void CState_CarriageMove::Tick_State(_float fTimeDelta)
 	// 루비의 애니메이션이 바뀌고 루비를 따라다녀야한다.
 	if (nullptr != m_pRuby)
 	{
+
+		_bool bTake = static_cast<CRubyCarriage*>(m_pOwner)->TakeTheCarriage();
 		CTransform* pTransform = m_pRuby->Get_Component<CTransform>(TEXT("Com_Transform"));
 		Matrix RubyWorld = pTransform->Get_WorldMatrix();
-		m_pTransformCom->Set_WorldMatrix(RubyWorld);
+
+		if (true == bTake)
+			m_pTransformCom->Set_WorldMatrix(RubyWorld);
 
 
 		if (true == m_pRuby->Get_QuestSection(CRuby::ESCORT_SECTION::SECTION1) || true == m_pRuby->Get_QuestSection(CRuby::ESCORT_SECTION::SECTION2))
+		{
+			if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
+				m_pStateMachineCom->Change_State(CRubyCarriage::STATE_IDLE);
+		}
+		else if (false == bTake)
 		{
 			if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
 				m_pStateMachineCom->Change_State(CRubyCarriage::STATE_IDLE);

@@ -206,6 +206,7 @@ protected:
 
 	// 호위 퀘스트 관련
 	_bool m_bIsEscort = false;
+	_bool m_bIsRubyDefence = false;
 	_bool m_bIsEscortHitPlayer = false;
 
 protected:

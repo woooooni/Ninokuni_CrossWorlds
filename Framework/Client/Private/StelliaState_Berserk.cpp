@@ -30,6 +30,8 @@ void CStelliaState_Berserk::Tick_State(_float fTimeDelta)
 
 void CStelliaState_Berserk::Exit_State()
 {
+	// TODO Change to Moon
+
 }
 
 CStelliaState_Berserk* CStelliaState_Berserk::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
