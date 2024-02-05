@@ -33,11 +33,22 @@ HRESULT CVfx_Stellia_Skill_ClawDouble::Initialize_Prototype()
 	m_pScaleOffset[TYPE_E_TRAIL_01] = _float3(2.25f, 2.25f, 2.25f);
 	m_pRotationOffset[TYPE_E_TRAIL_01] = _float3(0.f, -20.000f, -10.000f);
 
+	m_pFrameTriger[TYPE_P_CIRCLES_01] = 23;
+	m_pPositionOffset[TYPE_P_CIRCLES_01] = _float3(0.f, 0.5f, 5.f);
+	m_pScaleOffset[TYPE_P_CIRCLES_01]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_P_CIRCLES_01] = _float3(0.f, 0.f, 0.f);
+
+
 	// 1
 	m_pFrameTriger[TYPE_E_TRAIL_02] = 57;
 	m_pPositionOffset[TYPE_E_TRAIL_02] = _float3(0.f, 0.5f, 1.5f);
 	m_pScaleOffset[TYPE_E_TRAIL_02] = _float3(2.5f, 2.5f, 2.5f);
 	m_pRotationOffset[TYPE_E_TRAIL_02] = _float3(0.f, 0.f, 0.f);
+
+	m_pFrameTriger[TYPE_P_CIRCLES_02] = 58;
+	m_pPositionOffset[TYPE_P_CIRCLES_02] = _float3(0.f, 0.5f, 5.f);
+	m_pScaleOffset[TYPE_P_CIRCLES_02]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_P_CIRCLES_02] = _float3(0.f, 0.f, 0.f);
 
 
 	return S_OK;
@@ -61,12 +72,24 @@ void CVfx_Stellia_Skill_ClawDouble::Tick(_float fTimeDelta)
 			//Safe_AddRef(m_pHand01Effect);
 			m_iCount++;
 		}
+		else if (m_iCount == TYPE_P_CIRCLES_01 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_CIRCLES_01])
+		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Claw_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_CIRCLES_01], m_pScaleOffset[TYPE_P_CIRCLES_01], m_pRotationOffset[TYPE_P_CIRCLES_01]);
+			m_iCount++;
+		}
 
 		else if (m_iCount == TYPE_E_TRAIL_02 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_TRAIL_02])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_Stellia_Skill_RightClaw"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAIL_02], m_pScaleOffset[TYPE_E_TRAIL_02], m_pRotationOffset[TYPE_E_TRAIL_02]);
 			//Safe_AddRef(m_pHand02Effect);
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_P_CIRCLES_02 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_CIRCLES_02])
+		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Claw_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_CIRCLES_02], m_pScaleOffset[TYPE_P_CIRCLES_02], m_pRotationOffset[TYPE_P_CIRCLES_02]);
 			m_iCount++;
 		}
 	}

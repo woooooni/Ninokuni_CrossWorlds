@@ -13,6 +13,8 @@ class CVfx_Stellia_Skill_ClawRight final : public CVfx
 private:
 	enum TYPE {
 		TYPE_E_TRAIL_01,
+		TYPE_P_CIRCLES_01,
+
 		TYPE_V_E_SPEED,
 		TYPE_END
 	};
