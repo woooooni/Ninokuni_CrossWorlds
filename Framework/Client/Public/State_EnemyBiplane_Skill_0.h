@@ -24,11 +24,21 @@ public:
 	virtual void Exit_State() override;
 
 private:
+	void Shoot_Missile();
+
+private:
 	class CCharacter* m_pTarget = { nullptr };
 	class CVehicle_Flying_EnemyBiplane* m_pEngineerPlane = { nullptr };
 	_float m_fMovingSpeed = { 5.f };
 
-	
+private:
+	_float m_fAccShootMissile = 0.f;
+	_float m_fShootMissileTime = 0.1f;
+
+private:
+	_int m_iMissileCount = -4;
+
+
 
 public:
 	static CState_EnemyBiplane_Skill_0* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

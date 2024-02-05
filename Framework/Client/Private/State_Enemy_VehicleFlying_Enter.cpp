@@ -36,10 +36,18 @@ void CState_Enemy_VehicleFlying_Enter::Enter_State(void* pArg)
 {
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+
+    m_bEngineer = (wstring::npos != m_pVehicle->Get_ObjectTag().find(L"Vehicle_Flying_EnemyBiplane"));
 }
 
 void CState_Enemy_VehicleFlying_Enter::Tick_State(_float fTimeDelta)
 {
+    if (true == m_bEngineer && (GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER).size() <= 1))
+    {
+        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND);
+        return;
+    }
+
     // 엔지니어만 우선 사용하도록 예외처리
     if (m_pVehicle->Get_ObjectTag() != TEXT("Vehicle_Flying_EnemyBiplane"))
         return;

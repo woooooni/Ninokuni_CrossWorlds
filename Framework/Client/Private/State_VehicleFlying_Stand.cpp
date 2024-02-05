@@ -69,6 +69,12 @@ void CState_VehicleFlying_Stand::Enter_State(void* pArg)
 
 void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
 {
+    if (true == m_bEngineer && (GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER).size() <= 1))
+    {
+        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND);
+        return;
+    }
+
     _bool bMove = false;
 
     // Skills

@@ -57,9 +57,13 @@ void CState_EnemyBiplane_Run::Tick_State(_float fTimeDelta)
 
     Vec3 vDir = vPlayerPos - vMyPos;
     // 30 : 추적 시작함. 15 : 공격. // 40 : Run (Temp)
-    if (30.f > vDir.Length())
+    if (vDir.Length() < m_pEngineerPlane->Get_Trace_StartEnd_Distance().x)
     {
-        // 추적 시작
+        if (vDir.Length() < m_pEngineerPlane->Get_Attack_StartEnd_Distance().x)        
+            m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_ATTACK);        
+        else        
+            m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_TRACE);
+        
         return;
     }
 

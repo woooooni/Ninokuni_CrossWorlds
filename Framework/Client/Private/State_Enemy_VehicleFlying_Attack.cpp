@@ -53,7 +53,6 @@ void CState_Enemy_VehicleFlying_Attack::Tick_State(_float fTimeDelta)
 
     _float fDistance = (vPlayerPos - vMyPos).Length();
 
-    // 30 : 추적 시작함. 15 : 공격. // 40 : Run (Temp)
     if (40.f < fDistance)
     {
         m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN);

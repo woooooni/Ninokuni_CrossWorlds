@@ -541,9 +541,9 @@ void CVehicle_Flying_Biplane::Decide_Target()
 		if (nullptr == pTargetTransform)
 			continue;
 		
-		Vec3 vDir = m_pTransformCom->Get_Position() - pTargetTransform->Get_Position();
-
-		if (fMinDistance > vDir.Length())
+		Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+		_float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vDir), XMVector3Normalize(m_pTransformCom->Get_Look())));
+		if (fMinDistance > vDir.Length() && 0.f <= fDot)
 		{
 			pDecidedTarget = pTarget;
 			fMinDistance = vDir.Length();
@@ -573,9 +573,7 @@ void CVehicle_Flying_Biplane::Decide_Target()
 void CVehicle_Flying_Biplane::Tick_Target()
 {
 	if (nullptr == m_pTarget)
-	{
 		return;
-	}
 
 	if (true == m_pTarget->Is_Dead() || true == m_pTarget->Is_ReserveDead())
 	{
@@ -603,7 +601,9 @@ void CVehicle_Flying_Biplane::Tick_Target()
 	}
 
 	Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
-	if (vDir.Length() > 50.f)
+	
+	_float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vDir), XMVector3Normalize(m_pTransformCom->Get_Look())));
+	if (vDir.Length() > 50.f || 0 > fDot)
 	{
 		if (nullptr != m_pCameraFollow)
 		{
@@ -663,8 +663,25 @@ void CVehicle_Flying_Biplane::On_Damaged(const COLLISION_INFO& tInfo)
 		Vec3 vDir = m_pTransformCom->Get_Position() - pOtherTransform->Get_Position();
 		vDir = XMVector3Normalize(vDir);
 
+
+		// 데미지 공식
+		m_tStat.fCurHP = max(0.f, m_tStat.fCurHP - 1500.f);
+
 		m_pRigidBodyCom->Set_FrictionScale(2.f);
 		m_pRigidBodyCom->Add_Velocity(vDir, 20.f, true);
+	}
+
+	else if (wstring::npos != strAttackerName.find(L"Enemy_GuidedMissile"))
+	{
+		CTransform* pOtherTransform = tInfo.pOther->Get_Component_Transform();
+		Vec3 vDir = m_pTransformCom->Get_Position() - pOtherTransform->Get_Position();
+		vDir = XMVector3Normalize(vDir);
+
+		// 데미지 공식
+		m_tStat.fCurHP = max(0.f, m_tStat.fCurHP - 3000.f);
+
+		m_pRigidBodyCom->Set_FrictionScale(2.f);
+		m_pRigidBodyCom->Add_Velocity(vDir, 30.f, true);
 	}
 
 	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_DAMAGED);
@@ -683,14 +700,14 @@ HRESULT CVehicle_Flying_Biplane::Ready_Colliders()
 	SphereDesc.pNode = nullptr;
 	SphereDesc.pOwnerTransform = m_pTransformCom;
 	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+	SphereDesc.vOffsetPosition = Vec3(0.f, 150.f, 0.f);
 
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &SphereDesc)))
 		return E_FAIL;
 
 
 
-	SphereDesc.tSphere.Radius = 2.f;
+	SphereDesc.tSphere.Radius = 1.25f;
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &SphereDesc)))
 		return E_FAIL;
 

@@ -167,6 +167,7 @@
 #include "Biplane_ThunderCloud.h"
 #include "Biplane_BlackHole.h"
 #include "Enemy_Biplane_BulletBall.h"
+#include "Enemy_GuidedMissile.h"
 
 #include "Grandprix_Engineer.h"
 #include "Grandprix_Enemy_Ghost2.h"
@@ -351,11 +352,6 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Entire_GrassPlane", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/GrassPlane/", L"Common_Grass_Entire_Plane")))
 		return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Bullet_Blue", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Grandprix/Bullets/", L"Bullet_Blue")))
-		return E_FAIL;
-
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Bullet_Orange", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Grandprix/Bullets/", L"Bullet_Orange")))
-		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Bullet", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Bullet/", L"Engineer_Bullet")))
 		return E_FAIL;
@@ -786,9 +782,15 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 
 		// Enemy용.
 
-		/*if (GI->Add_Prototype(TEXT("Prototype_GameObject_Enemy_Biplane_BulletBall"),
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Enemy_Biplane_BulletBall"),
 			CEnemy_Biplane_BulletBall::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
-			return E_FAIL;*/
+			return E_FAIL;
+
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Enemy_Biplane_GuidedMissile"),
+			CEnemy_GuidedMissile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			return E_FAIL;
+
+		if (FAILED(CPool<CEnemy_GuidedMissile>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_Enemy_Biplane_GuidedMissile", LAYER_TYPE::LAYER_CHARACTER, &CharacterProjectileDesc, 500)))
 		
 
 		// 플레이어용.
@@ -2277,6 +2279,15 @@ HRESULT CLoader::Loading_Proto_Vehicles()
 		return E_FAIL;
 	
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Biplane_GuidedMissile", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/MiniGame/Missile/", L"Biplane_GuidedMissile")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Bullet_Blue", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Grandprix/Bullets/", L"Bullet_Blue")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Bullet_Orange", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Grandprix/Bullets/", L"Bullet_Orange")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Bullet_Ball", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Grandprix/Bullets/", L"Bullet_Ball")))
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Grandprix_ItemBox", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Grandprix/Granprix_ItemBox/", L"Grandprix_ItemBox")))

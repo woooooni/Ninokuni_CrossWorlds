@@ -51,6 +51,7 @@ void CVehicle_Flying::Tick(_float fTimeDelta)
 		m_fAccInfinite += fTimeDelta;
 		if (m_fAccInfinite >= m_fInfiniteTime)
 		{
+			m_fAccInfinite = 0.f;
 			m_bInfinite = false;
 		}
 	}

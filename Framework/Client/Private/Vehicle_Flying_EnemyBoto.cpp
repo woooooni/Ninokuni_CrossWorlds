@@ -420,7 +420,7 @@ void CVehicle_Flying_EnemyBoto::On_Damaged(const COLLISION_INFO& tInfo)
 	_int iDamage = 3000;
 	if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Character_Biplane_Bullet"))
 	{
-		iDamage = iDamage * 0.5f + GI->RandomInt(-300, 300);
+		iDamage = iDamage * 0.1f + GI->RandomInt(-300, 300);
 	}
 	else if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Biplane_Thunder_Cloud"))
 	{

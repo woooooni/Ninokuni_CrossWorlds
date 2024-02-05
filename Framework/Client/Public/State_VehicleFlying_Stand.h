@@ -31,6 +31,7 @@ private:
 
 private:
 	_bool m_bInitVelocity = false;
+	_bool m_bEngineer = false;
 
 public:
 	static CState_VehicleFlying_Stand* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

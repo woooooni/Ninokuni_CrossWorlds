@@ -58,7 +58,9 @@ void CState_EnemyBiplane_Stand::Enter_State(void* pArg)
         return;
     }
 
-    // 둘다 아니라면, 그냥 있자..
+    // 둘다 아니라면, 다시 순회.
+    m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_RUN);
+    return;
     
     
 

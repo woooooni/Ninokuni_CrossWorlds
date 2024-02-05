@@ -16,11 +16,25 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+
+public:
+	void Set_Infinite(_bool bInfinite, _float fInfiniteTime) 
+	{ 
+		m_bInfinite = bInfinite;
+		m_fInfiniteTime = fInfiniteTime;
+		m_fAccInfinite = 0.f;
+	}
 	
 protected:
 	virtual HRESULT Ready_Components() override;
 	virtual HRESULT Ready_States() override;
 	virtual HRESULT Ready_Colliders() override;
+
+private:
+	_bool m_bInfinite = true;
+	_float m_fAccInfinite = 0.f;
+	_float m_fInfiniteTime = 99999999.f;
+
 
 private:
 	HRESULT Ready_Sockets();

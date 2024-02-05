@@ -35,6 +35,7 @@
 #include "Pool.h"
 #include "Character_Biplane_Bullet.h"
 #include "Enemy_Biplane_Bullet.h"
+#include "Enemy_GuidedMissile.h"
 
 #ifdef _DEBUG
 // #include <vld.h>
@@ -66,13 +67,13 @@ HRESULT CMainApp::Initialize()
 
 	// Set Start Type
 	{
-		g_eStartLevel = LEVELID::LEVEL_TOOL;					/* 시작 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_LOGO;					/* 시작 레벨 타입 */
 
-		g_iStartQuestLevel = QUEST_LEVEL::QL_1_INTRO_TOUR;			/* 시작 퀘스트 레벨 */
+		g_iStartQuestLevel = QUEST_LEVEL::QL_8_BOSS_STELLIA;			/* 시작 퀘스트 레벨 */
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH;			/* 모델 로드할 캐릭터 타입 */
 
-		g_ePlayCharacter = LOAD_CHARACTER_TYPE::DESTROYER_CH;	/* 게임 플레이 캐릭터 타입 */
+		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;	/* 게임 플레이 캐릭터 타입 */
 	}
 
 	// Open Level
@@ -1704,6 +1705,7 @@ void Client::CMainApp::Free()
 
 	CPool<CCharacter_Biplane_Bullet>::Free();
 	CPool<CEnemy_Biplane_Bullet>::Free();
+	CPool<CEnemy_GuidedMissile>::Free();
 
 	CRiding_Manager::GetInstance()->DestroyInstance();
 	CGrandprix_Manager::GetInstance()->DestroyInstance();

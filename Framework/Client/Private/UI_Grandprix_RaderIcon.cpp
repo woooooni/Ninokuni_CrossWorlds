@@ -111,7 +111,7 @@ void CUI_Grandprix_RaderIcon::Tick(_float fTimeDelta)
 			if (nullptr == pBiplane)
 				return;
 
-			CGameObject* pTarget = pBiplane->Get_Target();
+			/*CGameObject* pTarget = pBiplane->Get_Target();
 			if (nullptr == pTarget || m_pOwner != pTarget)
 			{
 				if (TEXT("Vehicle_Flying_EnemyBiplane") == pTarget->Get_ObjectTag())
@@ -124,7 +124,7 @@ void CUI_Grandprix_RaderIcon::Tick(_float fTimeDelta)
 				}
 				else
 					return;
-			}
+			}*/
 		}
 
 		__super::Tick(fTimeDelta);

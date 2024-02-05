@@ -11,7 +11,12 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Camera_Manager.h"
+#include "Camera_Follow.h"
+
 #include "Enemy_Biplane_Bullet.h"
+
+
 
 
 CEnemy_Biplane_BulletBall::CEnemy_Biplane_BulletBall(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -50,6 +55,16 @@ HRESULT CEnemy_Biplane_BulletBall::Initialize(void* pArg)
 	if (nullptr == m_pTargetTransform)
 		return E_FAIL;
 
+	_int iRandomX = 0;
+	while (0 == iRandomX)	
+		iRandomX = GI->RandomInt(-3, 3);
+
+	_int iRandomZ = 0;
+	while (0 == iRandomZ)
+		iRandomZ = GI->RandomInt(-3, 3);
+
+	m_vOffsetPos = Vec3(iRandomX, 0.f, iRandomZ);
+
 	return S_OK;
 }
 
@@ -60,16 +75,19 @@ void CEnemy_Biplane_BulletBall::Tick(_float fTimeDelta)
 
 	if (true == m_bMove)
 	{
-		m_fAccMove += fTimeDelta;
-		if (m_fAccMove >= m_fMoveTime)
+		Vec4 vTargetPos = m_pTargetTransform->Get_RelativeOffset(Vec4(m_vOffsetPos).OneW());
+		Vec3 vDir = vTargetPos - Vec4(m_pTransformCom->Get_Position());
+
+		if (vDir.Length() > 0.01f)
+		{
+			m_pTransformCom->Move(XMVector3Normalize(vDir), 14.f, fTimeDelta);
+		}
+		else
 		{
 			m_bMove = false;
 			return;
 		}
-
-		Vec3 vDir = m_pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
-		if (vDir.Length() > 1.f)
-			m_pTransformCom->Move(XMVector3Normalize(vDir), 14.f, fTimeDelta);
+			
 	}
 	else
 	{
@@ -82,6 +100,17 @@ void CEnemy_Biplane_BulletBall::Tick(_float fTimeDelta)
 	}
 
 	Update_Rotaion(fTimeDelta);
+
+	if (true == m_bDead)
+	{
+		// Æø¹ß.
+		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.5f, 19.f, 0.3f);
+
+		for (auto& pCollider : Get_Collider(CCollider::DETECTION_TYPE::ATTACK))
+			pCollider->Set_Radius(10.f);
+
+		Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
+	}
 	
 }
 
@@ -112,7 +141,7 @@ HRESULT CEnemy_Biplane_BulletBall::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Bullet_Orange"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Bullet_Ball"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
 
@@ -129,7 +158,7 @@ HRESULT CEnemy_Biplane_BulletBall::Ready_Components()
 	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
 	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
 
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &SphereDesc)))
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
 		return E_FAIL;
 
 

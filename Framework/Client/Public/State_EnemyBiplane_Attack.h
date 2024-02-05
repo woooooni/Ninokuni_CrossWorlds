@@ -29,11 +29,20 @@ private:
 	void Tick_NormalAttack2(_float fTimeDelta);
 
 private:
+	void Shoot();
+	void Follow_Target(_float fTimeDelta);
+
+private:
 	class CCharacter* m_pTarget = { nullptr };
 	class CVehicle_Flying_EnemyBiplane* m_pEngineerPlane = { nullptr };
-	_float m_fMovingSpeed = { 5.f };
 
+	_float m_fMovingSpeed = { 5.f };
 	_int m_iPrevAttackNum = -1;
+
+
+private:
+	_float m_fShootTime = 0.1f;
+	_float m_fAccShootTime = 0.f;
 
 public:
 	static CState_EnemyBiplane_Attack* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

@@ -27,6 +27,9 @@
 #include "Player.h"
 #include "Character.h"
 
+#include "Grandprix_Engineer.h"
+
+#include "Trail.h"
 
 
 
@@ -56,6 +59,9 @@ HRESULT CVehicle_Flying_EnemyBiplane::Initialize(void* pArg)
 		return E_FAIL;
 
 	if (FAILED(Ready_States()))
+		return E_FAIL;
+
+	if (FAILED(Ready_Trails()))
 		return E_FAIL;
 	
 	m_bUseBone = false; 
@@ -103,6 +109,16 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 	{
 		__super::Tick(fTimeDelta);
 
+		if (true == m_bInfinite)
+		{
+			m_fAccInfinite += fTimeDelta;
+			if (m_fAccInfinite >= m_fInfiniteTime)
+			{
+				m_bInfinite = false;
+				m_fAccInfinite = 0.f;
+			}
+		}
+
 		m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 
 		if (nullptr != m_pHP)
@@ -121,6 +137,16 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 				m_pRaderIcon->Set_Active(false);
 
 			m_pRaderIcon->Tick(fTimeDelta);
+		}
+
+		for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
+		{
+			if (nullptr != m_pTrails[i])
+			{
+				m_pTrails[i]->Set_TransformMatrix(m_pModelCom->Get_SocketLocalMatrix(i + 2) * m_pTransformCom->Get_WorldMatrix());
+				m_pTrails[i]->Tick(fTimeDelta);
+			}
+
 		}
 
 		if (nullptr != m_pControllerCom)
@@ -159,7 +185,42 @@ HRESULT CVehicle_Flying_EnemyBiplane::Render()
 {
 	if (true == m_bOnBoard)
 	{
-		__super::Render();
+		if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+			return E_FAIL;
+
+		_float4 vRimColor = true == m_bInfinite ? Vec4(0.f, 0.f, 1.f, 1.f) : Vec4(0.f, 0.f, 0.f, 0.f);
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+			return E_FAIL;
+
+		const _uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+		for (_uint i = 0; i < iNumMeshes; ++i)
+		{
+			if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+
+			if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+				return E_FAIL;
+		}
+
+		return S_OK;
+
 
 	}
 
@@ -180,6 +241,13 @@ HRESULT CVehicle_Flying_EnemyBiplane::Render_ShadowDepth()
 void CVehicle_Flying_EnemyBiplane::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER_PROJECTILE)
+	{
+		if (CCollider::DETECTION_TYPE::ATTACK == tInfo.pOtherCollider->Get_DetectionType())
+		{
+			On_Damaged(tInfo);
+		}
+	}
 }
 
 void CVehicle_Flying_EnemyBiplane::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -205,6 +273,71 @@ void CVehicle_Flying_EnemyBiplane::Ground_Collision_Continue(PHYSX_GROUND_COLLIS
 void CVehicle_Flying_EnemyBiplane::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Exit(tInfo);
+}
+
+void CVehicle_Flying_EnemyBiplane::Start_Trail(BIPLANE_TRAIL eTrailType)
+{
+	if (eTrailType >= BIPLANE_TRAIL::BIPLANE_TRAIL_END)
+	{
+		for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
+		{
+			m_pTrails[i]->Start_Trail(m_pModelCom->Get_SocketLocalMatrix(i + 2) * m_pTransformCom->Get_WorldMatrix());
+		}
+	}
+	else
+	{
+		m_pTrails[eTrailType]->Start_Trail(m_pModelCom->Get_SocketLocalMatrix(eTrailType + 2) * m_pTransformCom->Get_WorldMatrix());
+	}
+}
+
+void CVehicle_Flying_EnemyBiplane::Generate_Trail(const wstring& strDiffuseTextureName, const wstring& strAlphaTextureName, const wstring& strDistortionTextureName, const _float4& vColor, _uint iVertexCount, BIPLANE_TRAIL eTrailType)
+{
+	if (eTrailType >= BIPLANE_TRAIL::BIPLANE_TRAIL_END)
+	{
+		for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
+		{
+			m_pTrails[i]->Set_DiffuseTexture_Index(strDiffuseTextureName);
+			m_pTrails[i]->Set_AlphaTexture_Index(strAlphaTextureName);
+			m_pTrails[i]->Set_DistortionTexture_Index(strDistortionTextureName);
+			m_pTrails[i]->Set_Color(vColor);
+			m_pTrails[i]->Start_Trail(m_pModelCom->Get_SocketLocalMatrix(i + 2) * m_pTransformCom->Get_WorldMatrix());
+		}
+
+	}
+	else
+	{
+		m_pTrails[eTrailType]->Set_DiffuseTexture_Index(strDiffuseTextureName);
+		m_pTrails[eTrailType]->Set_AlphaTexture_Index(strAlphaTextureName);
+		m_pTrails[eTrailType]->Set_DistortionTexture_Index(strDistortionTextureName);
+		m_pTrails[eTrailType]->Set_Color(vColor);
+		m_pTrails[eTrailType]->Start_Trail(m_pModelCom->Get_SocketLocalMatrix(eTrailType + 2) * m_pTransformCom->Get_WorldMatrix());
+	}
+}
+
+void CVehicle_Flying_EnemyBiplane::Stop_Trail(BIPLANE_TRAIL eTrailType)
+{
+	if (eTrailType >= BIPLANE_TRAIL::BIPLANE_TRAIL_END)
+	{
+		for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
+			m_pTrails[i]->Stop_Trail();
+	}
+	else
+	{
+		m_pTrails[eTrailType]->Stop_Trail();
+	}
+}
+
+void CVehicle_Flying_EnemyBiplane::Set_Infinite(_bool bInfinite, _float fInfiniteTime)
+{
+	m_fInfiniteTime = fInfiniteTime;
+	m_fAccInfinite = 0.f;
+	m_bInfinite = bInfinite;
+
+	CGrandprix_Engineer* pEngineer = dynamic_cast<CGrandprix_Engineer*>(m_pRider);
+
+	if (nullptr != pEngineer)	
+		pEngineer->Set_Infinite(bInfinite, fInfiniteTime);	
+
 }
 
 HRESULT CVehicle_Flying_EnemyBiplane::Ready_Components()
@@ -287,6 +420,43 @@ HRESULT CVehicle_Flying_EnemyBiplane::Ready_States()
 	return S_OK;
 }
 
+HRESULT CVehicle_Flying_EnemyBiplane::Ready_Trails()
+{
+	CTrail::TRAIL_DESC TrailDesc = {};
+	TrailDesc.bTrail = false;
+	TrailDesc.bUV_Cut = false;
+	TrailDesc.fAccGenTrail = 0.f;
+	TrailDesc.fGenTrailTime = 0.1f;
+	TrailDesc.vDiffuseColor = { 1.f, 0.3f, 0.f, 0.2f };
+	TrailDesc.vDistortion = { 0.1f, 0.1f };
+	TrailDesc.vUVAcc = { 0.f, 0.f };
+	TrailDesc.vUV_FlowSpeed = { 0.f, 0.f };
+	TrailDesc.fAlphaDiscard = 0.1f;
+	TrailDesc.vBlackDiscard = { -1.f, -1.f, -1.f };
+
+	m_pTrails[BIPLANE_TRAIL::LEFT_WING] = CTrail::Create(m_pDevice, m_pContext, L"Prototype_GameObject_Trail", TrailDesc);
+	m_pTrails[BIPLANE_TRAIL::RIGHT_WING] = CTrail::Create(m_pDevice, m_pContext, L"Prototype_GameObject_Trail", TrailDesc);
+	m_pTrails[BIPLANE_TRAIL::TAIL] = CTrail::Create(m_pDevice, m_pContext, L"Prototype_GameObject_Trail", TrailDesc);
+
+	if (nullptr == m_pTrails[BIPLANE_TRAIL::LEFT_WING] || nullptr == m_pTrails[BIPLANE_TRAIL::RIGHT_WING] || nullptr == m_pTrails[BIPLANE_TRAIL::TAIL])
+		return E_FAIL;
+
+	for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
+	{
+		if (FAILED(m_pTrails[i]->Initialize(nullptr)))
+			return E_FAIL;
+
+		if (i <= BIPLANE_TRAIL::RIGHT_WING)
+			m_pTrails[i]->SetUp_Position(XMVectorSet(-0.05f, 0.f, 0.f, 1.f), XMVectorSet(0.05f, 0.f, 0.f, 1.f));
+		else
+			m_pTrails[i]->SetUp_Position(XMVectorSet(0.f, -0.05f, 0.f, 1.f), XMVectorSet(0.f, 0.05f, 0.f, 1.f));
+
+		m_pTrails[i]->Stop_Trail();
+	}
+
+	return S_OK;
+}
+
 void CVehicle_Flying_EnemyBiplane::Update_RiderState()
 {
 	if (nullptr != m_pRider)
@@ -314,8 +484,51 @@ void CVehicle_Flying_EnemyBiplane::Update_RiderState()
 	}
 }
 
+void CVehicle_Flying_EnemyBiplane::On_Damaged(const COLLISION_INFO& tInfo)
+{
+	wstring strAttackerName = tInfo.pOther->Get_ObjectTag();
+
+	_int iDamage = 300;
+	if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Character_Biplane_Bullet"))
+	{
+		iDamage = iDamage * 0.1f + GI->RandomInt(-30, 30);
+	}
+	else if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Biplane_Thunder_Cloud"))
+	{
+		iDamage = iDamage * 0.7f + GI->RandomInt(-30, 30);
+	}
+	else if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Biplane_GuidedMissile"))
+	{
+		iDamage = iDamage * 0.3f + GI->RandomInt(-30, 30);
+	}
+
+	m_tStat.fCurHP = max(0, m_tStat.fCurHP - iDamage);
+
+	if (0.f >= m_tStat.fCurHP)
+	{
+		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK);
+		return;
+	}
+}
+
 HRESULT CVehicle_Flying_EnemyBiplane::Ready_Colliders()
 {
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	ZeroMemory(&SphereDesc, sizeof SphereDesc);
+
+	BoundingSphere tSphere;
+	ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	SphereDesc.tSphere = tSphere;
+	SphereDesc.tSphere.Radius = 1.25f;
+
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	SphereDesc.vOffsetPosition = Vec3(0.f, 150.f, 0.f);
+
+	
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &SphereDesc)))
+		return E_FAIL;
 
 	return S_OK;
 }

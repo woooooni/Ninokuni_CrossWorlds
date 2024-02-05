@@ -7,6 +7,7 @@ class CVehicle_Flying_Biplane final : public CVehicle_Flying
 {
 public:
 	enum BIPLANE_TRAIL { LEFT_WING, RIGHT_WING, TAIL, BIPLANE_TRAIL_END };
+
 private:
 	CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CVehicle_Flying_Biplane(const CVehicle_Flying_Biplane& rhs);
