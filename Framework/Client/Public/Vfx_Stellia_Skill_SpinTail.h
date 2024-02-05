@@ -12,10 +12,20 @@ class CVfx_Stellia_Skill_SpinTail final : public CVfx
 {
 private:
 	enum TYPE {
+		TYPE_D_WARNING,
+
 		TYPE_E_TRAIL_01,
 		TYPE_E_TRAIL_02,
-		TYPE_V_E_SPEED_01,
-		TYPE_V_E_SPEED_02,
+
+		TYPE_P_SMOKE_01,
+		TYPE_P_SMOKE_02,
+		TYPE_P_SMOKE_03,
+		TYPE_P_SMOKE_04,
+		TYPE_P_SMOKE_05,
+
+		//TYPE_V_E_SPEED_01,
+		//TYPE_V_E_SPEED_02,
+
 		TYPE_END
 	};
 
@@ -35,8 +45,7 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
-	class CEffect* m_pTail01Effect = nullptr;
-	class CEffect* m_pTail02Effect = nullptr;
+	class CDecal*  m_pWarning = nullptr;
 
 public:
 	static CVfx_Stellia_Skill_SpinTail* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

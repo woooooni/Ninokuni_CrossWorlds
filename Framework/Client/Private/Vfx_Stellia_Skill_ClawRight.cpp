@@ -33,6 +33,12 @@ HRESULT CVfx_Stellia_Skill_ClawRight::Initialize_Prototype()
 	m_pScaleOffset[TYPE_E_TRAIL_01] = _float3(2.5f, 2.5f, 2.5f);
 	m_pRotationOffset[TYPE_E_TRAIL_01] = _float3(0.f, 0.f, 0.f);
 
+	// 1
+	m_pFrameTriger[TYPE_P_CIRCLES_01] = 23;
+	m_pPositionOffset[TYPE_P_CIRCLES_01] = _float3(0.f, 0.5f, 5.f);
+	m_pScaleOffset[TYPE_P_CIRCLES_01]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_P_CIRCLES_01] = _float3(0.f, 0.f, 0.f);
+
 	m_pFrameTriger[TYPE_V_E_SPEED] = 22;
 	m_pPositionOffset[TYPE_V_E_SPEED] = _float3(48.f, 0.f, 0.f); // x에 속도 저장
 	m_pScaleOffset[TYPE_V_E_SPEED] = _float3(0.f, 0.f, 0.f);  // TurnSpeed 저장
@@ -58,6 +64,12 @@ void CVfx_Stellia_Skill_ClawRight::Tick(_float fTimeDelta)
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_Stellia_Skill_RightClaw"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAIL_01], m_pScaleOffset[TYPE_E_TRAIL_01], m_pRotationOffset[TYPE_E_TRAIL_01], nullptr, &m_pHand01Effect, false);
 			Safe_AddRef(m_pHand01Effect);
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_P_CIRCLES_01 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_CIRCLES_01])
+		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Claw_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_CIRCLES_01], m_pScaleOffset[TYPE_P_CIRCLES_01], m_pRotationOffset[TYPE_P_CIRCLES_01]);
 			m_iCount++;
 		}
 

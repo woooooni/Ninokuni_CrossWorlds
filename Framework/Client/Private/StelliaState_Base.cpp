@@ -145,5 +145,6 @@ void CStelliaState_Base::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pDecal);
+	if(nullptr != m_pDecal)
+		Safe_Release(m_pDecal);
 }

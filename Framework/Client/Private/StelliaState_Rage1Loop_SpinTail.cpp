@@ -24,31 +24,15 @@ void CStelliaState_Rage1Loop_SpinTail::Enter_State(void* pArg)
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill01"));
 
 	// Effect Create
-	CTransform* pTransformCom = m_pStellia->Get_Component<CTransform>(L"Com_Transform");
-	if (pTransformCom == nullptr)
-		return;
-	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage01SpinTail"), pTransformCom->Get_WorldMatrix(), m_pStellia);
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage01SpinTail"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Rage1Loop_SpinTail::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pDecal == nullptr)
-	{
-		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_Warning"), m_pTransformCom->Get_WorldMatrix(),
-			Vec3(0.f, 0.f, 0.f), Vec3(20.f, 5.f, 20.f), Vec3(0.f, 0.f, 0.f), m_pStellia, &m_pDecal, false);
-		Safe_AddRef(m_pDecal);
-	}
-
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		if (m_pDecal != nullptr)
-		{
-			m_pDecal->Set_Dead(true);
-			Safe_Release(m_pDecal);
-		}
-
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE1LOOP_JUMPSTAMP);
 	}
 }

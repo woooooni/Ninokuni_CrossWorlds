@@ -13,7 +13,11 @@ class CVfx_Stellia_Skill_ClawDouble final : public CVfx
 private:
 	enum TYPE {
 		TYPE_E_TRAIL_01,
+		TYPE_P_CIRCLES_01,
+
 		TYPE_E_TRAIL_02,
+		TYPE_P_CIRCLES_02,
+
 		TYPE_END
 	};
 
