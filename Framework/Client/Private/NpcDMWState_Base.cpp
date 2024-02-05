@@ -29,8 +29,8 @@ HRESULT CNpcDMWState_Base::Initialize(const list<wstring>& AnimationList)
 	m_fFollowingSpeed = 12.f;
 
 	/* 공격 패턴만 따로 모아놓기. (후에 순차적 혹은 랜덤으로 전환하기 위해) */
-	//m_vecAtkState.push_back(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
-	m_vecAtkState.push_back(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_LASER);
+	m_vecAtkState.push_back(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
+	// m_vecAtkState.push_back(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_LASER);
 
 
 	return S_OK;
@@ -43,6 +43,14 @@ void CNpcDMWState_Base::Enter_State(void* pArg)
 
 void CNpcDMWState_Base::Tick_State(_float fTimeDelta)
 {
+	if (!m_bIsRage02 && m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE2START)
+	{
+		m_bIsRage02 = true;
+	}
+	else if (!m_bIsRage03 && m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE3START_FADEOUT)
+	{
+		m_bIsRage03 = true;
+	}
 }
 
 void CNpcDMWState_Base::Exit_State()

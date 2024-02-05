@@ -50,6 +50,9 @@ protected:
 	vector<_uint> m_vecAtkState;
 	static _uint  m_iAtkIndex;
 
+	_bool m_bIsRage01 = false;
+	_bool m_bIsRage02 = false;
+	_bool m_bIsRage03 = false;
 
 private:
 	_float m_fTime = 0.f;
