@@ -332,6 +332,7 @@
     <ClInclude Include="..\Public\NpcDMWState_Base.h" />
     <ClInclude Include="..\Public\NpcDMWState_Following.h" />
     <ClInclude Include="..\Public\Skill_Biplane_Burst.h" />
+    <ClInclude Include="..\Public\State_CurlingGame_Ending.h" />
     <ClInclude Include="..\Public\State_Enemy.h" />
     <ClInclude Include="..\Public\State_Enemy_Flying_Run.h" />
     <ClInclude Include="..\Public\State_Enemy_Flying_RunStart.h" />
@@ -1399,6 +1400,7 @@
     <ClCompile Include="..\Private\NpcDMWState_Base.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Following.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_Burst.cpp" />
+    <ClCompile Include="..\Private\State_CurlingGame_Ending.cpp" />
     <ClCompile Include="..\Private\State_Enemy.cpp" />
     <ClCompile Include="..\Private\State_Enemy_Flying_Run.cpp" />
     <ClCompile Include="..\Private\State_Enemy_Flying_RunStart.cpp" />

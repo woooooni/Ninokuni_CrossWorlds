@@ -93,7 +93,6 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 	{
 		if (Check_FinishGame())
 		{
-
 			// 게임이 끝난 경우
 			const _uint iPlayerScore = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iScore;
 			const _uint iNpcScore = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iScore;
@@ -105,19 +104,19 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iNumStone = 2;
 				Send_To_Ui();
 			}
-			else if (iPlayerScore > iNpcScore) 
+			else
 			{
-				/* 플레이어 승리 (페이드 아웃 시작) */
-				m_pManager->m_bPlayerWin = true;
+				if (iPlayerScore > iNpcScore) /* 플레이어 승리 (페이드 아웃 시작) */
+					m_pManager->m_bPlayerWin = true;
+				else if (iPlayerScore < iNpcScore) /* 플레이어 패배 (페이드 아웃 시작) */
+					m_pManager->m_bPlayerWin = false;
+
 				m_pManager->Finish_Game();
-				return;
-			}
-			else if (iPlayerScore < iNpcScore) 
-			{
-				/* 플레이어 패배 (페이드 아웃 시작)  */
-				m_pManager->Finish_Game();
-				m_pManager->m_bPlayerWin = false;
-				return;
+
+				m_pManager->m_pCurStone->Set_Active(false);
+
+				if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::ENDING)))
+					return;
 			}
 		}
 		else

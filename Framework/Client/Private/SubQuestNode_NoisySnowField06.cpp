@@ -45,11 +45,11 @@ void CSubQuestNode_NoisySnowField06::Start()
 {
 	if (CCurlingGame_Manager::GetInstance()->Is_PlayerWin())
 	{
-		// 플레이어 승리
+		// 플레이어가 승리했다면 
 	}
 	else
 	{
-		// NPC  승리
+		// NPC가 승리 했다면
 	}
 
 	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);

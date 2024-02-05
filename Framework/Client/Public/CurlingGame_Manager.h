@@ -24,7 +24,8 @@ public:
 	enum PARTICIPANT_TYPE  { PARTICIPANT_PLAYER, PARTICIPANT_NPC, PARTICIPANT_TYPEEND };
 
 private:
-	enum CURLINGGAME_STATE { INTRO, MOVE, DIRECTION, INTENSITY, LAUNCH, CURLINGGAME_STATE_TYPEEND };
+	enum CURLINGGAME_STATE { INTRO, MOVE, DIRECTION, INTENSITY, LAUNCH, ENDING, CURLINGGAME_STATE_TYPEEND };
+	
 	typedef struct tagStandardDesc
 	{
 		/* Ring, Goal */
@@ -125,7 +126,8 @@ public:
 	CGameObject* Get_CurParticipant() const { return m_pCurParticipant; }
 	
 	const _bool& Is_PlayerWin() const { return m_bPlayerWin; }
-	const _bool& Is_FinishGame() const { return m_bPlaying; }
+	const _bool& Is_FinishGame() const { return !m_bPlaying; }
+
 public:
 	vector<CGameObject*>* Get_Stadium() { return &m_pStadiumObjects; }
 
@@ -133,6 +135,7 @@ private:
 	HRESULT Ready_Components();
 	HRESULT Ready_Objects();
 	HRESULT Ready_AiPathQueue();
+	HRESULT Ready_EndingTransform();
 
 private:
 	void Test(const _float& fTimeDelta);
@@ -195,6 +198,8 @@ private :
 	friend class CState_CurlingGame_Choose_Direction;
 	friend class CState_CurlingGame_Adjust_Intensity;
 	friend class CState_CurlingGame_Launch_Stone;
+	friend class CState_CurlingGame_Ending;
+
 };
 
 END
