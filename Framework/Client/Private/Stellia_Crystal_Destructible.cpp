@@ -91,18 +91,45 @@ HRESULT CStellia_Crystal_Destructible::Initialize(void* pArg)
 	m_tTurnDesc.fCurValue = 2.f;
 	m_tTurnDesc.Start(m_tTurnDesc.fCurValue, 0.f, m_fDeSpeedDuration, LERP_MODE::SMOOTHER_STEP);
 
+	// Start Dissolve
+	m_bStartDissolve  = true;
+	m_fDissolveWeight = 10.f;
+
 	return S_OK;
 }
 
 void CStellia_Crystal_Destructible::Tick(_float fTimeDelta)
 {
-	if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_GachaCommonCrystal03.ao|GachaCommonCrystalStart") &&
-		m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
+	// Start Dissolve
+	if (true == m_bStartDissolve)
+	{
+		switch (m_iSelfType)
+		{
+		case 0: // CRYSTAL_AURA
+			m_vDissolveColor = _float4(0.212f, 0.620f, 1.f, 1.f);
+			break;
+		case 1: // CRYSTAL_SKY
+			m_vDissolveColor = _float4(0.715f, 0.995f, 1.f, 1.f);
+			break;
+		case 2: // CRYSTAL_GOLD
+			m_vDissolveColor = _float4(1.f, 0.96f, 0.466f, 1.f);
+			break;
+		}
+
+		m_fDissolveWeight -= m_fDissolveSpeed * fTimeDelta;
+		if (m_fDissolveWeight < 0.f)
+		{
+			m_fDissolveWeight = 0.f;
+			m_bStartDissolve  = false;
+		}
+	}
+
+	if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_GachaCommonCrystal03.ao|GachaCommonCrystalStart") && m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pModelCom->Set_Animation(TEXT("SKM_GachaCommonCrystal03.ao|GachaCommonCrystalLoop"));
 	}
 
-	if (m_tStat.fHp <= 0.f)
+	if (false == m_bReserveDead && m_tStat.fHp <= 0.f)
 	{
 		if (m_iSelfType != m_iBingoType)
 		{
@@ -120,34 +147,9 @@ void CStellia_Crystal_Destructible::Tick(_float fTimeDelta)
 			m_pStellia->Set_CrystalTurnData();
 		}
 
-		this->Set_Dead(true);
+		m_bReserveDead = true;
 	}
-
-	Fly_Crystal(fTimeDelta);
-
-	if (m_bIsTurn)
-		Turn_Crystal(fTimeDelta);
-	else
-		Crystal_Roaming(fTimeDelta);
-
-	//////////////////////////
-
-	if (nullptr != m_pHPBar)
-		m_pHPBar->Tick(fTimeDelta);
-
-	GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
-
-	if (m_bIsRimUse) // RimLight
-	{
-		m_vRimLightColor = { 1.f, 0.f, 0.f, 1.f };
-		Tick_RimLight(fTimeDelta);
-	}
-	else
-	{
-		m_vRimLightColor = { 0.f, 0.f, 0.f, 0.f };
-	}
-
-	if (m_bReserveDead) // Dissolve
+	else if (m_bReserveDead) // Dissolve
 	{
 		if (!m_bDissolveEffect)
 		{
@@ -164,6 +166,29 @@ void CStellia_Crystal_Destructible::Tick(_float fTimeDelta)
 			m_fDissolveWeight += m_fDissolveSpeed * fTimeDelta;
 	}
 
+	Fly_Crystal(fTimeDelta);
+
+	if (m_bIsTurn)
+		Turn_Crystal(fTimeDelta);
+	else
+		Crystal_Roaming(fTimeDelta);
+
+	//////////////////////////
+
+	if (nullptr != m_pHPBar)
+		m_pHPBar->Tick(fTimeDelta);
+
+	if (m_bIsRimUse) // RimLight
+	{
+		m_vRimLightColor = { 1.f, 0.f, 0.f, 1.f };
+		Tick_RimLight(fTimeDelta);
+	}
+	else
+	{
+		m_vRimLightColor = { 0.f, 0.f, 0.f, 0.f };
+	}
+
+	GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
 }
 
 void CStellia_Crystal_Destructible::LateTick(_float fTimeDelta)
@@ -212,10 +237,23 @@ HRESULT CStellia_Crystal_Destructible::Render()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
 		return E_FAIL;
 
+	// Dissolve --------------------------------------------------------------------
+	if (FAILED(m_pDissoveTexture->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture", 51)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_DissolveDuration", &m_fDissolveDuration, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fDissolveWeight, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vDissolveColor", &m_vDissolveColor, sizeof(_float4))))
+		return E_FAIL;
+	// -----------------------------------------------------------------------------
+
+
 	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
 		return E_FAIL;
 
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 	_uint iPassIndex = 0;
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
@@ -231,7 +269,9 @@ HRESULT CStellia_Crystal_Destructible::Render()
 				return E_FAIL;
 		}
 
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+		if (m_bStartDissolve || m_bReserveDead)
+			iPassIndex = 2;
+		else if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 			iPassIndex = 0;
 		else
 			iPassIndex++;
