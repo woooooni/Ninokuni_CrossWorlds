@@ -40,7 +40,7 @@ void CSubQuestNode_FindCat06::Start()
 	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
 	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 	TalkEvent();
@@ -64,7 +64,7 @@ CBTNode::NODE_STATE CSubQuestNode_FindCat06::Tick(const _float& fTimeDelta)
 
 			if (m_iTalkIndex >= m_vecTalkDesc.size())
 			{
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 				CQuest_Manager::GetInstance()->Set_QuestClearStack(1);
 
 				return NODE_STATE::NODE_SUCCESS;

@@ -30,14 +30,17 @@ void CUI_Grandprix_RaderIcon::Set_Owner(CGameObject* pOwner, _bool bIsCamera)
 		if (pOwner->Get_ObjectTag() == TEXT("Vehicle_Flying_PlayerBiplane"))
 		{
 			m_eType = ICON_SWORDMAN;
+			m_bIsBiplane = true;
 		}
 		else if (pOwner->Get_ObjectTag() == TEXT("Vehicle_Flying_EnemyBiplane"))
 		{
 			m_eType = ICON_ENGINEER;
+			m_bIsBiplane = true;
 		}
 		else if (pOwner->Get_ObjectTag() == TEXT("Vehicle_Flying_EnemyBoto"))
 		{
 			m_eType = ICON_GHOST;
+			m_bIsBiplane = false;
 		}
 		else
 			return;
@@ -112,7 +115,17 @@ void CUI_Grandprix_RaderIcon::Tick(_float fTimeDelta)
 				return;
 
 			CGameObject* pTarget = pBiplane->Get_Target();
-			if (nullptr == pTarget || m_pOwner != pTarget)
+
+			if (nullptr == pTarget && m_eType == UI_RADERICON::ICON_TARGET)
+			{
+				// 원래 타입으로 돌린다.
+				if (true == m_bIsBiplane)
+					m_eType == UI_RADERICON::ICON_ENGINEER;
+				else
+					m_eType == UI_RADERICON::ICON_GHOST;
+			}
+
+			if (nullptr != pTarget && m_pOwner != pTarget)
 			{
 				if (TEXT("Vehicle_Flying_EnemyBiplane") == pTarget->Get_ObjectTag())
 				{

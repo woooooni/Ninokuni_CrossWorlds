@@ -1,40 +1,46 @@
 #include "stdafx.h"
-#include "UI_Minigame_Aim.h"
+#include "UI_Grandprix_Target.h"
 #include "GameInstance.h"
-#include "UI_Manager.h"
 
-#include "Camera.h"
-#include "Camera_Manager.h"
-#include "Game_Manager.h"
-#include "Player.h"
-#include "Vehicle_Flying.h"
+#include "UI_Manager.h"
 #include "UIMinigame_Manager.h"
 
-CUI_Minigame_Aim::CUI_Minigame_Aim(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CUI(pDevice, pContext, L"UI_Minigame_Aim")
+#include "Camera_Manager.h"
+#include "Camera.h"
+
+#include "Vehicle_Flying.h"
+#include "Character.h"
+
+CUI_Grandprix_Target::CUI_Grandprix_Target(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+	: CUI(pDevice, pContext, L"UI_Grandprix_Target")
 {
 }
 
-CUI_Minigame_Aim::CUI_Minigame_Aim(const CUI_Minigame_Aim& rhs)
+CUI_Grandprix_Target::CUI_Grandprix_Target(const CUI_Grandprix_Target& rhs)
 	: CUI(rhs)
 {
 }
 
-void CUI_Minigame_Aim::Set_Owner(CVehicle_Flying* pOwner)
+void CUI_Grandprix_Target::Set_Target(CVehicle_Flying* pOwner)
 {
 	if (nullptr == pOwner)
+	{
+		m_pOwner = nullptr;
 		return;
+	}
+
+	_float2 vScreenPos = CUI_Manager::GetInstance()->Get_ProjectionPosition(pOwner->Get_Component<CTransform>(L"Com_Transform"));
+	if (vScreenPos.x == -1.f && vScreenPos.y == -1.f)
+	{
+		m_pOwner = nullptr;
+		return;
+	}
 
 	m_pOwner = pOwner;
-
-	CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
-
-	if (TEXT("Vehicle_Flying_EnemyBiplane") == m_pOwner->Get_ObjectTag())
-		m_iTextureIndex = 1;
+	m_bActive = true;
 }
 
-HRESULT CUI_Minigame_Aim::Initialize_Prototype()
+HRESULT CUI_Grandprix_Target::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -42,7 +48,7 @@ HRESULT CUI_Minigame_Aim::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CUI_Minigame_Aim::Initialize(void* pArg)
+HRESULT CUI_Grandprix_Target::Initialize(void* pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -53,70 +59,25 @@ HRESULT CUI_Minigame_Aim::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_vOriginSize = _float2(m_tInfo.fCX, m_tInfo.fCY);
-	m_vMinSize = _float2(m_vOriginSize.x * 0.8f, m_vOriginSize.y * 0.8f);
-
-	m_bActive = false;
-	m_bResize = false;
+	m_bActive = true;
 
 	return S_OK;
 }
 
-void CUI_Minigame_Aim::Tick(_float fTimeDelta)
+void CUI_Grandprix_Target::Tick(_float fTimeDelta)
 {
 	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 	{
-		// 만약에 플레이어가 Aim을 잡고있는 상태면 Set_Active = true;
-		if (true == CUIMinigame_Manager::GetInstance()->Is_AimActive())
+		if (true == m_bActive)
 		{
-			if (false == m_bActive)
-				m_bActive = true;
-		}
-		else
-		{
-			if (true == m_bActive)
-				m_bActive = false;
-		}
-
-		if (m_bActive)
-		{
-			CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
-
-			_float4 Temp;
-			XMStoreFloat4(&Temp, pTransform->Get_Position());
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
-
-			if (!m_bResize)
+			if (nullptr == m_pOwner || true == m_pOwner->Is_Dead())
 			{
-				m_tInfo.fCX -= fTimeDelta * 20.f;
-				m_tInfo.fCY -= fTimeDelta * 20.f;
-
-				if (m_tInfo.fCX <= m_vMinSize.x)
-				{
-					m_bResize = true;
-					m_tInfo.fCX = m_vMinSize.x;
-					m_tInfo.fCY = m_vMinSize.y;
-				}
-
-				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-
-			}
-			else
-			{
-				m_tInfo.fCX += fTimeDelta * 20.f;
-				m_tInfo.fCY += fTimeDelta * 20.f;
-
-				if (m_tInfo.fCX >= m_vOriginSize.x)
-				{
-					m_bResize = false;
-					m_tInfo.fCX = m_vOriginSize.x;
-					m_tInfo.fCY = m_vOriginSize.y;
-				}
-
-				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+				Set_Active(false);
+				return;
 			}
 
-			Update_Distance();
+			// Rotation
+			m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 0.f, 1.f, 0.f), fTimeDelta);
 
 			__super::Tick(fTimeDelta);
 		}
@@ -124,19 +85,26 @@ void CUI_Minigame_Aim::Tick(_float fTimeDelta)
 	
 }
 
-void CUI_Minigame_Aim::LateTick(_float fTimeDelta)
+void CUI_Grandprix_Target::LateTick(_float fTimeDelta)
 {
 	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 	{
-		if (m_bActive)
+		if (true == m_bActive)
 		{
+			if (nullptr == m_pOwner || true == m_pOwner->Is_Dead())
+			{
+				Set_Active(false);
+				return;
+			}
+
 			// Error상태면 return
-			if (true == CUIMinigame_Manager::GetInstance()->Is_RaderError()) // 확인 필요함.
+			if (true == CUIMinigame_Manager::GetInstance()->Is_RaderError())
 				return;
 
 			_float4 vCamPos = GI->Get_CamPosition();
 			_vector vTempForDistance = m_pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos);
 			_float fDistance = XMVectorGetX(XMVector3Length(vTempForDistance));
+
 			CTransform* pPlayerTransform = CUI_Manager::GetInstance()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
 			if (nullptr == pPlayerTransform)
 				return;
@@ -191,22 +159,7 @@ void CUI_Minigame_Aim::LateTick(_float fTimeDelta)
 					if (fAngle >= XMConvertToRadians(0.f) && fAngle <= XMConvertToRadians(180.f))
 					{
 						if (CUI_Manager::GetInstance()->Is_FadeFinished())
-						{
-							// AddText
-							wstring strDistance = to_wstring(_uint(m_fDistance)) + TEXT("M");
-							_int iLength = strDistance.length() - 1;
-							_float2 vFontPos = _float2(m_tInfo.fX - 6.8f - (iLength * (6.8f - iLength)), m_tInfo.fY + 7.f);
-
-							CRenderer::TEXT_DESC TextDesc = {};
-							TextDesc.strText = strDistance;
-							TextDesc.strFontTag = L"Default_Bold";
-							TextDesc.vScale = { 0.3f, 0.3f };
-							TextDesc.vColor = _float4(1.f, 1.f, 1.f, 1.f);
-							TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y);
-							m_pRendererCom->Add_Text(TextDesc);
-
 							m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
-						}
 
 						__super::LateTick(fTimeDelta);
 					}
@@ -216,7 +169,7 @@ void CUI_Minigame_Aim::LateTick(_float fTimeDelta)
 	}
 }
 
-HRESULT CUI_Minigame_Aim::Render()
+HRESULT CUI_Grandprix_Target::Render()
 {
 	if (m_bActive)
 	{
@@ -233,26 +186,21 @@ HRESULT CUI_Minigame_Aim::Render()
 	return S_OK;
 }
 
-HRESULT CUI_Minigame_Aim::Ready_Components()
+HRESULT CUI_Grandprix_Target::Ready_Components()
 {
 	
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_AimCursor"),
+	if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_Target"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 	
 	return S_OK;
 }
 
-HRESULT CUI_Minigame_Aim::Ready_State()
+HRESULT CUI_Grandprix_Target::Ready_State()
 {
-	_float fBtnSize = 64.f;
-
-	m_tInfo.fCX = fBtnSize;
-	m_tInfo.fCY = fBtnSize;
-
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
@@ -260,7 +208,7 @@ HRESULT CUI_Minigame_Aim::Ready_State()
 	return S_OK;
 }
 
-HRESULT CUI_Minigame_Aim::Bind_ShaderResources()
+HRESULT CUI_Grandprix_Target::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 		return E_FAIL;
@@ -274,52 +222,39 @@ HRESULT CUI_Minigame_Aim::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-void CUI_Minigame_Aim::Update_Distance()
+CUI_Grandprix_Target* CUI_Grandprix_Target::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
-	CCharacter* pCharacter = pPlayer->Get_Character();
-	if (nullptr == pCharacter)
-		return;
-
-	Vec4 vPlayerPos = pCharacter->Get_CharacterPosition();
-	Vec4 vOwnerPos = m_pOwner->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
-
-	m_fDistance = XMVectorGetX(XMVector3Length(vPlayerPos - vOwnerPos));
-}
-
-CUI_Minigame_Aim* CUI_Minigame_Aim::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-{
-	CUI_Minigame_Aim* pInstance = new CUI_Minigame_Aim(pDevice, pContext);
+	CUI_Grandprix_Target* pInstance = new CUI_Grandprix_Target(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed To Create : CUI_Minigame_Aim");
+		MSG_BOX("Failed To Create : CUI_Grandprix_Target");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CUI_Minigame_Aim::Clone(void* pArg)
+CGameObject* CUI_Grandprix_Target::Clone(void* pArg)
 {
-	CUI_Minigame_Aim* pInstance = new CUI_Minigame_Aim(*this);
+	CUI_Grandprix_Target* pInstance = new CUI_Grandprix_Target(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed To Clone : CUI_Minigame_Aim");
+		MSG_BOX("Failed To Clone : CUI_Grandprix_Target");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CUI_Minigame_Aim::Free()
+void CUI_Grandprix_Target::Free()
 {
 	__super::Free();
 	

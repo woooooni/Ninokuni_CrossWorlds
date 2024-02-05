@@ -481,6 +481,9 @@ void CCamera_Follow::Tick_Transform(const _float fDeltaTime)
 	const Vec4 vCamPos = Calculate_WorldPosition(fDeltaTime);
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPos);
 
+	if (nullptr == m_pLookAtObj)
+		return;
+
 	/* Look & Shake */
 	const Vec4 vLookAtPos = Calculate_Look();
 	{

@@ -13,6 +13,9 @@ class CUI_Manager : public CBase
 {
 	DECLARE_SINGLETON(CUI_Manager)
 
+public:
+	enum UI_DIALOG { MAIN_DIALOG, MINI_DIALOG, BATTLE_DIALOG, DIALOG_END };
+
 private:
 	CUI_Manager();
 	virtual ~CUI_Manager() = default;

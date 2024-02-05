@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 
 CSubQuestNode_Windmill09::CSubQuestNode_Windmill09()
 {
@@ -51,7 +52,12 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill09::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+					CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+					QuestDesc.strType = m_strNextQuestTag;
+					QuestDesc.strTitle = m_strNextQuestName;
+					QuestDesc.strContents = m_strNextQuestContent;
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);

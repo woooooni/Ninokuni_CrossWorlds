@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 
 CSubQuestNode_Wanted08::CSubQuestNode_Wanted08()
 {
@@ -46,7 +47,12 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted08::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestTag, m_strQuestTag, m_strQuestName, m_strQuestContent);
+					CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+					QuestDesc.strType = m_strQuestTag;
+					QuestDesc.strTitle = m_strQuestName;
+					QuestDesc.strContents = m_strQuestContent;
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestTag, m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);

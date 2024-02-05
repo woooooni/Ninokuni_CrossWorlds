@@ -77,8 +77,21 @@ void CUI_PopupQuest::Set_Contents(const QUEST_INFO& tQuestInfo)
 	if (4 <= m_Quest.size())
 		return;
 
+//	QUEST_INFO QuestDesc = {};
+//	memcpy(&QuestDesc, &tQuestInfo, sizeof(QUEST_INFO));
 	QUEST_INFO QuestDesc = {};
-	memcpy(&QuestDesc, &tQuestInfo, sizeof(QUEST_INFO));
+	QuestDesc = tQuestInfo;
+
+	m_bProgressing = true; // 퀘스트가 완료되면 false로 전환할 수 있는 매개가 필요함.
+
+	if (TEXT("[메인]") == QuestDesc.strType)
+		m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
+	else if (TEXT("[서브]") == QuestDesc.strType)
+		m_vTypeColor = _float4(0.165f, 0.984f, 0.957f, 1.f);
+	else
+		m_vTypeColor = _float4(0.373f, 0.863f, 0.647f, 1.f);
+
+	m_vTextColor = _float4(0.804f, 0.843f, 0.741f, 1.f);
 
 	m_Quest.push_back(QuestDesc);
 }
@@ -115,18 +128,19 @@ void CUI_PopupQuest::Update_QuestContents(const wstring& strPreTitle, const QUES
 		return;
 
 	QUEST_INFO QuestDesc = {};
-	memcpy(&QuestDesc, &tQuestInfo, sizeof(QUEST_INFO));
+	//memcpy(&QuestDesc, &tQuestInfo, sizeof(QUEST_INFO));
+	QuestDesc = tQuestInfo;
 
 	for (auto iter = m_Quest.begin(); iter != m_Quest.end(); ++iter)
 	{
 		if (strPreTitle == iter->strTitle)
 		{
-			if (iter->strContents == tQuestInfo.strContents)
+			if (iter->strContents == QuestDesc.strContents)
 				return; // 추가
 
-			iter->strType = tQuestInfo.strType;
-			iter->strTitle = tQuestInfo.strTitle;
-			iter->strContents = tQuestInfo.strContents;
+			iter->strType = QuestDesc.strType;
+			iter->strTitle = QuestDesc.strTitle;
+			iter->strContents = QuestDesc.strContents;
 			break;
 		}
 	}

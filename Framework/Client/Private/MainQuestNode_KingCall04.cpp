@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 
 CMainQuestNode_KingCall04::CMainQuestNode_KingCall04()
 {
@@ -27,7 +28,7 @@ HRESULT CMainQuestNode_KingCall04::Initialize()
 
 void CMainQuestNode_KingCall04::Start()
 {
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 	m_pRuslan = GI->Find_GameObject(LEVELID::LEVEL_KINGDOMHALL, LAYER_NPC, TEXT("Ruslan"));
 	Vec4 vSpotPos = Set_DestSpot(m_pRuslan);
@@ -52,7 +53,12 @@ CBTNode::NODE_STATE CMainQuestNode_KingCall04::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+					CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+					QuestDesc.strType = m_strNextQuestTag;
+					QuestDesc.strTitle = m_strNextQuestName;
+					QuestDesc.strContents = m_strNextQuestContent;
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);

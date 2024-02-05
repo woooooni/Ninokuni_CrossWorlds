@@ -5,6 +5,7 @@
 #include "UI_Manager.h"
 #include "GameInstance.h"
 #include "Utils.h"
+#include "UI_PopupQuest.h"
 
 CMainQuestNode_IntroTour03::CMainQuestNode_IntroTour03()
 {
@@ -24,7 +25,13 @@ void CMainQuestNode_IntroTour03::Start()
 {
 	m_strQuestContent = L"서브 퀘스트 " + to_wstring(CQuest_Manager::GetInstance()->Get_QuestClearStack());
 	m_strQuestContent = m_strQuestContent + L" / 3 완료";
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestName;
+	QuestDesc.strContents = m_strQuestContent;
+	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
+	//CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 }
 
 CBTNode::NODE_STATE CMainQuestNode_IntroTour03::Tick(const _float& fTimeDelta)
@@ -36,7 +43,14 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour03::Tick(const _float& fTimeDelta)
 	{
 		m_strQuestContent = L"서브 퀘스트 " + to_wstring(CQuest_Manager::GetInstance()->Get_QuestClearStack());
 		m_strQuestContent = m_strQuestContent + L" / 3 완료";
-		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strQuestTag, m_strQuestName, m_strQuestContent);
+
+		CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+		QuestDesc.strType = m_strQuestTag;
+		QuestDesc.strTitle = m_strQuestName;
+		QuestDesc.strContents = m_strQuestContent;
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+		//CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strQuestTag, m_strQuestName, m_strQuestContent);
+
 		m_iPrevClearCount += CQuest_Manager::GetInstance()->Get_QuestClearStack();
 	}
 

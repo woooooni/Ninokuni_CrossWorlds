@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 
 #include "Game_Manager.h"
 #include "Quest_Manager.h"
@@ -55,7 +56,12 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 	{
 		m_strQuestContent = to_wstring(CQuest_Manager::GetInstance()->Get_MonsterKillCount());
 		m_strQuestContent = m_strQuestContent + L" / 7";
-		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strQuestTag, m_strQuestName, m_strQuestContent);
+		CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+		QuestDesc.strType = m_strQuestTag;
+		QuestDesc.strTitle = m_strQuestName;
+		QuestDesc.strContents = m_strQuestContent;
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strQuestTag, m_strQuestName, m_strQuestContent);
 		m_iPrevKillCount = CQuest_Manager::GetInstance()->Get_QuestClearStack();
 	}
 
@@ -68,7 +74,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
 			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 			m_bIsShowDialog = true;
@@ -88,7 +94,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
 			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 			m_bIsShowDialog = true;
@@ -108,7 +114,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
 			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 			m_bIsShowDialog = true;
@@ -131,7 +137,12 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 				Safe_Delete_Array(m_szpOwner);
 				Safe_Delete_Array(m_szpTalk);
 
-				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+				CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+				QuestDesc.strType = m_strNextQuestTag;
+				QuestDesc.strTitle = m_strNextQuestName;
+				QuestDesc.strContents = m_strNextQuestContent;
+				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 				CQuest_Manager::GetInstance()->Clear_MonsterKillCount();
 				CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
@@ -141,7 +152,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 				return NODE_STATE::NODE_FAIL;
 			}
 
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 			m_fTime = m_fTalkChangeTime - m_fTime;
 			m_bIsShowDialog = false;
 		}

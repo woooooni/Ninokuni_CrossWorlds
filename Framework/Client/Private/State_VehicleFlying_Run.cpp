@@ -85,20 +85,23 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 		return;
 	}
 
-//	if (KEY_HOLD(KEY::Q))
-//	{
-//		bMove = true;
-//
-//		_matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-//
-//		_vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
-//		_vector vUp = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_UP));
-//		_vector vLook = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
-//
-//		_float fRadian = XMVectorGetX(XMVector3Dot(vLook, vRight)) * 10.f * fTimeDelta;
-//
-//		m_pTransformCom->Rotation_Acc(vLook, fRadian);
-//	}
+	if (KEY_HOLD(KEY::Q))
+	{
+		_vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
+		_vector vLook = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+		_float fDot = XMVectorGetX(XMVector3Dot(vRight, vLook));
+
+		m_pTransformCom->Rotation_Acc(vRight, acos(fDot) * fTimeDelta * -1.f);
+	}
+
+	if (KEY_HOLD(KEY::E))
+	{
+		_vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
+		_vector vLook = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+		_float fDot = XMVectorGetX(XMVector3Dot(vRight, vLook));
+
+		m_pTransformCom->Rotation_Acc(vRight, acos(fDot) * fTimeDelta);
+	}
 
 	if (KEY_HOLD(KEY::W))
 	{
@@ -194,22 +197,6 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 		if (true == CUIMinigame_Manager::GetInstance()->Is_AimActive())
 			CUIMinigame_Manager::GetInstance()->Set_GrandprixAimActive(false);
 	}
-
-//	if (KEY_TAP(KEY::SPACE))
-//	{
-//		bMove = true;
-//		CUI_Manager::GetInstance()->Use_JumpBtn();
-//		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_JUMP);
-//		return;
-//	}
-//
-//
-//	if (KEY_NONE(KEY::SHIFT))
-//	{
-//		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_WALK);
-//		return;
-//	}
-
 
 	if (!bMove)
 	{

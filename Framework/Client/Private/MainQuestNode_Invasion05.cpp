@@ -69,7 +69,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion05::Tick(const _float& fTimeDelta)
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
 			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 			/* 대화 카메라 종료 */
 			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));

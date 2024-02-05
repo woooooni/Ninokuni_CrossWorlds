@@ -28,6 +28,7 @@ private:
 
 	class CGameObject* m_pOwner = { nullptr };
 	_uint m_iPass = { 20 };
+	_bool m_bIsBiplane = { false };
 
 private:
 	virtual HRESULT	Ready_Components() override;

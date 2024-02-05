@@ -33,7 +33,7 @@ HRESULT CSubQuestNode_FindCat02::Initialize()
 
 void CSubQuestNode_FindCat02::Start()
 {
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
@@ -72,7 +72,7 @@ CBTNode::NODE_STATE CSubQuestNode_FindCat02::Tick(const _float& fTimeDelta)
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
 			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 			/* 대화 카메라 종료 */
 			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));

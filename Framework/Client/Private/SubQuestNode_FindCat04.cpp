@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 #include "Quest_Manager.h"
 
 #include "Animals.h"
@@ -89,8 +90,12 @@ CBTNode::NODE_STATE CSubQuestNode_FindCat04::Tick(const _float& fTimeDelta)
 						vChloePos.x -= 1.f;
 						m_pDog->Get_Component<CTransform>(TEXT("Com_Transform"))->Set_State(CTransform::STATE_POSITION, vChloePos);
 
-
-						CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+						CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+						QuestDesc.strType = m_strNextQuestTag;
+						QuestDesc.strTitle = m_strNextQuestName;
+						QuestDesc.strContents = m_strNextQuestContent;
+						CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//						CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 						dynamic_cast<CAnimals*>(m_pDog)->Set_Lift(false);
 						dynamic_cast<CAnimals*>(m_pDog)->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CAnimals::STATE::STATE_STAND);
 

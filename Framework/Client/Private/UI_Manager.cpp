@@ -319,7 +319,8 @@ void CUI_Manager::Set_QuestPopup(void* pArg)
 		return;
 
 	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-	memcpy(&QuestDesc, &pArg, sizeof(CUI_PopupQuest::QUEST_INFO));
+	QuestDesc = *((CUI_PopupQuest::QUEST_INFO*)pArg);
+//	memcpy(&QuestDesc, &pArg, sizeof(CUI_PopupQuest::QUEST_INFO));
 	m_QuestPopUp[0]->Set_Contents(QuestDesc);
 
 	Resize_QuestPopup();
@@ -355,7 +356,8 @@ void CUI_Manager::Update_QuestPopup(const wstring& strPreTitle, void* pArg)
 		return;
 
 	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-	memcpy(&QuestDesc, &pArg, sizeof(CUI_PopupQuest::QUEST_INFO));
+//	memcpy(&QuestDesc, &pArg, sizeof(CUI_PopupQuest::QUEST_INFO));
+	QuestDesc = *((CUI_PopupQuest::QUEST_INFO*)pArg);
 	m_QuestPopUp[0]->Update_QuestContents(strPreTitle, QuestDesc);
 
 	Resize_QuestPopup();
@@ -5809,16 +5811,16 @@ void CUI_Manager::Show_AddItem(ITEM_TYPE eItemType, ITEM_CODE eItemCode, _uint i
 		if (nullptr == pSlot)
 			return;
 
-		if (0 < m_ItemPopup.size())
-		{
-			if (true == m_ItemPopup.front()->Is_Disappear() && true == m_ItemPopup.front()->Is_Dead())
-			{
-				dynamic_cast<CUI_AddItem*>(pSlot)->Set_Position(1);
-				m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
-				Safe_AddRef(pSlot);
-			}
-		}
-		else
+		//if (0 < m_ItemPopup.size())
+		//{
+		//	if (true == m_ItemPopup.front()->Is_Disappear() && true == m_ItemPopup.front()->Is_Dead())
+		//	{
+		//		dynamic_cast<CUI_AddItem*>(pSlot)->Set_Position(1);
+		//		m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
+		//		Safe_AddRef(pSlot);
+		//	}
+		//}
+		//else
 		{
 			dynamic_cast<CUI_AddItem*>(pSlot)->Set_Position(m_ItemPopup.size());
 			m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
@@ -6826,7 +6828,7 @@ HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
 		}
 	}
 
-	else if (iMagicNum == 2)
+	else if (iMagicNum == 2) // Battle
 	{
 		if (nullptr == m_pDialogBattle)
 			return E_FAIL;

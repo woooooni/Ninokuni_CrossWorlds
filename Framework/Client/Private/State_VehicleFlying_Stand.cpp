@@ -120,6 +120,24 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
             }
         }
 
+        if (KEY_HOLD(KEY::Q))
+        {
+            _vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
+            _vector vLook = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+            _float fDot = XMVectorGetX(XMVector3Dot(vRight, vLook));
+
+            m_pTransformCom->Rotation_Acc(vRight, acos(fDot) * fTimeDelta * -1.f);
+        }
+
+        if (KEY_HOLD(KEY::E))
+        {
+            _vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
+            _vector vLook = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+            _float fDot = XMVectorGetX(XMVector3Dot(vRight, vLook));
+
+            m_pTransformCom->Rotation_Acc(vRight, acos(fDot) * fTimeDelta);
+        }
+
         if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
         {
             m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN);

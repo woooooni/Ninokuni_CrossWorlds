@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 
 CSubQuestNode_Windmill03::CSubQuestNode_Windmill03()
 {
@@ -28,7 +29,12 @@ HRESULT CSubQuestNode_Windmill03::Initialize()
 
 void CSubQuestNode_Windmill03::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestName;
+	QuestDesc.strContents = m_strQuestContent;
+	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
+//	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	m_pBeard = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("SwiftSolutionMaster"));
 	Vec4 vSpotPos = Set_DestSpot(m_pBeard);
@@ -53,7 +59,12 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill03::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+					CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+					QuestDesc.strType = m_strNextQuestTag;
+					QuestDesc.strTitle = m_strNextQuestName;
+					QuestDesc.strContents = m_strNextQuestContent;
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);

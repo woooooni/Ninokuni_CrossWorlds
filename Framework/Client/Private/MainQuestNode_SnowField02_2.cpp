@@ -6,6 +6,7 @@
 
 #include "Quest_Manager.h"
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 #include "Sound_Manager.h"
 
 #include "Game_Manager.h"
@@ -41,7 +42,7 @@ HRESULT CMainQuestNode_SnowField02_2::Initialize()
 
 void CMainQuestNode_SnowField02_2::Start()
 {
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
@@ -52,7 +53,7 @@ void CMainQuestNode_SnowField02_2::Start()
 
 	// CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
 
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
 	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 
@@ -76,10 +77,15 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField02_2::Tick(const _float& fTimeDelta)
 
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
-			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+			CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+			QuestDesc.strType = m_strNextQuestTag;
+			QuestDesc.strTitle = m_strNextQuestName;
+			QuestDesc.strContents = m_strNextQuestContent;
+			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 			return NODE_STATE::NODE_FAIL;
 		}

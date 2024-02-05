@@ -35,7 +35,7 @@ HRESULT CMainQuestNode_Invasion02_4::Initialize()
 
 void CMainQuestNode_Invasion02_4::Start()
 {
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
@@ -70,7 +70,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02_4::Tick(const _float& fTimeDelta)
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
 			m_bIsWitchAppear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 			/* 대화 카메라 종료 */
 			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
