@@ -29,10 +29,15 @@ HRESULT CVfx_Stellia_Skill_Charge::Initialize_Prototype()
 	m_pScaleOffset    = new _float3[m_iMaxCount];
 	m_pRotationOffset = new _float3[m_iMaxCount];
 	
-	m_pFrameTriger[TYPE_ET1_SMOKE] = 55;
-	m_pPositionOffset[TYPE_ET1_SMOKE] = _float3(0.f, 0.f, -5.f);
-	m_pScaleOffset[TYPE_ET1_SMOKE]    = _float3(1.f, 1.f, 1.f);
-	m_pRotationOffset[TYPE_ET1_SMOKE] = _float3(0.f, 0.f, 0.f);
+	m_pFrameTriger[TYPE_ET1_WARNING] = 0;
+	m_pPositionOffset[TYPE_ET1_WARNING] = _float3(0.f, 0.f, 0.6f);
+	m_pScaleOffset[TYPE_ET1_WARNING]    = _float3(10.f, 2.f, 35.f);
+	m_pRotationOffset[TYPE_ET1_WARNING] = _float3(0.f, 0.f, 0.f);
+
+	m_pFrameTriger[TYPE_ET2_SMOKE] = 55;
+	m_pPositionOffset[TYPE_ET2_SMOKE] = _float3(0.f, 0.f, -5.f);
+	m_pScaleOffset[TYPE_ET2_SMOKE]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_ET2_SMOKE] = _float3(0.f, 0.f, 0.f);
 
  	return S_OK;
 }
@@ -48,20 +53,34 @@ void CVfx_Stellia_Skill_Charge::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
-		if (m_iCount == TYPE_ET1_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_SMOKE])
+		if (m_iCount == TYPE_ET1_WARNING && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_WARNING])
+		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_FourHandSwing_Warning"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_WARNING], m_pScaleOffset[TYPE_ET1_WARNING], m_pRotationOffset[TYPE_ET1_WARNING], nullptr, &m_pDecal, false);
+			Safe_AddRef(m_pDecal);
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_ET2_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_SMOKE])
 		{
 			m_fTimeAcc += fTimeDelta;
 			if (m_fTimeAcc >= 0.25f)
 			{
+				if (nullptr != m_pDecal)
+				{
+					m_pDecal->Start_AlphaDeleate();
+					Safe_Release(m_pDecal);
+				}
+
 				CTransform* pOwnerTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
 				if (pOwnerTransform != nullptr)
 				{
 					m_fTimeAcc = 0.f;
 
 					GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Swing_Smoke"),
-						pOwnerTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET1_SMOKE], m_pScaleOffset[TYPE_ET1_SMOKE], m_pRotationOffset[TYPE_ET1_SMOKE]);
+						pOwnerTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET2_SMOKE], m_pScaleOffset[TYPE_ET2_SMOKE], m_pRotationOffset[TYPE_ET2_SMOKE]);
 					GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Swing_Circle"),
-						pOwnerTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET1_SMOKE], m_pScaleOffset[TYPE_ET1_SMOKE], m_pRotationOffset[TYPE_ET1_SMOKE]);
+						pOwnerTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET2_SMOKE], m_pScaleOffset[TYPE_ET2_SMOKE], m_pRotationOffset[TYPE_ET2_SMOKE]);
 				}
 			}
 
@@ -118,6 +137,12 @@ CGameObject* CVfx_Stellia_Skill_Charge::Clone(void* pArg)
 void CVfx_Stellia_Skill_Charge::Free()
 {
 	__super::Free();
+
+	if (nullptr != m_pDecal)
+	{
+		m_pDecal->Start_AlphaDeleate();
+		Safe_Release(m_pDecal);
+	}
 
 	if (!m_isCloned)
 	{

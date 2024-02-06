@@ -12,7 +12,18 @@ class CVfx_Stellia_Skill_Laser final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_ET1_,
+		TYPE_ET1_D_WARNING,
+
+		TYPE_ET2_E_MAINLINE_01,
+		TYPE_ET2_E_MAINLINE_02,
+
+		TYPE_ET2_E_CIRCLELINE,
+		TYPE_ET2_E_LINEEFFECT,
+
+		TYPE_ET2_P_CIRCLES,
+
+		TYPE_ET3_V_FINISH,
+
 		TYPE_END
 	};
 
@@ -30,6 +41,10 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	class CEffect* m_pMainLine_01 = nullptr;
+	class CEffect* m_pMainLine_02 = nullptr;
 
 public:
 	static CVfx_Stellia_Skill_Laser* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

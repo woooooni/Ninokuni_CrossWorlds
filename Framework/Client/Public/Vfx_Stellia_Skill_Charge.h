@@ -12,7 +12,10 @@ class CVfx_Stellia_Skill_Charge final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_ET1_SMOKE,
+		TYPE_ET1_WARNING,
+
+		TYPE_ET2_SMOKE,
+
 		TYPE_END
 	};
 
@@ -30,6 +33,9 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	class CDecal* m_pDecal = nullptr;
 
 public:
 	static CVfx_Stellia_Skill_Charge* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

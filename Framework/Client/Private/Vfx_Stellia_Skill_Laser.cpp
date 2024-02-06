@@ -29,10 +29,43 @@ HRESULT CVfx_Stellia_Skill_Laser::Initialize_Prototype()
 	m_pScaleOffset    = new _float3[m_iMaxCount];
 	m_pRotationOffset = new _float3[m_iMaxCount];
 	
-	m_pFrameTriger[TYPE_ET1_] = 0;
-	m_pPositionOffset[TYPE_ET1_] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_ET1_]    = _float3(1.f, 1.f, 1.f);
-	m_pRotationOffset[TYPE_ET1_] = _float3(0.f, 0.f, 0.f);
+	m_pFrameTriger[TYPE_ET1_D_WARNING] = 0;
+	m_pPositionOffset[TYPE_ET1_D_WARNING] = _float3(0.f, 0.f, 0.6f);
+	m_pScaleOffset[TYPE_ET1_D_WARNING]    = _float3(7.f, 2.f, 42.f);
+	m_pRotationOffset[TYPE_ET1_D_WARNING] = _float3(0.f, 0.f, 0.f);
+
+	{
+		m_pFrameTriger[TYPE_ET2_E_MAINLINE_01] = 33;
+		m_pPositionOffset[TYPE_ET2_E_MAINLINE_01] = _float3(0.f, 1.f, -1.5f);
+		m_pScaleOffset[TYPE_ET2_E_MAINLINE_01]    = _float3(8.f, 30.f, 1.f);
+		m_pRotationOffset[TYPE_ET2_E_MAINLINE_01] = _float3(90.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_ET2_E_MAINLINE_02] = 33;
+		m_pPositionOffset[TYPE_ET2_E_MAINLINE_02] = _float3(0.2f, 1.f, 0.f); 
+		m_pScaleOffset[TYPE_ET2_E_MAINLINE_02]    = _float3(8.f, 30.f, 1.f);
+		m_pRotationOffset[TYPE_ET2_E_MAINLINE_02] = _float3(0.f, 90.f, 90.f);
+
+		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 33;
+		m_pPositionOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 4.f, 12.f);
+		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE]    = _float3(0.5f, 0.5f, 0.5f);
+		m_pRotationOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
+
+
+		m_pFrameTriger[TYPE_ET2_E_LINEEFFECT] = 33;
+		m_pPositionOffset[TYPE_ET2_E_LINEEFFECT] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET2_E_LINEEFFECT]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET2_E_LINEEFFECT] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 33;
+		m_pPositionOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET2_P_CIRCLES]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
+	}
+
+	m_pFrameTriger[TYPE_ET3_V_FINISH] = 100;
+	m_pPositionOffset[TYPE_ET3_V_FINISH] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_ET3_V_FINISH]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_ET3_V_FINISH] = _float3(0.f, 0.f, 0.f);
 
  	return S_OK;
 }
@@ -48,8 +81,66 @@ void CVfx_Stellia_Skill_Laser::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
-		if (m_iCount == TYPE_ET1_ && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_])
+		if (m_iCount == TYPE_ET1_D_WARNING && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_D_WARNING])
 		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_FourHandSwing_Warning"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_D_WARNING], m_pScaleOffset[TYPE_ET1_D_WARNING], m_pRotationOffset[TYPE_ET1_D_WARNING]);
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_ET2_E_MAINLINE_01 && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_MAINLINE_01])
+		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_LaserLineEffect"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_MAINLINE_01], m_pScaleOffset[TYPE_ET2_E_MAINLINE_01], m_pRotationOffset[TYPE_ET2_E_MAINLINE_01], false, &m_pMainLine_01, false);
+			Safe_AddRef(m_pMainLine_01);
+			m_iCount++;
+
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_LaserLineEffect"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_MAINLINE_02], m_pScaleOffset[TYPE_ET2_E_MAINLINE_02], m_pRotationOffset[TYPE_ET2_E_MAINLINE_02], false, &m_pMainLine_02, false);
+			Safe_AddRef(m_pMainLine_02);
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_ET2_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CIRCLELINE])
+		{
+			m_fTimeAcc += fTimeDelta;
+			if (m_fTimeAcc >= 0.2f)
+			{
+				m_fTimeAcc = 0.f;
+
+				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_CircleLineEffect"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_CIRCLELINE], m_pScaleOffset[TYPE_ET2_E_CIRCLELINE], m_pRotationOffset[TYPE_ET2_E_CIRCLELINE]);
+			}
+
+			if (m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] + 20)
+				m_iCount++;
+		}
+		else if (m_iCount == TYPE_ET2_E_LINEEFFECT && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_LINEEFFECT])
+		{
+
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_ET2_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_CIRCLES])
+		{
+
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_ET3_V_FINISH && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_V_FINISH])
+		{
+			if (nullptr != m_pMainLine_01)
+			{
+				m_pMainLine_01->Set_AnimationLoop(false);
+				m_pMainLine_01->Set_AnimationFinishDelete(true);
+				Safe_Release(m_pMainLine_01);
+			}
+
+			if (nullptr != m_pMainLine_02)
+			{
+				m_pMainLine_02->Set_AnimationLoop(false);
+				m_pMainLine_02->Set_AnimationFinishDelete(true);
+				Safe_Release(m_pMainLine_02);
+			}
+
 			m_iCount++;
 		}
 
@@ -102,6 +193,20 @@ CGameObject* CVfx_Stellia_Skill_Laser::Clone(void* pArg)
 void CVfx_Stellia_Skill_Laser::Free()
 {
 	__super::Free();
+
+	if (nullptr != m_pMainLine_01)
+	{
+		m_pMainLine_01->Set_AnimationLoop(false);
+		m_pMainLine_01->Set_AnimationFinishDelete(true);
+		Safe_Release(m_pMainLine_01);
+	}
+
+	if (nullptr != m_pMainLine_02)
+	{
+		m_pMainLine_02->Set_AnimationLoop(false);
+		m_pMainLine_02->Set_AnimationFinishDelete(true);
+		Safe_Release(m_pMainLine_02);
+	}
 
 	if (!m_isCloned)
 	{

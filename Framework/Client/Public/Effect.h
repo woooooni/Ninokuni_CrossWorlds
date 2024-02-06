@@ -326,6 +326,9 @@ public:
 	void Set_DeleteEffect(_bool bEffectDelete)             { m_bEffectDelete = bEffectDelete; }
 	void Set_OwnerTransformOnly(_bool bOwnerTransformOnly) { m_bOwnerTransformOnly = bOwnerTransformOnly; }
 
+	void Set_AnimationLoop(_bool bLoop)           { m_tEffectDesc.bAnimationLoop = bLoop; }
+	void Set_AnimationFinishDelete(_bool bDelete) { m_bAnimationFinishDelete = bDelete; }
+
 public:
 	class CTexture* Get_DiffuseTexture()    { return m_pDiffuseTextureCom; }
 	class CTexture* Get_AlphaTexture()      { return m_pAlphaTextureCom; }
@@ -333,7 +336,7 @@ public:
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 	class CRigidBody* Get_RigidBodyCom() { return m_pRigidBodyCom; }
 
-	_bool Get_DieEffect() { return m_bEffectDie; }
+	_bool  Get_DieEffect() { return m_bEffectDie; }
 	_float Get_EffectLifeTime() { return m_fLifeTime; }
 
 private:
@@ -385,6 +388,7 @@ private:
 	_float  m_fAnimationSpeed = 0.f;
 	_float2 m_fAccUVFlow   = _float2(0.f, 0.f);
 	_float 	m_fUVFlowSpeed = 0.f;
+	_bool m_bAnimationFinishDelete = false;
 
 	// ¾ËÆÄ
 	_float m_fAlpha      = 1.f;
