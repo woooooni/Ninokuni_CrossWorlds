@@ -10,6 +10,10 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Effect_Manager.h"
+#include "Vfx.h"
+#include "Vfx_Stellia_Skill_Roar.h"
+
 CStelliaState_Rage2Start::CStelliaState_Rage2Start(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -25,6 +29,12 @@ HRESULT CStelliaState_Rage2Start::Initialize(const list<wstring>& AnimationList)
 void CStelliaState_Rage2Start::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkillRage"));
+
+	// Effect Create
+	CVfx* pVfxEffect = nullptr;
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Roar"), m_pTransformCom->Get_WorldMatrix(), m_pStellia, &pVfxEffect);
+	if (nullptr != pVfxEffect)
+		pVfxEffect->Set_OwnerStateIndex((_int)CStellia::STELLIA_RAGE2START);
 }
 
 void CStelliaState_Rage2Start::Tick_State(_float fTimeDelta)

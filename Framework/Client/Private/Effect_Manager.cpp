@@ -945,6 +945,10 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 			CVfx_Stellia_Spawn_Roar::Create(m_pDevice, m_pContext, TEXT("Stellia_Spawn_Roar")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
 
+		// Prototype_Vfx_Stellia_Skill_Roar
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_Roar"),
+			CVfx_Stellia_Skill_Roar::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_Roar")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
 		// Prototype_Vfx_Stellia_Skill_ClawRight
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_RightClaw"),
 			CVfx_Stellia_Skill_ClawRight::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_RightClaw")), LAYER_TYPE::LAYER_EFFECT)))

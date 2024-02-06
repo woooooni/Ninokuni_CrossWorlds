@@ -27,11 +27,14 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	_uint Get_MaxCount() { return m_iMaxCount; }
+	_uint Get_MaxCount()    { return m_iMaxCount; }
 	_int* Get_FrameTriger() { return m_pFrameTriger; }
 	_float3* Get_PositionOffset() { return m_pPositionOffset; }
 	_float3* Get_ScaleOffset()    { return m_pScaleOffset; }
 	_float3* Get_RotationOffset() { return m_pRotationOffset; }
+
+public:
+	void Set_OwnerStateIndex(_int iIndex) { m_bOwnerStateIndex = iIndex; }
 
 protected:
 	virtual HRESULT Ready_Components() override;

@@ -55,6 +55,7 @@
 ////// Stellia
 #include "Vfx_Stellia_Spawn_Roar.h"
 
+#include "Vfx_Stellia_Skill_Roar.h"
 #include "Vfx_Stellia_Skill_ClawRight.h"
 #include "Vfx_Stellia_Skill_ClawDouble.h"
 #include "Vfx_Stellia_Skill_SpinTail.h"
