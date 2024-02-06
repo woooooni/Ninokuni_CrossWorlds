@@ -8,7 +8,6 @@
 #include "UI_Manager.h"
 #include "Sound_Manager.h"
 
-#include "Camera_Manager.h"
 #include "Camera_Group.h"
 
 #include "Game_Manager.h"
@@ -110,12 +109,6 @@ void CMainQuestNode_WitchForest03::TalkEvent()
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("00_01_02KuuSay_Hu.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
-		break;
-	case 2:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("00_01_03KuuSay_HurryGo!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, TEXT("SKM_Kuu.ao|Kuu_talk01"));
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
 		break;
 	}

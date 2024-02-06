@@ -8,7 +8,6 @@
 #include "UI_Manager.h"
 #include "Sound_Manager.h"
 
-#include "Camera_Manager.h"
 #include "Camera_Group.h"
 
 #include "Game_Manager.h"
@@ -77,17 +76,11 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour02::Tick(const _float& fTimeDelta)
 			CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WANTED, true);
 
 			/* ÄÆ½Å ½ÃÀÛ */
-			const _uint iCurLevel = GI->Get_CurrentLevel();
+			CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
+			if (nullptr != pCutSceneMap)
 			{
-				if (LEVELID::LEVEL_EVERMORE == iCurLevel || LEVELID::LEVEL_TOOL == iCurLevel)
-				{
-					CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
-					if (nullptr != pCutSceneMap)
-					{
-						pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE);
-						pCutSceneMap->Reserve_NextCameraType(CAMERA_TYPE::FOLLOW);
-					}
-				}
+				pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE);
+				pCutSceneMap->Reserve_NextCameraType(CAMERA_TYPE::FOLLOW);
 			}
 			return NODE_STATE::NODE_FAIL;
 		}
