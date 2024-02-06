@@ -63,7 +63,7 @@ void CState_EnemyBiplane_Skill_1::Shoot_Bullet_Ball()
     ProjectileDesc.pOwner = m_pEngineerPlane;
 
     CGameObject* pProjectile = nullptr;
-    if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, L"Prototype_GameObject_Enemy_Biplane_BulletBall", &ProjectileDesc, &pProjectile)))
+    if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, L"Prototype_GameObject_Enemy_Biplane_BulletBall", &ProjectileDesc, &pProjectile)))
     {
         MSG_BOX("AddGameObject_Failed. : CState_EnemyBiplane_Skill_1::Shoot_Bullet_Ball()");
         return;

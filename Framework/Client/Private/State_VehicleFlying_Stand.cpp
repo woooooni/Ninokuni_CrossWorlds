@@ -10,6 +10,7 @@
 
 #include "UIMinigame_Manager.h"
 #include "Character_Biplane_Bullet.h"
+#include "Pool.h"
 
 #include "Vehicle_Flying_Biplane.h"
 #include "Trail.h"
@@ -25,8 +26,10 @@ HRESULT CState_VehicleFlying_Stand::Initialize(const list<wstring>& AnimationLis
         return E_FAIL;
 
     m_pVehicle = dynamic_cast<CVehicle*>(m_pStateMachineCom->Get_Owner());
+    m_pVehicle_Flying_Biplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pStateMachineCom->Get_Owner());
+    m_pFollowCamera = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 
-    if (nullptr == m_pVehicle)
+    if (nullptr == m_pVehicle || nullptr == m_pVehicle_Flying_Biplane || nullptr == m_pFollowCamera)
         return E_FAIL;
     
     return S_OK;
@@ -39,13 +42,9 @@ void CState_VehicleFlying_Stand::Enter_State(void* pArg)
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 
-    CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-    if (nullptr != pFollowCam)
-    {
-        pFollowCam->Set_DampingBackLimitRad(XMConvertToRadians(90.f));
-        pFollowCam->Set_CanInput(true);
-        pFollowCam->Set_MinMaxLimitY(0.7f, 2.1f);
-    }
+    m_pFollowCamera->Set_DampingBackLimitRad(XMConvertToRadians(90.f));
+    m_pFollowCamera->Set_CanInput(true);
+    m_pFollowCamera->Set_MinMaxLimitY(0.7f, 2.1f);
 
     CVehicle_Flying_Biplane* pBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pVehicle);
     if (nullptr != pBiplane)
@@ -119,7 +118,7 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
         {
             m_fTimeAcc += fTimeDelta;
             
-            if (0.5f < m_fTimeAcc)
+            if (0.1f < m_fTimeAcc)
             {
                 m_bShoot = true;
                 m_fTimeAcc = 0.f;
@@ -231,14 +230,19 @@ void CState_VehicleFlying_Stand::Shoot()
     CCharacter_Biplane_Bullet::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
     ProjectileDesc.pOwner = dynamic_cast<CVehicle_Flying*>(m_pVehicle);
 
-
     // Left Side Bullet
-    CGameObject* pLeftBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+
+    CGameObject* pLeftBullet = CPool<CCharacter_Biplane_Bullet>::Get_Obj();
+
+    if (nullptr == pLeftBullet)
+        pLeftBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+
     if (nullptr == pLeftBullet)
         return;
 
     CTransform* pLeftTransform = pLeftBullet->Get_Component<CTransform>(L"Com_Transform");
     Vec3 vLeftScale = pLeftTransform->Get_Scale();
+
     pLeftTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
     pLeftTransform->Set_Scale(vLeftScale);
 
@@ -249,12 +253,27 @@ void CState_VehicleFlying_Stand::Shoot()
     vLeftStartPos += XMVector3Normalize(m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Look()) * 0.5f;
     pLeftTransform->Set_State(CTransform::STATE_POSITION, vLeftStartPos);
 
+    if (nullptr != m_pVehicle_Flying_Biplane->Get_Target())
+    {
+        CTransform* pTargetTransform = m_pVehicle_Flying_Biplane->Get_Target()->Get_Component_Transform();
+        if (nullptr != pTargetTransform)
+        {
+            Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() + XMVectorSet(0.f, 1.f, 0.f, 0.f) - pLeftTransform->Get_Position());
+            pLeftTransform->Rotation_Look(vDir);
+        }
+    }
+
     if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pLeftBullet)))
         MSG_BOX("Generate Bullet Failed.");
 
 
     // Right Side Bullet
+
     CGameObject* pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+
+    if (nullptr == pRightBullet)
+        pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+
     if (nullptr == pRightBullet)
         return;
 
@@ -265,9 +284,18 @@ void CState_VehicleFlying_Stand::Shoot()
 
     _matrix MatRight = m_pModelCom->Get_SocketLocalMatrix(1) * m_pTransformCom->Get_WorldMatrix();
     Vec4 vRightStartPos = MatRight.r[CTransform::STATE_POSITION];
-   // vRightStartPos += XMVector3Normalize(pRightTransform->Get_Look()) * 0.5f;
     vRightStartPos += XMVector3Normalize(m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Look()) * 0.5f;
     pRightTransform->Set_State(CTransform::STATE_POSITION, vRightStartPos);
+
+    if (nullptr != m_pVehicle_Flying_Biplane->Get_Target())
+    {
+        CTransform* pTargetTransform = m_pVehicle_Flying_Biplane->Get_Target()->Get_Component_Transform();
+        if (nullptr != pTargetTransform)
+        {
+            Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() + XMVectorSet(0.f, 1.f, 0.f, 0.f) - pRightTransform->Get_Position());
+            pRightTransform->Rotation_Look(vDir);
+        }
+    }
 
     if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pRightBullet)))
         MSG_BOX("Generate Bullet Failed.");

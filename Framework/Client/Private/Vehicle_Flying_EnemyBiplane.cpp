@@ -6,6 +6,7 @@
 #include "State_Enemy_VehicleFlying_Stand.h"
 #include "State_Enemy_VehicleFlying_Run.h"
 
+#include "State_EnemyBiplane_Stand.h"
 #include "State_EnemyBiplane_Attack.h"
 #include "State_EnemyBiplane_Finish_Attack.h"
 #include "State_EnemyBiplane_Run.h"
@@ -110,6 +111,30 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 {
 	if (true == m_bOnBoard)
 	{
+		
+		if (false == m_bInfinite && KEY_TAP(KEY::Z))
+		{
+			m_tStat.fCurHP -= 10000;
+			m_tStat.fCurHP = max(m_tStat.fCurHP, 0);
+			if (0 >= m_tStat.fCurHP)
+			{
+				m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK);
+			}
+		}
+
+		if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::Z))
+		{
+			for (auto& pObject : GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER))
+			{
+				if (pObject->Get_ObjectTag() == L"Vehicle_Flying_EnemyBiplane")
+					continue;
+
+				pObject->Set_Dead(true);
+			}
+		}
+
+		Check_Use_Skill();
+
 		__super::Tick(fTimeDelta);
 
 		if (true == m_bInfinite)
@@ -378,7 +403,7 @@ HRESULT CVehicle_Flying_EnemyBiplane::Ready_States()
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
-	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND, CState_EnemyBiplane_Trace::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND, CState_EnemyBiplane_Stand::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
@@ -487,6 +512,33 @@ void CVehicle_Flying_EnemyBiplane::Update_RiderState()
 	}
 }
 
+_bool CVehicle_Flying_EnemyBiplane::Check_Use_Skill()
+{
+	_float fHpRatio = m_tStat.fCurHP / m_tStat.fMaxHP;
+	if (false == m_bLaunch_Pattern1 && fHpRatio <= 0.7f)
+	{
+		m_bLaunch_Pattern1 = true;
+		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_0);
+		return true;
+	}
+
+	if (false == m_bLaunch_Pattern2 && fHpRatio <= 0.5f)
+	{
+		m_bLaunch_Pattern2 = true;
+		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_1);
+		return true;
+	}
+
+	if (false == m_bLaunch_Pattern3 && fHpRatio <= 0.3f)
+	{
+		m_bLaunch_Pattern3 = true;
+		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_2);
+		return true;
+	}
+
+	return false;
+}
+
 void CVehicle_Flying_EnemyBiplane::On_Damaged(const COLLISION_INFO& tInfo)
 {
 	if (true == m_bInfinite)
@@ -572,4 +624,8 @@ void CVehicle_Flying_EnemyBiplane::Free()
 	Safe_Release(m_pRaderIcon);
 	Safe_Release(m_pAim);
 	Safe_Release(m_pHP);
+
+	for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)	
+		Safe_Release(m_pTrails[i]);
+
 }

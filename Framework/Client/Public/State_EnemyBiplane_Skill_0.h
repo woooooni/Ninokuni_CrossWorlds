@@ -36,7 +36,7 @@ private:
 	_float m_fShootMissileTime = 0.1f;
 
 private:
-	_int m_iMissileCount = -4;
+	_int m_iMissileCount = -20;
 
 
 

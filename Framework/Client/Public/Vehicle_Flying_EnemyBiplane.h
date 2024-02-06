@@ -64,6 +64,7 @@ private:
 
 private:
 	void Update_RiderState();
+	_bool Check_Use_Skill();
 
 private:
 	void On_Damaged(const COLLISION_INFO& tInfo);
@@ -76,6 +77,12 @@ private:
 
 private:
 	class CGameObject* m_pTarget = nullptr;
+
+private:
+	_bool m_bLaunch_Pattern1 = false;
+	_bool m_bLaunch_Pattern2 = false;
+	_bool m_bLaunch_Pattern3 = false;
+
 
 private:
 	class CTrail* m_pTrails[BIPLANE_TRAIL::BIPLANE_TRAIL_END] = {};

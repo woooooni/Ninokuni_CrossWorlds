@@ -10,7 +10,9 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Riding_Manager.h"
 #include "Vehicle_Flying_EnemyBiplane.h"
+#include "Vehicle_Flying_Biplane.h"
 
 CState_EnemyBiplane_Stand::CState_EnemyBiplane_Stand(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
@@ -28,16 +30,22 @@ HRESULT CState_EnemyBiplane_Stand::Initialize(const list<wstring>& AnimationList
         return E_FAIL;
 
     m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+    
+    // TODO : 플레이어 포지션 변경.
+    // CRiding_Manager::GetInstance()->Get_Character_Biplane()->Get_Component_Transform()->Set_Position()
+    // CRiding_Manager::GetInstance()->Get_Character_Biplane()->Get_Component<CPhysX_Controller>(L"Com_Controller")->Set_EnterLevel_Position()
 
+    // TODO : 내 포지션 변경.
+    // m_pTransformCom->Set_Position()
+
+    // TODO : 페이드.
 
     return S_OK;
 }
 
 void CState_EnemyBiplane_Stand::Enter_State(void* pArg)
 {
-    if (true == Check_Use_Skill())
-        return;
-
+    m_pEngineerPlane->Set_Infinite(false, 0.f);
     CTransform* pTargetTransform = m_pTarget->Get_CharacterTransformCom(); //플레이어의 트랜스폼
     if (nullptr == pTargetTransform)
         return;
@@ -76,33 +84,6 @@ void CState_EnemyBiplane_Stand::Tick_State(_float fTimeDelta)
 void CState_EnemyBiplane_Stand::Exit_State()
 {
 
-}
-
-_bool CState_EnemyBiplane_Stand::Check_Use_Skill()
-{
-    _float fHpRatio = m_pEngineerPlane->Get_Stat().fCurHP / m_pEngineerPlane->Get_Stat().fMaxHP;
-    if (false == m_bLaunch_Pattern1 && fHpRatio <= 0.7f)
-    {
-        m_bLaunch_Pattern1 = true;
-        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_0);
-        return true;
-    }
-
-    if (false == m_bLaunch_Pattern2 && fHpRatio <= 0.5f)
-    {
-        m_bLaunch_Pattern2 = true;
-        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_1);
-        return true;
-    }
-
-    if (false == m_bLaunch_Pattern3 && fHpRatio <= 0.3f)
-    {
-        m_bLaunch_Pattern3 = true;
-        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_2);
-        return true;
-    }
-
-    return false;
 }
 
 

@@ -420,7 +420,7 @@ void CVehicle_Flying_EnemyBoto::On_Damaged(const COLLISION_INFO& tInfo)
 	_int iDamage = 3000;
 	if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Character_Biplane_Bullet"))
 	{
-		iDamage = iDamage * 0.1f + GI->RandomInt(-300, 300);
+		iDamage = iDamage * 0.3f + GI->RandomInt(-300, 300);
 	}
 	else if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Biplane_Thunder_Cloud"))
 	{
@@ -428,17 +428,23 @@ void CVehicle_Flying_EnemyBoto::On_Damaged(const COLLISION_INFO& tInfo)
 	}
 	else if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Biplane_GuidedMissile"))
 	{
-		iDamage = iDamage * 0.3f + GI->RandomInt(-300, 300);
+		iDamage = iDamage * 0.5f + GI->RandomInt(-300, 300);
 	}
 
-	m_tStat.fCurHP = max(0, m_tStat.fCurHP - iDamage);
+	
 
+	m_tStat.fCurHP = max(0, m_tStat.fCurHP - iDamage);
 	if (0.f >= m_tStat.fCurHP)
 	{
+		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.5f, 19.f, 0.5f);
 		m_pRider->Set_Dead(true);
 		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_DEAD);
 		Reserve_Dead(true);
 		return;
+	}
+	else
+	{
+		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.3f, 19.f, 0.3f);
 	}
 }
 

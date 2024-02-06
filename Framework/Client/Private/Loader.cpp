@@ -472,34 +472,34 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 		case Client::SWORDMAN_CH:
 		{
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Swordman",
-				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Swordman"), CHARACTER_TYPE::SWORD_MAN), LAYER_CHARACTER)))
+				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Swordman"), CHARACTER_TYPE::SWORD_MAN), LAYER_CHARACTER, true)))
 				return E_FAIL;
 		}
 		break;
 		case Client::DESTROYER_CH:
 		{
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Destroyer",
-				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Destroyer"), CHARACTER_TYPE::DESTROYER), LAYER_CHARACTER)))
+				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Destroyer"), CHARACTER_TYPE::DESTROYER), LAYER_CHARACTER, true)))
 				return E_FAIL;
 		}
 		break;
 		case Client::ENGINEER_CH:
 		{
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Engineer",
-				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Engineer"), CHARACTER_TYPE::ENGINEER), LAYER_CHARACTER)))
+				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Engineer"), CHARACTER_TYPE::ENGINEER), LAYER_CHARACTER, true)))
 				return E_FAIL;
 		}
 		break;
 		case Client::ALL_CH:
 		{
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Swordman",
-				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Swordman"), CHARACTER_TYPE::SWORD_MAN), LAYER_CHARACTER)))
+				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Swordman"), CHARACTER_TYPE::SWORD_MAN), LAYER_CHARACTER, true)))
 				return E_FAIL;
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Destroyer",
-				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Destroyer"), CHARACTER_TYPE::DESTROYER), LAYER_CHARACTER)))
+				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Destroyer"), CHARACTER_TYPE::DESTROYER), LAYER_CHARACTER, true)))
 				return E_FAIL;
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Engineer",
-				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Engineer"), CHARACTER_TYPE::ENGINEER), LAYER_CHARACTER)))
+				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Engineer"), CHARACTER_TYPE::ENGINEER), LAYER_CHARACTER, true)))
 				return E_FAIL;
 		}
 		break;
@@ -508,26 +508,26 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 		}
 
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Map_CostumRoom"),
-			CUI_CostumeTab_Map::Create(m_pDevice, m_pContext), LAYER_PROP)))
+			CUI_CostumeTab_Map::Create(m_pDevice, m_pContext), LAYER_PROP, true)))
 			return E_FAIL;
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Map_Mirror"),
 			CMirror::Create(m_pDevice, m_pContext, TEXT("Map_Common_Mirror"), OBJ_TYPE::OBJ_PROP),
-			LAYER_TYPE::LAYER_PROP)))
+			LAYER_TYPE::LAYER_PROP, true)))
 			return E_FAIL;
 
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Swordsman"),
-			CUI_Dummy_Swordsman::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
+			CUI_Dummy_Swordsman::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 			return E_FAIL;
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Destroyer"),
-			CUI_Dummy_Destroyer::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
+			CUI_Dummy_Destroyer::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 			return E_FAIL;
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Engineer"),
-			CUI_Dummy_Engineer::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
+			CUI_Dummy_Engineer::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 			return E_FAIL;
 
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Common_ColliderWall"),
 			CColliderWall::Create(m_pDevice, m_pContext, TEXT("Common_ColliderWall"), OBJ_TYPE::OBJ_BUILDING),
-			LAYER_TYPE::LAYER_BUILDING)))
+			LAYER_TYPE::LAYER_BUILDING, true)))
 			return E_FAIL;
 
 		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Collider_Wall", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/ColliderWall/", L"Common_ColliderWall")))
@@ -539,7 +539,7 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 		// Mirror
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Common_Mirror"),
 			CMirror::Create(m_pDevice, m_pContext, TEXT("Common_Mirror"), OBJ_TYPE::OBJ_PROP),
-			LAYER_TYPE::LAYER_PROP)))
+			LAYER_TYPE::LAYER_PROP, true)))
 			return E_FAIL;
 		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Mirror", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/CustomRoom/", L"CustomRoomMirror")))
 			return E_FAIL;
@@ -735,31 +735,31 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH || g_eLoadCharacter == LOAD_CHARACTER_TYPE::ENGINEER_CH)
 		{
 			if (GI->Add_Prototype(TEXT("Prototype_GameObject_Grandprix_Engineer"),
-				CGrandprix_Engineer::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+				CGrandprix_Engineer::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
 				return E_FAIL;
 		}
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LensFlare"),
-			CLensFlare::Create(m_pDevice, m_pContext, TEXT("Common_LensFlare"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
+			CLensFlare::Create(m_pDevice, m_pContext, TEXT("Common_LensFlare"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true))
 			return E_FAIL;
 
 		// 탈 것
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Udadak"),
-			CVehicle_Udadak::Create(m_pDevice, m_pContext, TEXT("Vehicle_Udadak")), LAYER_TYPE::LAYER_CHARACTER))
+			CVehicle_Udadak::Create(m_pDevice, m_pContext, TEXT("Vehicle_Udadak")), LAYER_TYPE::LAYER_CHARACTER, true))
 			return E_FAIL;
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Biplane"),
-			CVehicle_Flying_Biplane::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			CVehicle_Flying_Biplane::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
 			return E_FAIL;
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_EnemyBiplane"),
-			CVehicle_Flying_EnemyBiplane::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_MONSTER))
+			CVehicle_Flying_EnemyBiplane::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_MONSTER, true))
 			return E_FAIL;
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_EnemyBoto"),
-			CVehicle_Flying_EnemyBoto::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_MONSTER))
+			CVehicle_Flying_EnemyBoto::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_MONSTER, true))
 			return E_FAIL;
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Character_Biplane_Bullet"),
-			CCharacter_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			CCharacter_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
 			return E_FAIL;
 
 		CVehicleFlying_Projectile::GRANDPRIX_PROJECTILE_DESC CharacterProjectileDesc = {};
@@ -771,7 +771,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Enemy_Biplane_Bullet"),
-			CEnemy_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER)) 
+			CEnemy_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
 			return E_FAIL;
 
 		CVehicleFlying_Projectile::GRANDPRIX_PROJECTILE_DESC EnemyProjectileDesc = {};
@@ -783,11 +783,11 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		// Enemy용.
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Enemy_Biplane_BulletBall"),
-			CEnemy_Biplane_BulletBall::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			CEnemy_Biplane_BulletBall::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
 			return E_FAIL;
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Enemy_Biplane_GuidedMissile"),
-			CEnemy_GuidedMissile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			CEnemy_GuidedMissile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
 			return E_FAIL;
 
 		if (FAILED(CPool<CEnemy_GuidedMissile>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_Enemy_Biplane_GuidedMissile", LAYER_TYPE::LAYER_CHARACTER, &CharacterProjectileDesc, 500)))
@@ -796,19 +796,19 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 
 		// 플레이어용.
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Biplane_GuidedMissile"),
-			CBiplane_GuidedMissile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			CBiplane_GuidedMissile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
 			return E_FAIL;
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Biplane_ThunderCloud"),
-			CBiplane_Thunder_Cloud::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			CBiplane_Thunder_Cloud::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
 			return E_FAIL;
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Biplane_BlackHole"),
-			CBiplane_BlackHole::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			CBiplane_BlackHole::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
 			return E_FAIL;
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Grandprix_ItemBox"), // 레이어변경 필요함
-			CGrandprix_ItemBox::Create(m_pDevice, m_pContext, TEXT("Grandprix_ItemBox")), LAYER_TYPE::LAYER_ETC))
+			CGrandprix_ItemBox::Create(m_pDevice, m_pContext, TEXT("Grandprix_ItemBox")), LAYER_TYPE::LAYER_ETC, true))
 			return E_FAIL;
 		
 		g_bLevelFirst[LEVEL_EVERMORE] = true;

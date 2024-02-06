@@ -43,9 +43,10 @@ void CState_VehicleFlying_Rush::Enter_State(void* pArg)
 
     CVehicle_Flying_Biplane* pFlyingBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pVehicle);
     if (nullptr != pFlyingBiplane)
-
-    CUIMinigame_Manager::GetInstance()->OnOff_RushVignette(true);
-    pFlyingBiplane->Generate_Trail(L"", L"T_e_Skl_In_Slash_Line003.png", L"", Vec4(1.f, 1.f, 1.f, 0.5f), 22);
+    {
+        CUIMinigame_Manager::GetInstance()->OnOff_RushVignette(true);
+        pFlyingBiplane->Generate_Trail(L"", L"T_e_Skl_In_Slash_Line003.png", L"", Vec4(1.f, 1.f, 1.f, 0.5f), 22);
+    }
 
 }
 

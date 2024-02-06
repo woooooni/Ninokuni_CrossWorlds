@@ -7,6 +7,7 @@
 #include "State_Enemy_VehicleFlying_Enter.h"
 #include "Vehicle.h"
 #include "Vehicle_Flying.h"
+#include "Vehicle_Flying_EnemyBiplane.h"
 
 #include "UIMinigame_Manager.h"
 
@@ -102,6 +103,13 @@ void CState_Enemy_VehicleFlying_Enter::Exit_State()
 {
     m_bSet = false;
     m_bUpdate = false;
+
+    if (true == m_bEngineer)
+    {
+        CVehicle_Flying_EnemyBiplane* pEngineerBiplane = dynamic_cast<CVehicle_Flying_EnemyBiplane*>(m_pVehicle_Flying);
+        if (nullptr != pEngineerBiplane)
+            pEngineerBiplane->Generate_Trail(L"", L"", L"", Vec4(1.f, 1.f, 1.f, 0.5f), 22);
+    }
 }
 
 void CState_Enemy_VehicleFlying_Enter::Move(_float fTimeDelta)

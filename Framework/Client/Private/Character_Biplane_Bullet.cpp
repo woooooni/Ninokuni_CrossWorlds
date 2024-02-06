@@ -42,7 +42,7 @@ HRESULT CCharacter_Biplane_Bullet::Initialize(void* pArg)
 
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
-
+	m_fDeletionTime = 1.5f;
 	return S_OK;
 }
 

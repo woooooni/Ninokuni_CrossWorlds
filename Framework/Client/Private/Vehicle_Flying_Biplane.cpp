@@ -326,7 +326,8 @@ void CVehicle_Flying_Biplane::Collision_Continue(const COLLISION_INFO& tInfo)
 	{
 		if (OBJ_TYPE::OBJ_GRANDPRIX_ENEMY == tInfo.pOther->Get_ObjectType())
 		{
-			Decide_Target();
+			if(m_pStateCom->Get_CurrState() != CVehicle::VEHICLE_STATE::VEHICLE_DAMAGED)
+				Decide_Target();
 		}
 	}
 }
@@ -533,10 +534,6 @@ void CVehicle_Flying_Biplane::Decide_Target()
 		if (true == pTarget->Is_ReserveDead() || true == pTarget->Is_Dead())
 			continue;
 
-		if (wstring::npos != pTarget->Get_ObjectTag().find(L"Vehicle_Flying_EnemyBiplane"))
-			continue;
-
-
 		CTransform* pTargetTransform = pTarget->Get_Component_Transform();
 		if (nullptr == pTargetTransform)
 			continue;
@@ -559,7 +556,7 @@ void CVehicle_Flying_Biplane::Decide_Target()
 		m_pTarget = nullptr;
 	}
 
-	CCamera_Follow* pCameraFollow = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	/*CCamera_Follow* pCameraFollow = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 	if (nullptr != pCameraFollow)
 	{
 		if (nullptr == pCameraFollow->Get_LookAtObj() 
@@ -567,7 +564,7 @@ void CVehicle_Flying_Biplane::Decide_Target()
 		{
 			pCameraFollow->Start_LockOn(pDecidedTarget, Vec4(0.f, 0.f, -15.f, 1.f), Vec4(0.f, 0.f, 0.f, 1.f));
 		}
-	}
+	}*/
 		
 
 	m_pTarget = pDecidedTarget;
@@ -582,12 +579,12 @@ void CVehicle_Flying_Biplane::Tick_Target()
 	if (true == m_pTarget->Is_Dead() || true == m_pTarget->Is_ReserveDead())
 	{
 		
-		if (nullptr != m_pCameraFollow)
-		{
-			m_pCameraFollow->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-			m_pCameraFollow->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-			m_pCameraFollow->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-		}
+		//if (nullptr != m_pCameraFollow)
+		//{
+		//	m_pCameraFollow->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		//	m_pCameraFollow->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		//	m_pCameraFollow->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		//}
 			
 
 		Safe_Release(m_pTarget);
@@ -609,12 +606,12 @@ void CVehicle_Flying_Biplane::Tick_Target()
 	_float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vDir), XMVector3Normalize(m_pTransformCom->Get_Look())));
 	if (vDir.Length() > 50.f || 0 > fDot)
 	{
-		if (nullptr != m_pCameraFollow)
-		{
-			m_pCameraFollow->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-			m_pCameraFollow->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-			m_pCameraFollow->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-		}
+		//if (nullptr != m_pCameraFollow)
+		//{
+		//	m_pCameraFollow->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		//	m_pCameraFollow->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		//	m_pCameraFollow->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		//}
 			
 
 		Safe_Release(m_pTarget);

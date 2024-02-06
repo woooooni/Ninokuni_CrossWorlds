@@ -57,13 +57,15 @@ HRESULT CEnemy_Biplane_BulletBall::Initialize(void* pArg)
 
 	_int iRandomX = 0;
 	while (0 == iRandomX)	
-		iRandomX = GI->RandomInt(-3, 3);
+		iRandomX = GI->RandomInt(-5, 5);
 
 	_int iRandomZ = 0;
 	while (0 == iRandomZ)
-		iRandomZ = GI->RandomInt(-3, 3);
+		iRandomZ = GI->RandomInt(-5, 5);
 
 	m_vOffsetPos = Vec3(iRandomX, 0.f, iRandomZ);
+
+	m_fDeletionTime = 20.f;
 
 	return S_OK;
 }
@@ -73,30 +75,20 @@ void CEnemy_Biplane_BulletBall::Tick(_float fTimeDelta)
 	
 	__super::Tick(fTimeDelta);
 
-	if (true == m_bMove)
-	{
-		Vec4 vTargetPos = m_pTargetTransform->Get_RelativeOffset(Vec4(m_vOffsetPos).OneW());
-		Vec3 vDir = vTargetPos - Vec4(m_pTransformCom->Get_Position());
+	Vec4 vTargetPos = Vec4(m_pTargetTransform->Get_Position()) + m_pTargetTransform->Get_RelativeOffset(Vec4(m_vOffsetPos).OneW());
+	vTargetPos = vTargetPos.OneW();
 
-		if (vDir.Length() > 0.01f)
-		{
-			m_pTransformCom->Move(XMVector3Normalize(vDir), 14.f, fTimeDelta);
-		}
-		else
-		{
-			m_bMove = false;
-			return;
-		}
-			
-	}
-	else
+	Vec3 vDir = vTargetPos - Vec4(m_pTransformCom->Get_Position());
+
+	if (vDir.Length() > 0.1f)
+		m_pTransformCom->Move(XMVector3Normalize(vDir), 30.f, fTimeDelta);
+
+
+	m_fAccFireBullet += fTimeDelta;
+	if (m_fAccFireBullet >= m_fFireBulletTime)
 	{
-		m_fAccFireBullet += fTimeDelta;
-		if (m_fAccFireBullet >= m_fFireBulletTime)
-		{
-			m_fAccFireBullet = 0.f;
-			Fire_Bullet();
-		}
+		m_fAccFireBullet = 0.f;
+		Fire_Bullet();
 	}
 
 	Update_Rotaion(fTimeDelta);
