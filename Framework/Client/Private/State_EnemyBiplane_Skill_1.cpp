@@ -10,6 +10,8 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Enemy_Biplane_BulletBall.h"
+
 #include "Vehicle_Flying_EnemyBiplane.h"
 
 CState_EnemyBiplane_Skill_1::CState_EnemyBiplane_Skill_1(CStateMachine* pMachine)
@@ -36,12 +38,16 @@ HRESULT CState_EnemyBiplane_Skill_1::Initialize(const list<wstring>& AnimationLi
 void CState_EnemyBiplane_Skill_1::Enter_State(void* pArg)
 {
     m_iCurrAnimIndex = m_AnimIndices[0];
-    m_pModelCom->Set_Animation(m_iCurrAnimIndex);    
+    m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 }
 
 void CState_EnemyBiplane_Skill_1::Tick_State(_float fTimeDelta)
 {
-   
+    for (_int i = 0; i < 3; ++i)
+        Shoot_Bullet_Ball();
+
+    m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND);
+    return;
 }
 
 void CState_EnemyBiplane_Skill_1::Exit_State()
@@ -49,6 +55,37 @@ void CState_EnemyBiplane_Skill_1::Exit_State()
     
 }
 
+
+void CState_EnemyBiplane_Skill_1::Shoot_Bullet_Ball()
+{
+    CVehicleFlying_Projectile::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
+    ProjectileDesc.bPool = false;
+    ProjectileDesc.pOwner = m_pEngineerPlane;
+
+    CGameObject* pProjectile = nullptr;
+    if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, L"Prototype_GameObject_Enemy_Biplane_BulletBall", &ProjectileDesc, &pProjectile)))
+    {
+        MSG_BOX("AddGameObject_Failed. : CState_EnemyBiplane_Skill_1::Shoot_Bullet_Ball()");
+        return;
+    }
+
+    if (nullptr == pProjectile)
+    {
+        MSG_BOX("pProjectile is Null. : CState_EnemyBiplane_Skill_1::Shoot_Bullet_Ball()");
+        return;
+    }
+
+    CTransform* pProjectileTransform = pProjectile->Get_Component_Transform();
+    if (nullptr == pProjectileTransform)
+    {
+        MSG_BOX("pProjectileTransform is Null. : CState_EnemyBiplane_Skill_1::Shoot_Bullet_Ball()");
+        return;
+    }
+
+    Vec3 vScale = pProjectileTransform->Get_Scale();
+    pProjectileTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+    pProjectileTransform->Set_Scale(vScale);
+}
 
 CState_EnemyBiplane_Skill_1* CState_EnemyBiplane_Skill_1::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {

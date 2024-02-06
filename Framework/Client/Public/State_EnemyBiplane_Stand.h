@@ -23,8 +23,6 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
-private:
-	_bool Check_Use_Skill();
 
 private:
 	class CCharacter* m_pTarget = { nullptr };

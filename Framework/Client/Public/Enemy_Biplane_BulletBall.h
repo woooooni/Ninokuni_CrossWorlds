@@ -42,6 +42,9 @@ private:
 	_float m_fFireBulletTime = 0.05f;
 
 private:
+	Vec3 m_vOffsetPos = {};
+
+private:
 	Vec3 m_vRotationAngle = {};
 
 private:

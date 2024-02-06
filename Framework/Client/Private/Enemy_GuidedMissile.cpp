@@ -41,13 +41,19 @@ HRESULT CEnemy_GuidedMissile::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_fMoveSpeed = 10.f;
+	m_fMoveSpeed = 15.f;
 	m_pTransformCom->Set_Scale(Vec3(0.15f, 0.15f, 0.15f));
-	Set_Collider_Elemental(dynamic_cast<CCharacter*>(m_pOwner->Get_Rider())->Get_ElementalType());
+	
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
-	m_fDeletionTime = 5.f;
+	m_fDeletionTime = 10.f;
+	m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+	m_pTargetTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform();
+
+	if (nullptr == m_pTarget || nullptr == m_pTargetTransform)
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -56,46 +62,30 @@ void CEnemy_GuidedMissile::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Smoke"), this);
-
-	Tick_Target(fTimeDelta);
-
-	if (nullptr == m_pTarget)
-	{
-		Find_Target(fTimeDelta);
-		if (nullptr == m_pTarget)
-		{
-			m_bCameraTarget = false;
-			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-
-			Set_Dead(true);
-			return;
-		}
-	}
+	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Smoke"), this);	
 
 	if (m_fAccDeletionTime >= 0.5f)
 	{
-		if (nullptr != m_pTarget)
+		Vec3 vDir = m_pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+		if (vDir.Length() > 0.001f)
 		{
-			CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
-			if (nullptr != pTargetTransform)
-			{
-				Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
-				if (vDir.Length() > 0.001f)
-				{
-					Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+			Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 
-					Vec3 vAxis = XMVector3Cross(vLook, vDir);
-					vDir = XMVector3Normalize(pTargetTransform->Get_Position() - m_pTransformCom->Get_Position());
+			Vec3 vAxis = XMVector3Cross(vLook, vDir);
+			vDir = XMVector3Normalize(m_pTargetTransform->Get_Position() - m_pTransformCom->Get_Position());
 
-					m_pTransformCom->Rotation_Acc(vAxis, XMConvertToRadians(180.f) * fTimeDelta);
-				}
-			}
+			m_pTransformCom->Rotation_Acc(vAxis, XMConvertToRadians(180.f) * fTimeDelta);
 		}
 	}
 	
 	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
+
+	if (true == m_bDead)
+	{
+		CPool<CEnemy_GuidedMissile>::Return_Obj(this);
+		return;
+	}
+
 }
 
 void CEnemy_GuidedMissile::LateTick(_float fTimeDelta)
@@ -125,7 +115,7 @@ HRESULT CEnemy_GuidedMissile::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Enemy_GuidedMissile"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Biplane_GuidedMissile"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
 
@@ -152,50 +142,18 @@ HRESULT CEnemy_GuidedMissile::Ready_Components()
 void CEnemy_GuidedMissile::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
-	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_ENEMY) && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER) && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
 		wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
 		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
 		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
 
-		m_bCameraTarget = false;
-		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-
-
 		Set_Dead(true);
-	}
-}
 
-void CEnemy_GuidedMissile::Tick_Target(_float fTimeDelta)
-{
-	if (nullptr == m_pTarget)
-		return;
-
-
-	if (m_pTarget->Is_ReserveDead() || m_pTarget->Is_Dead())
-		m_pTarget = nullptr;
-}
-
-void CEnemy_GuidedMissile::Find_Target(_float fTimeDelta)
-{
-	list<CGameObject*>& TargetObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER);
-
-	_float fMinDistance = 50.f;
-	for (auto& pTarget : TargetObjects)
-	{
-		if (OBJ_TYPE::OBJ_GRANDPRIX_ENEMY != pTarget->Get_ObjectType())
-			continue;
-
-		CTransform* pTargetTransform = pTarget->Get_Component<CTransform>(L"Com_Transform");
-		Vec4 vPosition = m_pTransformCom->Get_Position();
-		Vec4 vTargetPosition = pTargetTransform->Get_Position();
-
-		Vec3 vDir = vTargetPosition - vPosition;
-		if (fMinDistance > vDir.Length())
+		if (false == CPool<CEnemy_GuidedMissile>::Return_Obj(this))
 		{
-			fMinDistance = vDir.Length();
-			m_pTarget = pTarget;
+			MSG_BOX("ReturnPool Failed. : CEnemy_GuidedMissile");
+			return;
 		}
 	}
 }

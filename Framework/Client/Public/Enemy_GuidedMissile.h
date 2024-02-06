@@ -26,11 +26,8 @@ public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
 
 private:
-	void Tick_Target(_float fTimeDelta);
-	void Find_Target(_float fTimeDelta);
-
-private:
 	class CGameObject* m_pTarget = nullptr;
+	class CTransform* m_pTargetTransform = nullptr;
 
 private:
 	_float m_fAccRotation = 0.f;

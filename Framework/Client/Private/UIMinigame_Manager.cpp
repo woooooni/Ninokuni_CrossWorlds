@@ -689,138 +689,138 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 {
 	// 타워 디펜스용 UI
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_TowerDefence_Menu_Background"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::TOWERDEFENCE_MENU), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::TOWERDEFENCE_MENU), LAYER_UI, true)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_TowerDefence_TowerSelect_Cannon"),
-		CUI_Minigame_TowerSelect::Create(m_pDevice, m_pContext, CUI_Minigame_TowerSelect::UI_TOWERTYPE::TOWER_CANNON), LAYER_UI)))
+		CUI_Minigame_TowerSelect::Create(m_pDevice, m_pContext, CUI_Minigame_TowerSelect::UI_TOWERTYPE::TOWER_CANNON), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_TowerDefence_TowerSelect_Crystal"),
-		CUI_Minigame_TowerSelect::Create(m_pDevice, m_pContext, CUI_Minigame_TowerSelect::UI_TOWERTYPE::TOWER_CRYSTAL), LAYER_UI)))
+		CUI_Minigame_TowerSelect::Create(m_pDevice, m_pContext, CUI_Minigame_TowerSelect::UI_TOWERTYPE::TOWER_CRYSTAL), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_TowerDefence_TowerSelect_Flame"),
-		CUI_Minigame_TowerSelect::Create(m_pDevice, m_pContext, CUI_Minigame_TowerSelect::UI_TOWERTYPE::TOWER_FLAME), LAYER_UI)))
+		CUI_Minigame_TowerSelect::Create(m_pDevice, m_pContext, CUI_Minigame_TowerSelect::UI_TOWERTYPE::TOWER_FLAME), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_TowerDefence_TowerSelect_Shadow"),
-		CUI_Minigame_TowerSelect::Create(m_pDevice, m_pContext, CUI_Minigame_TowerSelect::UI_TOWERTYPE::TOWER_SHADOW), LAYER_UI)))
+		CUI_Minigame_TowerSelect::Create(m_pDevice, m_pContext, CUI_Minigame_TowerSelect::UI_TOWERTYPE::TOWER_SHADOW), LAYER_UI, true)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_TowerDefence_Timer"),
-		CUI_Minigame_Timer::Create(m_pDevice, m_pContext), LAYER_UI)))
+		CUI_Minigame_Timer::Create(m_pDevice, m_pContext), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_TowerDefence_StartButton"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::TOWERDEFENCE_START), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::TOWERDEFENCE_START), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_TowerDefence_Gold"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::TOWERDEFENCE_GOLD), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::TOWERDEFENCE_GOLD), LAYER_UI, true)))
 		return E_FAIL;
 
 
 	// 그랑프리용 UI
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_CloudFrame"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_FRAME), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_FRAME), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_HPBackground"),
-		CUI_Minigame_EnemyInfo::Create(m_pDevice, m_pContext), LAYER_UI)))
+		CUI_Minigame_EnemyInfo::Create(m_pDevice, m_pContext), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_ClassSkill_First"),
-		CUI_Minigame_ClassSkill::Create(m_pDevice, m_pContext, CUI_Minigame_ClassSkill::UI_GRANDPRIXSKILL::SKILL_FIRST), LAYER_UI)))
+		CUI_Minigame_ClassSkill::Create(m_pDevice, m_pContext, CUI_Minigame_ClassSkill::UI_GRANDPRIXSKILL::SKILL_FIRST), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_ClassSkill_Second"),
-		CUI_Minigame_ClassSkill::Create(m_pDevice, m_pContext, CUI_Minigame_ClassSkill::UI_GRANDPRIXSKILL::SKILL_SECOND), LAYER_UI)))
+		CUI_Minigame_ClassSkill::Create(m_pDevice, m_pContext, CUI_Minigame_ClassSkill::UI_GRANDPRIXSKILL::SKILL_SECOND), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_ClassSkill_Third"),
-		CUI_Minigame_ClassSkill::Create(m_pDevice, m_pContext, CUI_Minigame_ClassSkill::UI_GRANDPRIXSKILL::SKILL_THIRD), LAYER_UI)))
+		CUI_Minigame_ClassSkill::Create(m_pDevice, m_pContext, CUI_Minigame_ClassSkill::UI_GRANDPRIXSKILL::SKILL_THIRD), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_SpecialSkill"),
-		CUI_Minigame_ClassSkill::Create(m_pDevice, m_pContext, CUI_Minigame_ClassSkill::UI_GRANDPRIXSKILL::SKILL_SPECIAL), LAYER_UI)))
+		CUI_Minigame_ClassSkill::Create(m_pDevice, m_pContext, CUI_Minigame_ClassSkill::UI_GRANDPRIXSKILL::SKILL_SPECIAL), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_ClassSkillFrame"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_CLASSFRAME), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_CLASSFRAME), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_SpecialSkillFrame"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_SPECIALFRAME), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_SPECIALFRAME), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_HPBar"),
-		CUI_Minigame_EnemyHP::Create(m_pDevice, m_pContext), LAYER_UI)))
+		CUI_Minigame_EnemyHP::Create(m_pDevice, m_pContext), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Ready"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_READY), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_READY), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Three"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_THREE), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_THREE), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Two"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_TWO), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_TWO), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_One"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_ONE), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_ONE), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Start"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_START), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_START), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_End"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_END), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_END), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_GaugeGlow"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_GAUGEGLOW), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_GAUGEGLOW), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_GaugeBack"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_GAUGEBACK), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_GAUGEBACK), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_GaugeBar"),
-		CUI_Minigame_GaugeBar::Create(m_pDevice, m_pContext), LAYER_UI)))
+		CUI_Minigame_GaugeBar::Create(m_pDevice, m_pContext), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_SpaceIcon"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_SPACE), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_SPACE), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_BiplaneIcon"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_BIPLANE), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_BIPLANE), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Plane_HPBackground"),
-		CUI_Minigame_PlayerInfo::Create(m_pDevice, m_pContext), LAYER_UI)))
+		CUI_Minigame_PlayerInfo::Create(m_pDevice, m_pContext), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Intro_Background"),
-		CUI_Grandprix_IntroBackground::Create(m_pDevice, m_pContext), LAYER_UI)))
+		CUI_Grandprix_IntroBackground::Create(m_pDevice, m_pContext), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_IntroIcon_Swordman"),
-		CUI_Grandprix_IntroIcons::Create(m_pDevice, m_pContext, CUI_Grandprix_IntroIcons::GRANDPRIX_INTRO::SWORDMAN), LAYER_UI)))
+		CUI_Grandprix_IntroIcons::Create(m_pDevice, m_pContext, CUI_Grandprix_IntroIcons::GRANDPRIX_INTRO::SWORDMAN), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_IntroIcon_Engineer"),
-		CUI_Grandprix_IntroIcons::Create(m_pDevice, m_pContext, CUI_Grandprix_IntroIcons::GRANDPRIX_INTRO::ENGINEER), LAYER_UI)))
+		CUI_Grandprix_IntroIcons::Create(m_pDevice, m_pContext, CUI_Grandprix_IntroIcons::GRANDPRIX_INTRO::ENGINEER), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_IntroIcon_Splitter"),
-		CUI_Grandprix_IntroIcons::Create(m_pDevice, m_pContext, CUI_Grandprix_IntroIcons::GRANDPRIX_INTRO::SPLITTER), LAYER_UI)))
+		CUI_Grandprix_IntroIcons::Create(m_pDevice, m_pContext, CUI_Grandprix_IntroIcons::GRANDPRIX_INTRO::SPLITTER), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_IntroIcon_Vs"),
-		CUI_Grandprix_IntroIcons::Create(m_pDevice, m_pContext, CUI_Grandprix_IntroIcons::GRANDPRIX_INTRO::VS_ICON), LAYER_UI)))
+		CUI_Grandprix_IntroIcons::Create(m_pDevice, m_pContext, CUI_Grandprix_IntroIcons::GRANDPRIX_INTRO::VS_ICON), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Rader_Frame"),
 		CUI_Grandprix_RaderFrame::Create(m_pDevice, m_pContext, CUI_Grandprix_RaderFrame::UI_RADER::RADER_FRAME), LAYER_UI)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Rader_FrameCircle"),
-		CUI_Grandprix_RaderFrame::Create(m_pDevice, m_pContext, CUI_Grandprix_RaderFrame::UI_RADER::RADER_CIRCLE), LAYER_UI)))
+		CUI_Grandprix_RaderFrame::Create(m_pDevice, m_pContext, CUI_Grandprix_RaderFrame::UI_RADER::RADER_CIRCLE), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Rader_FrameBackground"),
-		CUI_Grandprix_RaderFrame::Create(m_pDevice, m_pContext, CUI_Grandprix_RaderFrame::UI_RADER::RADER_BACKGROUND), LAYER_UI)))
+		CUI_Grandprix_RaderFrame::Create(m_pDevice, m_pContext, CUI_Grandprix_RaderFrame::UI_RADER::RADER_BACKGROUND), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Rader"),
-		CUI_Grandprix_Rader::Create(m_pDevice, m_pContext), LAYER_UI)))
+		CUI_Grandprix_Rader::Create(m_pDevice, m_pContext), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Vignette_Rush"),
-		CUI_Grandprix_Vignette::Create(m_pDevice, m_pContext, CUI_Grandprix_Vignette::UI_GRANDPRIX_VIGNETTE::VIGNETTE_RUSH), LAYER_UI)))
+		CUI_Grandprix_Vignette::Create(m_pDevice, m_pContext, CUI_Grandprix_Vignette::UI_GRANDPRIX_VIGNETTE::VIGNETTE_RUSH), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Vignette_Damaged"),
-		CUI_Grandprix_Vignette::Create(m_pDevice, m_pContext, CUI_Grandprix_Vignette::UI_GRANDPRIX_VIGNETTE::VIGNETTE_DAMAGED), LAYER_UI)))
+		CUI_Grandprix_Vignette::Create(m_pDevice, m_pContext, CUI_Grandprix_Vignette::UI_GRANDPRIX_VIGNETTE::VIGNETTE_DAMAGED), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Error"),
-		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_ERROR), LAYER_UI)))
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_ERROR), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Popup_Background"),
-		CUI_Grandprix_Popup::Create(m_pDevice, m_pContext, CUI_Grandprix_Popup::UI_GRANDPRIX_POPUP::POPUP_BACKGROUND), LAYER_UI)))
+		CUI_Grandprix_Popup::Create(m_pDevice, m_pContext, CUI_Grandprix_Popup::UI_GRANDPRIX_POPUP::POPUP_BACKGROUND), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Popup_Main"),
-		CUI_Grandprix_Popup::Create(m_pDevice, m_pContext, CUI_Grandprix_Popup::UI_GRANDPRIX_POPUP::POPUP_MAIN), LAYER_UI)))
+		CUI_Grandprix_Popup::Create(m_pDevice, m_pContext, CUI_Grandprix_Popup::UI_GRANDPRIX_POPUP::POPUP_MAIN), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_TargetUI"),
 		CUI_Grandprix_Target::Create(m_pDevice, m_pContext), LAYER_UI)))
@@ -828,16 +828,16 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 
 	// 매니저 내에서는 프로토타입만 생성함
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Enemy_WorldHP"),
-		CUI_Minigame_WorldHP::Create(m_pDevice, m_pContext), LAYER_UI)))
+		CUI_Minigame_WorldHP::Create(m_pDevice, m_pContext), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Enemy_Aim"),
-		CUI_Minigame_Aim::Create(m_pDevice, m_pContext), LAYER_UI)))
+		CUI_Minigame_Aim::Create(m_pDevice, m_pContext), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Plane_HPBar"),
-		CUI_Grandprix_PlaneHP::Create(m_pDevice, m_pContext), LAYER_UI)))
+		CUI_Grandprix_PlaneHP::Create(m_pDevice, m_pContext), LAYER_UI, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_RaderIcon"),
-		CUI_Grandprix_RaderIcon::Create(m_pDevice, m_pContext), LAYER_UI)))
+		CUI_Grandprix_RaderIcon::Create(m_pDevice, m_pContext), LAYER_UI, true)))
 		return E_FAIL;
 
 	return S_OK;

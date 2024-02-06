@@ -51,13 +51,14 @@ void CState_EnemyBiplane_Trace::Tick_State(_float fTimeDelta)
     _float fDistance = vDir.Length();
     if (fDistance <= m_pEngineerPlane->Get_Attack_StartEnd_Distance().x)
     {
-        // Attack 스테이트로 변경.
+        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_ATTACK);
         return;
     }
 
     if (fDistance > m_pEngineerPlane->Get_Trace_StartEnd_Distance().y)
     {
         // Stand, 혹은 Run 스테이트로 변경.
+        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND);
         return;
     }
 

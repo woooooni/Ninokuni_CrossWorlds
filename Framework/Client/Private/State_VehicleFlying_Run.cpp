@@ -39,7 +39,7 @@ void CState_VehicleFlying_Run::Enter_State(void* pArg)
 
 	if (nullptr != m_pFollowCamera)
 	{
-		m_pFollowCamera->Set_DampingBackLimitRad(XMConvertToRadians(90.f));
+		m_pFollowCamera->Set_DampingBackLimitRad(XMConvertToRadians(180.f));
 		m_pFollowCamera->Set_CanInput(true);
 		m_pFollowCamera->Set_MinMaxLimitY(0.4f, 2.5f);
 	}
@@ -147,7 +147,7 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 
 	if (KEY_HOLD(KEY::A))
 	{
-		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), -1.f * XMConvertToRadians(90.f) * fTimeDelta);
+		m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Up()), -3.f * XMConvertToRadians(90.f) * fTimeDelta);
 		if (!bMove)
 			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed(), fTimeDelta);
 
@@ -157,7 +157,7 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 
 	if (KEY_HOLD(KEY::D))
 	{
-		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(90.f) * fTimeDelta);
+		m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Up()), 3.f * XMConvertToRadians(90.f) * fTimeDelta);
 		if (!bMove)
 			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed(), fTimeDelta);
 
@@ -246,7 +246,7 @@ void CState_VehicleFlying_Run::Shoot()
 		CTransform* pTargetTransform = m_pVehicle_Flying_Biplane->Get_Target()->Get_Component_Transform();
 		if (nullptr != pTargetTransform)
 		{
-			Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() - pLeftTransform->Get_Position());
+			Vec3 vDir = XMVector3Normalize((pTargetTransform->Get_Position() + XMVectorSet(0.f, 0.5f, 0.f, 0.f)) - pLeftTransform->Get_Position());
 			pLeftTransform->Rotation_Look(vDir);
 		}
 	}
@@ -280,7 +280,7 @@ void CState_VehicleFlying_Run::Shoot()
 		CTransform* pTargetTransform = m_pVehicle_Flying_Biplane->Get_Target()->Get_Component_Transform();
 		if (nullptr != pTargetTransform)
 		{
-			Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() - pRightTransform->Get_Position());
+			Vec3 vDir = XMVector3Normalize((pTargetTransform->Get_Position() + XMVectorSet(0.f, 0.5f, 0.f, 0.f)) - pRightTransform->Get_Position());
 			pRightTransform->Rotation_Look(vDir);
 		}
 	}

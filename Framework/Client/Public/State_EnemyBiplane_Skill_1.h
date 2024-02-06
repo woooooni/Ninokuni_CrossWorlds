@@ -28,6 +28,9 @@ private:
 	class CVehicle_Flying_EnemyBiplane* m_pEngineerPlane = { nullptr };
 	_float m_fMovingSpeed = { 5.f };
 
+private:
+	void Shoot_Bullet_Ball();
+
 public:
 	static CState_EnemyBiplane_Skill_1* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

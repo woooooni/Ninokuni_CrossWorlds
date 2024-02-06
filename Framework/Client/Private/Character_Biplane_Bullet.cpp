@@ -42,7 +42,7 @@ HRESULT CCharacter_Biplane_Bullet::Initialize(void* pArg)
 
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
-
+	m_fDeletionTime = 1.5f;
 	return S_OK;
 }
 
@@ -113,8 +113,7 @@ HRESULT CCharacter_Biplane_Bullet::Ready_Components()
 void CCharacter_Biplane_Bullet::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
-	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS)
-		&& tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_ENEMY) && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
 		wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
 		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);

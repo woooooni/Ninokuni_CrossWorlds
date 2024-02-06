@@ -7,6 +7,7 @@
 #include "State_Enemy_VehicleFlying_Enter.h"
 #include "Vehicle.h"
 #include "Vehicle_Flying.h"
+#include "Vehicle_Flying_EnemyBiplane.h"
 
 #include "UIMinigame_Manager.h"
 
@@ -36,10 +37,18 @@ void CState_Enemy_VehicleFlying_Enter::Enter_State(void* pArg)
 {
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+
+    m_bEngineer = (wstring::npos != m_pVehicle->Get_ObjectTag().find(L"Vehicle_Flying_EnemyBiplane"));
 }
 
 void CState_Enemy_VehicleFlying_Enter::Tick_State(_float fTimeDelta)
 {
+    if (true == m_bEngineer && (GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER).size() <= 1))
+    {
+        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND);
+        return;
+    }
+
     // 엔지니어만 우선 사용하도록 예외처리
     if (m_pVehicle->Get_ObjectTag() != TEXT("Vehicle_Flying_EnemyBiplane"))
         return;
@@ -94,6 +103,13 @@ void CState_Enemy_VehicleFlying_Enter::Exit_State()
 {
     m_bSet = false;
     m_bUpdate = false;
+
+    if (true == m_bEngineer)
+    {
+        CVehicle_Flying_EnemyBiplane* pEngineerBiplane = dynamic_cast<CVehicle_Flying_EnemyBiplane*>(m_pVehicle_Flying);
+        if (nullptr != pEngineerBiplane)
+            pEngineerBiplane->Generate_Trail(L"", L"", L"", Vec4(1.f, 1.f, 1.f, 0.5f), 22);
+    }
 }
 
 void CState_Enemy_VehicleFlying_Enter::Move(_float fTimeDelta)

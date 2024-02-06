@@ -5,6 +5,9 @@
 BEGIN(Client)
 class CVehicle_Flying_EnemyBiplane final : public CVehicle_Flying
 {
+public:
+	enum BIPLANE_TRAIL { LEFT_WING, RIGHT_WING, TAIL, BIPLANE_TRAIL_END };
+
 protected:
 	CVehicle_Flying_EnemyBiplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CVehicle_Flying_EnemyBiplane(const CVehicle_Flying_EnemyBiplane& rhs);
@@ -30,20 +33,41 @@ public:
 	virtual void Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo) override;
 
 public:
+	void Start_Trail(BIPLANE_TRAIL eTrailType = BIPLANE_TRAIL::BIPLANE_TRAIL_END);
+	void Generate_Trail(const wstring& strDiffuseTextureName, const wstring& strAlphaTextureName, const wstring& strDistortionTextureName, const _float4& vColor, _uint iVertexCount, BIPLANE_TRAIL eTrailType = BIPLANE_TRAIL::BIPLANE_TRAIL_END);
+	void Stop_Trail(BIPLANE_TRAIL eTrailType = BIPLANE_TRAIL::BIPLANE_TRAIL_END);
+
+	class CTrail* Get_Trail(BIPLANE_TRAIL eTrailType)
+	{
+		if (eTrailType >= BIPLANE_TRAIL::BIPLANE_TRAIL_END)
+			return nullptr;
+
+		return m_pTrails[eTrailType];
+	}
+
+public:
 	const Vec2& Get_Trace_StartEnd_Distance() { return m_vTraceStartEndDistance; }
 	const Vec2& Get_Attack_StartEnd_Distance() { return m_vAttackStartEndDistance; }
 
 public:
 	class CGameObject* Get_Target() { return m_pTarget; }
 
+public:
+	void Set_Infinite(_bool bInfinite, _float fInfiniteTime);
+
 
 private:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT	Ready_Colliders();
 	virtual HRESULT Ready_States();
+	virtual HRESULT Ready_Trails();
 
 private:
 	void Update_RiderState();
+	_bool Check_Use_Skill();
+
+private:
+	void On_Damaged(const COLLISION_INFO& tInfo);
 
 private:
 	class CUI_Grandprix_RaderIcon* m_pRaderIcon = { nullptr };
@@ -53,6 +77,20 @@ private:
 
 private:
 	class CGameObject* m_pTarget = nullptr;
+
+private:
+	_bool m_bLaunch_Pattern1 = false;
+	_bool m_bLaunch_Pattern2 = false;
+	_bool m_bLaunch_Pattern3 = false;
+
+
+private:
+	class CTrail* m_pTrails[BIPLANE_TRAIL::BIPLANE_TRAIL_END] = {};
+
+private:
+	_bool m_bInfinite = true;
+	_float m_fInfiniteTime = 99999.f;
+	_float m_fAccInfinite = 0.f;
 
 private:
 	Vec2 m_vTraceStartEndDistance = { 70.f, 100.f };

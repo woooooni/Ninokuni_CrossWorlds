@@ -26,11 +26,16 @@ private:
 	void Shoot();
 
 private:
+	class CVehicle_Flying_Biplane* m_pVehicle_Flying_Biplane = nullptr;
+	class CCamera_Follow* m_pFollowCamera = nullptr;
+
+private:
 	_bool m_bShoot = { false };
 	_float m_fTimeAcc = { 0.f };
 
 private:
 	_bool m_bInitVelocity = false;
+	_bool m_bEngineer = false;
 
 public:
 	static CState_VehicleFlying_Stand* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
