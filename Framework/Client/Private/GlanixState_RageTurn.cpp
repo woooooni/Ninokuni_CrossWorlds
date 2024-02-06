@@ -18,7 +18,7 @@ HRESULT CGlanixState_RageTurn::Initialize(const list<wstring>& AnimationList)
 void CGlanixState_RageTurn::Enter_State(void* pArg)
 {
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
-	_vector vDestNormal = XMVector3Normalize(m_pPlayerTransform->Get_Position() - m_pTransformCom->Get_Position());
+	_vector vDestNormal = XMVector3Normalize(m_pGlanix->Get_TargetDesc().pTragetTransform->Get_Position() - m_pTransformCom->Get_Position());
 
 	/* 보스위 look과 플레이어 위치 - 보스 위치로 나온 방향 벡터의 각도를 구함. */
 	_float fDotProduct = XMVectorGetX(XMVector3Dot(vLookNormal, vDestNormal));
@@ -68,7 +68,7 @@ void CGlanixState_RageTurn::Enter_State(void* pArg)
 		}
 	}
 
-	m_vDestPos = m_pPlayerTransform->Get_Position();
+	m_vDestPos = m_pGlanix->Get_TargetDesc().pTragetTransform->Get_Position();
 }
 
 void CGlanixState_RageTurn::Tick_State(_float fTimeDelta)

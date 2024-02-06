@@ -30,6 +30,7 @@ HRESULT CNpcDMWState_Base::Initialize(const list<wstring>& AnimationList)
 
 	/* 공격 패턴만 따로 모아놓기. (후에 순차적 혹은 랜덤으로 전환하기 위해) */
 	m_vecAtkState.push_back(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
+	m_vecAtkState.push_back(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
 	// m_vecAtkState.push_back(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_LASER);
 
 
@@ -43,40 +44,29 @@ void CNpcDMWState_Base::Enter_State(void* pArg)
 
 void CNpcDMWState_Base::Tick_State(_float fTimeDelta)
 {
-	if (!m_bIsRage02 && m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE2START)
+	if (m_pStellia == nullptr)
 	{
-		m_bIsRage02 = true;
+		m_pStellia = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_MONSTER, TEXT("Stellia"));
 	}
-	else if (!m_bIsRage03 && m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE3START_FADEOUT)
+
+	if (m_pStellia != nullptr)
 	{
-		m_bIsRage03 = true;
+		if (m_pWitch->Get_IsBattle())
+		{
+			if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE2START)
+			{
+				m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_FOLLOWING_RAGE02);
+			}
+			else if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE3START_FADEIN)
+			{
+				m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_FOLLOWING_RAGE03);
+			}
+		}
 	}
 }
 
 void CNpcDMWState_Base::Exit_State()
 {
-}
-
-void CNpcDMWState_Base::Following_Stellia(Vec4 vStelliaPos, const _float& fTimeDelta)
-{
-	m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
-
-	Vec4 vReleativePos = m_pPlayerTransform->Get_RelativeOffset({ -5.f , vStelliaPos.y + 8.f, -5.f, 1.f });
-
-	Vec4 vDestPos = Vec4(vReleativePos + vStelliaPos).OneW();
-
-	if (Vec4::Zero == m_vCurPos || 5.f < Vec4::Distance(vDestPos, m_vCurPos))
-	{
-		m_vCurPos = vDestPos;
-	}
-	else
-	{
-		const Vec4 vDist = (vDestPos.ZeroW() - m_vCurPos.ZeroW()) * m_fDampingCoefficient;
-		m_vCurPos += vDist;
-		m_vCurPos.y = vDestPos.y;
-	}
-
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(m_vCurPos, 1.f));
 }
 
 void CNpcDMWState_Base::Free()

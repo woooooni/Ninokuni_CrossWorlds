@@ -4,11 +4,11 @@
 
 BEGIN(Client)
 
-class CNpcDMWState_Rage3Laser final : public CNpcDMWState_Base
+class CNpcDMWState_Rage03Laser final : public CNpcDMWState_Base
 {
 private:
-	CNpcDMWState_Rage3Laser(CStateMachine* pStateMachine);
-	virtual ~CNpcDMWState_Rage3Laser() = default;
+	CNpcDMWState_Rage03Laser(CStateMachine* pStateMachine);
+	virtual ~CNpcDMWState_Rage03Laser() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -27,7 +27,7 @@ private:
 	_float m_fAccTime = 0.f;
 
 public:
-	static CNpcDMWState_Rage3Laser* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CNpcDMWState_Rage03Laser* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 

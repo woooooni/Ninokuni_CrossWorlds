@@ -19,7 +19,7 @@ public:
 	virtual void Exit_State();
 
 private:	
-	Vec4 m_vLeftRotLook = {};
+	Vec4 m_vDestLook = {};
 
 	Vec4 m_vDestPos = {};
 	_float  m_fTurnSpeed = 0.f;

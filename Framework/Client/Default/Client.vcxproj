@@ -338,8 +338,7 @@
     <ClInclude Include="..\Public\NpcDMWState_Following.h" />
     <ClInclude Include="..\Public\NpcDMWState_Following_Rage02.h" />
     <ClInclude Include="..\Public\NpcDMWState_Following_Rage03.h" />
-    <ClInclude Include="..\Public\NpcDMWState_Rage2Sphere.h" />
-    <ClInclude Include="..\Public\NpcDMWState_Rage3Laser.h" />
+    <ClInclude Include="..\Public\NpcDMWState_Rage03Laser.h" />
     <ClInclude Include="..\Public\Skill_Biplane_Burst.h" />
     <ClInclude Include="..\Public\State_CurlingGame_Ending.h" />
     <ClInclude Include="..\Public\State_Enemy.h" />
@@ -1432,8 +1431,7 @@
     <ClCompile Include="..\Private\NpcDMWState_Following.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Following_Rage02.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Following_Rage03.cpp" />
-    <ClCompile Include="..\Private\NpcDMWState_Rage2Sphere.cpp" />
-    <ClCompile Include="..\Private\NpcDMWState_Rage3Laser.cpp" />
+    <ClCompile Include="..\Private\NpcDMWState_Rage03Laser.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_Burst.cpp" />
     <ClCompile Include="..\Private\State_CurlingGame_Ending.cpp" />
     <ClCompile Include="..\Private\State_Enemy.cpp" />

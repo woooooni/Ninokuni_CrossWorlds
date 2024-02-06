@@ -67,7 +67,7 @@ void CWitch_Rage02Sphere::Tick(_float fTimeDelta)
 		if (m_pSphere->Is_Dead() && !m_bIsBombCreate)
 		{
 			Vec4 vPos = m_pTransformCom->Get_Position();
-			vPos.y = 1.7f;
+			vPos.y = 1.8f;
 			m_pTransformCom->Set_Position(vPos);
 
 			// Æø¹ß »ý¼º

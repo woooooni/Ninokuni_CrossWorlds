@@ -22,16 +22,16 @@ void CStelliaState_Rage3TurnAround::Enter_State(void* pArg)
 	if (pArg != nullptr)
 	{
 		m_bIsRight = true;
-		m_vLeftRotLook = XMVector3Rotate(m_pTransformCom->Get_Look(), XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians(90.f), 0.0f));
+		// Right ±¸ÇÏ±â
+		m_vDestLook = XMVector3Cross(Vec3(0.f, 1.f, 0.f), XMVector3Normalize(m_pTransformCom->Get_Look()));
 		m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_RightTurn"));
 	}
 	else
 	{
 		m_bIsRight = false;
-		m_vLeftRotLook = XMVector3Rotate(m_pTransformCom->Get_Look(), XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians(-90.f), 0.0f));
-		m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_LeftTurn"));
+		m_vDestLook = XMVector3Rotate(m_pTransformCom->Get_Look(), XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians(-90.f), 0.0f));
+		m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_RightTurn"));
 	}
-
 
 }
 
@@ -39,7 +39,7 @@ void CStelliaState_Rage3TurnAround::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	_vector vCrossProduct = XMVector3Cross(XMVector3Normalize(m_pTransformCom->Get_Look()), XMVector3Normalize(m_vLeftRotLook));
+	_vector vCrossProduct = XMVector3Cross(XMVector3Normalize(m_pTransformCom->Get_Look()), XMVector3Normalize(m_vDestLook));
 	_float fCrossProductY = XMVectorGetY(vCrossProduct);
 
 	if (!m_bIsRight)

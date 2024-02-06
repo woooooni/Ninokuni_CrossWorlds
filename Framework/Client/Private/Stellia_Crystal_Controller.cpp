@@ -47,7 +47,7 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 			// 타임 슬립 시작.
 			if (!m_bIsTimeSlep)
 			{
-				GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 0.1f);
+				GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 0.05f);
 				m_bIsTimeSlep = true;
 				m_bIsSlow = true;
 			}
@@ -116,7 +116,7 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 
 				if (m_fSleepTime >= m_fSlowTime)
 				{
-					m_fSleepTime = m_fSlowTime = m_fSleepTime;
+					m_fSleepTime = 0.f;
 					m_bIsTimeSlep = false;
 					m_bIsSlow = false;
 					GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 1.f);

@@ -19,7 +19,7 @@ HRESULT CStelliaState_Rage3Charge::Initialize(const list<wstring>& AnimationList
 {
 	__super::Initialize(AnimationList);
 
-	m_fChargeTime = 2.f;
+	m_fChargeTime = .5f;
 	m_fLimitTime = 6.f;
 	m_fShakeTime = 0.5f;
 	m_iClickDest = 30.f;
@@ -33,6 +33,7 @@ void CStelliaState_Rage3Charge::Enter_State(void* pArg)
 	m_fAccChargeTime = 0.f;
 	m_fAccClickTime = 0.f;
 	m_fAccShakeTime = 0.5f;
+	m_fAccChargeTime = 0.f;
 
 	m_iClickPower = 0;
 }
@@ -139,7 +140,7 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 	
 	// 스텔리아가 AroundDist에 도달한다면 Turn.
 	Vec4 vCenterToStellia = m_pStellia->Get_OriginPos() - (Vec4)m_pTransformCom->Get_Position();
-	if (fabs(vCenterToStellia.Length()) > m_fAroundDist - 2.f && m_fAccChargeTime >= m_fChargeTime)
+	if (fabs(vCenterToStellia.Length()) > m_fAroundDist - 5.f && m_fAccChargeTime >= m_fChargeTime)
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE3CHARGE_BREAK);
 	}

@@ -18,6 +18,10 @@ public:
 	virtual void Tick_State(_float fTimeDelta);
 	virtual void Exit_State();
 
+private:
+	_float m_fAccChargeTime = 0.f;
+	_float m_fChargeTime = 0.f;
+
 public:
 	static CStelliaState_Rage3ClawEndCharge* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

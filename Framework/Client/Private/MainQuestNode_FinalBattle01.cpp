@@ -53,7 +53,9 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle01::Tick(const _float& fTimeDelta)
 		}
 		if (m_pMoon == nullptr)
 		{
+			// TODO
 			m_pMoon = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_SKYBOX, L"Common_Moon");
+			static_cast<CMoon*>(m_pMoon)->Set_AppearMoon(true);
 		}
 
 
@@ -82,9 +84,6 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle01::Tick(const _float& fTimeDelta)
 		{
 			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 			m_bIsClear = true;
-
-			// TODO
-			static_cast<CMoon*>(m_pMoon)->Set_AppearMoon(true);
 
 			return NODE_STATE::NODE_FAIL;
 		}

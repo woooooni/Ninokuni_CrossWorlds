@@ -19,6 +19,8 @@ HRESULT CStelliaState_Rage3ClawEndCharge::Initialize(const list<wstring>& Animat
 {
 	__super::Initialize(AnimationList);
 
+	m_fAccChargeTime = 0.5f;
+
 	return S_OK;
 }
 
@@ -31,14 +33,16 @@ void CStelliaState_Rage3ClawEndCharge::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	// 스텔리아를 다시 AroundDist 까지 달린다.
-	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRage3AroundSpeed, fTimeDelta);
-
 	// 스텔리아가 다시 AroundDist 까지 도달하면 돈다.
 	Vec4 vCenterToStellia = m_pStellia->Get_OriginPos() - (Vec4)m_pTransformCom->Get_Position();
-	if (fabs(vCenterToStellia.Length()) >= m_fAroundDist - 2.f)
+	if (fabs(vCenterToStellia.Length()) >= m_fAroundDist - 5.f && m_fAccChargeTime >= m_fChargeTime)
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE3CLAW_ENDBREAK);
+	}
+	else
+	{
+		// 스텔리아를 다시 AroundDist 까지 달린다.
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRage3AroundSpeed, fTimeDelta);
 	}
 }
 

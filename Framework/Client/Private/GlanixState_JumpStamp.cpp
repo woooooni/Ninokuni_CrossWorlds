@@ -37,7 +37,7 @@ void CGlanixState_JumpStamp::Tick_State(_float fTimeDelta)
 	__super::Tick_State(fTimeDelta);
 
 	if(m_pModelCom->Get_CurrAnimationFrame() < 45)
-		vDestPos = m_pPlayerTransform->Get_Position();
+		vDestPos = m_pGlanix->Get_TargetDesc().pTragetTransform->Get_Position();
 
 	if (m_pModelCom->Get_CurrAnimationFrame() >= 45 && m_pModelCom->Get_CurrAnimationFrame() <= 75)
 	{
