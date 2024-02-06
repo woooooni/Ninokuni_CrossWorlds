@@ -26,10 +26,7 @@ void CStelliaState_ChaseJumpStamp::Enter_State(void* pArg)
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkillChaseJump"));
 
 	// Effect Create
-	//CTransform* pTransformCom = m_pStellia->Get_Component<CTransform>(L"Com_Transform");
-	//if (pTransformCom == nullptr)
-	//	return;
-	//GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_JumpDown"), pTransformCom->Get_WorldMatrix(), m_pStellia);
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_ChaseJumpStamp"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_ChaseJumpStamp::Tick_State(_float fTimeDelta)

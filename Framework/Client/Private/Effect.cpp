@@ -613,7 +613,14 @@ HRESULT CEffect::Bind_ShaderResource_Instance(CShader* pShader)
 void CEffect::Increment(_float fTimeDelta)
 {
 	if (m_bAccIndexEnd == true)
+	{
+		if (true == m_bAnimationFinishDelete)
+		{
+			m_bEffectDelete = true;
+			m_bEffectDie    = true;
+		}
 		return;
+	}
 
 	m_fAccIndex += m_fAnimationSpeed * fTimeDelta;
 	if (m_fAccIndex >= 1.f)

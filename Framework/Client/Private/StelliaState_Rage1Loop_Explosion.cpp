@@ -63,12 +63,6 @@ void CStelliaState_Rage1Loop_Explosion::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Get_CurrAnimationFrame() >= 65 && m_pModelCom->Get_CurrAnimationFrame() <= 70)
 	{
-		if (m_pDecal != nullptr)
-		{
-			m_pDecal->Set_Dead(true);
-			Safe_Release(m_pDecal);
-		}
-
 		_float fLength = vDirToPlayer.Length();
 		// 플레이어가 안전지대 범위 내에 없다.
 		if (XMConvertToDegrees(fAngleToPlayer) >= m_fRotAngle || fLength > m_fDist)

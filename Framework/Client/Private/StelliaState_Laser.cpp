@@ -19,6 +19,9 @@ HRESULT CStelliaState_Laser::Initialize(const list<wstring>& AnimationList)
 void CStelliaState_Laser::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill05_New"));
+
+	// Effect Create
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Laser"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Laser::Tick_State(_float fTimeDelta)
@@ -29,9 +32,6 @@ void CStelliaState_Laser::Tick_State(_float fTimeDelta)
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
 	}
-
-	// Effect Create
-	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Laser"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Laser::Exit_State()

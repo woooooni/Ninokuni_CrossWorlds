@@ -8,6 +8,8 @@
 #include "Camera_Follow.h"
 #include "Camera_Manager.h"
 
+#include "Particle_Manager.h"
+
 CStelliaState_Rage2StartJump::CStelliaState_Rage2StartJump(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -25,6 +27,7 @@ void CStelliaState_Rage2StartJump::Enter_State(void* pArg)
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill02_New"));
 
 	vDestPos = m_pStellia->Get_OriginPos();
+	m_bJumpEffect = false;
 }
 
 void CStelliaState_Rage2StartJump::Tick_State(_float fTimeDelta)
@@ -37,6 +40,20 @@ void CStelliaState_Rage2StartJump::Tick_State(_float fTimeDelta)
 
 		XMVECTOR vCurVector = XMVectorLerp(m_pTransformCom->Get_Position(), vDestPos, fTimeDelta / 0.5f);
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCurVector);
+	}
+
+	if (!m_bJumpEffect && !m_pModelCom->Is_Tween() && m_pModelCom->Get_CurrAnimationFrame() >= 91)
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Spawn_Smoke"),
+			m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.7f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Spawn_Circle"),
+			m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.5f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Spawn_Circle_02"),
+			m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.5f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+
+		m_bJumpEffect = true;
 	}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())

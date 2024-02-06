@@ -55,13 +55,16 @@
 ////// Stellia
 #include "Vfx_Stellia_Spawn_Roar.h"
 
+#include "Vfx_Stellia_Skill_Roar.h"
 #include "Vfx_Stellia_Skill_ClawRight.h"
 #include "Vfx_Stellia_Skill_ClawDouble.h"
 #include "Vfx_Stellia_Skill_SpinTail.h"
 #include "Vfx_Stellia_Skill_JumpStamp.h"
 #include "Vfx_Stellia_Skill_Laser.h"
 #include "Vfx_Stellia_Skill_TripleLaser.h"
+#include "Vfx_Stellia_Skill_Charge.h"
 #include "Vfx_Stellia_Skill_BigBang.h"
+#include "Vfx_Stellia_Skill_ChaseJumpStamp.h"
 // Rage01
 #include "Vfx_Stellia_Skill_Rage01Explosion.h"
 #include "Vfx_Stellia_Skill_Rage01JumpStamp.h"

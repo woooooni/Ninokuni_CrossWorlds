@@ -5,6 +5,8 @@
 
 #include "Animation.h"
 
+#include "Effect_Manager.h"
+
 CStelliaState_Charge::CStelliaState_Charge(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -24,6 +26,9 @@ void CStelliaState_Charge::Enter_State(void* pArg)
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill06"));
 
 	m_tChargeLerp.Start(m_fChargeSpeed, 0.f, 1.f, LERP_MODE::EASE_IN);
+
+	// Effect Create
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Charge"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Charge::Tick_State(_float fTimeDelta)

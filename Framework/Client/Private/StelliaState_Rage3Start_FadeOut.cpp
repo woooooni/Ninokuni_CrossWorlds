@@ -13,6 +13,10 @@
 #include "UI_Manager.h"
 #include "UI_Fade.h"
 
+#include "Effect_Manager.h"
+#include "Vfx.h"
+#include "Vfx_Stellia_Skill_Roar.h"
+
 CStelliaState_Rage3Start_FadeOut::CStelliaState_Rage3Start_FadeOut(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -29,6 +33,12 @@ void CStelliaState_Rage3Start_FadeOut::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkillRage"));
 	m_bIsFadeOut = false;
+
+	// Effect Create
+	CVfx* pVfxEffect = nullptr;
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Roar"), m_pTransformCom->Get_WorldMatrix(), m_pStellia, &pVfxEffect);
+	if (nullptr != pVfxEffect)
+		pVfxEffect->Set_OwnerStateIndex((_int)CStellia::STELLIA_RAGE3START_FADEOUT);
 }
 
 void CStelliaState_Rage3Start_FadeOut::Tick_State(_float fTimeDelta)

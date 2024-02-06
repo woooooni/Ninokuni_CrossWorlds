@@ -59,7 +59,6 @@ protected:
 	_float m_fAroundDist = 0.f;
 
 protected:
-	class CDecal* m_pDecal = nullptr; // 임시 Decal, 나중에는 vfx인지 뭐시긴지 걸로 옮기지 않을까?
 	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
 
 private:
