@@ -31,12 +31,16 @@ HRESULT CState_EnemyBiplane_Stand::Initialize(const list<wstring>& AnimationList
 
     m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
     
+    
     // TODO : 플레이어 포지션 변경.
     // CRiding_Manager::GetInstance()->Get_Character_Biplane()->Get_Component_Transform()->Set_Position()
     // CRiding_Manager::GetInstance()->Get_Character_Biplane()->Get_Component<CPhysX_Controller>(L"Com_Controller")->Set_EnterLevel_Position()
 
     // TODO : 내 포지션 변경.
-    // m_pTransformCom->Set_Position()
+    m_pTransformCom->Set_Position(Vec4(-0.65f, 111.44f, 288.f, 1.f));
+
+    // TODO : camera target
+
 
     // TODO : 페이드.
 
