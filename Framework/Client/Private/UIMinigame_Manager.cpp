@@ -28,6 +28,7 @@
 #include "UI_Grandprix_RaderIcon.h"
 #include "UI_Grandprix_Vignette.h"
 #include "UI_Grandprix_Popup.h"
+#include "UI_Grandprix_Target.h"
 
 #include "CurlingGame_Group.h"
 
@@ -59,6 +60,14 @@ void CUIMinigame_Manager::Set_HPOwner(CGameObject* pOwner, _uint eEnemyID)
 		return;
 
 	m_EnemyHP[eEnemyID]->Set_Owner(pOwner);
+}
+
+void CUIMinigame_Manager::Set_TargetUI(CVehicle_Flying* pTarget)
+{
+	if (nullptr == m_pTarget || nullptr == pTarget)
+		return;
+
+	m_pTarget->Set_Target(pTarget);
 }
 
 void CUIMinigame_Manager::Set_Flyable(_bool bFlyable)
@@ -316,6 +325,12 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_ToLayer(LEVELID eID)
 			Safe_AddRef(iter);
 		}
 
+		if (nullptr == m_pTarget)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pTarget)))
+			return E_FAIL;
+		Safe_AddRef(m_pTarget);
+
 	}
 	else if (LEVELID::LEVEL_ICELAND == eID)
 	{
@@ -520,13 +535,11 @@ void CUIMinigame_Manager::Start_Grandprix()
 
 void CUIMinigame_Manager::End_Grandprix()
 {
-	if (true != m_bCountStart)
-		return;
-
 	OnOff_GrandprixGauge(false);
 
 	m_bFlying = false;
 
+	m_bIntroStarted = false;
 	m_bGrandprixEnd = true;
 	m_iCountIndex = 5;
 
@@ -809,6 +822,9 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Popup_Main"),
 		CUI_Grandprix_Popup::Create(m_pDevice, m_pContext, CUI_Grandprix_Popup::UI_GRANDPRIX_POPUP::POPUP_MAIN), LAYER_UI)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_TargetUI"),
+		CUI_Grandprix_Target::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
 
 	// 매니저 내에서는 프로토타입만 생성함
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Enemy_WorldHP"),
@@ -1000,6 +1016,18 @@ HRESULT CUIMinigame_Manager::Ready_TowerDence()
 HRESULT CUIMinigame_Manager::Ready_Granprix()
 {
 	CUI::UI_INFO UIDesc = {};
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 128.f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	CGameObject* pTarget = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_TargetUI"), &UIDesc, &pTarget)))
+		return E_FAIL;
+	m_pTarget = dynamic_cast<CUI_Grandprix_Target*>(pTarget);
+	Safe_AddRef(m_pTarget);
+
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 	UIDesc.fCX = g_iWinSizeX;
 	UIDesc.fCY = g_iWinSizeY;
@@ -1774,6 +1802,7 @@ void CUIMinigame_Manager::Free()
 	for (auto& pPopup : m_Popup)
 		Safe_Release(pPopup);
 	m_Popup.clear();
+	Safe_Release(m_pTarget);
 
 	// 컬링
 	for (auto& pUI : m_CurlingGameUIs)

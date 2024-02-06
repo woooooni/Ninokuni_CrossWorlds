@@ -6,6 +6,7 @@
 
 #include "Game_Manager.h"
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 #include "Player.h"
 
 CMainQuestNode_WitchForest01::CMainQuestNode_WitchForest01()
@@ -36,7 +37,12 @@ HRESULT CMainQuestNode_WitchForest01::Initialize()
 
 void CMainQuestNode_WitchForest01::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestName;
+	QuestDesc.strContents = m_strQuestContent;
+	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
+//	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 
@@ -44,7 +50,7 @@ void CMainQuestNode_WitchForest01::Start()
 	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
 	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 	TalkEvent();
@@ -67,7 +73,7 @@ CBTNode::NODE_STATE CMainQuestNode_WitchForest01::Tick(const _float& fTimeDelta)
 			m_iTalkIndex += 1;
 
 			if (m_iTalkIndex >= m_vecTalkDesc.size())
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 			if (m_iTalkIndex < m_vecTalkDesc.size())
 			{

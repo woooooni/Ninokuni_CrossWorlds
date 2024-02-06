@@ -6,6 +6,7 @@
 
 #include "UI_Manager.h"
 #include "UI_Fade.h"
+#include "UI_PopupQuest.h"
 
 #include "Game_Manager.h"
 
@@ -32,7 +33,12 @@ HRESULT CSubQuestNode_NoisySnowField05::Initialize()
 
 void CSubQuestNode_NoisySnowField05::Start()
 {
-	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strNextQuestTag;
+	QuestDesc.strTitle = m_strNextQuestName;
+	QuestDesc.strContents = m_strNextQuestContent;
+	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 	// 게임 시작 
 	CCurlingGame_Manager::GetInstance()->Start_Game();

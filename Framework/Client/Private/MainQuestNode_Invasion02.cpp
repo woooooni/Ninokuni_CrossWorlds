@@ -6,6 +6,7 @@
 
 #include "Game_Manager.h"
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 
 #include "Player.h"
 #include "Character.h"
@@ -42,7 +43,12 @@ HRESULT CMainQuestNode_Invasion02::Initialize()
 
 void CMainQuestNode_Invasion02::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestName;
+	QuestDesc.strContents = m_strQuestContent;
+	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
+//	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
@@ -131,10 +137,15 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02::Tick(const _float& fTimeDelta)
 
 			if (m_iTalkIndex >= m_vecTalkDesc.size())
 			{
-				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+				CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+				QuestDesc.strType = m_strNextQuestTag;
+				QuestDesc.strTitle = m_strNextQuestName;
+				QuestDesc.strContents = m_strNextQuestContent;
+				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 				m_bIsClear = true;
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 				//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
 				//if (nullptr != pActionCam)

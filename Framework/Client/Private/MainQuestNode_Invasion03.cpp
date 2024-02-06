@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 
 #include "Game_Manager.h"
 #include "Quest_Manager.h"
@@ -86,7 +87,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion03::ProgressTalk(const _float& fTimeD
 			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
 			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 			m_bIsShowDialog = true;
@@ -106,7 +107,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion03::ProgressTalk(const _float& fTimeD
 			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
 			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 			m_bIsShowDialog = true;
@@ -126,7 +127,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion03::ProgressTalk(const _float& fTimeD
 			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
 			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 			m_bIsShowDialog = true;
@@ -149,7 +150,12 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion03::ProgressTalk(const _float& fTimeD
 				Safe_Delete_Array(m_szpOwner);
 				Safe_Delete_Array(m_szpTalk);
 
-				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+				CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+				QuestDesc.strType = m_strNextQuestTag;
+				QuestDesc.strTitle = m_strNextQuestName;
+				QuestDesc.strContents = m_strNextQuestContent;
+				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 				CQuest_Manager::GetInstance()->Clear_MonsterKillCount();
 				CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
@@ -158,7 +164,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion03::ProgressTalk(const _float& fTimeD
 				return NODE_STATE::NODE_FAIL;
 			}
 
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 			m_fTime = m_fTalkChangeTime - m_fTime;
 			m_bIsShowDialog = false;
 		}

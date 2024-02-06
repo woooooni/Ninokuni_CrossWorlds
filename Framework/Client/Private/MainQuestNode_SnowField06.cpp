@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 
 CMainQuestNode_SnowField06::CMainQuestNode_SnowField06()
 {
@@ -27,7 +28,7 @@ HRESULT CMainQuestNode_SnowField06::Initialize()
 
 void CMainQuestNode_SnowField06::Start()
 {
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("GrimalKinML01"));
 	Vec4 vSpotPos = Set_DestSpot(m_pJackson);
@@ -52,7 +53,12 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField06::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+					CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+					QuestDesc.strType = m_strNextQuestTag;
+					QuestDesc.strTitle = m_strNextQuestName;
+					QuestDesc.strContents = m_strNextQuestContent;
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);

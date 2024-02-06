@@ -171,6 +171,7 @@
 #include "Grandprix_Engineer.h"
 #include "Grandprix_Enemy_Ghost2.h"
 #include "Grandprix_ItemBox.h"
+#include "Grandprix_Goal.h"
 
 #include "Respawn_Box.h"
 #include "CurlingGame_Manager.h"
@@ -731,6 +732,9 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_ItemPopup_Background"),
 			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Item/UI_Grandprix_ItemPopup_1.png")))))
 			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_Target"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Grandprix_Target_2.png")))))
+			return E_FAIL;
 
 		// 미니게임용 프로토타입
 		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_Prototypes(LEVELID::LEVEL_EVERMORE)))
@@ -804,8 +808,12 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			CBiplane_BlackHole::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 
-		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Grandprix_ItemBox"), // 레이어변경 필요함
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Grandprix_ItemBox"),
 			CGrandprix_ItemBox::Create(m_pDevice, m_pContext, TEXT("Grandprix_ItemBox")), LAYER_TYPE::LAYER_ETC))
+			return E_FAIL;
+
+		if (GI->Add_Prototype(TEXT("Prorotype_GameObject_Grandprix_Goal"),
+			CGrandprix_Goal::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_ETC))
 			return E_FAIL;
 		
 		g_bLevelFirst[LEVEL_EVERMORE] = true;
@@ -2280,6 +2288,9 @@ HRESULT CLoader::Loading_Proto_Vehicles()
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Grandprix_ItemBox", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Grandprix/Granprix_ItemBox/", L"Grandprix_ItemBox")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Grandprix_SiriusRelic", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Grandprix/SiriusRelic/", L"SiriusRelic")))
 		return E_FAIL;
 
 

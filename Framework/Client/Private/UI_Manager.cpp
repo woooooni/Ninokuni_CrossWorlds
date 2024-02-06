@@ -319,18 +319,10 @@ void CUI_Manager::Set_QuestPopup(void* pArg)
 		return;
 
 	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-	memcpy(&QuestDesc, &pArg, sizeof(CUI_PopupQuest::QUEST_INFO));
+	QuestDesc = *((CUI_PopupQuest::QUEST_INFO*)pArg);
 	m_QuestPopUp[0]->Set_Contents(QuestDesc);
 
 	Resize_QuestPopup();
-
-//	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-//	QuestDesc.strType = m_strQuestTag;
-//	QuestDesc.strTitle = m_strQuestName;
-//	QuestDesc.strContents = m_strQuestContent;
-//	QuestDesc.bCreateSpot = true;
-//	QuestDesc.vDestPosition = _float4(vSpotPos.x, vSpotPos.y, vSpotPos.z, vSpotPos.w);
-//	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
 }
 
 void CUI_Manager::Update_QuestPopup(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents)
@@ -355,7 +347,8 @@ void CUI_Manager::Update_QuestPopup(const wstring& strPreTitle, void* pArg)
 		return;
 
 	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-	memcpy(&QuestDesc, &pArg, sizeof(CUI_PopupQuest::QUEST_INFO));
+//	memcpy(&QuestDesc, &pArg, sizeof(CUI_PopupQuest::QUEST_INFO));
+	QuestDesc = *((CUI_PopupQuest::QUEST_INFO*)pArg);
 	m_QuestPopUp[0]->Update_QuestContents(strPreTitle, QuestDesc);
 
 	Resize_QuestPopup();
@@ -491,19 +484,23 @@ void CUI_Manager::Get_QuestInfo()
 
 void CUI_Manager::Set_QuestDestSpot(_int iWindow)
 {
-//	if (nullptr == m_QuestPopUp[0])
-//		return;
-//
-//	if (iWindow > Get_QuestNum())
-//		return;
-//
-//	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-//	memcpy(&QuestDesc, &(m_QuestPopUp[0]->Get_QuestContents(iWindow)), sizeof(CUI_PopupQuest::QUEST_INFO));
+	if (nullptr == m_QuestPopUp[0] || iWindow > Get_QuestNum())
+		return;
+
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc = m_QuestPopUp[0]->Get_QuestContents(iWindow);
+	// 퀘스트 목적지가 설정되어있다면
+	if (true == QuestDesc.bCreateSpot)
+		Calculate_QuestDestSpot(QuestDesc.vDestPosition);
 }
 
-void CUI_Manager::Calculate_QuestDestSpot(const wstring& strContents, _float4 vDestPos)
+void CUI_Manager::Calculate_QuestDestSpot(_float4 vDestPos)
 {
-	vDestPos; // 
+	for (auto& iter : m_Milepost)
+	{
+		iter ->Set_TargetPosition(vDestPos);
+	}
+//	m_Milepost[CUI_Milepost::MILEPOST_FLAG]->Set_TargetPosition(vDestPos);
 }
 
 _int CUI_Manager::Get_SelectedCharacter()
@@ -774,6 +771,8 @@ HRESULT CUI_Manager::Ready_Veils(LEVELID eID)
 		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pUIFade)))
 			return E_FAIL;
 		Safe_AddRef(m_pUIFade);
+
+		m_pUIFade->Set_DefaultSetting();
 	}
 
 	return S_OK;
@@ -3808,6 +3807,7 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pUIFade)))
 		return E_FAIL;
 	Safe_AddRef(m_pUIFade);
+	m_pUIFade->Set_DefaultSetting();
 
 	if (nullptr == m_pUIMapName)
 		return E_FAIL;
@@ -5809,16 +5809,16 @@ void CUI_Manager::Show_AddItem(ITEM_TYPE eItemType, ITEM_CODE eItemCode, _uint i
 		if (nullptr == pSlot)
 			return;
 
-		if (0 < m_ItemPopup.size())
-		{
-			if (true == m_ItemPopup.front()->Is_Disappear() && true == m_ItemPopup.front()->Is_Dead())
-			{
-				dynamic_cast<CUI_AddItem*>(pSlot)->Set_Position(1);
-				m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
-				Safe_AddRef(pSlot);
-			}
-		}
-		else
+		//if (0 < m_ItemPopup.size())
+		//{
+		//	if (true == m_ItemPopup.front()->Is_Disappear() && true == m_ItemPopup.front()->Is_Dead())
+		//	{
+		//		dynamic_cast<CUI_AddItem*>(pSlot)->Set_Position(1);
+		//		m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
+		//		Safe_AddRef(pSlot);
+		//	}
+		//}
+		//else
 		{
 			dynamic_cast<CUI_AddItem*>(pSlot)->Set_Position(m_ItemPopup.size());
 			m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
@@ -6826,7 +6826,7 @@ HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
 		}
 	}
 
-	else if (iMagicNum == 2)
+	else if (iMagicNum == 2) // Battle
 	{
 		if (nullptr == m_pDialogBattle)
 			return E_FAIL;
@@ -7484,6 +7484,15 @@ HRESULT CUI_Manager::OnOff_Inventory(_bool bOnOff)
 	}
 
 	return S_OK;
+}
+
+void CUI_Manager::Off_Milepost()
+{
+	for (auto& iter : m_Milepost)
+	{
+		if (nullptr != iter)
+			iter->Set_Active(false);
+	}
 }
 
 HRESULT CUI_Manager::OnOff_SkillWindow(_bool bOnOff)

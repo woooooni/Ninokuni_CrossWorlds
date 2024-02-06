@@ -15,6 +15,7 @@ protected:
 	virtual ~CUI_Fade() = default;
 
 public:
+	void	Set_DefaultSetting();
 	void	Set_Fade(const _bool& pIsFadeOut, const _float& pFadeTime, const _bool& bIsWhite = false);
 	const	_bool&		Get_Fade() { return m_bIsFadeOut; }
 	void	Set_White(const _bool& pIsWhite)

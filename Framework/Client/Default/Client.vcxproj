@@ -253,7 +253,9 @@
     <ClInclude Include="..\Public\Camera_Quater.h" />
     <ClInclude Include="..\Public\Character.h" />
     <ClInclude Include="..\Public\Character_Destroyer.h" />
-    <ClInclude Include="..\Public\Character_Dummy.h" />
+    <ClInclude Include="..\Public\Character_Dummy.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\Public\Character_Engineer.h" />
     <ClInclude Include="..\Public\Character_Projectile.h" />
     <ClInclude Include="..\Public\Chloe.h" />
@@ -265,6 +267,7 @@
     <ClInclude Include="..\Public\Enemy_Biplane_BulletBall.h" />
     <ClInclude Include="..\Public\Enemy_GuidedMissile.h" />
     <ClInclude Include="..\Public\EntireGrass.h" />
+    <ClInclude Include="..\Public\Grandprix_Goal.h" />
     <ClInclude Include="..\Public\LargeGrass.h" />
     <ClInclude Include="..\Public\LargeGrass_Purple.h" />
     <ClInclude Include="..\Public\MainQuestNode_Ending01.h" />
@@ -372,6 +375,7 @@
     <ClInclude Include="..\Public\UI_Grandprix_Rader.h" />
     <ClInclude Include="..\Public\UI_Grandprix_RaderFrame.h" />
     <ClInclude Include="..\Public\UI_Grandprix_RaderIcon.h" />
+    <ClInclude Include="..\Public\UI_Grandprix_Target.h" />
     <ClInclude Include="..\Public\UI_Grandprix_Vignette.h" />
     <ClInclude Include="..\Public\UI_Minigame_Aim.h" />
     <ClInclude Include="..\Public\StelliaState_Rage1StartTurnOL.h" />
@@ -1343,7 +1347,9 @@
     <ClCompile Include="..\Private\Camera_Quater.cpp" />
     <ClCompile Include="..\Private\Character.cpp" />
     <ClCompile Include="..\Private\Character_Destroyer.cpp" />
-    <ClCompile Include="..\Private\Character_Dummy.cpp" />
+    <ClCompile Include="..\Private\Character_Dummy.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\Private\Character_Engineer.cpp" />
     <ClCompile Include="..\Private\Character_Projectile.cpp" />
     <ClCompile Include="..\Private\Chloe.cpp" />
@@ -1355,6 +1361,7 @@
     <ClCompile Include="..\Private\Enemy_Biplane_BulletBall.cpp" />
     <ClCompile Include="..\Private\Enemy_GuidedMissile.cpp" />
     <ClCompile Include="..\Private\EntireGrass.cpp" />
+    <ClCompile Include="..\Private\Grandprix_Goal.cpp" />
     <ClCompile Include="..\Private\LargeGrass.cpp" />
     <ClCompile Include="..\Private\LargeGrass_Purple.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_Ending01.cpp" />
@@ -1462,6 +1469,7 @@
     <ClCompile Include="..\Private\UI_Grandprix_Rader.cpp" />
     <ClCompile Include="..\Private\UI_Grandprix_RaderFrame.cpp" />
     <ClCompile Include="..\Private\UI_Grandprix_RaderIcon.cpp" />
+    <ClCompile Include="..\Private\UI_Grandprix_Target.cpp" />
     <ClCompile Include="..\Private\UI_Grandprix_Vignette.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Aim.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage1StartTurnOL.cpp" />

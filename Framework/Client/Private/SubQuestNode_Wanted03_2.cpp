@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 
 #include "Game_Manager.h"
 #include "Character.h"
@@ -44,7 +45,7 @@ HRESULT CSubQuestNode_Wanted03_2::Initialize()
 
 void CSubQuestNode_Wanted03_2::Start()
 {
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
@@ -88,8 +89,12 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted03_2::Tick(const _float& fTimeDelta)
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
 			m_bIsClear = true;
-			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+			CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+			QuestDesc.strType = m_strNextQuestTag;
+			QuestDesc.strTitle = m_strNextQuestName;
+			QuestDesc.strContents = m_strNextQuestContent;
+			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 			/* 대화 카메라 종료 */
 			{

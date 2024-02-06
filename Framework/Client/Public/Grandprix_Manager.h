@@ -37,6 +37,7 @@ public:
 
 public:
 	void Add_ItemBox(_uint iType);
+	void Show_GoalObject();
 
 private:
 	GRANDPRIX_PHASE m_eCurPhase = { GRANDPRIX_PHASE::GRANDPRIX_NO_RUN };
@@ -46,6 +47,8 @@ private:
 	vector <class CVehicle_Flying_EnemyBoto*> m_Botos;
 	vector <class CGrandprix_Enemy*> m_Enemies;
 	vector <class CGrandprix_ItemBox*> m_Items;
+
+	class CGrandprix_Goal* m_pGoal = { nullptr };
 
 	_bool m_bItem[4];
 	_float m_fTimeAcc[4];

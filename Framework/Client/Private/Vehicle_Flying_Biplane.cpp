@@ -568,6 +568,9 @@ void CVehicle_Flying_Biplane::Decide_Target()
 
 	m_pTarget = pDecidedTarget;
 	Safe_AddRef(m_pTarget);
+
+	if (nullptr != dynamic_cast<CVehicle_Flying*>(m_pTarget))
+		CUIMinigame_Manager::GetInstance()->Set_TargetUI(dynamic_cast<CVehicle_Flying*>(m_pTarget));
 }
 
 void CVehicle_Flying_Biplane::Tick_Target()

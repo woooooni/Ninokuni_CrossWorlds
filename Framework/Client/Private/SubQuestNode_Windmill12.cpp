@@ -72,7 +72,7 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill12::Tick(const _float& fTimeDelta)
 			if (m_iTalkIndex >= m_vecTalkDesc.size())
 			{
 				CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 				/* 여기서 퀘스트 보상 받기.(퀘스트 보상 다 받으면 return하기.*/
 				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("풍차 수리"));

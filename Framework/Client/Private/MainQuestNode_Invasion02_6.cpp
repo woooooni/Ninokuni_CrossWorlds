@@ -70,7 +70,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02_6::Tick(const _float& fTimeDelta)
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
 			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 			return NODE_STATE::NODE_FAIL;
 		}

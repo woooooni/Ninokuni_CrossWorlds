@@ -29,6 +29,7 @@ void CUI_Minigame_EnemyHP::Set_Owner(CGameObject* pOwner)
 	m_fMaxHP = StatDesc.fMaxHP;
 	m_fCurHP = StatDesc.fCurHP;
 	m_fPreHP = m_fCurHP;
+	m_bAddText = true;
 }
 
 HRESULT CUI_Minigame_EnemyHP::Initialize_Prototype()
@@ -83,75 +84,80 @@ void CUI_Minigame_EnemyHP::LateTick(_float fTimeDelta)
 	{
 		if (nullptr != m_pOwner)
 		{
-			if (true == m_pOwner->Is_Dead() || true == m_pOwner->Is_ReserveDead())
-				return;
-
 			if (true == m_pOwner->Get_Stat().bIsEnemy)
 			{
 				CVehicle_Flying::PLANE_STAT StatDesc = m_pOwner->Get_Stat();
 				m_fCurHP = StatDesc.fCurHP;
+				if (m_fCurHP == 0.f)
+					m_bAddText = false;
 
-				CRenderer::TEXT_DESC  DefaultDesc;
-				DefaultDesc.strText = L"/";
-				DefaultDesc.strFontTag = L"Default_Bold";
-				DefaultDesc.vScale = { 0.3f, 0.3f };
-				// Outline
-				DefaultDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
-				DefaultDesc.vPosition = _float2(m_tInfo.fX - 1.f, (m_tInfo.fY - 5.f));
-				m_pRendererCom->Add_Text(DefaultDesc);
-				DefaultDesc.vPosition = _float2(m_tInfo.fX + 1.f, (m_tInfo.fY - 5.f));
-				m_pRendererCom->Add_Text(DefaultDesc);
-				DefaultDesc.vPosition = _float2(m_tInfo.fX, (m_tInfo.fY - 5.f) - 1.f);
-				m_pRendererCom->Add_Text(DefaultDesc);
-				DefaultDesc.vPosition = _float2(m_tInfo.fX, (m_tInfo.fY - 5.f) + 1.f);
-				m_pRendererCom->Add_Text(DefaultDesc);
-				// Origin
-				DefaultDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-				DefaultDesc.vPosition = _float2(m_tInfo.fX, (m_tInfo.fY - 5.f));
-				m_pRendererCom->Add_Text(DefaultDesc);
+				if (true == m_bAddText)
+				{
+					CRenderer::TEXT_DESC  DefaultDesc;
+					DefaultDesc.strText = L"/";
+					DefaultDesc.strFontTag = L"Default_Bold";
+					DefaultDesc.vScale = { 0.3f, 0.3f };
+					// Outline
+					DefaultDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+					DefaultDesc.vPosition = _float2(m_tInfo.fX - 1.f, (m_tInfo.fY - 5.f));
+					m_pRendererCom->Add_Text(DefaultDesc);
+					DefaultDesc.vPosition = _float2(m_tInfo.fX + 1.f, (m_tInfo.fY - 5.f));
+					m_pRendererCom->Add_Text(DefaultDesc);
+					DefaultDesc.vPosition = _float2(m_tInfo.fX, (m_tInfo.fY - 5.f) - 1.f);
+					m_pRendererCom->Add_Text(DefaultDesc);
+					DefaultDesc.vPosition = _float2(m_tInfo.fX, (m_tInfo.fY - 5.f) + 1.f);
+					m_pRendererCom->Add_Text(DefaultDesc);
+					// Origin
+					DefaultDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+					DefaultDesc.vPosition = _float2(m_tInfo.fX, (m_tInfo.fY - 5.f));
+					m_pRendererCom->Add_Text(DefaultDesc);
 
-				CRenderer::TEXT_DESC CurHPDesc;
-				wstring strCurHP = to_wstring(_int(m_pOwner->Get_Stat().fCurHP));
-				_float fOffsetX = (strCurHP.length() - 1) * 7.f;
-				CurHPDesc.strText = strCurHP;
-				CurHPDesc.strFontTag = L"Default_Bold";
-				CurHPDesc.vScale = { 0.25f, 0.25f };
-				// Outline
-				CurHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
-				CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX) - 1.f, (m_tInfo.fY - 5.f));
-				m_pRendererCom->Add_Text(CurHPDesc);
-				CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX) + 1.f, (m_tInfo.fY - 5.f));
-				m_pRendererCom->Add_Text(CurHPDesc);
-				CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX), (m_tInfo.fY - 5.f) - 1.f);
-				m_pRendererCom->Add_Text(CurHPDesc);
-				CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX), (m_tInfo.fY - 5.f) + 1.f);
-				m_pRendererCom->Add_Text(CurHPDesc);
-				// Origin
-				CurHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-				CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX), (m_tInfo.fY - 5.f));
-				m_pRendererCom->Add_Text(CurHPDesc);
-	
-				CRenderer::TEXT_DESC MaxHPDesc;
-				wstring strMaxHP = to_wstring(_int(m_pOwner->Get_Stat().fMaxHP));
-				MaxHPDesc.strText = strMaxHP;
-				MaxHPDesc.strFontTag = L"Default_Bold";
-				MaxHPDesc.vScale = { 0.25f, 0.25f };
-				// Outline
-				MaxHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
-				MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f) - 1.f, (m_tInfo.fY - 5.f));
-				m_pRendererCom->Add_Text(MaxHPDesc);
-				MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f) + 1.f, (m_tInfo.fY - 5.f));
-				m_pRendererCom->Add_Text(MaxHPDesc);
-				MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f), (m_tInfo.fY - 5.f) - 1.f);
-				m_pRendererCom->Add_Text(MaxHPDesc);
-				MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f), (m_tInfo.fY - 5.f) + 1.f);
-				m_pRendererCom->Add_Text(MaxHPDesc);
-				// Origin
-				MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-				MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f),( m_tInfo.fY - 5.f));
-				m_pRendererCom->Add_Text(MaxHPDesc);
+					CRenderer::TEXT_DESC CurHPDesc;
+					wstring strCurHP = to_wstring(_int(m_pOwner->Get_Stat().fCurHP));
+					_float fOffsetX = (strCurHP.length() - 1) * 7.f;
+					CurHPDesc.strText = strCurHP;
+					CurHPDesc.strFontTag = L"Default_Bold";
+					CurHPDesc.vScale = { 0.25f, 0.25f };
+					// Outline
+					CurHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+					CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX) - 1.f, (m_tInfo.fY - 5.f));
+					m_pRendererCom->Add_Text(CurHPDesc);
+					CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX) + 1.f, (m_tInfo.fY - 5.f));
+					m_pRendererCom->Add_Text(CurHPDesc);
+					CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX), (m_tInfo.fY - 5.f) - 1.f);
+					m_pRendererCom->Add_Text(CurHPDesc);
+					CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX), (m_tInfo.fY - 5.f) + 1.f);
+					m_pRendererCom->Add_Text(CurHPDesc);
+					// Origin
+					CurHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+					CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX), (m_tInfo.fY - 5.f));
+					m_pRendererCom->Add_Text(CurHPDesc);
+
+					CRenderer::TEXT_DESC MaxHPDesc;
+					wstring strMaxHP = to_wstring(_int(m_pOwner->Get_Stat().fMaxHP));
+					MaxHPDesc.strText = strMaxHP;
+					MaxHPDesc.strFontTag = L"Default_Bold";
+					MaxHPDesc.vScale = { 0.25f, 0.25f };
+					// Outline
+					MaxHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+					MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f) - 1.f, (m_tInfo.fY - 5.f));
+					m_pRendererCom->Add_Text(MaxHPDesc);
+					MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f) + 1.f, (m_tInfo.fY - 5.f));
+					m_pRendererCom->Add_Text(MaxHPDesc);
+					MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f), (m_tInfo.fY - 5.f) - 1.f);
+					m_pRendererCom->Add_Text(MaxHPDesc);
+					MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f), (m_tInfo.fY - 5.f) + 1.f);
+					m_pRendererCom->Add_Text(MaxHPDesc);
+					// Origin
+					MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+					MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f), (m_tInfo.fY - 5.f));
+					m_pRendererCom->Add_Text(MaxHPDesc);
+				}
 			}
 		}
+
+		if (true == m_pOwner->Is_Dead() || true == Is_ReserveDead())
+			return;
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}

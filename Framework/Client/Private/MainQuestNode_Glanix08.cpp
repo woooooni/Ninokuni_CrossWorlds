@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
@@ -44,7 +45,7 @@ HRESULT CMainQuestNode_Glanix08::Initialize()
 
 void CMainQuestNode_Glanix08::Start()
 {
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 	/* ´ëÈ­ */
 	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
@@ -52,7 +53,7 @@ void CMainQuestNode_Glanix08::Start()
 
 	// CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
 
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
 	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 	m_pKuu = CGame_Manager::GetInstance()->Get_Kuu();
@@ -67,8 +68,13 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix08::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_KINGDOMHALL)
 	{
-		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
-		CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+		CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+		QuestDesc.strType = m_strNextQuestTag;
+		QuestDesc.strTitle = m_strNextQuestName;
+		QuestDesc.strContents = m_strNextQuestContent;
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+		CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;

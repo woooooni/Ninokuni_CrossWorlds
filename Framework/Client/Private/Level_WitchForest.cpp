@@ -70,7 +70,6 @@ HRESULT CLevel_WitchForest::Initialize()
 	if (FAILED(Ready_Layer_Prop(LAYER_TYPE::LAYER_PROP)))
 		return E_FAIL;
 	
-
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 5.f);
 

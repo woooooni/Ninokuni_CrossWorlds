@@ -22,6 +22,7 @@ private:
 
 public: // Getter & Setter
 	void	Set_HPOwner(CGameObject* pOwner, _uint eEnemyID);
+	void	Set_TargetUI(class CVehicle_Flying* pTarget);
 
 	_bool	Is_GrandprixIntroStarted() { return m_bIntroStarted; }
 	_bool	Is_BiplaneFlying() { return m_bFlying; }
@@ -124,6 +125,7 @@ private: // Evermore Granprix
 	class CUI_Grandprix_Rader*				m_pRader;
 
 	vector<class CUI_Grandprix_Popup*>		m_Popup;
+	class CUI_Grandprix_Target*				m_pTarget;
 
 private: // Iceland Curling
 	vector<class CUI_Minigame_Curling_Base*> m_CurlingGameUIs;

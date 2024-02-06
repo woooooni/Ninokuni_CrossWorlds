@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 #include "Game_Manager.h"
 
 #include "Criminal_Npc.h"
@@ -47,7 +48,7 @@ void CSubQuestNode_Wanted04::Start()
 	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
 	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 	TalkEvent();
@@ -72,7 +73,7 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted04::Tick(const _float& fTimeDelta)
 				m_iTalkIndex += 1;
 
 				if (m_iTalkIndex >= m_vecTalkDesc.size())
-					CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+					CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 				if (m_iTalkIndex < m_vecTalkDesc.size())
 				{
@@ -93,6 +94,14 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted04::Tick(const _float& fTimeDelta)
 			m_bIsCreateSpot = true;
 			Vec4 vSpotPos = { -49.6f, -5.2f, -40.f , 1.f };
 			m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
+		
+			CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+			QuestDesc.strType = m_strQuestName;
+			QuestDesc.strTitle = m_strQuestName;
+			QuestDesc.strContents = m_strQuestName;
+			QuestDesc.bCreateSpot = true;
+			QuestDesc.vDestPosition = vSpotPos;
+			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 		}
 
 		if (m_bIsCreateSpot)
@@ -106,7 +115,12 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted04::Tick(const _float& fTimeDelta)
 				{
 					if (m_pQuestDestSpot->Get_IsCol())
 					{
-						CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+						CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+						QuestDesc.strType = m_strNextQuestTag;
+						QuestDesc.strTitle = m_strNextQuestName;
+						QuestDesc.strContents = m_strNextQuestContent;
+						CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+//						CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 						m_bIsClear = true;
 						m_pQuestDestSpot->Set_ReadyDelete(true);

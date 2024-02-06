@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "State_Vehicle_Run.h"
 #include "Vehicle.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CState_Vehicle_Run::CState_Vehicle_Run(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
@@ -28,6 +30,10 @@ void CState_Vehicle_Run::Enter_State(void* pArg)
 
 void CState_Vehicle_Run::Tick_State(_float fTimeDelta)
 {
+	// 플레이어 움직임이 막혀있다면 return;
+	if (false == CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Is_Move_Input())
+		return;
+
 	_bool bMove = false;
 
 	if (KEY_HOLD(KEY::W))

@@ -3,15 +3,15 @@
 #include "UI.h"
 
 BEGIN(Client)
-class CUI_Minigame_Aim final : public CUI
+class CUI_Grandprix_Target final : public CUI
 {
 protected:
-	CUI_Minigame_Aim(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CUI_Minigame_Aim(const CUI_Minigame_Aim& rhs);
-	virtual ~CUI_Minigame_Aim() = default;
+	CUI_Grandprix_Target(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CUI_Grandprix_Target(const CUI_Grandprix_Target& rhs);
+	virtual ~CUI_Grandprix_Target() = default;
 
 public:
-	void Set_Owner(class CVehicle_Flying* pOwner);
+	void Set_Target(class CVehicle_Flying* pOwner);
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -28,14 +28,6 @@ private:
 	_float2 m_vOffset = _float2(0.f, 0.f);
 	_float2 m_vOriginOffset = _float2(0.f, 0.f);
 
-	_bool m_bResize = { false };
-	_float2 m_vOriginSize = _float2(0.f, 0.f);
-	_float2 m_vMinSize = _float2(0.f, 0.f);
-
-	_bool m_bIsTarget = { false };
-	_float m_fDistance = { 0.f };
-	_uint m_iTextureIndex = { 0 };
-
 private:
 	virtual HRESULT	Ready_Components() override;
 
@@ -43,11 +35,8 @@ private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
 
-private:
-	void Update_Distance();
-
 public:
-	static CUI_Minigame_Aim* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CUI_Grandprix_Target* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

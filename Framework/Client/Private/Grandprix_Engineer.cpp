@@ -44,8 +44,6 @@ HRESULT CGrandprix_Engineer::Initialize(void* pArg)
 	m_pRigidBodyCom->Set_Use_Gravity(false);
 	m_pRigidBodyCom->Set_Ground(true);
 
-//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(0.12f, -0.09, 30.2f, 1.f));
-
 	m_bActive = false;
 
 	return S_OK;
@@ -71,7 +69,6 @@ void CGrandprix_Engineer::LateTick(_float fTimeDelta)
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
-//	__super::LateTick(fTimeDelta);
 }
 
 HRESULT CGrandprix_Engineer::Render()

@@ -5,6 +5,8 @@
 #include "Camera.h"
 #include "State_Vehicle_Idle.h"
 #include "Vehicle.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CState_Vehicle_Idle::CState_Vehicle_Idle(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
@@ -40,6 +42,9 @@ void CState_Vehicle_Idle::Tick_State(_float fTimeDelta)
         m_pModelCom->Set_Animation(m_iCurrAnimIndex);
     }
 
+    // 플레이어 움직임이 막혀있다면 return;
+    if (false == CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Is_Move_Input())
+        return;
 
 	if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
 	{
