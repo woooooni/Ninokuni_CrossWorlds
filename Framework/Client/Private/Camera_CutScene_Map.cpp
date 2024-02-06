@@ -250,7 +250,7 @@ HRESULT CCamera_CutScene_Map::Stop_CutScene(const _bool& bClearReservedCutScene)
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID)
+HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID, const _bool bSecondCutScene)
 {
 	/* Exception */
 	const _uint iCurLevel = GI->Get_CurrentLevel();
@@ -263,26 +263,52 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID)
 	{
 	case LEVELID::LEVEL_EVERMORE:
 	{
-		/* Reserve Fade */
-		Reserve_Fade(1.f, true, 1.f, true);
-
-		/* CutScene - Evermore */
-		vector<string> CutSceneNames;
+		if (!bSecondCutScene)
 		{
-			CutSceneNames.push_back("Evermore_Intro_Short_Flowers");			
-			CutSceneNames.push_back("Evermore_Intro_Short_MarketPlace");		
-			CutSceneNames.push_back("Evermore_Intro_Short_Armys");				
-			CutSceneNames.push_back("Evermore_Intro_Short_Cat");				
-			CutSceneNames.push_back("Evermore_Intro_Short_People");				
-			CutSceneNames.push_back("Evermore_Intro_Middle_Entire");			
+			/* Reserve Fade */
+			Reserve_Fade(1.f, true, 1.f, true);
+
+			/* CutScene - Evermore */
+			vector<string> CutSceneNames;
+			{
+				CutSceneNames.push_back("Evermore_Intro_Short_Flowers");			
+				CutSceneNames.push_back("Evermore_Intro_Short_MarketPlace");		
+				CutSceneNames.push_back("Evermore_Intro_Short_Armys");				
+				CutSceneNames.push_back("Evermore_Intro_Short_Cat");				
+				CutSceneNames.push_back("Evermore_Intro_Short_People");				
+				CutSceneNames.push_back("Evermore_Intro_Middle_Entire");			
+			}
+			Start_CutScenes(CutSceneNames, true);
+
+			/* Sound */
+			{
+				GI->Play_Sound(TEXT("Evermore_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
+				m_fBgmPrevVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
+				GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume * 0.6f);
+			}
 		}
-		Start_CutScenes(CutSceneNames, true);
-
-		/* Sound */
+		else
 		{
-			GI->Play_Sound(TEXT("Evermore_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
-			m_fBgmPrevVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
-			GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume * 0.6f);
+			/* Reserve Fade */
+			//Reserve_Fade(0.7f, true, 0.7f, true);
+
+			/* CutScene - Evermore */
+			vector<string> CutSceneNames;
+			{
+				CutSceneNames.push_back("Evermore_Ending_From_Back_00");
+				CutSceneNames.push_back("Evermore_Ending_From_Back_01");
+				CutSceneNames.push_back("Evermore_Ending_From_Front_00");
+				CutSceneNames.push_back("Evermore_Ending_From_Front_01");
+				
+			}
+			Start_CutScenes(CutSceneNames, true);
+
+			///* Sound */
+			//{
+			//	GI->Play_Sound(TEXT("Evermore_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
+			//	m_fBgmPrevVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
+			//	GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume * 0.6f);
+			//}
 		}
 	}
 		break;
