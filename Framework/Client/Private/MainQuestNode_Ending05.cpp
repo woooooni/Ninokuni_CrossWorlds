@@ -71,17 +71,19 @@ CBTNode::NODE_STATE CMainQuestNode_Ending05::Tick(const _float& fTimeDelta)
 
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
-			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+			if (!m_bEndingCutScene)
+			{
+				m_bEndingCutScene = true;
 
-			/* 대화 카메라 종료 */
-			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			if (nullptr != pActionCam)
-				pActionCam->Finish_Action_Talk();
+				CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 
-			m_bIsClear = true;
+				// 엔딩 카메라 액션 호출 
+			}
 
-			return NODE_STATE::NODE_SUCCESS;
+			//m_bIsClear = true;
+
+			return NODE_STATE::NODE_RUNNING;
 		}
 
 		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);

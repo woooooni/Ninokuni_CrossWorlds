@@ -21,6 +21,8 @@ private:
 	CGameObject* m_pRuslan = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
+	_bool		m_bEndingCutScene = false;
+
 public:
 	static CMainQuestNode_Ending05* Create();
 	virtual void Free() override;
