@@ -4,6 +4,7 @@
 #include "GameNpc.h"
 
 #include "Animation.h"
+#include "Ruby.h"
 
 CUniqueNpcState_Walk::CUniqueNpcState_Walk(CStateMachine* pStateMachine)
 	: CNpcState_Base(pStateMachine)
@@ -28,27 +29,31 @@ void CUniqueNpcState_Walk::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	//_float4 vPos;
-	//_float4 vDestPos;
-	//
-	//XMStoreFloat4(&vPos, m_pTransformCom->Get_Position());
-	//XMStoreFloat4(&vDestPos, m_pNpc->Get_RoamingIndex(m_pNpc->Get_CurRoamingIndex()));
-	//
-	//
-	////if (m_bIsMove)
-	////{
-	//m_pTransformCom->LookAt_ForLandObject(m_pNpc->Get_RoamingIndex(m_pNpc->Get_CurRoamingIndex()));
-	//m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pNpc->Get_Stat()->fSpeed, fTimeDelta);
-	//
-	//if (vPos.x >= vDestPos.x - 0.1f && vPos.x <= vDestPos.x + 0.1f &&
-	//	vPos.z >= vDestPos.z - 0.1f && vPos.z <= vDestPos.z + 0.1f)
-	//{
-	//	m_pNpc->Set_CurRoamingIndex(m_pNpc->Get_CurRoamingIndex() + 1);
-	//	if (m_pNpc->Get_CurRoamingIndex() == m_pNpc->Get_RoamingArea()->size())
-	//		m_pNpc->Set_CurRoamingIndex(0);
-	//
-	//	//m_bIsMove = false;
-	//}
+	if (m_pOwner->Get_ObjectTag() == TEXT("Ruby"))
+	{
+		CRuby* pRuby = static_cast<CRuby*>(m_pOwner);
+		CGameObject* pPlantKiller = pRuby->Get_QuestObject();
+		
+		if (nullptr != pPlantKiller)
+		{
+			CTransform* pPlantTransform = pPlantKiller->Get_Component_Transform();
+			Vec4 vDir = pPlantTransform->Get_Position() - m_pTransformCom->Get_Position();
+			_float fDistance = vDir.Length();
+
+			if (fDistance >= 1.5f)
+			{
+				vDir.Normalize();
+				m_pTransformCom->LookAt_ForLandObject(pPlantTransform->Get_Position());
+				m_pTransformCom->Move(vDir, 2.0f, fTimeDelta);
+			}
+			else
+			{
+				if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
+					m_pStateMachineCom->Change_State(CGameNpc::NPC_STATE::NPC_UNIQUENPC_ATTACK);
+			}
+		}
+	}
+	
 }
 
 void CUniqueNpcState_Walk::Exit_State()

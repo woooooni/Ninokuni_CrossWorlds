@@ -64,9 +64,10 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Initialize_Client()))
 		return E_FAIL;
 
+	
 	// Set Start Type
 	{
-		g_eStartLevel = LEVELID::LEVEL_LOGO;					/* 시작 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_TOOL;					/* 시작 레벨 타입 */
 
 		g_iStartQuestLevel	= QUEST_LEVEL::QL_9_ENDING;				/* 시작 퀘스트 레벨 */
 
@@ -522,6 +523,9 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Moon_Diffuse"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/Skydom/T_Nightmare_Moon_01_D.png")))))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Moon_Red"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/Skydom/T_Archipelago_Moon_01_S.png")))))
+		return E_FAIL;
 
 	// Grass Mask
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Grass_MaskMap"),
@@ -543,12 +547,16 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Aurora2"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/aurora2.png")))))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Gradation_Dissolve"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/GradationDissolve.png")))))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_LensFlare_Texture"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/LensFlare/flare%d.png"), 7))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_GrassMask"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/Common/Plants/SM_Common_grass_01_Mask.png")))))
 		return E_FAIL;
+
 
 
 	/* For.Prototype_Component_Trail */

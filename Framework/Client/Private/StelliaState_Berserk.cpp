@@ -2,7 +2,8 @@
 #include "StelliaState_Berserk.h"
 
 #include "Stellia.h"
-
+#include "Moon.h"
+#include "GameInstance.h"
 CStelliaState_Berserk::CStelliaState_Berserk(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -31,7 +32,11 @@ void CStelliaState_Berserk::Tick_State(_float fTimeDelta)
 void CStelliaState_Berserk::Exit_State()
 {
 	// TODO Change to Moon
+	CMoon* pMoon = static_cast<CMoon*>(GI->Find_GameObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX, TEXT("Common_Moon")));
+	if (nullptr == pMoon)
+		return;
 
+	pMoon->Set_RedColorStart(true);
 }
 
 CStelliaState_Berserk* CStelliaState_Berserk::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

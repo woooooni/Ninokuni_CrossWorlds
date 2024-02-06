@@ -6,7 +6,6 @@ BEGIN(Client)
 class CRuby final : public CGameNpc
 {
 public:
-	enum RUBY_STATE { RUBY_IDLE, RUBY_WALK, RUBY_TALK, RUBY_SEAT, RUBY_STATE_END };
 	enum ESCORT_SECTION { SECTION1, SECTION2, SECTION3, SECTION_END };
 private:
 	CRuby(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
@@ -31,6 +30,7 @@ public:
 
 public:
 	virtual CGameObject* Get_RidingObject() { return m_pRidingObject; }
+	CGameObject* Get_QuestObject() { return m_pQuestItem; }
 	const _bool& Get_QuestSection(_uint iIndex) const
 	{
 		if (iIndex >= ESCORT_SECTION::SECTION_END)
@@ -63,7 +63,7 @@ private:
 	
 
 private:
-	_bool m_bQuestSection[ESCORT_SECTION::SECTION_END] = { false, false };
+	_bool m_bQuestSection[ESCORT_SECTION::SECTION_END] = { false, false, false };
 
 public:
 	static CRuby* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

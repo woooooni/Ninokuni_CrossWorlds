@@ -4,6 +4,9 @@
 #include "GameNpc.h"
 
 #include "Animation.h"
+#include "Ruby.h"
+#include "RubyCarriage.h"
+#include "GameInstance.h"
 
 CNpcState_Idle::CNpcState_Idle(CStateMachine* pStateMachine)
 	: CNpcState_Base(pStateMachine)
@@ -23,6 +26,12 @@ HRESULT CNpcState_Idle::Initialize(const list<wstring>& AnimationList)
 
 void CNpcState_Idle::Enter_State(void* pArg)
 {
+	if (nullptr != pArg)
+	{
+		m_pModelCom->Set_Animation(m_iCurrAnimIndex, MIN_TWEEN_DURATION);
+		return;
+	}
+
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 }
 
@@ -61,7 +70,23 @@ void CNpcState_Idle::Tick_State(_float fTimeDelta)
 		}
 	}
 
+	if (m_pOwner->Get_ObjectTag() == TEXT("Ruby"))
+	{
+		CRuby* pRuby = static_cast<CRuby*>(m_pOwner);
+		CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(pRuby->Get_RidingObject());
 	
+		_bool bTake = pRubyCarriage->TakeTheCarriage();
+		if (true == bTake)
+		{
+			if (true == m_pModelCom->Is_Finish() && false == m_pModelCom->Is_Tween())
+				m_pStateMachineCom->Change_State(CGameNpc::NPC_STATE::NPC_UNIQUENPC_SEAT);
+		}
+		else if (true == pRuby->Get_QuestSection(CRuby::SECTION3))
+		{
+			if (true == m_pModelCom->Is_Finish() && false == m_pModelCom->Is_Tween())
+				m_pStateMachineCom->Change_State(CGameNpc::NPC_STATE::NPC_UNIQUENPC_WALK);
+		}
+	}	
 }
 
 void CNpcState_Idle::Exit_State()

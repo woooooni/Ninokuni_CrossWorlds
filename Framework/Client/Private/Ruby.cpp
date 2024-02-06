@@ -7,6 +7,7 @@
 #include "UniqueNpcState_Run.h"
 #include "UniqueNpcState_Talk.h"
 #include "UniqueNpcState_Seat.h"
+#include "UniqueNpcState_Attack.h"
 #include "NpcState_Idle.h"
 
 #include "UI_World_NPCTag.h"
@@ -33,15 +34,7 @@ HRESULT CRuby::Initialize_Prototype()
 
 HRESULT CRuby::Initialize(void* pArg)
 {
-	//pGameObjects = GI->Find_GameObjects(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_GRASS);
-	//for (auto& pObj : pGameObjects)
-	//{
-	//	if (pObj->Get_ObjectTag() == TEXT("Common_PlantC_01b"))
-	//	{
-	//		m_pQuestItem = pObj;
-	//		break;
-	//	}
-	//}
+
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -74,6 +67,8 @@ HRESULT CRuby::Initialize(void* pArg)
 		}
 	}
 
+	m_pQuestItem = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_GRASS, TEXT("Common_PlantC_01b"));
+
 	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
 	m_pTag->Set_Owner(this, m_strKorName, 2.f, true);
 
@@ -92,8 +87,6 @@ void CRuby::Tick(_float fTimeDelta)
 				CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(m_pRidingObject);
 				pRubyCarriage->Set_TakeTheCarriage(true);
 				Set_QuestSection(ESCORT_SECTION::SECTION1, false);
-
-				
 			}
 		}
 		else if (true == m_bQuestSection[ESCORT_SECTION::SECTION2])
@@ -107,14 +100,6 @@ void CRuby::Tick(_float fTimeDelta)
 			}
 		}
 	}
-
-	//if (nullptr != m_pQuestItem)
-	//{
-	//	if (true == m_bQuestSection[ESCORT_SECTION::SECTION3])
-	//	{
-
-	//	}
-	//}
 
 	__super::Tick(fTimeDelta);
 
@@ -211,9 +196,9 @@ HRESULT CRuby::Ready_States()
 	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Talk");
 	m_pStateCom->Add_State(NPC_UNIQUENPC_TALK, CUniqueNpcState_Talk::Create(m_pStateCom, strAnimationName));
 
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Attack01");
-	//m_pStateCom->Add_State(NPC_UNIQUENPC_SEAT, CUniqueNpcState_Seat::Create(m_pStateCom, strAnimationName));
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Attack01");
+	m_pStateCom->Add_State(CGameNpc::NPC_STATE::NPC_UNIQUENPC_ATTACK, CUniqueNpcState_Attack::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Seat");
