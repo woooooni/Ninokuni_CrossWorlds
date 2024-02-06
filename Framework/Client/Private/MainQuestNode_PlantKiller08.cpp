@@ -105,12 +105,15 @@ void CMainQuestNode_PlantKiller08::TalkEvent()
 	switch (m_iTalkIndex)
 	{
 	case 0:
+	{
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("01_KuuSay_Hey.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pRuby->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		_float fDuration = MIN_TWEEN_DURATION;
+		m_pRuby->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, &fDuration);
 		m_pRuby->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Ruby.ao|Ruby_Idle02"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;
+	}
 	case 1:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("02_VerdeSay_Hello.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pRuby->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);

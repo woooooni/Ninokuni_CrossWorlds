@@ -7,7 +7,7 @@ Texture2D		g_NormalTexture;
 
 
 Texture2D		g_DissolveTexture;
-
+ 
 
 float3          g_vBloomPower;
 float4			g_vCamPosition;

@@ -359,7 +359,6 @@
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Run.h" />
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Stand.h" />
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Trace.h" />
-    <ClInclude Include="..\Public\State_RubyIdle.h" />
     <ClInclude Include="..\Public\State_VehicleFlying_Backflip.h" />
     <ClInclude Include="..\Public\State_VehicleFlying_Damaged.h" />
     <ClInclude Include="..\Public\State_VehicleFlying_Rush.h" />
@@ -388,6 +387,7 @@
     <ClInclude Include="..\Public\UI_Minigame_Curling_Stones.h" />
     <ClInclude Include="..\Public\UI_Minigame_Curling_Title.h" />
     <ClInclude Include="..\Public\UI_Minigame_WorldHP.h" />
+    <ClInclude Include="..\Public\UniqueNpcState_Attack.h" />
     <ClInclude Include="..\Public\Vehicle_Flying_EnemyBiplane.h" />
     <ClInclude Include="..\Public\Skill_Biplane_1.h" />
     <ClInclude Include="..\Public\Skill_Biplane_2.h" />
@@ -1449,7 +1449,6 @@
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Run.cpp" />
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Stand.cpp" />
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Trace.cpp" />
-    <ClCompile Include="..\Private\State_RubyIdle.cpp" />
     <ClCompile Include="..\Private\State_VehicleFlying_Backflip.cpp" />
     <ClCompile Include="..\Private\State_VehicleFlying_Damaged.cpp" />
     <ClCompile Include="..\Private\State_VehicleFlying_Rush.cpp" />
@@ -1478,6 +1477,7 @@
     <ClCompile Include="..\Private\UI_Minigame_Curling_Stones.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Curling_Title.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_WorldHP.cpp" />
+    <ClCompile Include="..\Private\UniqueNpcState_Attack.cpp" />
     <ClCompile Include="..\Private\Vehicle_Flying_EnemyBiplane.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_1.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_2.cpp" />

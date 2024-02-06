@@ -29,12 +29,23 @@ HRESULT CMoon::Initialize(void* pArg)
 void CMoon::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+
 }
 
 void CMoon::LateTick(_float fTimeDelta)
 {
-	if (true == m_bAppearMoon)
-	{
+	if (KEY_HOLD(KEY::C) && KEY_HOLD(KEY::D))
+		m_bIsRedColor = true;
+
+	if (KEY_HOLD(KEY::C) && KEY_HOLD(KEY::S))
+		m_bIsRedColor = false;
+
+	if (true == m_bIsRedColor)
+		m_fWeight += m_fSpeed * fTimeDelta;
+
+	//if (true == m_bAppearMoon)
+	//{
 		_matrix Temp = XMLoadFloat4x4(&m_pTransformCom->Get_WorldFloat4x4());
 		_vector vPosition = Temp.r[CTransform::STATE_POSITION];
 		_vector vCamPosition = XMLoadFloat4(&GI->Get_CamPosition());
@@ -56,7 +67,7 @@ void CMoon::LateTick(_float fTimeDelta)
 		m_pTransformCom->Set_WorldMatrix(Temp);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_NONBLEND, this);
-	}
+	//}
 }
 
 HRESULT CMoon::Render()
@@ -67,7 +78,25 @@ HRESULT CMoon::Render()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL; 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("bStartChange", &m_bIsRedColor, sizeof(_bool))))
+		return E_FAIL;
+	if (FAILED(m_pTextureCom[TEX_TYPE::DIFFUSE_TEX]->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
+		return E_FAIL;
+	if (FAILED(m_pTextureCom[TEX_TYPE::RED_TEX]->Bind_ShaderResource(m_pShaderCom, "g_RedTexture", 0)))
+		return E_FAIL;
+
+	//_int iIndex = m_pTextureCom[TEX_TYPE::DISSOLVE_TEX]->Find_Index(TEXT("T_360LINE_MASK01"));
+	if (FAILED(m_pTextureCom[TEX_TYPE::DISSOLVE_TEX]->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture", 0)))
+		return E_FAIL;
+
+	const Vec4 vBloomColor = Vec4(0.3f, 0.3f, 0.3f, 1.0f);
+	if (FAILED(m_pShaderCom->Bind_RawValue("vBloomColor", &vBloomColor, sizeof(Vec4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("fTime", &m_fTime, sizeof(_float))))
+		return E_FAIL;
+
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("fDissolveWeight", &m_fWeight, sizeof(_float))))
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Begin(7)))
@@ -98,7 +127,15 @@ HRESULT CMoon::Ready_Components()
 		return E_FAIL;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Moon_Diffuse"),
-		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::DIFFUSE_TEX]))))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Moon_Red"),
+		TEXT("Com_Texture1"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::RED_TEX]))))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Gradation_Dissolve"),
+		TEXT("Com_Texture2"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::DISSOLVE_TEX]))))
 		return E_FAIL;
 
 	return S_OK;
@@ -138,5 +175,7 @@ void CMoon::Free()
 	Safe_Release<CRenderer*>(m_pRendererCom);
 	Safe_Release<CTransform*>(m_pTransformCom);
 	Safe_Release<CVIBuffer_Rect*>(m_pVIBufferCom);
-	Safe_Release<CTexture*>(m_pTextureCom);
+
+	for(_uint i = 0; i < TEX_TYPE::TEX_END; ++i)
+		Safe_Release<CTexture*>(m_pTextureCom[i]);
 }

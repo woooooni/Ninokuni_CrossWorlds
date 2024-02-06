@@ -177,8 +177,6 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 						pRuby->Set_QuestSection(CRuby::ESCORT_SECTION::SECTION1, true);
 						static_cast<CRubyCarriage*>(pRuby->Get_RidingObject())->Set_TakeTheCarriage(false);
 						Load_Monster_Data(TEXT("Witch"), 1);
-
-						
 					}
 					Set_Dead(true);
 				}

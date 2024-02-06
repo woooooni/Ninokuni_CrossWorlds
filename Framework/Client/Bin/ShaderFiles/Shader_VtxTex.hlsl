@@ -4,6 +4,8 @@ matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 Texture2D	g_DiffuseTexture;
 Texture2D	g_DepthTexture;
 Texture2D	g_MaskTexture;
+Texture2D	g_RedTexture;
+Texture2D	g_DissolveTexture;
 
 float4		g_vDiffuseColor = { 0.1f, 0.1f, 0.1f, 1.f };
 float		g_Alpha = 1.f;
@@ -81,16 +83,41 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;	
 }
 
+
+cbuffer CB_Moon
+{
+    bool bStartChange = false;
+    float4 vBloomColor = float4(0.0f, 0.0f, 0.0f, 0.0);
+    float fTime = 0.0f;
+	
+    float fDissolveWeight = 0.0f;
+    float fDissolveTime = 5.0f;
+};
+
 PS_OUT PS_MOON_MAIN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
 
-    Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
-    Out.vBloom = float4(0.65f, 0.65f, 0.65f, 1.0f);
-
+    float4 vWhiteColor  = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+    float4 vRedColor = g_RedTexture.Sample(LinearSampler, In.vTexUV);
+    float4 vDissolve = g_DissolveTexture.Sample(LinearSampler, In.vTexUV);
+    float fDissolveAlpha = bStartChange == true ? saturate(1.0f - fDissolveWeight / fDissolveTime + vDissolve.r) : 1.0f;
+    // Dissolve의 Alpha의 Weight가 늘어날수록 Dissolve의 알파가 0이 된다.
+	
+    if (fDissolveAlpha < 0.5f)
+    {
+        Out.vBloom = vBloomColor;
+        Out.vColor = vRedColor;
+    }
+	else
+    {
+        Out.vBloom = vBloomColor;
+        Out.vColor = vWhiteColor;
+    }
+	
     if (0.0001f >= Out.vColor.a)
         discard;
-
+	
     return Out;
 }
 
