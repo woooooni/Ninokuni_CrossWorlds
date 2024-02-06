@@ -34,6 +34,14 @@ void CSubQuestNode_Windmill09::Start()
 
 	// 임시로 monster에 
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
+
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestTag;
+	QuestDesc.strContents = m_strQuestTag;
+	QuestDesc.bCreateSpot = true;
+	QuestDesc.vDestPosition = vSpotPos;
+	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 }
 
 CBTNode::NODE_STATE CSubQuestNode_Windmill09::Tick(const _float& fTimeDelta)

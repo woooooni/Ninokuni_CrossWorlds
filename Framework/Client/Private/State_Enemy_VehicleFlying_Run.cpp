@@ -75,7 +75,7 @@ void CState_Enemy_VehicleFlying_Run::Tick_State(_float fTimeDelta)
         Move(fTimeDelta); 
 
         _float fDistanceDest = (vDestPos - Vec4(m_pTransformCom->Get_Position())).Length();
-        if (0.1f > fDistanceDest) // 내가 지정한 DestPosition과 거의 유사해지면
+        if (0.2f > fDistanceDest) // 내가 지정한 DestPosition과 거의 유사해지면
         {
             if (false == m_bUpdate)
             {

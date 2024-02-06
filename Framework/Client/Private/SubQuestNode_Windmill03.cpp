@@ -29,18 +29,19 @@ HRESULT CSubQuestNode_Windmill03::Initialize()
 
 void CSubQuestNode_Windmill03::Start()
 {
-	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-	QuestDesc.strType = m_strQuestTag;
-	QuestDesc.strTitle = m_strQuestName;
-	QuestDesc.strContents = m_strQuestContent;
-	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
-//	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
 	m_pBeard = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("SwiftSolutionMaster"));
 	Vec4 vSpotPos = Set_DestSpot(m_pBeard);
 
 	// 임시로 monster에 
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
+
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestName;
+	QuestDesc.strContents = m_strQuestContent;
+	QuestDesc.bCreateSpot = true;
+	QuestDesc.vDestPosition = vSpotPos;
+	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
 }
 
 CBTNode::NODE_STATE CSubQuestNode_Windmill03::Tick(const _float& fTimeDelta)
@@ -64,7 +65,6 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill03::Tick(const _float& fTimeDelta)
 					QuestDesc.strTitle = m_strNextQuestName;
 					QuestDesc.strContents = m_strNextQuestContent;
 					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);

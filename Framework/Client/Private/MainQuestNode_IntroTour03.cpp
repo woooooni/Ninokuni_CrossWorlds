@@ -31,7 +31,6 @@ void CMainQuestNode_IntroTour03::Start()
 	QuestDesc.strTitle = m_strQuestName;
 	QuestDesc.strContents = m_strQuestContent;
 	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
-	//CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 }
 
 CBTNode::NODE_STATE CMainQuestNode_IntroTour03::Tick(const _float& fTimeDelta)
@@ -49,7 +48,6 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour03::Tick(const _float& fTimeDelta)
 		QuestDesc.strTitle = m_strQuestName;
 		QuestDesc.strContents = m_strQuestContent;
 		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-		//CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 		m_iPrevClearCount += CQuest_Manager::GetInstance()->Get_QuestClearStack();
 	}

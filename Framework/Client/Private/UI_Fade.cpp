@@ -13,16 +13,27 @@ CUI_Fade::CUI_Fade(const CUI_Fade& rhs)
 {
 }
 
+void CUI_Fade::Set_DefaultSetting()
+{
+	m_bIsComplete = true;
+	m_fFadeTime = 0.f;
+}
+
 void CUI_Fade::Set_Fade(const _bool& pIsFadeOut, const _float& pFadeTime, const _bool& bIsWhite)
 {
-	CUI_Manager::GetInstance()->OnOff_TextUI(false);
+	// Initialize에 관련 코드 추가하기
+	if (false == m_bIsComplete)
+		return;
 
-	Set_White(bIsWhite);
+	// 02/06 텍스트 관련 디버깅 필요 -> 그랑프리 Intro에서 오작동
+	CUI_Manager::GetInstance()->OnOff_TextUI(false);
 
 	m_bIsFadeOut = pIsFadeOut;
 	m_fAlpha = !(float)pIsFadeOut;
 	m_fFadeTime = pFadeTime;
 	m_bIsComplete = false;
+
+	Set_White(bIsWhite);
 }
 
 void CUI_Fade::Set_Finish()
@@ -34,7 +45,6 @@ void CUI_Fade::Set_Finish()
 	else
 		m_fAlpha = 0.f;
 
-	// 글자 그려지도록 함.
 	CUI_Manager::GetInstance()->OnOff_TextUI(true);
 }
 
@@ -62,28 +72,27 @@ HRESULT CUI_Fade::Initialize(void* pArg)
 
 void CUI_Fade::Tick(_float fTimeDelta)
 {
-	if (m_bIsComplete)
+	if (true == m_bIsComplete)
 		return;
 
-	if (!m_bIsFadeOut && m_fAlpha > 0.f)
+	if (false == m_bIsFadeOut && m_fAlpha > 0.f)
 	{
 		m_fAlpha -= fTimeDelta / m_fFadeTime;
 
-		if (m_fAlpha < 0.f)
+		if (m_fAlpha <= 0.f)
 			m_fAlpha = 0.f;
 	}
-	else if (!m_bIsFadeOut)
+	else if (false == m_bIsFadeOut)
 	{
 		Set_Finish();
 	}
-	else if (m_bIsFadeOut && m_fAlpha < 1.f)
+	else if (true == m_bIsFadeOut && m_fAlpha < 1.f)
 	{
 		m_fAlpha += fTimeDelta / m_fFadeTime;
 		if (m_fAlpha > 1.f)
 			m_fAlpha = 1.f;
-
 	}
-	else if (m_bIsFadeOut)
+	else if (true == m_bIsFadeOut)
 	{
 		Set_Finish();
 	}
@@ -93,7 +102,7 @@ void CUI_Fade::Tick(_float fTimeDelta)
 
 void CUI_Fade::LateTick(_float fTimeDelta)
 {
-//	if (m_bIsComplete)
+//	if (true == m_bIsComplete)
 //		return;
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_EFFECT_BLEND, this);

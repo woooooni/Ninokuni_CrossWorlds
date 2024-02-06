@@ -79,12 +79,12 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill08::Tick(const _float& fTimeDelta)
 
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
-			CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-			QuestDesc.strType = m_strNextQuestTag;
-			QuestDesc.strTitle = m_strNextQuestName;
-			QuestDesc.strContents = m_strNextQuestContent;
-			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+			// 다음 노드에서 연결
+//			CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+//			QuestDesc.strType = m_strNextQuestTag;
+//			QuestDesc.strTitle = m_strNextQuestName;
+//			QuestDesc.strContents = m_strNextQuestContent;
+//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);

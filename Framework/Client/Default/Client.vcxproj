@@ -267,6 +267,7 @@
     <ClInclude Include="..\Public\Enemy_Biplane_BulletBall.h" />
     <ClInclude Include="..\Public\Enemy_GuidedMissile.h" />
     <ClInclude Include="..\Public\EntireGrass.h" />
+    <ClInclude Include="..\Public\Grandprix_Goal.h" />
     <ClInclude Include="..\Public\LargeGrass.h" />
     <ClInclude Include="..\Public\LargeGrass_Purple.h" />
     <ClInclude Include="..\Public\MainQuestNode_Ending01.h" />
@@ -1358,6 +1359,7 @@
     <ClCompile Include="..\Private\Enemy_Biplane_BulletBall.cpp" />
     <ClCompile Include="..\Private\Enemy_GuidedMissile.cpp" />
     <ClCompile Include="..\Private\EntireGrass.cpp" />
+    <ClCompile Include="..\Private\Grandprix_Goal.cpp" />
     <ClCompile Include="..\Private\LargeGrass.cpp" />
     <ClCompile Include="..\Private\LargeGrass_Purple.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_Ending01.cpp" />

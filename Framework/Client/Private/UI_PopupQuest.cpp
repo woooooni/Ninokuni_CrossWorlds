@@ -128,7 +128,6 @@ void CUI_PopupQuest::Update_QuestContents(const wstring& strPreTitle, const QUES
 		return;
 
 	QUEST_INFO QuestDesc = {};
-	//memcpy(&QuestDesc, &tQuestInfo, sizeof(QUEST_INFO));
 	QuestDesc = tQuestInfo;
 
 	for (auto iter = m_Quest.begin(); iter != m_Quest.end(); ++iter)
@@ -136,11 +135,13 @@ void CUI_PopupQuest::Update_QuestContents(const wstring& strPreTitle, const QUES
 		if (strPreTitle == iter->strTitle)
 		{
 			if (iter->strContents == QuestDesc.strContents)
-				return; // 추가
+				return;
 
 			iter->strType = QuestDesc.strType;
 			iter->strTitle = QuestDesc.strTitle;
 			iter->strContents = QuestDesc.strContents;
+			iter->bCreateSpot = QuestDesc.bCreateSpot;
+			iter->vDestPosition = QuestDesc.vDestPosition;
 			break;
 		}
 	}
@@ -172,6 +173,17 @@ _int CUI_PopupQuest::Get_NumOfQuest()
 	return m_Quest.size();
 }
 
+const CUI_PopupQuest::QUEST_INFO& CUI_PopupQuest::Get_QuestContents(_int iSlotNum)
+{
+	// 첫번째 윈도우에서 클릭된 창에 해당하는 퀘스트 정보를 가지고 온다.
+	// 예외처리는 UIManager에서 수행한다.
+
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc = m_Quest[iSlotNum];
+
+	return QuestDesc;
+}
+
 HRESULT CUI_PopupQuest::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -192,6 +204,7 @@ HRESULT CUI_PopupQuest::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_bActive = false;
+	m_bUseMouse = true;
 
 	if (m_eType == POPUP_WINDOW)
 	{
@@ -235,6 +248,13 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 				if (LEVELID::LEVEL_EVERMORE == GI->Get_CurrentLevel() &&
 					true == CUIMinigame_Manager::GetInstance()->Is_GrandprixIntroStarted())
 					return;
+
+				/*
+				길이에 따른 Text Size, TextPosition
+				TitleDesc.strText Length를 구한다.
+				0.3f, 0.3f로 사이즈를 잡고
+				포지션도 y값은 +5.f를 해주면 됨.
+				*/
 
 				if (0 < m_Quest.size() && 4 >= m_Quest.size())
 				{

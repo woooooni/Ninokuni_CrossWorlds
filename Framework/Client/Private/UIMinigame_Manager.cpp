@@ -535,13 +535,11 @@ void CUIMinigame_Manager::Start_Grandprix()
 
 void CUIMinigame_Manager::End_Grandprix()
 {
-	if (true != m_bCountStart)
-		return;
-
 	OnOff_GrandprixGauge(false);
 
 	m_bFlying = false;
 
+	m_bIntroStarted = false;
 	m_bGrandprixEnd = true;
 	m_iCountIndex = 5;
 

@@ -33,7 +33,6 @@ void CSubQuestNode_FindCat03::Start()
 	QuestDesc.strTitle = m_strQuestName;
 	QuestDesc.strContents = m_strQuestContent;
 	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
-//	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 }
 
 CBTNode::NODE_STATE CSubQuestNode_FindCat03::Tick(const _float& fTimeDelta)

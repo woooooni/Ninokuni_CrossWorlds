@@ -56,7 +56,7 @@ public: // Get/Set
 	void			Get_QuestInfo();
 
 	void			Set_QuestDestSpot(_int iWindow);
-	void			Calculate_QuestDestSpot(const wstring& strContents, _float4 vDestPos);
+	void			Calculate_QuestDestSpot(_float4 vDestPos);
 
 	_int			Get_SelectedCharacter();
 	_float			Get_DistanceofMovement_SkillBG();
@@ -178,6 +178,7 @@ public: // Lobby
 	HRESULT OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum);
 	HRESULT OnOff_QuestWindow(_bool bOnOff);
 	HRESULT OnOff_QuestPopup(_bool bOnOff);
+	void	Off_Milepost();
 	HRESULT OnOff_WorldMap(_bool bOnOff);
 	HRESULT OnOff_MiniMap(_bool bOnOff);
 

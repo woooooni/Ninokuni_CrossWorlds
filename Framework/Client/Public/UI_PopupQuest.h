@@ -38,7 +38,7 @@ public:
 
 	_int Get_NumOfQuest();
 
-//	const QUEST_INFO& Get_QuestContents(_int iSlotNum);
+	const QUEST_INFO& Get_QuestContents(_int iSlotNum);
 
 public:
 	virtual HRESULT	Initialize_Prototype();

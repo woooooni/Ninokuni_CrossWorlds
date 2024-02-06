@@ -17,6 +17,7 @@ public:
 	void Set_TargetPosition(_float4 vPosition) {
 		m_vTargetPos = vPosition;
 		m_bGoal = true;
+		m_bActive = true;
 	}
 	virtual void Set_Active(_bool bActive) override;
 

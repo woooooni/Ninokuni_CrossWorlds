@@ -20,7 +20,7 @@ HRESULT CSubQuestNode_Wanted07::Initialize()
 	m_strQuestContent = TEXT("녀석들을 혼내주자");
 
 	m_strNextQuestTag = TEXT("[서브]");
-	m_strNextQuestName = TEXT("수상한 남자 잡기");
+	m_strNextQuestName = TEXT("툼바에게 돌아가기");
 	m_strNextQuestContent = TEXT("툼바에게 돌아가자");
 
 	return S_OK;
@@ -44,12 +44,10 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted07::Tick(const _float& fTimeDelta)
 		QuestDesc.strTitle = m_strNextQuestName;
 		QuestDesc.strContents = m_strNextQuestContent;
 		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;
 	}
-
 
 	return NODE_STATE::NODE_RUNNING;
 }

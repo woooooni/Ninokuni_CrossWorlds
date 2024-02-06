@@ -10,6 +10,7 @@
 #include "Grandprix_ItemBox.h"
 #include "Grandprix_Engineer.h"
 #include "Grandprix_ItemBox.h"
+#include "Grandprix_Goal.h"
 #include "Riding_Manager.h"
 
 #include "UI_Manager.h"
@@ -38,12 +39,6 @@ HRESULT CGrandprix_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceC
 
 void CGrandprix_Manager::Tick(_float fTimeDelta)
 {
-//	if (KEY_TAP(KEY::N))
-//		Start_Grandprix();
-//
-//	if (KEY_TAP(KEY::M))
-//		End_Grandprix();
-//
 	// 그랑프리가 시작되었는지 확인한다. false면 return;
 
 	if (true == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP])
@@ -160,16 +155,23 @@ HRESULT CGrandprix_Manager::Ready_Grandprix_GameObjectToLayer(LEVELID eID)
 				Safe_AddRef(iter);
 			}
 		}
+	}
 
-		for (auto& iter : m_Items)
+	for (auto& iter : m_Items)
+	{
+		if (nullptr != iter)
 		{
-			if (nullptr != iter)
-			{
-				if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, iter)))
-					return E_FAIL;
-				Safe_AddRef(iter);
-			}
+			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, iter)))
+				return E_FAIL;
+			Safe_AddRef(iter);
 		}
+	}
+
+	if (nullptr != m_pGoal)
+	{
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, m_pGoal)))
+			return E_FAIL;
+		Safe_AddRef(m_pGoal);
 	}
 
 	return S_OK;
@@ -359,6 +361,16 @@ HRESULT CGrandprix_Manager::Prepare_Grandprix()
 		dynamic_cast<CGrandprix_ItemBox*>(pItem)->Set_MinMaxPosition(Vec4(fX, fY, fZ, 1.f));
 	}
 
+	CGameObject* pGoal = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Goal"), nullptr, &pGoal)))
+		return E_FAIL;
+	if (nullptr == pGoal)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CGrandprix_Goal*>(pGoal))
+		return E_FAIL;
+	m_pGoal = dynamic_cast<CGrandprix_Goal*>(pGoal);
+	Safe_AddRef(m_pGoal);
+
 	return S_OK;
 }
 
@@ -373,10 +385,7 @@ void CGrandprix_Manager::Finish_Grandprix()
 
 void CGrandprix_Manager::End_Grandprix()
 {
-//	CUIMinigame_Manager::GetInstance()->End_Grandprix();
-
 	// 남아 있는 적이 있다면, Set_Dead 처리한다.
-
 	if (nullptr != m_pEnemyPlane)
 	{
 		m_pEnemyPlane->Set_Dead(true);
@@ -419,7 +428,11 @@ void CGrandprix_Manager::End_Grandprix()
 	}
 	m_Items.clear();
 
-//	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 3.f, true);
+	if (nullptr != m_pGoal)
+	{
+		m_pGoal->Set_Dead(true);
+		Safe_Release(m_pGoal);
+	}
 }
 
 void CGrandprix_Manager::Add_ItemBox(_uint iType)
@@ -475,7 +488,6 @@ void CGrandprix_Manager::Add_ItemBox(_uint iType)
 			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB] = true;
 			CUIMinigame_Manager::GetInstance()->OnOff_RaderIcons(false);
 			// 플레이어 탈 것을 멀리 밀어낸다.
-			// ~~~~~~~~~~~~~~~~ 구현 전 ~~~~~~~~~~~~~~~~~~~~~~~
 			// UI 연결
 			CUIMinigame_Manager::GetInstance()->On_GrandprixPopup(CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_BOMB);
 		}
@@ -492,6 +504,14 @@ void CGrandprix_Manager::Add_ItemBox(_uint iType)
 		}
 		break;
 	}
+}
+
+void CGrandprix_Manager::Show_GoalObject()
+{
+	if (nullptr == m_pGoal)
+		return;
+
+	m_pGoal->Set_Active(true);
 }
 
 
@@ -560,6 +580,7 @@ void CGrandprix_Manager::Free()
 	for (auto& iter : m_Items)
 		Safe_Release(iter);
 	m_Items.clear();
+	Safe_Release(m_pGoal);
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

@@ -27,6 +27,7 @@ private:
 	_uint m_iPass = { 14 };
 
 	_bool m_bLerp = { false };
+	_bool m_bAddText = { true };
 	_float m_fMaxHP = { 0 };
 	_float m_fPreHP = { 0 };
 	_float m_fCurHP = { 0 };

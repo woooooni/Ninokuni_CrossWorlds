@@ -94,6 +94,14 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted04::Tick(const _float& fTimeDelta)
 			m_bIsCreateSpot = true;
 			Vec4 vSpotPos = { -49.6f, -5.2f, -40.f , 1.f };
 			m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
+		
+			CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+			QuestDesc.strType = m_strQuestName;
+			QuestDesc.strTitle = m_strQuestName;
+			QuestDesc.strContents = m_strQuestName;
+			QuestDesc.bCreateSpot = true;
+			QuestDesc.vDestPosition = vSpotPos;
+			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 		}
 
 		if (m_bIsCreateSpot)

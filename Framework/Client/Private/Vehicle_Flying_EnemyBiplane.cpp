@@ -17,6 +17,7 @@
 #include "State_EnemyBiplane_Dead.h"
 
 #include "Grandprix_Enemy.h"
+#include "Grandprix_Manager.h"
 
 #include "UIMinigame_Manager.h"
 #include "UI_Minigame_WorldHP.h"
@@ -102,6 +103,9 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 	if (true == m_bOnBoard)
 	{
 		__super::Tick(fTimeDelta);
+
+		if (0.f >= m_tStat.fCurHP)
+			CGrandprix_Manager::GetInstance()->Show_GoalObject();
 
 		m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 
@@ -241,44 +245,44 @@ HRESULT CVehicle_Flying_EnemyBiplane::Ready_States()
 	"State_EnemyBiplane_Skill_2.h"*/
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND, CState_EnemyBiplane_Trace::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_TRACE, CState_EnemyBiplane_Trace::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_ATTACK, CState_EnemyBiplane_Attack::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK, CState_EnemyBiplane_Finish_Attack::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_0, CState_EnemyBiplane_Skill_0::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_1, CState_EnemyBiplane_Skill_1::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_2, CState_EnemyBiplane_Skill_2::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_RUN, CState_EnemyBiplane_Run::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_RUNAWAY, CState_EnemyBiplane_RunAway::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_DEAD, CState_EnemyBiplane_Dead::Create(m_pStateCom, strAnimationNames));
 
 
@@ -307,9 +311,9 @@ void CVehicle_Flying_EnemyBiplane::Update_RiderState()
 
 		if (CVehicle::VEHICLE_STATE::VEHICLE_IDLE == m_pStateCom->Get_CurrState())
 		{
-			if (CGrandprix_Enemy::ENEMY_STATE::FLYING_STAND != pStateCom->Get_CurrState() &&
-				CGrandprix_Enemy::ENEMY_STATE::FLYING_RUNSTART != pStateCom->Get_CurrState())
-				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGrandprix_Enemy::ENEMY_STATE::FLYING_STAND);
+			//if (CGrandprix_Enemy::ENEMY_STATE::FLYING_STAND != pStateCom->Get_CurrState() &&
+			//	CGrandprix_Enemy::ENEMY_STATE::FLYING_RUNSTART != pStateCom->Get_CurrState())
+			//	m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGrandprix_Enemy::ENEMY_STATE::FLYING_STAND);
 		}
 	}
 }
