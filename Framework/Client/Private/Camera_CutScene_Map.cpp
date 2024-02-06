@@ -250,7 +250,7 @@ HRESULT CCamera_CutScene_Map::Stop_CutScene(const _bool& bClearReservedCutScene)
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID)
+HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID, const _bool bSecondCutScene)
 {
 	/* Exception */
 	const _uint iCurLevel = GI->Get_CurrentLevel();
@@ -263,31 +263,52 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID)
 	{
 	case LEVELID::LEVEL_EVERMORE:
 	{
-		/* Reserve Fade */
-		Reserve_Fade(1.f, true, 1.f, true);
-
-		/* CutScene - Evermore */
-		vector<string> CutSceneNames;
+		if (!bSecondCutScene)
 		{
-			CutSceneNames.push_back("Evermore_Intro_Short_Flowers");			// 왼쪽 (거리) (미들) - 시작
-			CutSceneNames.push_back("Evermore_Intro_Short_MarketPlace");		// 아래 (사람)
-		
-			CutSceneNames.push_back("Evermore_Intro_Short_Armys");				// 앞 (거리)
-			CutSceneNames.push_back("Evermore_Intro_Short_Cat");				// 앞 (거리)
+			/* Reserve Fade */
+			Reserve_Fade(1.f, true, 1.f, true);
 
-			CutSceneNames.push_back("Evermore_Intro_Short_People");				// 오른쪽 (사람)
+			/* CutScene - Evermore */
+			vector<string> CutSceneNames;
+			{
+				CutSceneNames.push_back("Evermore_Intro_Short_Flowers");			
+				CutSceneNames.push_back("Evermore_Intro_Short_MarketPlace");		
+				CutSceneNames.push_back("Evermore_Intro_Short_Armys");				
+				CutSceneNames.push_back("Evermore_Intro_Short_Cat");				
+				CutSceneNames.push_back("Evermore_Intro_Short_People");				
+				CutSceneNames.push_back("Evermore_Intro_Middle_Entire");			
+			}
+			Start_CutScenes(CutSceneNames, true);
 
-			//CutSceneNames.push_back("Evermore_Intro_Middle_AutumnGrandFather"); // 앞 (거리) (미들)
-
-			CutSceneNames.push_back("Evermore_Intro_Middle_Entire");			// 위 (미들) - 엔딩
+			/* Sound */
+			{
+				GI->Play_Sound(TEXT("Evermore_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
+				m_fBgmPrevVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
+				GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume * 0.6f);
+			}
 		}
-		Start_CutScenes(CutSceneNames, true);
-
-		/* Sound */
+		else
 		{
-			GI->Play_Sound(TEXT("Evermore_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
-			m_fBgmPrevVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
-			GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume * 0.6f);
+			/* Reserve Fade */
+			//Reserve_Fade(0.7f, true, 0.7f, true);
+
+			/* CutScene - Evermore */
+			vector<string> CutSceneNames;
+			{
+				CutSceneNames.push_back("Evermore_Ending_From_Back_00");
+				CutSceneNames.push_back("Evermore_Ending_From_Back_01");
+				CutSceneNames.push_back("Evermore_Ending_From_Front_00");
+				CutSceneNames.push_back("Evermore_Ending_From_Front_01");
+				
+			}
+			Start_CutScenes(CutSceneNames, true);
+
+			///* Sound */
+			//{
+			//	GI->Play_Sound(TEXT("Evermore_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
+			//	m_fBgmPrevVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
+			//	GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume * 0.6f);
+			//}
 		}
 	}
 		break;
@@ -296,6 +317,30 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID)
 	case LEVELID::LEVEL_ICELAND:
 		break;
 	case LEVELID::LEVEL_WITCHFOREST:
+	{
+		/* Reserve Fade */
+		Reserve_Fade(0.7f, true, 0.7f, true);
+
+		/* CutScene - Evermore */
+		vector<string> CutSceneNames;
+		{
+			CutSceneNames.push_back("Witchforest_Short_Shrub");		
+			CutSceneNames.push_back("Witchforest_Short_Campfire");	
+			CutSceneNames.push_back("Witchforest_short_Town_In");			
+			CutSceneNames.push_back("Witchforest_Short_Town_Ghosts");			
+			CutSceneNames.push_back("Witchforest_Short_Town_Middle");		
+			CutSceneNames.push_back("Witchforest_Short_Town_Out");			
+		}
+		Start_CutScenes(CutSceneNames, true);
+
+		/* Sound */
+		{
+			/*GI->Play_Sound(TEXT("Evermore_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
+			m_fBgmPrevVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
+			GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume * 0.6f);*/
+		}
+
+	}
 		break;
 	default:
 		break;
