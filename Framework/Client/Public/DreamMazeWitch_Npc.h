@@ -9,9 +9,12 @@ public:
 	enum NPC_WITCH_STATE {
 		WITCHSTATE_INVASION_IDLE = NPC_END + 1,
 		WITCHSTATE_INVASION_APPEAR, WITCHSTATE_INVASION_DISAPPEARTURN, WITCHSTATE_INVASION_DISAPPEAR,
-		WITCHSTATE_BATTLE_FOLLOWING, 
+		WITCHSTATE_BATTLE_FOLLOWING,
 		WITCHSTATE_BATTLE_ATTACK,
 		WITCHSTATE_BATTLE_LASER,
+		WITCHSTATE_BATTLE_FOLLOWING_RAGE02,
+		WITCHSTATE_BATTLE_FOLLOWING_RAGE03, WITCHSTATE_BATTLE_RAGE3_LASER,
+
 		WITCHSTATE_END
 	};
 
@@ -43,6 +46,10 @@ public:
 	void Set_IsFollowing(_bool bIsFollowing) { m_bIsFollowing = bIsFollowing; }
 	_bool Get_IsFollowing() { return m_bIsFollowing; }
 
+	void Set_IsFollowingPlayer(_bool bIsFollowing) { m_bIsFollowingPlayer = bIsFollowing; }
+	_bool Get_IsFollowingPlayer() { return m_bIsFollowingPlayer; }
+
+
 private:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT Ready_States() override;
@@ -61,11 +68,24 @@ private:
 	/* Battle */
 	_bool m_bIsBattle = false;
 	_bool m_bIsFollowing = false;
+	_bool m_bIsFollowingPlayer = false;
 
 	/* Damping */
 	CGameObject* m_pStellia = nullptr;
 	CGameObject* m_pPlayer = nullptr;
 	_float m_fFollowingSpeed = 0.f;
+
+	/* Rage03 Damping */
+	LERP_VEC4_DESC m_tRage03Lerp = {};
+
+	_float m_fMoveWait = 2.f;
+	_float m_fAccMoveWait = 0.f;
+	_float m_fMoveTime = 5.f;
+	_bool m_bIsCheckDestPos = false;
+
+	Vec4 m_vDestPos = {};
+	Vec4 m_vStartPos = {};
+
 
 	Vec4		 m_vCurPos = Vec4::Zero;
 	const _float m_fDampingCoefficient = 0.027f; /* (144 프레임 기준 댐핑 계수 - 0과 1사이 범위를 갖으며, 값이 클수록 빨리 따라감)*/

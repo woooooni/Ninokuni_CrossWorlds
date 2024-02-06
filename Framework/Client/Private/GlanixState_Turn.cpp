@@ -51,7 +51,7 @@ void CGlanixState_Turn::Enter_State(void* pArg)
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_NeutralWalk"));
 
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
-	_vector vDestNormal = XMVector3Normalize(m_pPlayerTransform->Get_Position() - m_pTransformCom->Get_Position());
+	_vector vDestNormal = XMVector3Normalize(m_pGlanix->Get_TargetDesc().pTragetTransform->Get_Position() - m_pTransformCom->Get_Position());
 
 	/* 보스위 look과 플레이어 위치 - 보스 위치로 나온 방향 벡터의 각도를 구함. */
 	_float fDotProduct = XMVectorGetX(XMVector3Dot(vLookNormal, vDestNormal));
@@ -82,7 +82,7 @@ void CGlanixState_Turn::Enter_State(void* pArg)
 		}
 	}
 
-	m_vDestPos = m_pPlayerTransform->Get_Position();
+	m_vDestPos = m_pGlanix->Get_TargetDesc().pTragetTransform->Get_Position();
 }
 
 void CGlanixState_Turn::Tick_State(_float fTimeDelta)
@@ -91,7 +91,7 @@ void CGlanixState_Turn::Tick_State(_float fTimeDelta)
 
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
 	//_vector vDestNormal = XMVector3Normalize(m_vDestPos - m_pTransformCom->Get_Position());
-	_vector vDestNormal = XMVector3Normalize(m_pPlayerTransform->Get_Position() - m_pTransformCom->Get_Position());
+	_vector vDestNormal = XMVector3Normalize(m_pGlanix->Get_TargetDesc().pTragetTransform->Get_Position() - m_pTransformCom->Get_Position());
 
 	/* 보스의 look을 기준으로 플레이어가 왼쪽, 오른쪽에 위치하는지를 판별. */
 	_vector vCrossProduct = XMVector3Cross(vLookNormal, vDestNormal);

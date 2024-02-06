@@ -161,19 +161,19 @@ void CStellia::Tick(_float fTimeDelta)
 	//	}
 	//}
 
-	if (KEY_TAP(KEY::L))
-	{
-		m_pStateCom->Change_State(m_iCurAnimIndex);
-
-		m_iCurAnimIndex += 1;
-		if (m_iCurAnimIndex >= m_pStateCom->Get_States().size())
-			m_iCurAnimIndex = 0;
-	}
+	//if (KEY_TAP(KEY::L))
+	//{
+	//	m_pStateCom->Change_State(m_iCurAnimIndex);
+	//
+	//	m_iCurAnimIndex += 1;
+	//	if (m_iCurAnimIndex >= m_pStateCom->Get_States().size())
+	//		m_iCurAnimIndex = 0;
+	//}
 
 	/* юс╫ц */
 	if (KEY_TAP(KEY::C))
 	{
-		m_pStateCom->Change_State(STELLIA_RAGE3START_FADEOUT);
+		m_pStateCom->Change_State(STELLIA_RAGE3TURN_AROUND);
 	}
 	if (KEY_TAP(KEY::X))
 	{
@@ -363,12 +363,12 @@ HRESULT CStellia::Ready_Components()
 		//m_vOriginPos = m_pTransformCom->Get_Position();
 		//m_vOriginLook = m_pTransformCom->Get_Look();
 		//m_vRage3StartPos = Vec4(138.f, -0.5f, 132.f, 1.f);
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(143.436f, 2.311f, 120.378f, 1.f));
-		m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(161.5f, 2.311f, 147.5f, 1.f));
+		m_pTransformCom->FixRotation(0.f, 195.f, 0.f);
 
 		m_vOriginPos = m_pTransformCom->Get_Position();
 		m_vOriginLook = m_pTransformCom->Get_Look();
-		m_vRage3StartPos = Vec4(143.436f, 2.311f, 150.378, 1.f);
+		m_vRage3StartPos = Vec4(165.f, 2.311f, 177.f, 1.f);
 
 	//}
 
@@ -686,7 +686,7 @@ HRESULT CStellia::Ready_States()
 	m_pStateCom->Add_State(STELLIA_DEAD, CStelliaState_Dead::Create(m_pStateCom, strAnimationName));
 
 	m_pStateCom->Change_State(STELLIA_SPAWN);
-	//m_pStateCom->Change_State(STELLIA_ATTACK2);
+	//m_pStateCom->Change_State(STELLIA_RAGE3START_FADEIN);
 
 	return S_OK;
 }

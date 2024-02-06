@@ -40,9 +40,11 @@ HRESULT CStellia_Crystal::Initialize(void* pArg)
 		return E_FAIL;
 
 	Vec4 vPos = *(Vec4*)pArg;
-	vPos.y += 6.f;
+	vPos.y += 8.f;
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
-	m_pTransformCom->Set_Scale(Vec3(2.f, 2.f, 2.f));
+	m_pTransformCom->Set_Scale(Vec3(4.f, 4.f, 4.f));
+
+	m_vBloomPower = _float3(1.f, 1.f, 1.f);
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;

@@ -31,9 +31,6 @@ public:
 	virtual void Exit_State() PURE;
 
 protected:
-	virtual void Following_Stellia(Vec4 vStelliaPos, const _float& fTimeDelta);
-
-protected:
 	CCharacter* m_pPlayer = nullptr;
 	CTransform* m_pPlayerTransform = nullptr;
 	CGameObject* m_pStellia = nullptr;

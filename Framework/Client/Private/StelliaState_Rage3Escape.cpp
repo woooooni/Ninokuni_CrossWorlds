@@ -45,7 +45,7 @@ void CStelliaState_Rage3Escape::Tick_State(_float fTimeDelta)
 
 
 	Vec4 vCenterToStellia = m_pStellia->Get_OriginPos() - (Vec4)m_pTransformCom->Get_Position();
-	if (fabs(vCenterToStellia.Length()) > m_fAroundDist)
+	if (fabs(vCenterToStellia.Length()) > m_fAroundDist - 2.f)
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE3CHARGE_BREAK);
 	}

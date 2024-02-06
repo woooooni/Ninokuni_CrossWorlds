@@ -81,15 +81,15 @@ void CVfx_Witch_Skill_Rage02Sphere_Ready::Tick(_float fTimeDelta)
 			m_vPos.y = m_tLerpDesc.Update(fTimeDelta);
 			m_pSphere->Get_TransformCom()->Set_State(CTransform::STATE_POSITION, m_vPos);
 		}
-		else
-		{
-			m_vPos = m_pSphere->Get_TransformCom()->Get_Position();
-			if (m_vPos.y > m_fDestY)
-			{
-				m_vPos.y -= fTimeDelta;
-				m_pSphere->Get_TransformCom()->Set_State(CTransform::STATE_POSITION, m_vPos);
-			}
-		}
+		//else
+		//{
+		//	m_vPos = m_pSphere->Get_TransformCom()->Get_Position();
+		//	if (m_vPos.y > m_fDestY)
+		//	{
+		//		m_vPos.y -= fTimeDelta;
+		//		m_pSphere->Get_TransformCom()->Set_State(CTransform::STATE_POSITION, m_vPos);
+		//	}
+		//}
 
 		if (m_pSphere->Is_Dead() || m_pSphere->Get_DieEffect())
 		{

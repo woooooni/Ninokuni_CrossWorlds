@@ -13,10 +13,16 @@
 
 #include "NpcDMWState_Following.h"
 #include "NpcDMWState_Attack.h"
-#include "NpcDMWState_Rage3Laser.h"
+
+#include "NpcDMWState_Following_Rage02.h"
+
+#include "NpcDMWState_Following_Rage03.h"
+#include "NpcDMWState_Rage03Laser.h"
 
 #include "Game_Manager.h"
 #include "Player.h"
+
+#include "GameInstance.h"
 
 CDreamMazeWitch_Npc::CDreamMazeWitch_Npc(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
@@ -75,6 +81,8 @@ HRESULT CDreamMazeWitch_Npc::Initialize(void* pArg)
 void CDreamMazeWitch_Npc::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	m_pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 
 	if (m_bIsBattle)
 	{
@@ -193,9 +201,22 @@ HRESULT CDreamMazeWitch_Npc::Ready_States()
 	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Attack02");
 	m_pStateCom->Add_State(WITCHSTATE_BATTLE_ATTACK, CNpcDMWState_Attack::Create(m_pStateCom, strAnimationName));
 
+	// Rage2
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Stand");
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Walk");
+	m_pStateCom->Add_State(WITCHSTATE_BATTLE_FOLLOWING_RAGE02, CNpcDMWState_Following_Rage02::Create(m_pStateCom, strAnimationName));
+
+	// Rage3
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Stand");
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Walk");
+	m_pStateCom->Add_State(WITCHSTATE_BATTLE_FOLLOWING_RAGE03, CNpcDMWState_Following_Rage03::Create(m_pStateCom, strAnimationName));
+
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Attack02");
-	m_pStateCom->Add_State(WITCHSTATE_BATTLE_LASER, CNpcDMWState_Rage3Laser::Create(m_pStateCom, strAnimationName));
+	m_pStateCom->Add_State(WITCHSTATE_BATTLE_RAGE3_LASER, CNpcDMWState_Rage03Laser::Create(m_pStateCom, strAnimationName));
+
 
 	//m_pStateCom->Change_State(WITCHSTATE_BATTLE_FOLLOWING);
 	m_pStateCom->Change_State(WITCHSTATE_INVASION_IDLE);
@@ -206,7 +227,7 @@ HRESULT CDreamMazeWitch_Npc::Ready_States()
 void CDreamMazeWitch_Npc::Witch_BattleSet(CGameObject* pStellia)
 {
 	m_pStellia = pStellia;
-	m_pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+	// m_pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 	
 	if (m_pStellia == nullptr)
 		MSG_BOX("Stellia Is Null");
@@ -230,14 +251,30 @@ HRESULT CDreamMazeWitch_Npc::Ready_Sockets()
 	return S_OK;
 }
 
-void CDreamMazeWitch_Npc::Following_Stellia(_float)
+void CDreamMazeWitch_Npc::Following_Stellia(_float fTimeDelta)
 {
 	if (m_bIsFollowing)
 	{
 		m_pTransformCom->LookAt_ForLandObject(m_pPlayer->Get_Component_Transform()->Get_Position());
 		Vec4 vStelliaPos = m_pStellia->Get_Component_Transform()->Get_Position();
+		Vec4 vReleativePos = {};
 
-		Vec4 vReleativePos = m_pStellia->Get_Component_Transform()->Get_RelativeOffset({ -5.f , vStelliaPos.y + 8.f, -5.f, 1.f });
+		// 레이지1 익스플로전 상태일 때
+		if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE1LOOP_EXPLOSION)
+		{
+			vReleativePos = m_pStellia->Get_Component_Transform()->Get_RelativeOffset({ 0.f , vStelliaPos.y + 8.f, 0.f, 1.f });
+		}
+		// 레이지2 상태일 때
+		else if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE1LOOP_EXPLOSION)
+		{
+			vReleativePos = m_pStellia->Get_Component_Transform()->Get_RelativeOffset({ 0.f , vStelliaPos.y + 8.f, -2.f, 1.f });
+		}
+		// 일반 
+		else
+		{
+			vReleativePos = m_pStellia->Get_Component_Transform()->Get_RelativeOffset({ -5.f , vStelliaPos.y + 8.f, -5.f, 1.f });
+		}
+
 
 		Vec4 vDestPos = Vec4(vReleativePos + vStelliaPos).OneW();
 
@@ -253,6 +290,62 @@ void CDreamMazeWitch_Npc::Following_Stellia(_float)
 		}
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(m_vCurPos, 1.f));
+	}
+
+	if (m_bIsFollowingPlayer)
+	{
+		if (!m_bIsCheckDestPos)
+		{
+			m_fAccMoveWait += fTimeDelta;
+			if (m_fAccMoveWait >= m_fMoveWait)
+			{
+				Vec4 vLookToWitch = dynamic_cast<CStellia*>(m_pStellia)->Get_OriginPos() - Vec4(m_pTransformCom->Get_Position());
+
+				_float fRandAngle = GI->RandomFloat(10.f, 170.f);
+				vLookToWitch = XMVector3Rotate(m_pTransformCom->Get_Look(), XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians(fRandAngle), 0.0f));
+				vLookToWitch.Normalize();
+
+				m_vStartPos = m_pTransformCom->Get_Position();
+				m_vDestPos = dynamic_cast<CStellia*>(m_pStellia)->Get_OriginPos() + (vLookToWitch * GI->RandomFloat(3.f, 20.f));
+				m_bIsCheckDestPos = true;
+
+				m_tRage03Lerp.Start(m_vStartPos, m_vDestPos, m_fMoveTime, LERP_MODE::EASE_IN);
+
+				m_fAccMoveWait = m_fMoveWait - m_fAccMoveWait;
+			}
+		}
+		else
+		{
+			if (m_tRage03Lerp.bActive)
+			{
+				Vec4 vCurPos = m_tRage03Lerp.Update_Lerp(fTimeDelta);
+				m_pTransformCom->LookAt_ForLandObject(CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform()->Get_Position());
+				m_pTransformCom->Set_Position(vCurPos);
+			}
+			else
+				m_bIsCheckDestPos = false;
+		}
+
+
+		//m_pTransformCom->LookAt_ForLandObject(m_pPlayer->Get_Component_Transform()->Get_Position());
+		//Vec4 vStelliaPos = m_pPlayer->Get_Component_Transform()->Get_Position();
+		//
+		//Vec4 vReleativePos = m_pPlayer->Get_Component_Transform()->Get_RelativeOffset({ 1.f , vStelliaPos.y + 5.f, 10.f, 1.f });
+		//
+		//Vec4 vDestPos = Vec4(vReleativePos + vStelliaPos).OneW();
+		//
+		//if (Vec4::Zero == m_vCurPos || m_fDampingLimitDistance < Vec4::Distance(vDestPos, m_vCurPos))
+		//{
+		//	m_vCurPos = vDestPos;
+		//}
+		//else
+		//{
+		//	const Vec4 vDist = (vDestPos.ZeroW() - m_vCurPos.ZeroW()) * m_fDampingCoefficient;
+		//	m_vCurPos += vDist;
+		//	m_vCurPos.y = vDestPos.y;
+		//}
+		//
+		//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(m_vCurPos, 1.f));
 	}
 }
 

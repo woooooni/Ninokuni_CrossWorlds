@@ -44,8 +44,8 @@ void CGlanixState_RagePull::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Get_CurrAnimationFrame() >= 20 && m_pModelCom->Get_CurrAnimationFrame() <= 175)
 	{
-		_vector vPullDir = XMVector3Normalize(m_pTransformCom->Get_Position() - m_pPlayerTransform->Get_Position());
-		m_pPlayer->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(vPullDir, 4.5f, true);
+		_vector vPullDir = XMVector3Normalize(m_pTransformCom->Get_Position() - m_pGlanix->Get_TargetDesc().pTragetTransform->Get_Position());
+		m_pGlanix->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(vPullDir, 4.5f, true);
 
 		if (m_pModelCom->Get_CurrAnimationFrame() <= 165)
 		{

@@ -119,7 +119,8 @@ void CCharacter::Tick(_float fTimeDelta)
 
 	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::END_KEY))
 	{
-		Set_InitialPosition(Vec4(111.f, -0.785f, 8.f, 1.f));
+		//Set_InitialPosition(Vec4(111.f, -0.785f, 8.f, 1.f));
+		Set_InitialPosition(Vec4(161.5f, 2.311f, 147.5f, 1.f));
 	}
 
 	//if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))

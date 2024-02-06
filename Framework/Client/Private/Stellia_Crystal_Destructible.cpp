@@ -168,10 +168,11 @@ void CStellia_Crystal_Destructible::Tick(_float fTimeDelta)
 
 	Fly_Crystal(fTimeDelta);
 
-	if (m_bIsTurn)
-		Turn_Crystal(fTimeDelta);
-	else
-		Crystal_Roaming(fTimeDelta);
+	// 어색해서 뺌. 빙글빙글 도는것과 로밍하는 것
+	//if (m_bIsTurn)
+	//	Turn_Crystal(fTimeDelta);
+	//else
+		//Crystal_Roaming(fTimeDelta);
 
 	//////////////////////////
 

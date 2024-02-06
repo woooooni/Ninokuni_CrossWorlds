@@ -31,10 +31,10 @@ void CMainQuestNode_FinalBattle02::Start()
 	}
 	else
 	{
-		m_pWitch->Get_Component_Transform()->Set_State(CTransform::STATE_POSITION, Vec4(142.2f, 1.f, 107.2f, 1.f));
+		m_pWitch->Get_Component_Transform()->Set_State(CTransform::STATE_POSITION, Vec4(166.8f, 3.f, 165.5f, 1.f));
 		m_pWitch->Get_Component_Transform()->FixRotation(0.f, -162.f, 0.f);
 		
-		Vec4 vSpotPos = { 130.6, -0.5f, 89.7f, 1.f };
+		Vec4 vSpotPos = { 157.7f, 0.f, 134.3f, 1.f };
 
 		m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 	}

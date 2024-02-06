@@ -48,7 +48,7 @@ void CGlanixState_RageCharge::Tick_State(_float fTimeDelta)
 {
 	if (m_pModelCom->Get_CurrAnimationFrame() <= 45)
 	{
-		m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+		m_pTransformCom->LookAt_ForLandObject(m_pGlanix->Get_TargetDesc().pTragetTransform->Get_Position());
 	}
 
 	else if (m_pModelCom->Get_CurrAnimationFrame() >= 50)

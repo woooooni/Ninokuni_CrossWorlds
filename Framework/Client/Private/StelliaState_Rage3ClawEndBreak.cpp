@@ -27,10 +27,24 @@ void CStelliaState_Rage3ClawEndBreak::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	_float fCurSpeed = m_tChargeLerp.Update(fTimeDelta);
+	_float fCurSpeed = 0.f;
 
-	if(m_pModelCom->Get_CurrAnimationFrame() <= 22)
-		m_pTransformCom->Move(m_pTransformCom->Get_Look(), fCurSpeed, fTimeDelta);
+	if (m_tChargeLerp.bActive)
+	{
+		m_tChargeLerp.Update(fTimeDelta);
+		fCurSpeed = m_tChargeLerp.fCurValue;
+	}
+
+	if (m_pModelCom->Get_CurrAnimationFrame() <= 22)
+	{
+		Vec4 vCenterToStellia = m_pStellia->Get_OriginPos() - (Vec4)m_pTransformCom->Get_Position();
+
+		cout << "Speed " << fCurSpeed << endl;
+		cout << "Dist " << fabs(vCenterToStellia.Length()) << endl;
+
+		if(fabs(vCenterToStellia.Length()) < m_fAroundDist)
+			m_pTransformCom->Move(m_pTransformCom->Get_Look(), fCurSpeed, fTimeDelta);
+	}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
