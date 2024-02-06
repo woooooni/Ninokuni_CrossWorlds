@@ -545,6 +545,29 @@ Vec4 CCamera_CutScene_Map::Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], c
 	return Vec3::Lerp(r0, r1, fNormalizedRatio);
 }
 
+const _bool CCamera_CutScene_Map::Is_LastCutScene()
+{
+	/* 현재 진행중인 컷신이 예약된 컷신중 마지막 것인지 여부를 반환한다. */
+	if (!m_bActive)
+		return false;
+
+	if (m_CutSceneNamesReserved.empty())
+		return true;
+	else
+		return false;
+}
+
+const _float CCamera_CutScene_Map::Get_Progress()
+{
+	/* 현재 진행중인 컷신의 진행률을 반환한다.  */
+	return m_tTimeDesc.fLerpTime / m_tTimeDesc.fEndTime;
+}
+
+const _float CCamera_CutScene_Map::Get_RemainDuration()
+{
+	return m_tTimeDesc.fEndTime - m_tTimeDesc.fCurTime;
+}
+
 Vec4 CCamera_CutScene_Map::Get_LookAt()
 {
 	return m_vPrevLookAt;
@@ -675,6 +698,10 @@ void CCamera_CutScene_Map::Tick_Fade(_float fTimeDelta)
 							CCamera_Manager::GetInstance()->Set_CurCamera(pFollowCam->Get_Key());
 						}
 						m_eReservedNextCameraType = CAMERA_TYPE::CAMERA_TYPE_END;
+					}
+					else if (CAMERA_TYPE::ACTION == m_eReservedNextCameraType)
+					{
+						CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
 					}
 					else
 						CCamera_Manager::GetInstance()->Set_PrevCamera();

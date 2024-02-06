@@ -21,6 +21,12 @@ private:
 	CGameObject* m_pKuu = nullptr;
 	_bool		 m_bIsTalkStart = false;
 
+	_bool		m_bFadeOut = false;
+	_bool		m_bFadeIn = false;
+
+	const _float m_fFadeDuration = 1.f;
+	_bool		m_bFinishIntro = false;
+
 public:
 	static CMainQuestNode_Ending02* Create();
 	virtual void Free() override;
