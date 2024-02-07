@@ -39,7 +39,10 @@ void CMoon::LateTick(_float fTimeDelta)
 		m_bIsRedColor = true;
 
 	if (KEY_HOLD(KEY::C) && KEY_HOLD(KEY::S))
+	{
 		m_bIsRedColor = false;
+		m_fWeight = 0.f;
+	}
 
 	if (true == m_bIsRedColor)
 		m_fWeight += m_fSpeed * fTimeDelta;
