@@ -21,12 +21,39 @@ void CUI_Fade::Set_DefaultSetting()
 
 void CUI_Fade::Set_Fade(const _bool& pIsFadeOut, const _float& pFadeTime, const _bool& bIsWhite)
 {
-	// Initialize에 관련 코드 추가하기
+	/*
+	*  WH :
+	Fade In : 화면이 점차 밝아지는 것(검은 화면 -> 게임 화면)
+	Fade Out : 화면이 점차 어두워 지는 것(게임 화면 -> 검은 화면)
+	*/
+
+	// 24.02.07 Comment :
+	// 만약 Fade Out 후 Fade In을 사용하는데, Veil이 사라지지 않는다면 Renew_Fade 코드로 Fade In을 처리해주세요.
+
 	if (false == m_bIsComplete)
 		return;
 
 	// 02/06 텍스트 관련 디버깅 필요 -> 그랑프리 Intro에서 오작동
 	CUI_Manager::GetInstance()->OnOff_TextUI(false);
+
+	m_bIsFadeOut = pIsFadeOut;
+	m_fAlpha = !(float)pIsFadeOut;
+	m_fFadeTime = pFadeTime;
+	m_bIsComplete = false;
+
+	Set_White(bIsWhite);
+}
+
+void CUI_Fade::Renew_Fade(const _bool& pIsFadeOut, const _float& pFadeTime, const _bool& bIsWhite)
+{
+	// 24.02.07
+	// Comment : TimeDelta 이슈로 Set_Finish가 제때에 동작하지 않아 Fade In/Out을 이어서 사용할 수 없는 상황들이 간헐적으로 발생되어 추가한 함수
+
+	if (m_fFadeTime <= 0.f)
+	{
+		Set_Fade(pIsFadeOut, pFadeTime, bIsWhite);
+		return;
+	}
 
 	m_bIsFadeOut = pIsFadeOut;
 	m_fAlpha = !(float)pIsFadeOut;

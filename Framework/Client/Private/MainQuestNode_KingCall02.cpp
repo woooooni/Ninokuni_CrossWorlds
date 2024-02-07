@@ -87,7 +87,6 @@ CBTNode::NODE_STATE CMainQuestNode_KingCall02::Tick(const _float& fTimeDelta)
 			QuestDesc.strTitle = m_strNextQuestName;
 			QuestDesc.strContents = m_strNextQuestContent;
 			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 			
 			/* 대화 카메라 종료 */

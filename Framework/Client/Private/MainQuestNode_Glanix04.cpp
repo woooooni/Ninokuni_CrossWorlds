@@ -39,6 +39,8 @@ HRESULT CMainQuestNode_Glanix04::Initialize()
 	return S_OK;
 }
 
+
+
 void CMainQuestNode_Glanix04::Start()
 {
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
@@ -69,7 +71,6 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix04::Tick(const _float& fTimeDelta)
 			QuestDesc.strTitle = m_strQuestName;
 			QuestDesc.strContents = m_strQuestContent;
 			CUI_Manager::GetInstance()->Update_QuestPopup(TEXT("´õ¿í ´õ ±í°Ô"), &QuestDesc);
-//			CUI_Manager::GetInstance()->Update_QuestPopup(TEXT("´õ¿í ´õ ±í°Ô"), m_strQuestTag, m_strQuestName, m_strQuestContent);
 			m_bIsIntroTalk = true;
 		}
 
@@ -101,7 +102,6 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix04::Tick(const _float& fTimeDelta)
 			QuestDesc.strTitle = m_strNextQuestName;
 			QuestDesc.strContents = m_strNextQuestContent;
 			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 			CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
 			CQuest_Manager::GetInstance()->Set_IsBossKill(false);

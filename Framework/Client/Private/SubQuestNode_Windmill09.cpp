@@ -37,8 +37,8 @@ void CSubQuestNode_Windmill09::Start()
 
 	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
 	QuestDesc.strType = m_strQuestTag;
-	QuestDesc.strTitle = m_strQuestTag;
-	QuestDesc.strContents = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestName;
+	QuestDesc.strContents = m_strQuestContent;
 	QuestDesc.bCreateSpot = true;
 	QuestDesc.vDestPosition = vSpotPos;
 	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);

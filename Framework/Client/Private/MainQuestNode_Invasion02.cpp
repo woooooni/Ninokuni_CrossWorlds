@@ -48,7 +48,6 @@ void CMainQuestNode_Invasion02::Start()
 	QuestDesc.strTitle = m_strQuestName;
 	QuestDesc.strContents = m_strQuestContent;
 	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
-//	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
@@ -142,7 +141,6 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02::Tick(const _float& fTimeDelta)
 				QuestDesc.strTitle = m_strNextQuestName;
 				QuestDesc.strContents = m_strNextQuestContent;
 				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 				m_bIsClear = true;
 				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);

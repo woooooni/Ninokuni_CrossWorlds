@@ -260,6 +260,19 @@ _float2 CUI_Manager::Get_ProjectionPosition(CTransform* pTransform)
 	return _float2(fScreenX, fScreenY);
 }
 
+_float CUI_Manager::Calculate_Distance_FromPlayer(_float4 vPosition)
+{
+	CTransform* pPlayerTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pPlayerTransform)
+		return 0.f;
+
+	_vector vTempDistance = (XMLoadFloat4(&vPosition)) - (pPlayerTransform->Get_Position());
+	_float fDistance = XMVectorGetX(XMVector3Length(vTempDistance));
+
+	return fDistance;
+
+}
+
 
 
 void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
@@ -491,10 +504,10 @@ void CUI_Manager::Set_QuestDestSpot(_int iWindow)
 	QuestDesc = m_QuestPopUp[0]->Get_QuestContents(iWindow);
 	// 퀘스트 목적지가 설정되어있다면
 	if (true == QuestDesc.bCreateSpot)
-		Calculate_QuestDestSpot(QuestDesc.vDestPosition);
+		Set_QuestDestSpotPosition(QuestDesc.vDestPosition);
 }
 
-void CUI_Manager::Calculate_QuestDestSpot(_float4 vDestPos)
+void CUI_Manager::Set_QuestDestSpotPosition(_float4 vDestPos)
 {
 	for (auto& iter : m_Milepost)
 	{
@@ -4545,6 +4558,10 @@ HRESULT CUI_Manager::Tick_UIs(LEVELID eID, _float fTimeDelta)
 		Tick_GamePlayLevel(fTimeDelta);
 		break;
 
+	case LEVELID::LEVEL_WITCHFOREST:
+		Tick_GamePlayLevel(fTimeDelta);
+		break;
+
 	default:
 		Tick_GamePlayLevel(fTimeDelta);
 		break;
@@ -6720,6 +6737,9 @@ void CUI_Manager::OnOff_MapName(_bool bOnOff, const wstring& strMapName)
 
 	if (bOnOff) // On
 	{
+		if (CAMERA_TYPE::CUTSCENE_MAP == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+			return;
+
 		// 맵네임 Type을 세팅하는 곳
 		if (TEXT("남문 광장") == strMapName)
 		{
@@ -6760,6 +6780,22 @@ void CUI_Manager::OnOff_MapName(_bool bOnOff, const wstring& strMapName)
 		else if (TEXT("그늘진 저지대") == strMapName)
 		{
 			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::ICELAND_SHADOW);
+		}
+		else if (TEXT("숲의 입구") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::WITCH_ENTRANCE);
+		}
+		else if (TEXT("정령의 쉼터") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::WITCH_SHELTER);
+		}
+		else if (TEXT("초승달 평원 북부") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::WITCH_MOON);
+		}
+		else if (TEXT("반디 정원") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::WITCH_BANDI);
 		}
 		else
 		{

@@ -72,7 +72,7 @@ HRESULT CMainApp::Initialize()
 
 		g_iStartQuestLevel = QUEST_LEVEL::QL_7_PLANT_KILLER;			/* 시작 퀘스트 레벨 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::DESTROYER_CH;			/* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;			/* 모델 로드할 캐릭터 타입 */
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::DESTROYER_CH;	/* 게임 플레이 캐릭터 타입 */
 	}
@@ -1276,7 +1276,7 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 
 	// MapName Text(Renewal)
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MapName_Text_Renewal"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MapName/Text_Rework/UI_MapName_Text_%d.png"), 19))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MapName/Text_Rework/UI_MapName_Text_%d.png"), 16))))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MiniDialogue_Battle"),

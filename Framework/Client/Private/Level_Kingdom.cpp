@@ -62,7 +62,7 @@ HRESULT CLevel_Kingdom::Initialize()
 
 	if (FAILED(Ready_Layer_Npc(LAYER_TYPE::LAYER_NPC)))
 		return E_FAIL;
-
+	
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
 		return E_FAIL;
 

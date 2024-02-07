@@ -165,6 +165,9 @@ void CUI_World_Interaction::LateTick(_float fTimeDelta)
 	{
 		if (m_bActive)
 		{
+			if (CAMERA_TYPE::CUTSCENE_MAP == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+				return;
+
 			_float4 vCamPos = GI->Get_CamPosition();
 			_vector vTempForDistance = m_pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos);
 			_float fDistance = XMVectorGetX(XMVector3Length(vTempForDistance));

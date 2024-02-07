@@ -25,7 +25,6 @@ void CUI_AddItem::Set_Position(_int iOrder)
 	{
 	case 0:
 		m_tInfo.fY = 100.f;
-
 		break;
 
 	case 1: // y·Î 48¾¿ offset

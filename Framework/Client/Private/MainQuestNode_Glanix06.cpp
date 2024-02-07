@@ -25,8 +25,8 @@ HRESULT CMainQuestNode_Glanix06::Initialize()
 	m_strQuestContent = TEXT("잭슨에게 보고하자");
 
 	m_strNextQuestTag = TEXT("[메인]");
-	m_strNextQuestName = TEXT("다시 에스타나비아로");
-	m_strNextQuestContent = TEXT("왔던 길을 돌아가 에스타나비아로 돌아가기");
+	m_strNextQuestName = TEXT("다시 에스타바니아로");
+	m_strNextQuestContent = TEXT("왔던 길을 돌아가 에스타바니아로 돌아가기");
 
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/04.MainQuest_Glanix/MainQuest_Glanix06.json");
 
@@ -83,7 +83,6 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix06::Tick(const _float& fTimeDelta)
 			QuestDesc.strTitle = m_strNextQuestName;
 			QuestDesc.strContents = m_strNextQuestContent;
 			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
