@@ -24,6 +24,12 @@ public:
 		const wstring& strEffectName, _matrix WorldMatrix,
 		_float3 vLocalPos = _float3(0.f, 0.f, 0.f), _float3 vLocalScale = _float3(1.f, 1.f, 1.f), _float3 vLocalRotation = _float3(0.f, 0.f, 0.f), CGameObject* pOwner = nullptr);
 
+
+	HRESULT Tick_Generate_Decal(_float* fTimeAcc, _float fCreateTime, _float fTimeDelta,
+		const wstring& strDecalName, _matrix WorldMatrix,
+		_float3 vLocalPos = _float3(0.f, 0.f, 0.f), _float3 vLocalScale = _float3(1.f, 1.f, 1.f), _float3 vLocalRotation = _float3(0.f, 0.f, 0.f), CGameObject* pOwner = nullptr);
+
+
 	HRESULT Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CDecal** ppOut = nullptr, _bool bDelet = true);
 	HRESULT Generate_Decal_To_Position(const wstring& strDecalName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CDecal** ppOut = nullptr, _bool bDelet = true);
 	

@@ -557,6 +557,8 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	TriggerDesc.strMapName = TEXT("³²¹® ±¤Àå");
 	TriggerDesc.vStartPosition = { 0.f, -20.f, 0.f, 1.f };
 	TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
+	TriggerDesc.vAt = Vec4(0.0f,0.0f,0.0f,1.0f);
+	TriggerDesc.vEye = Vec4(7.0f, 100.0f, 0.0f, 1.0f);
 
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
 		return E_FAIL;
@@ -564,6 +566,8 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	TriggerDesc.strMapName = TEXT("¼­¹® ±¤Àå");
 	TriggerDesc.vStartPosition = { -85.5f, -20.f, 60.6f, 1.f };
 	TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
+	TriggerDesc.vAt = Vec4(0.0f, -574.0f, 0.0f, 1.0f);
+	TriggerDesc.vEye = Vec4(-85.0f, 100.0f, 0.0f, 1.0f);
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
 		return E_FAIL;
 

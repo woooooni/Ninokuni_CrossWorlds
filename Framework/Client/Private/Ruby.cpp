@@ -79,6 +79,7 @@ void CRuby::Tick(_float fTimeDelta)
 {
 	if (nullptr != m_pRidingObject)
 	{
+
 		if (true == m_bQuestSection[ESCORT_SECTION::SECTION1])
 		{
 			list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_MONSTER);

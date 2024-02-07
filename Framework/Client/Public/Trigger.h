@@ -28,6 +28,9 @@ public:
 		// For.Trigger MapName
 		wstring strMapName = TEXT("");
 
+		Vec4 vEye;
+		Vec4 vAt;
+
 	} TRIGGER_DESC;
 
 private:
@@ -54,6 +57,12 @@ private:
 private:
 	void Load_Monster_Data(const wstring& strFilePath, _uint Section);
 
+public:
+	const TRIGGER_TYPE& Get_TriggerType() const { return m_eTriggerType; }
+	void Set_TriggerType(TRIGGER_TYPE eType) { m_eTriggerType = eType; }
+
+	void Set_BgmName(const string& bgmName) { m_strBGM = bgmName; }
+	void Set_strMapName(const wstring& mapName) { m_strMapName = mapName; }
 private:
 	TRIGGER_TYPE m_eTriggerType = TRIGGER_TYPE::TRIGGER_END;
 	Vec3 m_vExtents = { 100.f, 100.f, 100.f };
@@ -68,6 +77,9 @@ private:
 	wstring m_strMapName = TEXT("");
 	
 	_bool m_bWhaleCutScene = false;
+
+	Vec4 m_vAt;
+	Vec4 m_vEye;
 
 public:
 	static CTrigger* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

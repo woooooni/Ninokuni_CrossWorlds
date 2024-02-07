@@ -82,6 +82,9 @@ void CTool_Map::Tick(_float fTimeDelta)
 		MapAnimalPatrol();
 #pragma endregion AnimalPatrol
 
+#pragma region Trigger
+		Map_TriggerBox();
+#pragma endregion
 
 		Picking();
 
@@ -182,6 +185,29 @@ void CTool_Map::DeleteLight(_uint iLightID)
 		pLight->Set_LightID(iLightCount++);
 }
 
+void CTool_Map::DeleteTrigger(LEVELID iLevelID, LAYER_TYPE ILayerType)
+{
+	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(iLevelID, ILayerType);
+
+	auto iter = pGameObjects.begin();
+
+	while (iter != pGameObjects.end())
+	{
+		if (nullptr == m_pTriggerObj)
+			break;
+
+		if (m_pTriggerObj->Get_ObjectID() == (*iter)->Get_ObjectID())
+		{
+			Safe_Release<CGameObject*>((*iter));
+			iter = pGameObjects.erase(iter);
+			m_pTriggerObj = nullptr;
+		}
+		else
+			++iter;
+
+	}
+}
+
 void CTool_Map::BatchObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
 {
 	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(iLevelID, iLayerType);
@@ -230,6 +256,40 @@ void CTool_Map::AddMapNPC(LEVELID iLevelID, LAYER_TYPE iLayerType)
 
 void CTool_Map::BatchNPC(LEVELID iLevelID, LAYER_TYPE iLayerType)
 {
+}
+
+void CTool_Map::AddTrigger(LEVELID iLevelID, LAYER_TYPE iLayerType)
+{
+	const map<const std::wstring, CGameObject*>& vecPrototypeList = GI->Find_Prototype_GameObjects(iLayerType);
+
+	for (auto& Pair : vecPrototypeList)
+	{
+		if (ImGui::Selectable(CUtils::ToString(Pair.first).c_str()))
+		{
+			if (true == m_bAddTrigger)
+				GI->Add_GameObject(iLevelID, iLayerType, Pair.first);
+		}
+
+	}
+}
+
+void CTool_Map::BatchTrigger(LEVELID iLevelID, LAYER_TYPE iLayerType)
+{
+	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(iLevelID, iLayerType);
+
+	for (auto& pObj : pGameObjects)
+	{
+		if (pObj->Get_ObjectType() != OBJ_TRIGGER)
+			continue;
+
+		string ObjectID = std::to_string(pObj->Get_ObjectID());
+		string ObjectTag = CUtils::ToString(pObj->Get_ObjectTag());
+
+		string strName = ObjectTag + "_" + ObjectID;
+
+		if (ImGui::Selectable(strName.c_str()))
+			m_pTriggerObj = static_cast<CTrigger*>(pObj);
+	}
 }
 
 void CTool_Map::BatchDynamic(LEVELID iLevelID, LAYER_TYPE iLayerType)
@@ -1716,6 +1776,195 @@ void CTool_Map::Map_Fog(_float fTimeDelta)
 	m_pRendererCom->Set_FogDesc(FogDesc);
 }
 
+void CTool_Map::Map_TriggerBox()
+{
+	if (ImGui::CollapsingHeader("[ Trigger Tool ]"))
+	{
+		if (ImGui::BeginChild("Trigger_Child_List", ImVec2(0, 300.f), true))
+		{
+			if (ImGui::RadioButton("Trigger", (0 == m_iTriggerState)))
+			{
+				ChangeState();
+				m_iTriggerState = 0;
+			} ImGui::SameLine();
+
+			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"트리거 오브젝트");
+			if (nullptr != m_pTriggerObj)
+			{
+				_bool iChange = 0;
+				ImGui::PushItemWidth(50);
+
+				string SelectObjectID = std::to_string(m_pTriggerObj->Get_ObjectID());
+				string SelectObjectTag = CUtils::ToString(m_pTriggerObj->Get_ObjectTag());
+				string SlectstrName = SelectObjectTag + "_" + SelectObjectID;
+
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), u8"선택된 트리거 : "); ImGui::SameLine();
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), SlectstrName.c_str());
+
+				if (ImGui::CollapsingHeader("Movement"))
+				{
+					int lastUsing = 0;
+
+					CTransform* pTransform = m_pTriggerObj->Get_Component<CTransform>(L"Com_Transform");
+					if (nullptr == pTransform)
+					{
+						ImGui::End();
+						return;
+					}
+
+					Vec3 vScaled = pTransform->Get_Scale();
+					XMMATRIX vPos = pTransform->Get_WorldMatrix();
+					XMVECTOR vWorldPosition = vPos.r[3];
+
+					ImGui::PushItemWidth(150.f);
+					ImGui::DragFloat3("Position", &vWorldPosition.m128_f32[0], 0.1f, -1000.f, 1000.f);
+					ImGui::DragFloat3("Scale", &vScaled.x, 0.01f, 0.01f, 100.f);
+					ImGui::PopItemWidth();
+
+					pTransform->Set_Scale(vScaled);
+					pTransform->Set_State(CTransform::STATE::STATE_POSITION, vWorldPosition);
+				}
+
+				if (ImGui::Button(u8"선택된 트리거 삭제"))
+					DeleteTrigger(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
+
+				ImGui::PopItemWidth();
+			}
+			else
+				ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), u8"[ 현재 선택된 트리거가 없습니다.]");
+
+			ImGui::SameLine();
+			ImGui::PushItemWidth(110.f);
+
+			static const char* szLevelType = nullptr;
+
+			if (ImGui::BeginCombo(u8"Level_Type", szLevelType))
+			{
+				for (_uint i = 0; i < LEVEL_LIST_END; ++i)
+				{
+					_bool IsSelected = (szLevelType == m_ImguiSelectableTrrigerNameList[i]);
+
+					if (ImGui::Selectable(m_ImguiSelectableTrrigerNameList[i], IsSelected))
+					{
+						szLevelType = m_ImguiSelectableTrrigerNameList[i];
+						m_iTriggerLevel = i;
+						m_strLevelTrigger = CUtils::ToWString(m_ImguiSelectableTrrigerNameList[i]);
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::PopItemWidth();
+
+			ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+			if (ImGui::Button(u8"트리거 추가"))
+			{
+				m_pTriggerObj = nullptr;
+				m_bAddTrigger = true;
+
+			}ImGui::SameLine();
+
+			if (ImGui::Button(u8"배치된 트리거"))
+				m_bAddTrigger = false;
+
+			if (true == m_bAddTrigger)
+			{
+				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"추가할 트리거 선택");
+
+				if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(300.0f, 0.0f)))
+					AddTrigger(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
+
+				ImGui::ListBoxFooter();
+			}
+			else
+			{
+				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"맵에 배치된 트리거 리스트");
+
+				static char* szTemp = nullptr;
+				
+				ImGui::PushItemWidth(150.f);
+				if (ImGui::BeginCombo("##Set State", szTemp))
+				{
+					for (_uint i = 0; i < TRIGGER_TYPE::TRIGGER_END; ++i)
+					{
+						_bool IsSelected = (szTemp == m_TriggerSelectName[i]);
+
+						if (ImGui::Selectable(m_TriggerSelectName[i], IsSelected))
+						{
+							if (nullptr == m_pTriggerObj)
+								break;
+
+							// TODO NpcState
+							// 세팅 해놓고 나중에 Get으로 저장할 때 불러오면 됨.
+							if (m_TriggerSelectName[i] == "CHANGE_BGM")
+								static_cast<CTrigger*>(m_pTriggerObj)->Set_TriggerType(TRIGGER_TYPE::TRIGGER_CHANGE_BGM);
+							else if (m_TriggerSelectName[i] == "MAP_NAME")
+								static_cast<CTrigger*>(m_pTriggerObj)->Set_TriggerType(TRIGGER_TYPE::TRIGGER_MAP_NAME);
+							else if (m_TriggerSelectName[i] == "GIANTY_ENTER")
+								static_cast<CTrigger*>(m_pTriggerObj)->Set_TriggerType(TRIGGER_TYPE::TRIGGER_BOSS_GIANTY_ENTER);
+							else if (m_TriggerSelectName[i] == "STELLIA_ENTER")
+								static_cast<CTrigger*>(m_pTriggerObj)->Set_TriggerType(TRIGGER_TYPE::TRIGGER_BOSS_STELLIA_ENTER);
+							else if (m_TriggerSelectName[i] == "WHALE_ENTER")
+								static_cast<CTrigger*>(m_pTriggerObj)->Set_TriggerType(TRIGGER_TYPE::TRIGGER_WHALE_ENTER);
+							else if (m_TriggerSelectName[i] == "WOOD_ENTER")
+								static_cast<CTrigger*>(m_pTriggerObj)->Set_TriggerType(TRIGGER_TYPE::TRIGGER_WITCH_WOOD_ENTER);
+							else if (m_TriggerSelectName[i] == "ESCORT1")
+								static_cast<CTrigger*>(m_pTriggerObj)->Set_TriggerType(TRIGGER_TYPE::TRIGGER_WITCH_ESCORT1);
+							else if (m_TriggerSelectName[i] == "ESCORT2")
+								static_cast<CTrigger*>(m_pTriggerObj)->Set_TriggerType(TRIGGER_TYPE::TRIGGER_WITCH_ESCORT2);
+						}
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::PopItemWidth();
+
+				if (ImGui::ListBoxHeader("##OBJECTLIST", ImVec2(300.0f, 0.0f)))
+				{
+					if (0 == m_iMonsterState)
+						BatchTrigger(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
+				}
+
+				ImGui::ListBoxFooter();
+			}
+
+			ImGui::Spacing();
+		
+			if (nullptr != m_pTriggerObj)
+			{
+				ImGui::PushItemWidth(120.0f);
+				static char Bgmbuffer[256] = "";
+				static char MapNameBuffer[256] = "";
+				if (ImGui::InputText("BgmName", Bgmbuffer, sizeof(Bgmbuffer))) {}; ImGui::SameLine();
+				if (ImGui::InputText("MapNameBuffer", MapNameBuffer, sizeof(MapNameBuffer))) {};
+
+				ImGui::Spacing();
+				if (ImGui::Button("BgmNameSave"))
+					m_pTriggerObj->Set_BgmName(Bgmbuffer);
+				ImGui::SameLine();
+				if (ImGui::Button("MapNameSave"))
+				{
+					_tchar tmp[256] = L"";
+					MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, MapNameBuffer, ::strlen(MapNameBuffer), tmp, 256);
+					m_pTriggerObj->Set_strMapName(tmp);
+				}
+				ImGui::PopItemWidth();
+				ImGui::Spacing();
+			}
+
+			if (ImGui::Button(u8"Save"))
+				Save_Trigger_Data(m_strLevelTrigger);
+
+			ImGui::SameLine();
+
+			if (ImGui::Button(u8"Load"))
+				Load_Trigger_Data(m_strLevelTrigger);
+
+		}
+		ImGui::EndChild();
+	}
+}
+
 void CTool_Map::ChangeState()
 {
 	m_bAddObject = false;
@@ -1763,6 +2012,10 @@ HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 
 			for (auto& Object : GameObjects)
 			{
+				if (Object->Get_ObjectType() == OBJ_TYPE::OBJ_TRIGGER)
+					continue;
+
+
 				CTransform* pTransform = Object->Get_Component<CTransform>(L"Com_Transform");
 				if (nullptr == pTransform)
 				{
@@ -1833,7 +2086,7 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_DYNAMIC)
 			continue;
 
-		GI->Clear_Layer(LEVEL_TOOL, i);
+		//GI->Clear_Layer(LEVEL_TOOL, i);
 		{
 			_uint iObjectCount = File->Read<_uint>();
 
@@ -2609,6 +2862,16 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 	}
 	MSG_BOX("Npc_Loaded.");
 	return S_OK;
+}
+
+HRESULT CTool_Map::Save_Trigger_Data(const wstring& strTriggerName)
+{
+	return S_OK;
+}
+
+HRESULT CTool_Map::Load_Trigger_Data(const wstring& strTriggerName)
+{
+	return E_NOTIMPL;
 }
 
 #ifdef _DEBUG

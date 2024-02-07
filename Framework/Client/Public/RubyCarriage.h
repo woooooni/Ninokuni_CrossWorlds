@@ -68,6 +68,8 @@ private:
 
 	ELEMENTAL_TYPE m_eDamagedElemental = ELEMENTAL_TYPE::WOOD;
 
+	_float m_fTime[2] = { 0.0f, 0.0f };
+
 private:
 	_bool m_bTakeTheCarriage = false;
 
