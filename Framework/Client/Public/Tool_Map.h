@@ -42,6 +42,9 @@ private:
 	void AddMapNPC(LEVELID iLevelID, LAYER_TYPE iLayerType);
 	void BatchNPC(LEVELID iLevelID, LAYER_TYPE iLayerType);
 
+	void AddTrigger(LEVELID iLevelID, LAYER_TYPE iLayerType);
+	void BatchTrigger(LEVELID iLevelID, LAYER_TYPE iLayerType);
+
 	void BatchDynamic(LEVELID iLevelID, LAYER_TYPE iLayerType);
 	void DeleteDynamic(LEVELID iLevelID, LAYER_TYPE iLayerType);
 
@@ -49,6 +52,8 @@ private:
 	void BatchAnimal(LEVELID iLevelID, LAYER_TYPE iLayerType);
 
 	void DeleteLight(_uint iLightID);
+
+	void DeleteTrigger(LEVELID iLevelID, LAYER_TYPE ILayerType);
 
 	// NPC Roming Clear
 	void RomingClear();
@@ -67,6 +72,8 @@ private:
 	void MapWaterSpace();
 	void MapAnimalPatrol();
 	void Map_Fog(_float fTimeDelta);
+	void Map_TriggerBox();
+
 private:
 	void ChangeState();
 
@@ -86,6 +93,9 @@ private:
 	HRESULT Save_NPC_Data(const wstring& strNPCFileName);
 	HRESULT Load_NPC_Data(const wstring& strNPCFileName);
 
+	HRESULT Save_Trigger_Data(const wstring& strTriggerName);
+	HRESULT Load_Trigger_Data(const wstring& strTriggerName);
+
 private:
 	class CRenderer* m_pRendererCom = nullptr;
 
@@ -96,6 +106,7 @@ private:
 	_bool m_bAddNPC = false;
 	_bool m_bPlantMode = false;
 	_bool m_bAddDynamic = false;
+	_bool m_bAddTrigger = false;
 
 	_bool m_bAddLight = false;
 	LightHelper m_LightHelper = {};
@@ -106,14 +117,17 @@ private:
 	_int m_iDynamicState = 0;
 	_int m_iMonsterState = 0;
 	_int m_iNPCState = 0;
+	_int m_iTriggerState = 0;
 	_bool m_bAnimalPointPick = false;
 
 	wstring m_strLevelName = L"Evermore";
 	wstring m_strLevelMonsterName = L"Winter";
 	wstring m_strLevelNPCName = L"Evermore";
+	wstring m_strLevelTrigger = L"Evermore";
 	wstring m_strPrevLevelName = L"";
 	_uint m_iCurrentLevel = 0;
 	_uint m_iMonsterLevel = 0;
+	_uint m_iTriggerLevel = 0;
 
 	const char* m_ImguiSelectableNameList[LEVEL_LIST_END] =
 	{ "Lobby", "Evermore", "Kingdom", "Winter", "Witch" };
@@ -121,10 +135,14 @@ private:
 	const char* m_ImguiSelectableNPCNameList[LEVEL_LIST_END] =
 	{ "Lobby", "Evermore", "Kingdom", "Winter", "Witch" };
 
+	const char* m_ImguiSelectableTrrigerNameList[LEVEL_LIST_END] =
+	{ "Lobby", "Evermore", "Kingdom", "Winter", "Witch" };
+
 	const char* m_ImguiLevelName[2] = { "Winter", "Witch" };
 
 	// 선택한 오브젝트
 	CGameObject* m_pSelectObj = nullptr;
+	class CTrigger* m_pTriggerObj = nullptr;
 	CLight* m_pSelectLight = nullptr;
 
 	// IMGUI STATE
@@ -153,6 +171,10 @@ private:
 	const char* m_InvasionMonsterStateSelectableName[CMonster::MONSTER_INVASION_STATE::INVASION_STATE_END] =
 	{
 		"ATTACK", "IDLE01", "IDLE02", "DEAD"
+	};
+	const char* m_TriggerSelectName[TRIGGER_TYPE::TRIGGER_END] = 
+	{
+		"CHANGE_BGM", "MAP_NAME", "GIANTY_ENTER", "STELLIA_ENTER", "WHALE_ENTER", "WOOD_ENTER", "ESCORT1", "ESCORT2"
 	};
 
 #pragma region Debug

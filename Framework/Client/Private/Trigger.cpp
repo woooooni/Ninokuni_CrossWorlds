@@ -47,6 +47,8 @@ HRESULT CTrigger::Initialize(void* pArg)
 	m_vExtents = pTriggerDesc->vExtents;
 	m_strBGM = pTriggerDesc->strBGM;
 	m_strMapName = pTriggerDesc->strMapName;
+	m_vAt = pTriggerDesc->vAt;
+	m_vEye = pTriggerDesc->vEye;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -99,6 +101,8 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 		switch (m_eTriggerType)
 		{
 		case TRIGGER_TYPE::TRIGGER_MAP_NAME:
+			GI->Set_ShadowLight(GI->Get_CurrentLevel(), m_vEye, m_vAt, Vec4(0.0f, 1.0f, 0.0f, 0.0f));
+
 			if (m_strMapName == TEXT(""))
 				return;
 			CUI_Manager::GetInstance()->OnOff_MapName(true, m_strMapName);
@@ -232,12 +236,13 @@ HRESULT CTrigger::Ready_Collider()
 
 	CCollider_AABB::AABB_COLLIDER_DESC AABBDesc;
 	BoundingBox AABBBox;
-	AABBBox.Extents = m_vExtents;
+	AABBBox.Extents = Vec3(1.0f, 1.0f, 1.0f);
+	AABBBox.Center = Vec3(0.0f, 0.0f, 0.0f);
 	AABBDesc.tBox = AABBBox;
 	AABBDesc.pNode = nullptr;
 	AABBDesc.pOwnerTransform = m_pTransformCom;
 	AABBDesc.ModelPivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
-	AABBDesc.vOffsetPosition = { 0.f, m_vExtents.y, 0.f };
+	AABBDesc.vOffsetPosition = { 0.f, 0.f, 0.f };
 
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::AABB, CCollider::DETECTION_TYPE::BODY, &AABBDesc)))
 		return E_FAIL;

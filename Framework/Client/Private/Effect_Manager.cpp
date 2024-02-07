@@ -121,6 +121,20 @@ HRESULT CEffect_Manager::Tick_Generate_Effect(_float* fTimeAcc, _float fCreateTi
 	return S_OK;
 }
 
+HRESULT CEffect_Manager::Tick_Generate_Decal(_float* fTimeAcc, _float fCreateTime, _float fTimeDelta, const wstring& strDecalName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner)
+{
+	*fTimeAcc += fTimeDelta;
+	if (*fTimeAcc >= fCreateTime)
+	{
+		*fTimeAcc = 0.f;
+		if (FAILED(Generate_Decal(strDecalName, WorldMatrix, vLocalPos, vLocalScale, vLocalRotation, pOwner)))
+			return E_FAIL;
+	}
+
+
+	return S_OK;
+}
+
 HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, CDecal** ppOut, _bool bDelet)
 {
 	// strDecalName

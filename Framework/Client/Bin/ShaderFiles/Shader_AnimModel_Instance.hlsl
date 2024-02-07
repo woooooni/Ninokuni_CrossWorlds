@@ -396,9 +396,6 @@ PS_OUT PS_GRANDFA_MAIN(PS_IN In)
 
         if (0.5f >= Out.vDiffuse.a)
             discard;
-
-		
-	
     }
 	
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
