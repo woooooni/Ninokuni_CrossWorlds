@@ -131,9 +131,6 @@ private:
 	/* Damping */
 	DAMPING_DESC	m_tDampingDesc			= {};
 
-	/* PhysX */
-	//CPhysX_Controller* m_pControllerCom	= nullptr;
-
 	/* Lock On */
 	LOCK_PROGRESS	m_eLockProgress			= LOCK_PROGRESS::OFF;
 	_bool			m_bLockLookHeight		= false;

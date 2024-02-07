@@ -452,26 +452,6 @@ HRESULT CCamera_Follow::Lock_LookHeight()
 
 HRESULT CCamera_Follow::Ready_Components()
 {
-	///* CPhysX_Controller */
-	//{
-	//	CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
-	//	{
-	//		ControllerDesc.eType = CPhysX_Controller::CAPSULE;
-	//		ControllerDesc.pTransform = m_pTransformCom;
-	//		ControllerDesc.vOffset = { 0.f, 0.f, 0.f };
-	//		ControllerDesc.fHeight = 0.01f;
-	//		ControllerDesc.fMaxJumpHeight = 10.f;
-	//		ControllerDesc.fRaidus = 0.1f;
-	//		ControllerDesc.pOwner = this;
-	//	}
-	//
-	//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
-	//		return E_FAIL;
-	//}
-	//
-	//if(nullptr != m_pControllerCom)
-	//	m_pControllerCom->Set_Active(true);
-
 	return S_OK;
 }
 
@@ -494,10 +474,6 @@ void CCamera_Follow::Tick_Transform(const _float fDeltaTime)
 
 		m_pTransformCom->LookAt(m_vPrevLookAt);
 	}
-
-	/* PhysX */
-	//if (nullptr != m_pControllerCom && !m_bBlending)
-	//	m_pControllerCom->Tick_Controller(fDeltaTime);
 }
 
 void CCamera_Follow::Tick_Blending(const _float fDeltaTime)
@@ -509,11 +485,6 @@ void CCamera_Follow::Tick_Blending(const _float fDeltaTime)
 	m_vPrevLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
 
 	m_pTransformCom->LookAt(m_vPrevLookAt);
-
-	/* PhysX */
-	/* 블렌딩 동안 피직스를 돌린다 */
-	//if (nullptr != m_pControllerCom && !m_bBlending)
-	//	m_pControllerCom->Tick_Controller(fDeltaTime);
 
 	/* 블렌딩 시작시 댐핑을 리셋하므로 블렌딩이 종료될 때까지 블렌딩 리셋 상태를 유지해야 한다. */
 	m_tDampingDesc.bSet = false;

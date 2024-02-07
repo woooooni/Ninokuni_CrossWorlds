@@ -78,11 +78,13 @@ CBTNode::NODE_STATE CMainQuestNode_Ending05::Tick(const _float& fTimeDelta)
 				CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 
-				// 엔딩 카메라 액션 호출 
+				// 엔딩 카메라 액션 호출 (이후 계속 해당 틱을 타게된다. 계속 running 반환)
+				CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+				if (nullptr != pActionCam)
+				{
+					pActionCam->Start_Action_Ending();
+				}
 			}
-
-			//m_bIsClear = true;
-
 			return NODE_STATE::NODE_RUNNING;
 		}
 

@@ -16,7 +16,7 @@ class CKuu;
 class CCamera_Action final : public CCamera
 {
 public:
-	enum CAMERA_ACTION_TYPE { LOBBY, DOOR, TALK, WINDMILL, SWORDMAN_BURST, ENGINEER_BURST, DESTROYER_BURST, STADIUM, CAMERA_ACTION_END };
+	enum CAMERA_ACTION_TYPE { LOBBY, DOOR, TALK, WINDMILL, SWORDMAN_BURST, ENGINEER_BURST, DESTROYER_BURST, STADIUM, ENDING, CAMERA_ACTION_END };
 
 public:
 	typedef struct tagActionLobbyDesc
@@ -136,8 +136,7 @@ public:
 		Vec4	vPrevTalkPos		= {};
 
 
-		// View Lost 
-
+		// View ist 
 		enum VIEW_NUM { V0_WALL, V1_WALL, V2_TRACK, V3_TRACK, V4_FINAL, VIEW_NUM_END };
 
 		const Vec4 ViewPositions[VIEW_NUM::VIEW_NUM_END]
@@ -162,6 +161,44 @@ public:
 
 	}ACTION_STADIUM_DESC;
 
+	typedef struct tagEndingDesc
+	{
+		_bool bActive = false;
+
+		enum VIEW_NUM { V0, V1, V2, VIEW_NUM_END };
+
+		/* Blending */
+		const Vec3 ViewPositions[VIEW_NUM::VIEW_NUM_END]
+		{
+			Vec3(-3.763f, 23.654f, 125.07f),
+			Vec3(-0.931f, 28.05f, 132.64f),
+			Vec3(-2.254f, 27.192f, 126.271f),
+		};
+
+		const Vec3 ViewLooks[VIEW_NUM::VIEW_NUM_END]
+		{
+			Vec3(0.869f, -0.213f, -0.4465f).Normalized(),
+			Vec3(0.513f, -0.219f, -0.829f).Normalized(),
+			Vec3(0.756f, -0.428f, -0.493f).Normalized(),
+		};
+
+		const _float    fLerpDuration = 6.f;
+		const LERP_MODE eLerpMode = LERP_MODE::SMOOTHER_STEP;
+		const _float	fTargetFov = Cam_Fov_Default;
+
+		LERP_VEC3_DESC	tLerpPos = {};
+		LERP_VEC3_DESC	tLerpLook = {};
+
+		/* Height Move*/
+		LERP_FLOAT_DESC tLerpHeight;
+		_bool bUp = false;
+		const _float fHeightDelta = 1.f;
+		const _float fHeightLerpDuration = 4.f;
+		const LERP_MODE eHeightLerpMode = LERP_MODE::SMOOTHER_STEP;
+		_float fOriginHeight = 0;
+
+	}ACTION_ENDING_DESC;
+
 private:
 	CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_Action(const CCamera_Action& rhs);
@@ -181,6 +218,14 @@ public:
 	HRESULT Start_Action_Lobby();
 	HRESULT Start_Action_Door();
 	HRESULT Start_Action_WindMill(const _bool& bNpcToWindMill); /* 현재 대화 룩 타겟이 NPC일 때 호출*/
+	HRESULT Start_Action_Ending();
+
+	HRESULT Start_Action_Talk(CGameObject* pNpc); /* 처음 대화 시작시 호출 (쿠우 혼자면 nullptr, Npc 있으면 Npc 넘겨줌 */
+	HRESULT Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_TYPE& eType); /* 중간 화자 변경시 호출 */
+	HRESULT Finish_Action_Talk(const CAMERA_TYPE& eNextCameraType = CAMERA_TYPE::FOLLOW); /* 대화 종료시 호출 */
+
+	HRESULT Start_Action_Stadium(const _float& fDuration);
+	HRESULT Finish_Action_Stadium();
 
 	// 캐릭터 버스트 스킬 액션.
 	HRESULT Start_Action_SwordManBurst(class CTransform* pSwordManTransform);
@@ -189,13 +234,6 @@ public:
 	HRESULT Stop_ActionSwordMan_Burst();
 	HRESULT Stop_ActionEngineer_Burst();
 	HRESULT Stop_ActionDestroyer_Burst();
-
-	HRESULT Start_Action_Talk(CGameObject* pNpc); /* 처음 대화 시작시 호출 (쿠우 혼자면 nullptr, Npc 있으면 Npc 넘겨줌 */
-	HRESULT Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_TYPE& eType); /* 중간 화자 변경시 호출 */
-	HRESULT Finish_Action_Talk(const CAMERA_TYPE& eNextCameraType = CAMERA_TYPE::FOLLOW); /* 대화 종료시 호출 */
-
-	HRESULT Start_Action_Stadium(const _float& fDuration);
-	HRESULT Finish_Action_Stadium();
 
 public:
 	const _bool& Is_Finish_Action() const { return m_bAction; }
@@ -207,10 +245,12 @@ private:
 	void Tick_Door(_float fTimeDelta);
 	void Tick_Talk(_float fTimeDelta);
 	void Tick_WindMill(_float fTimeDelta);
+	void Tick_Stadium(_float fTimeDelta);
+	void Tick_Ending(_float fTimeDelta);
+
 	void Tick_SwordManBurst(_float fTimeDelta);
 	void Tick_EngineerBurst(_float fTimeDelta);
 	void Tick_DestroyerBurst(_float fTimeDelta);
-	void Tick_Stadium(_float fTimeDelta);
 
 private:
 	void Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType);
@@ -230,6 +270,7 @@ private:
 	ACTION_TALK_DESC		m_tActionTalkDesc = {};
 	ACTION_WINDMILL_DESC	m_tActionWindMillDesc = {};
 	ACTION_STADIUM_DESC		m_tActionStadiumDesc = {};
+	ACTION_ENDING_DESC		m_tActionEndingDesc = {};
 
 	ACTION_SWORDMAN_BURST_DESC m_tActionSwordManBurstDesc = {};
 	ACTION_ENGINEER_BURST_DESC m_tActionEngineerBurstDesc = {};
