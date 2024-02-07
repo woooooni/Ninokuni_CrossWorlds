@@ -22,8 +22,8 @@ HRESULT CSubQuestNode_Wanted06::Initialize()
 	m_strQuestContent = TEXT("녀석들을 혼내주자");
 
 	m_strNextQuestTag = TEXT("[서브]");
-	m_strNextQuestName = TEXT("나쁜 남자 잡기");
-	m_strNextQuestContent = TEXT("녀석들을 혼내주자");
+	m_strNextQuestName = TEXT("툼바에게 돌아가기");
+	m_strNextQuestContent = TEXT("툼바에게 돌아가자");
 
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/03. SubQuest03_Tumba_Wanted/SubQuest_Wanted06.json");
 

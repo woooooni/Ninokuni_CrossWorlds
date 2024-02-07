@@ -11,6 +11,7 @@
 #include "Camera_Group.h"
 
 #include "Game_Manager.h"
+#include "Player.h"
 
 #include "Kuu.h"
 
@@ -46,25 +47,32 @@ HRESULT CMainQuestNode_Glanix08::Initialize()
 void CMainQuestNode_Glanix08::Start()
 {
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
-
-	/* 대화 */
-	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-	// CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
-	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
-
-	m_pKuu = CGame_Manager::GetInstance()->Get_Kuu();
-
-	TalkEvent();
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Glanix08::Tick(const _float& fTimeDelta)
 {
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
+
+	if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CurrentState() == CCharacter::STATE::NEUTRAL_DOOR_ENTER)
+		return NODE_STATE::NODE_RUNNING;
+
+	if (!m_bIsStart)
+	{
+		m_bIsStart = true;
+
+		/* 대화 */
+		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+		// CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+		CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
+		CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+		TalkEvent();
+	}
+
 
 	if (GI->Get_CurrentLevel() == LEVEL_KINGDOMHALL)
 	{

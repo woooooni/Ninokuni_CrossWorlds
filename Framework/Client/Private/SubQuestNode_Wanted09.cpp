@@ -19,10 +19,6 @@ HRESULT CSubQuestNode_Wanted09::Initialize()
 {
 	__super::Initialize();
 
-	m_strQuestTag = TEXT("[서브]");
-	m_strQuestName = TEXT("툼바에게 돌아가기");
-	m_strQuestContent = TEXT("툼바에게 돌아가자");
-
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/03. SubQuest03_Tumba_Wanted/SubQuest_Wanted09.json");
 
 	for (const auto& talkDesc : Load) {
@@ -84,7 +80,6 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted09::Tick(const _float& fTimeDelta)
 						iter->Set_Dead(true);
 				}
 
-				CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 				/* 대화 카메라 종료 */

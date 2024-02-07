@@ -40,6 +40,7 @@ HRESULT CMainQuestNode_PlantKiller07::Initialize()
 
 void CMainQuestNode_PlantKiller07::Start()
 {
+	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::GetInstance()->QUESTEVENT_RUBY_DEFENCE);
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	m_pRuby = static_cast<CRuby*>(GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_NPC, TEXT("Ruby")));

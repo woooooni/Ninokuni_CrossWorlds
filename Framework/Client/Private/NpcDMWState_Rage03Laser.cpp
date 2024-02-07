@@ -30,7 +30,7 @@ HRESULT CNpcDMWState_Rage03Laser::Initialize(const list<wstring>& AnimationList)
 void CNpcDMWState_Rage03Laser::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
-	m_pWitch->Set_IsFollowing(true);
+	// m_pWitch->Set_IsFollowing(true);
 
 	m_bIsAttack = false;
 	m_fAccTime = 0.f;
