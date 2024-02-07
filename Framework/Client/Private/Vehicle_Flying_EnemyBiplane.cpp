@@ -7,14 +7,10 @@
 #include "State_Enemy_VehicleFlying_Run.h"
 
 #include "State_EnemyBiplane_Stand.h"
-#include "State_EnemyBiplane_Attack.h"
 #include "State_EnemyBiplane_Finish_Attack.h"
-#include "State_EnemyBiplane_Run.h"
-#include "State_EnemyBiplane_RunAway.h"
 #include "State_EnemyBiplane_Skill_0.h"
 #include "State_EnemyBiplane_Skill_1.h"
 #include "State_EnemyBiplane_Skill_2.h"
-#include "State_EnemyBiplane_Trace.h"
 #include "State_EnemyBiplane_Dead.h"
 
 #include "Grandprix_Enemy.h"
@@ -412,14 +408,6 @@ HRESULT CVehicle_Flying_EnemyBiplane::Ready_States()
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
-	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_TRACE, CState_EnemyBiplane_Trace::Create(m_pStateCom, strAnimationNames));
-
-	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
-	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_ATTACK, CState_EnemyBiplane_Attack::Create(m_pStateCom, strAnimationNames));
-
-	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK, CState_EnemyBiplane_Finish_Attack::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
@@ -433,15 +421,6 @@ HRESULT CVehicle_Flying_EnemyBiplane::Ready_States()
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_2, CState_EnemyBiplane_Skill_2::Create(m_pStateCom, strAnimationNames));
-
-	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
-	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_RUN, CState_EnemyBiplane_Run::Create(m_pStateCom, strAnimationNames));
-
-
-	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
-	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_RUNAWAY, CState_EnemyBiplane_RunAway::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");

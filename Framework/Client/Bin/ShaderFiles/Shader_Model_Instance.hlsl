@@ -17,10 +17,23 @@ float4 g_vClipPlane;
 
 float fGrassAngle;
 
+float3 g_vBloomPower;
+
 cbuffer InversTransposeMatBuffer
 {
     matrix WorldInvTransposeView;
 };
+
+float4 Caculation_Brightness(float4 vColor)
+{
+    float4 vBrightnessColor = float4(0.f, 0.f, 0.f, 0.f);
+
+    float fPixelBrightness = dot(vColor.rgb, g_vBloomPower.rgb);
+    if (fPixelBrightness > 0.99f)
+        vBrightnessColor = float4(vColor.rgb, 1.0f);
+
+    return vBrightnessColor;
+}
 
 
 void ComputeNormalMapping(inout float3 normal, float3 tangent, float2 texcoord)
@@ -156,7 +169,7 @@ VS_OUT VS_GRASS_MAIN(VS_IN In)
     Out.vProjPos = Out.vPosition;
     Out.iInstanceID = In.iInstanceID;
 
-			// SSAO
+	// SSAO
     Out.vViewNormal = mul(Out.vNormal.xyz, (float3x3) g_ViewMatrix);
     Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
     return Out;
@@ -319,7 +332,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
-    Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vBloom = Caculation_Brightness(Out.vDiffuse);
     Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
 	if (0.3 >= Out.vDiffuse.a)
 		discard;
@@ -381,7 +394,7 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
-    Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vBloom = Caculation_Brightness(Out.vDiffuse);
     Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
 	if (0.5 >= Out.vDiffuse.a)
 		discard;
@@ -411,7 +424,7 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
 
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
-    Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vBloom = Caculation_Brightness(Out.vDiffuse);
     Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
 	if (0 == Out.vDiffuse.a)
 		discard;

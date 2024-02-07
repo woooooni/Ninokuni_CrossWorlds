@@ -113,6 +113,8 @@ HRESULT CBuilding::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instanc
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
+	if (FAILED(pInstancingShader->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
+		return E_FAIL;
 
 	// ViewSpace상의 노멀을 찾기 위한 Matrix
 	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
@@ -155,6 +157,9 @@ HRESULT CBuilding::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_
 	if (FAILED(pInstancingShader->Bind_Matrix("g_ViewMatrix", &GI->Get_ShadowViewMatrix(GI->Get_CurrentLevel()))))
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	if (FAILED(pInstancingShader->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
 		return E_FAIL;
 
 	// ViewSpace상의 노멀을 찾기 위한 Matrix

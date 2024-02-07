@@ -41,7 +41,7 @@ void CState_EnemyBiplane_Skill_2::Enter_State(void* pArg)
 
 void CState_EnemyBiplane_Skill_2::Tick_State(_float fTimeDelta)
 {
-    
+    // m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND);
 }
 
 void CState_EnemyBiplane_Skill_2::Exit_State()

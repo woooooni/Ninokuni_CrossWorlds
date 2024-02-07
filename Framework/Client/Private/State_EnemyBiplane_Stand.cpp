@@ -14,6 +14,19 @@
 #include "Vehicle_Flying_EnemyBiplane.h"
 #include "Vehicle_Flying_Biplane.h"
 
+#include "Camera_Follow.h"
+#include "Camera_Manager.h"
+
+#include "UI_Manager.h"
+#include "UI_Fade.h"
+
+#include "Enemy_Biplane_Bullet.h"
+#include "Enemy_Biplane_BulletBall.h"
+#include "Enemy_GuidedMissile.h"
+
+#include "Pool.h"
+
+
 CState_EnemyBiplane_Stand::CState_EnemyBiplane_Stand(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
 {
@@ -31,18 +44,16 @@ HRESULT CState_EnemyBiplane_Stand::Initialize(const list<wstring>& AnimationList
 
     m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
     
+   
+
     
-    // TODO : 플레이어 포지션 변경.
-    // CRiding_Manager::GetInstance()->Get_Character_Biplane()->Get_Component_Transform()->Set_Position()
-    // CRiding_Manager::GetInstance()->Get_Character_Biplane()->Get_Component<CPhysX_Controller>(L"Com_Controller")->Set_EnterLevel_Position()
+    m_pFollowCamera = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+    if (nullptr == m_pFollowCamera)
+        return E_FAIL;
 
-    // TODO : 내 포지션 변경.
-    m_pTransformCom->Set_Position(Vec4(-0.65f, 111.44f, 288.f, 1.f));
+    
 
-    // TODO : camera target
-
-
-    // TODO : 페이드.
+    
 
     return S_OK;
 }
@@ -50,43 +61,199 @@ HRESULT CState_EnemyBiplane_Stand::Initialize(const list<wstring>& AnimationList
 void CState_EnemyBiplane_Stand::Enter_State(void* pArg)
 {
     m_pEngineerPlane->Set_Infinite(false, 0.f);
-    CTransform* pTargetTransform = m_pTarget->Get_CharacterTransformCom(); //플레이어의 트랜스폼
-    if (nullptr == pTargetTransform)
-        return;
 
 
-    Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+    // TODO : 플레이어 포지션 변경.
+    CRiding_Manager::GetInstance()->Get_Character_Biplane()->Get_Component_Transform()->Set_Position(Vec4(-0.65f, 51.4f, 131.4f, 1.f));
+    CRiding_Manager::GetInstance()->Get_Character_Biplane()->Get_Component<CPhysX_Controller>(L"Com_Controller")->Set_EnterLevel_Position(Vec4(-0.65f, 51.4f, 131.4f, 1.f));
 
-    _float fDistance = vDir.Length();
-    if (fDistance <= m_pEngineerPlane->Get_Attack_StartEnd_Distance().x)
-    {
-        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_ATTACK);
-        return;
-    }
+    // TODO : 내 포지션 변경.
+    m_pTransformCom->Set_Position(Vec4(-0.65f, 111.44f, 288.f, 1.f));
+    m_pEngineerPlane->Get_Component<CPhysX_Controller>(L"Com_Controller")->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
+    m_vInitialPositon = m_pTransformCom->Get_Position();
 
-    if (fDistance <= m_pEngineerPlane->Get_Trace_StartEnd_Distance().x)
-    {
-        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_TRACE);
-        return;
-    }
 
-    // 둘다 아니라면, 다시 순회.
-    m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_RUN);
+    // TODO:: Look 변경,
+    Vec3 vTargetDir = m_pTransformCom->Get_Position() - CRiding_Manager::GetInstance()->Get_Character_Biplane()->Get_Component_Transform()->Get_Position();
+
+    CRiding_Manager::GetInstance()->Get_Character_Biplane()->Get_Component_Transform()->Rotation_Look(XMVector3Normalize(vTargetDir));
+    m_pTransformCom->Rotation_Look(-1.f * XMVector3Normalize(vTargetDir));
+
+    // TODO : Camera Target
+    m_pFollowCamera->Start_LockOn(m_pEngineerPlane, Vec4(0.f, -1.f, -10.f, 0.f), Vec4(0.f, 1.f, 0.f, 0.f));
+    
+    // TODO : 페이드.
+    CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
+
+    for (_int i = 0; i < SHOOT_STATE::SHOOT_STATE_END; ++i)
+        m_iShootCounts[i] = 0;
+
     return;
-    
-    
-
 }
 
 void CState_EnemyBiplane_Stand::Tick_State(_float fTimeDelta)
 {
     if (nullptr == m_pTarget)
         return;
-    
+
+    if (true == m_bCoolDown)
+    {
+        m_fAccCoolDown += fTimeDelta;
+        if (m_fAccCoolDown >= m_fCoolDownTime)
+        {
+            m_bCoolDown = false;
+            m_fAccCoolDown = 0.f;
+        }
+    }
+    else
+    {
+        m_fAccShootTime += fTimeDelta;
+        if (m_fAccShootTime >= m_fShootTime)
+        {
+            m_fAccShootTime = 0.f;
+            switch (m_eShootState)
+            {
+            case Client::CState_EnemyBiplane_Stand::NORMAL:
+                Shoot_Normal();
+                break;
+            case Client::CState_EnemyBiplane_Stand::PATTERN_0:
+                Shoot_Pattern_0();
+                break;
+            case Client::CState_EnemyBiplane_Stand::PATTERN_1:
+                Shoot_Pattern_1();
+                break;
+            case Client::CState_EnemyBiplane_Stand::PATTERN_2:
+                Shoot_Pattern_2();
+                break;
+            case Client::CState_EnemyBiplane_Stand::RAGE:
+                break;
+
+            default:
+                break;
+            }
+        }
+    }
 }
 
 void CState_EnemyBiplane_Stand::Exit_State()
 {
+    for (_int i = 0; i < SHOOT_STATE::SHOOT_STATE_END; ++i)    
+        m_iShootCounts[i] = 0;
+}
+
+void CState_EnemyBiplane_Stand::Shoot_Normal()
+{
+    m_fShootTime = 0.1f;
+
+    if (m_iShootCounts[SHOOT_STATE::NORMAL] > 30)
+    {
+        m_eShootState = SHOOT_STATE(GI->RandomInt(SHOOT_STATE::PATTERN_0, SHOOT_STATE::PATTERN_2));
+        return;
+    }
+
+    CEnemy_Biplane_Bullet::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
+    ProjectileDesc.pOwner = m_pEngineerPlane;
+
+    // Left Side Bullet
+
+    CGameObject* pLeftBullet = CPool<CEnemy_Biplane_Bullet>::Get_Obj();
+
+    if (nullptr == pLeftBullet)
+        pLeftBullet = GI->Clone_GameObject(L"Prototype_GameObject_Enemy_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+
+    if (nullptr == pLeftBullet)
+        return;
+
+    CTransform* pLeftTransform = pLeftBullet->Get_Component<CTransform>(L"Com_Transform");
+    Vec3 vLeftScale = pLeftTransform->Get_Scale();
+
+    pLeftTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+    pLeftTransform->Set_Scale(vLeftScale);
+
+    _matrix MatLeft = m_pModelCom->Get_SocketLocalMatrix(0) * m_pTransformCom->Get_WorldMatrix();
+    Vec4 vLeftStartPos = MatLeft.r[CTransform::STATE_POSITION];
+
+    //vLeftStartPos += XMVector3Normalize(pLeftTransform->Get_Look()) * 0.5f;
+    vLeftStartPos += XMVector3Normalize(m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Look()) * 0.5f;
+    pLeftTransform->Set_State(CTransform::STATE_POSITION, vLeftStartPos);
+
+    if (nullptr != m_pEngineerPlane->Get_Target())
+    {
+        CTransform* pTargetTransform = m_pEngineerPlane->Get_Target()->Get_Component_Transform();
+        if (nullptr != pTargetTransform)
+        {
+            Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() - pLeftTransform->Get_Position());
+            pLeftTransform->Rotation_Look(vDir);
+        }
+    }
+
+    if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, pLeftBullet)))
+        MSG_BOX("Generate Bullet Failed.");
+
+
+    // Right Side Bullet
+    CGameObject* pRightBullet = CPool<CEnemy_Biplane_Bullet>::Get_Obj();
+
+    if (nullptr == pRightBullet)
+        pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Enemy_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+
+    if (nullptr == pRightBullet)
+        return;
+
+    CTransform* pRightTransform = pRightBullet->Get_Component<CTransform>(L"Com_Transform");
+    Vec3 vRightScale = pRightTransform->Get_Scale();
+    pRightTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+    pRightTransform->Set_Scale(vRightScale);
+
+    _matrix MatRight = m_pModelCom->Get_SocketLocalMatrix(1) * m_pTransformCom->Get_WorldMatrix();
+    Vec4 vRightStartPos = MatRight.r[CTransform::STATE_POSITION];
+    vRightStartPos += XMVector3Normalize(m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Look()) * 0.5f;
+    pRightTransform->Set_State(CTransform::STATE_POSITION, vRightStartPos);
+
+    if (nullptr != m_pEngineerPlane->Get_Target())
+    {
+        CTransform* pTargetTransform = m_pEngineerPlane->Get_Target()->Get_Component_Transform();
+        if (nullptr != pTargetTransform)
+        {
+            Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() - pRightTransform->Get_Position());
+            pRightTransform->Rotation_Look(vDir);
+        }
+    }
+
+    if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, pRightBullet)))
+        MSG_BOX("Generate Bullet Failed.");
+
+
+    m_iShootCounts[SHOOT_STATE::NORMAL] += 1;
+}
+
+void CState_EnemyBiplane_Stand::Shoot_Pattern_0()
+{
+    m_fShootTime = 1.f;
+    if (m_iShootCounts[SHOOT_STATE::NORMAL] > 30)
+    {
+        
+    }
+    
+}
+
+void CState_EnemyBiplane_Stand::Shoot_Pattern_1()
+{
+    m_fShootTime = 1.f;
+
+    if (m_iShootCounts[SHOOT_STATE::NORMAL] > 30)
+    {
+
+    }
+}
+
+void CState_EnemyBiplane_Stand::Shoot_Pattern_2()
+{
+    m_fShootTime = 1.f;
+    if (m_iShootCounts[SHOOT_STATE::NORMAL] > 30)
+    {
+
+    }
 
 }
 
