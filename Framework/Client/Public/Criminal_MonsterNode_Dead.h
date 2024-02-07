@@ -19,6 +19,9 @@ private:
 	_float m_fTime = 0.f;
 	_float m_fBlowDeadTime = 0.f;
 
+	_bool m_bIsDown = false;
+	_bool m_bIsDead = false;
+
 public:
 	static CCriminal_MonsterNode_Dead* Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT);
 	virtual void Free() override;

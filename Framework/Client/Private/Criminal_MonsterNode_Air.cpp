@@ -14,7 +14,8 @@ HRESULT CCriminal_MonsterNode_Air::Initialize_Prototype(CMonsterBT::BT_MONSTERDE
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
-	m_fAirTime = 1.f;
+	m_fAirTime = 3.f;
+	m_fForcedStandUpTime = 5.f;
 
 	return S_OK;
 }
@@ -28,37 +29,71 @@ CBTNode::NODE_STATE CCriminal_MonsterNode_Air::Tick(const _float& fTimeDelta)
 	if (!dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_AIR))
 		return NODE_STATE::NODE_FAIL;
 
-	if (m_tBTMonsterDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Is_Ground())
+	m_fCheckTime += fTimeDelta;
+
+	if (m_fCheckTime >= 0.5f)
 	{
-		m_fTime += fTimeDelta;
-		if (m_fTime >= m_fAirTime)
+		if (m_tBTMonsterDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Is_Ground())
 		{
-			if (!m_bIsStand)
+			if (!m_bIsDown)
 			{
-				m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_BlackCircleAgent.ao|StandUp"));
-				m_bIsStand = true;
+				m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_BlackCircleAgent.ao|Down"));
+				m_bIsDown = true;
 			}
 
-			if (m_tBTMonsterDesc.pOwnerModel->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_BlackCircleAgent.ao|StandUp"))
+			m_fTime += fTimeDelta;
+			if (m_fTime >= m_fAirTime)
 			{
-				if (m_tBTMonsterDesc.pOwnerModel->Is_Finish() && !m_tBTMonsterDesc.pOwnerModel->Is_Tween())
+				if (!m_bIsStand)
 				{
-					dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_AIR, false);
-					dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, false);
+					m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_BlackCircleAgent.ao|StandUp"));
+					m_bIsStand = true;
+				}
 
-					if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND))
-						dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
-					else
-						dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, false);
+				if (m_tBTMonsterDesc.pOwnerModel->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_BlackCircleAgent.ao|StandUp"))
+				{
+					if (m_tBTMonsterDesc.pOwnerModel->Is_Finish() && !m_tBTMonsterDesc.pOwnerModel->Is_Tween())
+					{
+						dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_AIR, false);
+						dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, false);
 
-					m_fTime = m_fAirTime - m_fTime;
-					m_bIsStand = false;
+						if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND))
+							dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
+						else
+							dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, false);
 
-					return NODE_STATE::NODE_SUCCESS;
+						m_fTime = m_fAirTime - m_fTime;
+						m_bIsStand = false;
+						m_bIsDown = false;
+						m_fCheckTime = 0.f;
+
+						return NODE_STATE::NODE_SUCCESS;
+					}
 				}
 			}
 		}
 	}
+
+	// 안 일어나는 놈들이 있어서 강제 기상
+	//m_fAccForcedStandUpTime += fTimeDelta;
+	//if (m_fAccForcedStandUpTime >= m_fForcedStandUpTime)
+	//{
+	//	m_fAccForcedStandUpTime = m_fForcedStandUpTime - m_fAccForcedStandUpTime;
+	//
+	//	dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_BLOW, false);
+	//	dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, false);
+	//
+	//	if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND))
+	//		dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
+	//	else
+	//		dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, false);
+	//
+	//	m_fTime = m_fAirTime - m_fTime;
+	//	m_bIsStand = false;
+	//
+	//	return NODE_STATE::NODE_SUCCESS;
+	//}
+
 
 	return NODE_STATE::NODE_RUNNING;
 }

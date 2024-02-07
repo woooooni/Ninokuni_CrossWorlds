@@ -10,6 +10,7 @@
 #include "Sound_Manager.h"
 
 #include "Game_Manager.h"
+#include "Player.h"
 
 CMainQuestNode_SnowField02_2::CMainQuestNode_SnowField02_2()
 {
@@ -46,19 +47,6 @@ void CMainQuestNode_SnowField02_2::Start()
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
-
-	/* 대화 */
-	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-	// CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
-	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
-
-
-
-	TalkEvent();
 }
 
 CBTNode::NODE_STATE CMainQuestNode_SnowField02_2::Tick(const _float& fTimeDelta)
@@ -66,41 +54,63 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField02_2::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	m_fTime += fTimeDelta;
+	if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CurrentState() == CCharacter::STATE::NEUTRAL_DOOR_ENTER)
+		return NODE_STATE::NODE_RUNNING;
 
-	if (m_fTime >= 6.f)
+	if (!m_bIsStart)
 	{
-		Safe_Delete_Array(m_szpOwner);
-		Safe_Delete_Array(m_szpTalk);
+		m_bIsStart = true;
 
-		m_iTalkIndex += 1;
+		/* 대화 */
+		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-		if (m_iTalkIndex >= m_vecTalkDesc.size())
+		// CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+		CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
+		CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+		TalkEvent();
+	}
+
+	if (m_bIsStart)
+	{
+		m_fTime += fTimeDelta;
+
+		if (m_fTime >= 6.f)
 		{
-			CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-			QuestDesc.strType = m_strNextQuestTag;
-			QuestDesc.strTitle = m_strNextQuestName;
-			QuestDesc.strContents = m_strNextQuestContent;
-			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+			Safe_Delete_Array(m_szpOwner);
+			Safe_Delete_Array(m_szpTalk);
 
-			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
+			m_iTalkIndex += 1;
 
-			return NODE_STATE::NODE_FAIL;
+			if (m_iTalkIndex >= m_vecTalkDesc.size())
+			{
+				CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+				QuestDesc.strType = m_strNextQuestTag;
+				QuestDesc.strTitle = m_strNextQuestName;
+				QuestDesc.strContents = m_strNextQuestContent;
+				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+				//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+
+				m_bIsClear = true;
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
+
+				return NODE_STATE::NODE_FAIL;
+			}
+
+			if (m_iTalkIndex < m_vecTalkDesc.size())
+			{
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+			}
+
+			m_fTime = m_fTalkChangeTime - m_fTime;
 		}
-
-		if (m_iTalkIndex < m_vecTalkDesc.size())
-		{
-			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
-
-			TalkEvent();
-		}
-
-		m_fTime = m_fTalkChangeTime - m_fTime;
 	}
 
 	//if (KEY_TAP(KEY::LBTN))

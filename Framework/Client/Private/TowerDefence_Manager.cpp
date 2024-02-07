@@ -299,10 +299,10 @@ void CTowerDefence_Manager::Set_PickObject(TOWER_TYPE eTowerType)
 
 void CTowerDefence_Manager::Tick_Defence_No_Run(_float fTimeDelta)
 {
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::X))
-	{
-		Prepare_Defence();
-	}
+	//if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::X))
+	//{
+	//	Prepare_Defence();
+	//}
 }
 
 void CTowerDefence_Manager::Tick_Defence_Prepare(_float fTimeDelta)

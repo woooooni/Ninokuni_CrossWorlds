@@ -149,7 +149,7 @@ void CCriminal_Monster::Collision_Enter(const COLLISION_INFO& tInfo)
 
 					On_Damaged(tInfo);
 
-					m_pModelCom->Set_Animation(TEXT("SKM_BlackCircleAgent.ao|Down"));
+					m_pModelCom->Set_Animation(TEXT("SKM_BlackCircleAgent.ao|Air"));
 
 					m_pRigidBodyCom->Add_Velocity(-m_pTransformCom->Get_Look(), m_tStat.fAirVelocity, false);
 					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 1.5f, false);
@@ -167,7 +167,7 @@ void CCriminal_Monster::Collision_Enter(const COLLISION_INFO& tInfo)
 
 					On_Damaged(tInfo);
 
-					m_pModelCom->Set_Animation(TEXT("SKM_BlackCircleAgent.ao|Down"));
+					m_pModelCom->Set_Animation(TEXT("SKM_BlackCircleAgent.ao|Air"));
 					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 2.f, false);
 
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] = false;
@@ -256,9 +256,9 @@ HRESULT CCriminal_Monster::Ready_Components()
 	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
 	ControllerDesc.pTransform = m_pTransformCom;
 	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
-	ControllerDesc.fHeight = 1.f;
+	ControllerDesc.fHeight = 5.f;
 	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 0.5f;
+	ControllerDesc.fRaidus = .2f;
 	ControllerDesc.pOwner = this;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
@@ -283,8 +283,8 @@ HRESULT CCriminal_Monster::Ready_States()
 	m_tStat.eElementType = ELEMENTAL_TYPE::WOOD;
 
 	m_tStat.iLv = 1;
-	m_tStat.fMaxHp = 25000;
-	m_tStat.fHp = 25000;
+	m_tStat.fMaxHp = 10000;
+	m_tStat.fHp = 10000;
 	m_tStat.iAtk = 25;
 	m_tStat.iDef = 0;
 

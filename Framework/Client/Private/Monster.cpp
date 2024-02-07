@@ -402,40 +402,11 @@ void CMonster::Search_Target(_float fTimeDelta)
 	}
 
 	// 루비 몬스터 웨이브 퀘스트
-	//else if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_RUBY_DEFENCE)
-	//{
-	//	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
-	//	CGameObject* pRuby = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, (_uint)LAYER_NPC, TEXT("Ruby"));
-
-	//	// 최초 한 번만
-	//	if (!m_bIsRubyDefence && m_tTargetDesc.pTarget == nullptr)
-	//	{
-	//		m_tTargetDesc.pTarget = pRuby;
-
-	//		if (m_tTargetDesc.pTarget != nullptr)
-	//		{
-	//			m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
-	//			m_bIsRubyDefence = true;
-	//		}
-	//		else
-	//		{
-	//			m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-	//			m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
-	//			m_bIsRubyDefence = true;
-	//		}
-	//	}
-
-	//	// 한 번이라도 플레이어게 맞았으면
-	//	if (!m_bIsEscortHitPlayer && m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT])
-	//	{
-	//		m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-	//		if (m_tTargetDesc.pTarget != nullptr)
-	//			m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
-
-	//		m_bIsEscortHitPlayer = true;
-	//	}
-	//}
-
+	else if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_RUBY_DEFENCE)
+	{
+		m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+		m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
+	}
 
 	// 퀘스트 상태가 아닐 때
 	else

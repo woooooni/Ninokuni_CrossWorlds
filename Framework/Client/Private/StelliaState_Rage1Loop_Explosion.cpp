@@ -56,7 +56,7 @@ void CStelliaState_Rage1Loop_Explosion::Tick_State(_float fTimeDelta)
 	__super::Tick_State(fTimeDelta);
 	__super::Rage1_Tick(fTimeDelta);
 
-	Vec4 vDirToPlayer = (Vec4)m_pPlayerTransform->Get_Position() - ((Vec4)m_pTransformCom->Get_Position() + m_vLook * m_fStelliaCenterOffSetDist);
+	Vec4 vDirToPlayer = (Vec4)m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position() - ((Vec4)m_pTransformCom->Get_Position() + m_vLook * m_fStelliaCenterOffSetDist);
 
 	// 스텔리아의 룩과 플레이어의 현재 위치의 라디안 각도.
 	_float fAngleToPlayer = XMVectorGetX(XMVector3AngleBetweenNormals(m_vLook, XMVector3Normalize(vDirToPlayer)));
