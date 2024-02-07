@@ -120,9 +120,9 @@ void CUI_Grandprix_RaderIcon::Tick(_float fTimeDelta)
 			{
 				// 원래 타입으로 돌린다.
 				if (true == m_bIsBiplane)
-					m_eType == UI_RADERICON::ICON_ENGINEER;
+					m_eType = UI_RADERICON::ICON_ENGINEER;
 				else
-					m_eType == UI_RADERICON::ICON_GHOST;
+					m_eType = UI_RADERICON::ICON_GHOST;
 			}
 
 			if (nullptr != pTarget && m_pOwner != pTarget)

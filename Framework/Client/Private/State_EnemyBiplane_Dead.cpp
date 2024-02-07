@@ -55,10 +55,6 @@ void CState_EnemyBiplane_Dead::Enter_State(void* pArg)
         return;
     }
 
-    // 둘다 아니라면, 그냥 있자..
-    m_pStateMachineCom->Change_State(CVehicle::VEHICLE_ENGINEER_RUN);
-
-
 }
 
 void CState_EnemyBiplane_Dead::Tick_State(_float fTimeDelta)

@@ -123,6 +123,9 @@ HRESULT CProbs::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
+	if (FAILED(pInstancingShader->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
+		return E_FAIL;
+
 
 	if (TEXT("Winter_Plants_02") == m_strObjectTag || TEXT("Winter_Plants_01") == m_strObjectTag)
 	{

@@ -25,6 +25,8 @@
 #include "Player.h"
 #include "Character.h"
 
+#include "State_VehicleFlying_BossStage_Stand.h"
+
 CVehicle_Flying_Biplane::CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CVehicle_Flying(pDevice, pContext, L"Vehicle_Flying_PlayerBiplane", OBJ_GRANDPRIX_CHARACTER)
 {
@@ -444,6 +446,10 @@ HRESULT CVehicle_Flying_Biplane::Ready_States()
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_BACKFLIP, CState_VehicleFlying_Backflip::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_BOSS_IDLE, CState_VehicleFlying_BossStage_Stand::Create(m_pStateCom, strAnimationNames));
 
 	/*strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
