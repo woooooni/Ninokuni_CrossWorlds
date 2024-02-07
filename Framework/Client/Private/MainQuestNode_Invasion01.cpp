@@ -11,6 +11,8 @@
 #include "Quest_Manager.h"
 #include "SkyDome.h"
 
+#include "Camera_Group.h"
+
 CMainQuestNode_Invasion01::CMainQuestNode_Invasion01()
 {
 }
@@ -52,10 +54,10 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)
 		{
 			CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::GetInstance()->QUESTEVENT_INVASION);
 
-			if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CurrentState() == CCharacter::STATE::NEUTRAL_DOOR_ENTER)
+			/* 레벨 입장 카메라 액션이 진행중이라면 리턴 */
+			if(!Is_Finish_LevelEnterCameraAction())
 				return NODE_STATE::NODE_RUNNING;
-
-			CCamera_Manager::GetInstance()->Start_Action_Shake(0.5f, 17.f, 0.5f);
+		
 			GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR, 0.f);
 			GI->Play_Sound(L"Impact_Metal_Stone_1.mp3", CHANNELID::SOUND_CUTSCENE, 1.f, true);
 
@@ -64,6 +66,14 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)
 			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
 			CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+			/* 카메라 세팅 */
+			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+			if (nullptr != pActionCam)
+			{
+				pActionCam->Start_Action_Talk(nullptr);
+				CCamera_Manager::GetInstance()->Start_Action_Shake(0.1f, 17.f, 0.3f); // 대화 카메라에 쉐이킹 적용 예정
+			}
 
 			TalkEvent();
 
@@ -84,9 +94,9 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)
 				m_bIsClear = true;
 				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
-				//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-				//if (nullptr != pActionCam)
-				//	pActionCam->Finish_Action_Talk();
+				CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+				if (nullptr != pActionCam)
+					pActionCam->Finish_Action_Talk();
 
 				return NODE_STATE::NODE_FAIL;
 			}
@@ -109,20 +119,28 @@ void CMainQuestNode_Invasion01::LateTick(const _float& fTimeDelta)
 
 void CMainQuestNode_Invasion01::TalkEvent()
 {
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr == pActionCam)
+		return;
+
 	switch (m_iTalkIndex)
 	{
 	case 0:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_01_00_KuuSay_Hmm....ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		//m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		//m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
 		break;
 	case 1:
 		// CSound_Manager::GetInstance()->Play_Sound(TEXT("03_01_01_KuuSay_HHH.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
+
 		break;
 	case 2:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_01_01_KuuSay_HHH.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		//m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
 		//m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
 		break;
 	}
 }

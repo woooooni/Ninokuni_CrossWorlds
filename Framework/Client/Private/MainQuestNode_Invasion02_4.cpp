@@ -92,7 +92,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02_4::Tick(const _float& fTimeDelta)
 
 	if (m_bIsWitchAppear)
 	{
-		// 마녀 등장
+		// 마녀 등장해서 내려오기 시작
 		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, _uint(LAYER_NPC), TEXT("Prorotype_GameObject_DreamMazeWitch_Npc"), nullptr, &m_pWitch)))
 		{
 			MSG_BOX("Fail AddGameObj : Quest DreamerMazeWitch");
@@ -105,6 +105,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02_4::Tick(const _float& fTimeDelta)
 
 	if (m_pWitch != nullptr)
 	{
+		// 마녀 다 내려옴 
 		if (m_pWitch->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CDreamMazeWitch_Npc::WITCHSTATE_INVASION_IDLE)
 		{
 			// 갔다와서 여기 바로 걸리는지 확인. 바로 걸리면 안되거덩
