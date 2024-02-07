@@ -55,8 +55,6 @@ void CCamera_Free::LateTick(_float fTimeDelta)
 		return;
 
 	//__super::LateTick(fTimeDelta);
-
-	//Debug();
 }
 
 HRESULT CCamera_Free::Render()
@@ -121,53 +119,6 @@ void CCamera_Free::Rotate(_float fTimeDelta)
 			m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), MouseMove * m_fRotateSpeed, fTimeDelta);
 		}
 	}
-}
-
-void CCamera_Free::Debug()
-{
-	Vec2			vPos = { g_iWinSizeX * 0.2f, g_iWinSizeY * 0.75f };
-	const Vec2		vDelta = { 0.f, 30.f };
-	const Vec2		vScale(0.4f);
-	const wstring	wstrFont = L"Default_Bold";
-	CRenderer* const pRenderer = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CRenderer>(L"Com_Renderer");
-
-	CRenderer::TEXT_DESC desc = {};
-
-	/* Pos */
-	ZeroMemory(&desc, sizeof(CRenderer::TEXT_DESC));
-	{
-		vPos += vDelta;
-
-		const Vec3 vCamPos = m_pTransformCom->Get_Position();
-
-		desc.strText = L"Pos : x  " + to_wstring(vCamPos.x)
-					+ L", y : " + to_wstring(vCamPos.y)
-					+ L", z : " + to_wstring(vCamPos.z);
-
-		desc.strFontTag = wstrFont;
-		desc.vScale = vScale * 1.5f;
-		desc.vPosition = vPos;
-		desc.vColor = (Vec4)DirectX::Colors::Black;
-	}
-	pRenderer->Add_Text(desc);
-
-	/* Look */
-	ZeroMemory(&desc, sizeof(CRenderer::TEXT_DESC));
-	{
-		vPos += vDelta;
-
-		const Vec3 vCamLook = m_pTransformCom->Get_Look();
-
-		desc.strText = L"Look : x  " + to_wstring(vCamLook.x)
-			+ L", y : " + to_wstring(vCamLook.y)
-			+ L", z : " + to_wstring(vCamLook.z);
-		
-		desc.strFontTag = wstrFont;
-		desc.vScale = vScale * 1.5f;
-		desc.vPosition = vPos;
-		desc.vColor = (Vec4)DirectX::Colors::Black;
-	}
-	pRenderer->Add_Text(desc);
 }
 
 CCamera_Free* CCamera_Free::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

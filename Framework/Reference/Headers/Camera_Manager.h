@@ -73,6 +73,8 @@ private:
 	CCamera*	Find_Camera(const _uint& iKey);
 	void		Tick_Blending(_float fTimeDelta);
 
+	void		Debug_Transform(const _float& fTimeDelat);
+
 private:
 	CCamera* m_pPrevCamera	= { nullptr };
 	CCamera* m_pCurCamera	= { nullptr };

@@ -29,7 +29,6 @@ public:
 private:
 	void Move(const _float fTimeDelta);
 	void Rotate(const _float fTimeDelta);
-	void Debug();
 
 private:
 	virtual HRESULT Ready_Components() override;

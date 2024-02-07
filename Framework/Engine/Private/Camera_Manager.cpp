@@ -56,6 +56,8 @@ void CCamera_Manager::LateTick(_float fTimeDelta)
 		return;
 
 	m_pCurCamera->LateTick(fTimeDelta);
+
+	//Debug_Transform(fTimeDelta);
 }
 
 CCamera* CCamera_Manager::Get_Camera(const _uint& iKey)
@@ -244,6 +246,56 @@ void CCamera_Manager::Tick_Blending(_float fTimeDelta)
 
 	m_tBlendingPosition.Update_Lerp(fTimeDelta);
 	m_tBlendingLookAt.Update_Lerp(fTimeDelta);
+}
+
+void CCamera_Manager::Debug_Transform(const _float& fTimeDelat)
+{
+	CRenderer* const pRenderer = dynamic_cast<CRenderer*>(GI->Clone_Component(0, TEXT("Prototype_Component_Renderer")));
+	if (nullptr == pRenderer)
+		return;
+
+	Vec2			vPos = { 1600.f * 0.2f, 900.f * 0.75f };
+	const Vec2		vDelta = { 0.f, 30.f };
+	const Vec2		vScale(0.4f);
+	const wstring	wstrFont = L"Default_Bold";
+	
+	CRenderer::TEXT_DESC desc = {};
+
+	/* Pos */
+	ZeroMemory(&desc, sizeof(CRenderer::TEXT_DESC));
+	{
+		vPos += vDelta;
+
+		const Vec3 vCamPos = m_pCurCamera->Get_Transform()->Get_Position();
+
+		desc.strText = L"Pos : x  " + to_wstring(vCamPos.x)
+			+ L", y : " + to_wstring(vCamPos.y)
+			+ L", z : " + to_wstring(vCamPos.z);
+
+		desc.strFontTag = wstrFont;
+		desc.vScale = vScale * 1.5f;
+		desc.vPosition = vPos;
+		desc.vColor = (Vec4)DirectX::Colors::Black;
+	}
+	pRenderer->Add_Text(desc);
+
+	/* Look */
+	ZeroMemory(&desc, sizeof(CRenderer::TEXT_DESC));
+	{
+		vPos += vDelta;
+
+		const Vec3 vCamLook = m_pCurCamera->Get_Transform()->Get_Look();
+
+		desc.strText = L"Look : x  " + to_wstring(vCamLook.x)
+			+ L", y : " + to_wstring(vCamLook.y)
+			+ L", z : " + to_wstring(vCamLook.z);
+
+		desc.strFontTag = wstrFont;
+		desc.vScale = vScale * 1.5f;
+		desc.vPosition = vPos;
+		desc.vColor = (Vec4)DirectX::Colors::Black;
+	}
+	pRenderer->Add_Text(desc);
 }
 
 void CCamera_Manager::Free()

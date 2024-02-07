@@ -102,6 +102,10 @@ public:
 	static Vec4 Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio);
 	void Reserve_NextCameraType(const CAMERA_TYPE& eType) { m_eReservedNextCameraType = eType; }
 
+	const _bool Is_LastCutScene();
+	const _float Get_Progress();
+	const _float Get_RemainDuration();
+
 public:
 	virtual Vec4 Get_LookAt() override;
 	virtual void Set_Blending(const _bool& bBlending) override;

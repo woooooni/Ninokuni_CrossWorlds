@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_Fade.h"
 
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
@@ -47,7 +48,18 @@ void CMainQuestNode_Ending02::Start()
 	pPlayerTransform->FixRotation(0.f, -90.f, 0.f);
 	pPlayerController->Set_EnterLevel_Position(pPlayerTransform->Get_Position());
 
-	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterStateCom()->Change_State(CCharacter::STATE::NEUTRAL_DOOR_ENTER);
+	/* 대화 카메라를 미리 세팅 해둔다. */
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr != pActionCam)
+		pActionCam->Start_Action_Talk(nullptr);
+
+	/* 컷신 시작 */
+	CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
+	if (nullptr != pCutSceneMap)
+	{
+		pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE, true);
+		pCutSceneMap->Reserve_NextCameraType(CAMERA_TYPE::ACTION);
+	}
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Ending02::Tick(const _float& fTimeDelta)
@@ -57,16 +69,44 @@ CBTNode::NODE_STATE CMainQuestNode_Ending02::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_EVERMORE)
 	{
-		if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CurrentState() == CCharacter::STATE::NEUTRAL_DOOR_ENTER)
-			return NODE_STATE::NODE_RUNNING;
-
-		if (!m_bIsTalkStart)
+		CCamera_CutScene_Map* pCutSceneMapCam = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+	
+		/* 예약된 마지막 컷신에서, 남은 재생 시간이 1초 이하라면 페이드 아웃을 시작한다. */
+		if (nullptr != pCutSceneMapCam && pCutSceneMapCam->Is_LastCutScene() && pCutSceneMapCam->Get_RemainDuration() <= m_fFadeDuration * 0.5f && !m_bFadeOut)
 		{
-			/* 대화 카메라 세팅 */
+			m_bFadeOut = true;
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, m_fFadeDuration, true);
+			return NODE_STATE::NODE_RUNNING;
+		}
+		
+		/* 페이드 아웃이 끝났다면 페이드 인을 바로 시작한다. 동시에 대화 카메라에서의 캐릭터들의 트랜스폼을 설정한다. */
+		if (m_bFadeOut && !m_bFadeIn && CUI_Manager::GetInstance()->Is_FadeFinished())
+		{
 			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
 			if (nullptr != pActionCam)
-				pActionCam->Start_Action_Talk(nullptr);
+			{
+				pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
+			}
 
+			m_bFadeIn = true;
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_fFadeDuration, true);
+			return NODE_STATE::NODE_RUNNING;
+		}
+
+		/* 페이드 인이 끝났는지 체크한다. */
+		if (!m_bFinishIntro)
+		{
+			if (m_bFadeOut && m_bFadeIn && !CUI_Manager::GetInstance()->Is_FadeFinished())
+			{
+				return NODE_STATE::NODE_RUNNING;
+			}
+			else if (m_bFadeOut && m_bFadeIn && CUI_Manager::GetInstance()->Is_FadeFinished())
+				m_bFinishIntro = true;
+		}
+		
+		/* 페이드 인이 끝났고, 토크를 시작하지 않았다면 */
+		if (m_bFinishIntro && !m_bIsTalkStart)
+		{
 			/* 대화 */
 			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);

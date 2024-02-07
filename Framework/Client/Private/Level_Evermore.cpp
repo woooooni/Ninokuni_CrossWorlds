@@ -44,7 +44,7 @@ CLevel_Evermore::CLevel_Evermore(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 }
 
 HRESULT CLevel_Evermore::Initialize()
-{
+{	
 	SetWindowText(g_hWnd, TEXT("Ni no Kuni : Cross Worlds"));
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
@@ -85,9 +85,6 @@ HRESULT CLevel_Evermore::Initialize()
 	/* 쿠우 타겟 설정 */
 	CGame_Manager::GetInstance()->Set_KuuTarget_Player();
 
-	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
-		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 5.f);
-
 	/* 퀘스트 세팅 */
 	if (CQuest_Manager::GetInstance()->Get_IsReserve() == false)
 	{
@@ -96,7 +93,21 @@ HRESULT CLevel_Evermore::Initialize()
 		CQuest_Manager::GetInstance()->Set_Running(true);
 	}
 
-	/* Camera Action */
+	/* 페이드 설정  */
+	if (CQuest_Manager::QUESTEVENT_ENDING != CQuest_Manager::GetInstance()->Get_CurQuestEvent() && g_iStartQuestLevel != QUEST_LEVEL::QL_9_ENDING)
+	{	
+		if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 5.f);
+	}
+	else
+	{
+		/* 엔딩 퀘스트라면 하얀색으로 짧게 진행 */
+		if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f, true);
+	}
+
+	/* Door Camera Action (엔딩 퀘스트에서는 사용하지 않는다.) */
+	if (CQuest_Manager::QUESTEVENT_ENDING != CQuest_Manager::GetInstance()->Get_CurQuestEvent() && g_iStartQuestLevel != QUEST_LEVEL::QL_9_ENDING)
 	{
 		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
 		CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
@@ -106,26 +117,34 @@ HRESULT CLevel_Evermore::Initialize()
 		}
 	}
 
+	/* 구역 이름 (엔딩 퀘스트에서는 사용하지 않는다.) */
+	if (CQuest_Manager::QUESTEVENT_ENDING != CQuest_Manager::GetInstance()->Get_CurQuestEvent() && g_iStartQuestLevel != QUEST_LEVEL::QL_9_ENDING)
+	{
+		if (false == g_bFirstEnter)
+		{
+			g_bFirstEnter = true;
+			CUI_Manager::GetInstance()->OnOff_MapName(true, TEXT("남문 광장"));
+		}
+	}
+
+	/* Set Fog */
+	{
+		CRenderer::FOG_DESC fogDesc;
+		::ZeroMemory(&fogDesc, sizeof(fogDesc));
+		{
+			fogDesc.fFogDistanceValue = 30.0f;
+			fogDesc.fFogHeightValue = 50.0f;
+			fogDesc.fFogStartDepth = 100.0f;
+			fogDesc.fFogStartDistance = 17.150f;
+			fogDesc.fFogDistanceDensity = 0.04f;
+			fogDesc.fFogHeightDensity = 0.06f;
+		}
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogDesc(fogDesc);
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogColor(Vec4(0.396f, 0.744f, 1.0f, 1.0f));
+	}
+
+	/* Set Bgm */
 	GI->Play_BGM(TEXT("BGM_Town_Evermore_Normal_Castle_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
-
-	if (false == g_bFirstEnter)
-	{
-		g_bFirstEnter = true;
-		CUI_Manager::GetInstance()->OnOff_MapName(true, TEXT("남문 광장"));
-	}
-
-	CRenderer::FOG_DESC fogDesc;
-	::ZeroMemory(&fogDesc, sizeof(fogDesc));
-	{
-		fogDesc.fFogDistanceValue = 30.0f;
-		fogDesc.fFogHeightValue = 50.0f;
-		fogDesc.fFogStartDepth = 100.0f;
-		fogDesc.fFogStartDistance = 17.150f;
-		fogDesc.fFogDistanceDensity = 0.04f;
-		fogDesc.fFogHeightDensity = 0.06f;
-	}
-	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogDesc(fogDesc);
-	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogColor(Vec4(0.396f, 0.744f, 1.0f, 1.0f));
 
 	return S_OK;
 }

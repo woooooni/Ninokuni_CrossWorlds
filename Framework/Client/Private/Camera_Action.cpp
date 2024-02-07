@@ -96,13 +96,12 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		case CCamera_Action::STADIUM:
 			Tick_Stadium(fTimeDelta);
 			break;
+		case CCamera_Action::ENDING:
+			Tick_Ending(fTimeDelta);
 		default:
 			break;
 		}
 	}
-
-	/* Test */
-	//Test(fTimeDelta);
 }
 
 void CCamera_Action::LateTick(_float fTimeDelta)
@@ -378,6 +377,78 @@ void CCamera_Action::Tick_Lobby(_float fTimeDelta)
 	Vec4 vPos = m_tActionLobbyDesc.vCamPosition + Vec4(m_tTargetOffset.vCurVec);
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos.OneW());
+}
+
+void CCamera_Action::Tick_Ending(_float fTimeDelta)
+{
+	/* 대화 뷰에서 멀리 떨어진 곳까지 블렌딩 */
+	if (m_tActionEndingDesc.bActive)
+	{
+		if (m_tActionEndingDesc.tLerpPos.bActive)
+		{
+			m_tActionEndingDesc.tLerpPos.Update_Lerp(fTimeDelta);
+
+			m_pTransformCom->Set_Position(Vec4(m_tActionEndingDesc.tLerpPos.vCurVec).OneW());
+		}
+
+		if (m_tActionEndingDesc.tLerpLook.bActive)
+		{
+			m_tActionEndingDesc.tLerpLook.Update_Lerp(fTimeDelta);
+
+			m_pTransformCom->Set_LookAtByDir(Vec4(m_tActionEndingDesc.tLerpLook.vCurVec.Normalized()).ZeroW());
+		}
+
+		if (!m_tActionEndingDesc.tLerpPos.bActive && !m_tActionEndingDesc.tLerpLook.bActive)
+		{
+			m_tActionEndingDesc.bActive = false;
+
+			/* 높이 보간 시작 */
+			{
+				m_tActionEndingDesc.fOriginHeight = Vec4(m_pTransformCom->Get_Position()).y;
+				m_tActionEndingDesc.tLerpHeight.Start(
+					0.f,
+					m_tActionEndingDesc.fHeightDelta,
+					m_tActionEndingDesc.fHeightLerpDuration,
+					m_tActionEndingDesc.eHeightLerpMode);
+				
+				m_tActionEndingDesc.bUp = true;
+			}
+		}
+	}
+
+	/* 블렌딩 이후 바람 타듯 높이 럴프*/
+	if (m_tActionEndingDesc.tLerpHeight.bActive)
+	{
+		m_tActionEndingDesc.tLerpHeight.Update(fTimeDelta);
+
+		Vec4 vPos = m_pTransformCom->Get_Position();
+
+		vPos.y = m_tActionEndingDesc.fOriginHeight + m_tActionEndingDesc.tLerpHeight.fCurValue;
+
+		m_pTransformCom->Set_Position(vPos);
+
+		if (!m_tActionEndingDesc.tLerpHeight.bActive)
+		{
+			if (m_tActionEndingDesc.bUp)
+			{
+				m_tActionEndingDesc.tLerpHeight.Start(
+					m_tActionEndingDesc.fHeightDelta,
+					0.f,
+					m_tActionEndingDesc.fHeightLerpDuration,
+					m_tActionEndingDesc.eHeightLerpMode);
+			}
+			else
+			{
+				m_tActionEndingDesc.tLerpHeight.Start(
+					0.f,
+					m_tActionEndingDesc.fHeightDelta,
+					m_tActionEndingDesc.fHeightLerpDuration,
+					m_tActionEndingDesc.eHeightLerpMode);
+			}
+
+			m_tActionEndingDesc.bUp = !m_tActionEndingDesc.bUp;
+		}
+	}
 }
 
 void CCamera_Action::Tick_Door(_float fTimeDelta)
@@ -1017,4 +1088,32 @@ void CCamera_Action::Free()
 	__super::Free();
 
 	Safe_Release(m_pTransformCom);
+}
+
+HRESULT CCamera_Action::Start_Action_Ending()
+{
+	m_bAction = true;
+
+	m_eCurActionType = CAMERA_ACTION_TYPE::ENDING;
+
+	m_tActionEndingDesc.bActive = true;
+
+	ACTION_ENDING_DESC::VIEW_NUM eView = ACTION_ENDING_DESC::VIEW_NUM::V0;
+	{
+		m_tActionEndingDesc.tLerpPos.Start(
+			CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Position(), 
+			m_tActionEndingDesc.ViewPositions[eView],
+			m_tActionEndingDesc.fLerpDuration, 
+			m_tActionEndingDesc.eLerpMode);
+
+		m_tActionEndingDesc.tLerpLook.Start(
+			Vec3(CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look()).Normalized(),
+			m_tActionEndingDesc.ViewLooks[eView],
+			m_tActionEndingDesc.fLerpDuration,
+			m_tActionEndingDesc.eLerpMode);
+	}
+
+	Start_Lerp_Fov(m_tActionEndingDesc.fTargetFov, m_tActionEndingDesc.fLerpDuration* 0.7f, m_tActionEndingDesc.eLerpMode);
+
+	return S_OK;
 }

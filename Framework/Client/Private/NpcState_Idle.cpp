@@ -70,7 +70,7 @@ void CNpcState_Idle::Tick_State(_float fTimeDelta)
 		}
 	}
 
-	if (m_pOwner->Get_ObjectTag() == TEXT("Ruby"))
+	if (m_pOwner->Get_ObjectTag() == TEXT("Ruby") && LEVELID::LEVEL_WITCHFOREST == GI->Get_CurrentLevel()) // 에버모어에서도 사용해서, 마녀의 숲에서만 아래 코드 타도록 함
 	{
 		CRuby* pRuby = static_cast<CRuby*>(m_pOwner);
 		CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(pRuby->Get_RidingObject());
