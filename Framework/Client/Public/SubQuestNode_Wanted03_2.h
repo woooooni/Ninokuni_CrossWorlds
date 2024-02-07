@@ -21,6 +21,8 @@ private:
 	CGameObject* m_pCriminal = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
+private:
+	Vec4 m_vCirminalOriginLookAt = {};
 public:
 	static CSubQuestNode_Wanted03_2* Create();
 	virtual void Free() override;

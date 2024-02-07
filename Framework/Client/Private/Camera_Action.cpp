@@ -98,6 +98,7 @@ void CCamera_Action::Tick(_float fTimeDelta)
 			break;
 		case CCamera_Action::ENDING:
 			Tick_Ending(fTimeDelta);
+			break;
 		default:
 			break;
 		}
@@ -158,6 +159,26 @@ HRESULT CCamera_Action::Finish_Action_Stadium()
 	}
 
 	return S_OK;
+}
+
+void CCamera_Action::Set_TalkBackupDesc(class CTransform* pNpcTransform)
+{
+	if (nullptr == pNpcTransform)
+		return;
+
+	m_tActionTalkBackUpDesc.vOriginLookAt = pNpcTransform->Get_LookAt();
+
+	m_tActionTalkBackUpDesc.vOriginPosition = pNpcTransform->Get_Position();
+}
+
+void CCamera_Action::Set_NpcTransformByBackupDesc(class CTransform* pNpcTransform)
+{
+	if (nullptr == pNpcTransform)
+		return;
+
+	pNpcTransform->LookAt(m_tActionTalkBackUpDesc.vOriginLookAt);
+
+	pNpcTransform->Set_Position(m_tActionTalkBackUpDesc.vOriginPosition);
 }
 
 Vec4 CCamera_Action::Get_LookAt()
@@ -449,6 +470,10 @@ void CCamera_Action::Tick_Ending(_float fTimeDelta)
 			m_tActionEndingDesc.bUp = !m_tActionEndingDesc.bUp;
 		}
 	}
+}
+
+void CCamera_Action::Tick_Criminal(_float fTimeDelta)
+{
 }
 
 void CCamera_Action::Tick_Door(_float fTimeDelta)

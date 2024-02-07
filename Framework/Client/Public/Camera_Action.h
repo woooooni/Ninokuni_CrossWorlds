@@ -16,7 +16,11 @@ class CKuu;
 class CCamera_Action final : public CCamera
 {
 public:
-	enum CAMERA_ACTION_TYPE { LOBBY, DOOR, TALK, WINDMILL, SWORDMAN_BURST, ENGINEER_BURST, DESTROYER_BURST, STADIUM, ENDING, CAMERA_ACTION_END };
+	enum CAMERA_ACTION_TYPE { 
+		LOBBY, DOOR, TALK, WINDMILL, 
+		SWORDMAN_BURST, ENGINEER_BURST, DESTROYER_BURST, 
+		STADIUM, ENDING,
+		CAMERA_ACTION_END };
 
 public:
 	typedef struct tagActionLobbyDesc
@@ -199,6 +203,13 @@ public:
 
 	}ACTION_ENDING_DESC;
 
+	typedef struct tagTalkBackUpDesc
+	{
+		Vec4 vOriginLookAt = {};
+		Vec4 vOriginPosition = {};
+
+	}ACTION_TALK_BACKUP_DESC;
+
 private:
 	CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_Action(const CCamera_Action& rhs);
@@ -218,7 +229,6 @@ public:
 	HRESULT Start_Action_Lobby();
 	HRESULT Start_Action_Door();
 	HRESULT Start_Action_WindMill(const _bool& bNpcToWindMill); /* 현재 대화 룩 타겟이 NPC일 때 호출*/
-	HRESULT Start_Action_Ending();
 
 	HRESULT Start_Action_Talk(CGameObject* pNpc); /* 처음 대화 시작시 호출 (쿠우 혼자면 nullptr, Npc 있으면 Npc 넘겨줌 */
 	HRESULT Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_TYPE& eType); /* 중간 화자 변경시 호출 */
@@ -227,6 +237,8 @@ public:
 	HRESULT Start_Action_Stadium(const _float& fDuration);
 	HRESULT Finish_Action_Stadium();
 
+	HRESULT Start_Action_Ending();
+
 	// 캐릭터 버스트 스킬 액션.
 	HRESULT Start_Action_SwordManBurst(class CTransform* pSwordManTransform);
 	HRESULT Start_Action_EngineerBurst(class CTransform* pEngineerTransform);
@@ -234,6 +246,9 @@ public:
 	HRESULT Stop_ActionSwordMan_Burst();
 	HRESULT Stop_ActionEngineer_Burst();
 	HRESULT Stop_ActionDestroyer_Burst();
+
+	void Set_TalkBackupDesc(class CTransform* pNpcTransform);
+	void Set_NpcTransformByBackupDesc(class CTransform* pNpcTransform);
 
 public:
 	const _bool& Is_Finish_Action() const { return m_bAction; }
@@ -247,6 +262,7 @@ private:
 	void Tick_WindMill(_float fTimeDelta);
 	void Tick_Stadium(_float fTimeDelta);
 	void Tick_Ending(_float fTimeDelta);
+	void Tick_Criminal(_float fTimeDelta);
 
 	void Tick_SwordManBurst(_float fTimeDelta);
 	void Tick_EngineerBurst(_float fTimeDelta);
@@ -265,16 +281,18 @@ private:
 	_bool					m_bAction = false;
 	CAMERA_ACTION_TYPE		m_eCurActionType = CAMERA_ACTION_TYPE::CAMERA_ACTION_END;
 
-	ACTION_LOBBY_DESC		m_tActionLobbyDesc = {};
-	ACTION_DOOR_DESC		m_tActionDoorDesc = {};
-	ACTION_TALK_DESC		m_tActionTalkDesc = {};
-	ACTION_WINDMILL_DESC	m_tActionWindMillDesc = {};
-	ACTION_STADIUM_DESC		m_tActionStadiumDesc = {};
-	ACTION_ENDING_DESC		m_tActionEndingDesc = {};
+	ACTION_LOBBY_DESC		m_tActionLobbyDesc		= {};
+	ACTION_DOOR_DESC		m_tActionDoorDesc		= {};
+	ACTION_TALK_DESC		m_tActionTalkDesc		= {};
+	ACTION_WINDMILL_DESC	m_tActionWindMillDesc	= {};
+	ACTION_STADIUM_DESC		m_tActionStadiumDesc	= {};
+	ACTION_ENDING_DESC		m_tActionEndingDesc		= {};
+	ACTION_TALK_BACKUP_DESC m_tActionTalkBackUpDesc = {};
 
-	ACTION_SWORDMAN_BURST_DESC m_tActionSwordManBurstDesc = {};
-	ACTION_ENGINEER_BURST_DESC m_tActionEngineerBurstDesc = {};
+	ACTION_SWORDMAN_BURST_DESC m_tActionSwordManBurstDesc	= {};
+	ACTION_ENGINEER_BURST_DESC m_tActionEngineerBurstDesc	= {};
 	ACTION_DESTROYER_BURST_DESC m_tActionDestroyerBurstDesc = {};
+
 
 public:
 	static CCamera_Action* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

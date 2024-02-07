@@ -12,8 +12,7 @@
 #include "Player.h"
 #include "Criminal_Npc.h"
 
-#include "Camera_Manager.h"
-#include "Camera_Follow.h"
+#include "Camera_Group.h"
 
 CSubQuestNode_Wanted03_2::CSubQuestNode_Wanted03_2()
 {
@@ -55,15 +54,17 @@ void CSubQuestNode_Wanted03_2::Start()
 	m_vecTalker.push_back(m_pCriminal);
 
 	/* 대화 카메라 세팅 */
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr != pActionCam)
 	{
-		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
-		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CCharacter::NEUTRAL_IDLE);
-		
-		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-		if (nullptr != pFollowCam)
-			pFollowCam->Reset_WideView_To_DefaultView(false);
-	}
+		m_vCirminalOriginLookAt = m_pCriminal->Get_Component_Transform()->Get_LookAt();
+		pActionCam->Set_TalkBackupDesc(m_pCriminal->Get_Component_Transform());
 
+		m_pCriminal->Get_Component_Transform()->LookAt_ForLandObject((m_vCirminalOriginLookAt * -1.f).OneW());
+		pActionCam->Start_Action_Talk(m_pCriminal);
+
+		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
+	}
 
 	/* 대화 */
 	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
@@ -97,12 +98,10 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted03_2::Tick(const _float& fTimeDelta)
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 			/* 대화 카메라 종료 */
-			{
-				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+			if (nullptr != pActionCam)
+				pActionCam->Finish_Action_Talk();
 
-				if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
-					CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
-			}
 			m_pCriminal->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCriminal_Npc::NPC_CRIMINAL_STATE::NPC_CRIMINAL_ESCAPE);
 
 			return NODE_STATE::NODE_FAIL;
@@ -125,32 +124,56 @@ void CSubQuestNode_Wanted03_2::LateTick(const _float& fTimeDelta)
 
 void CSubQuestNode_Wanted03_2::TalkEvent()
 {
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr == pActionCam)
+		return;
+
 	switch (m_iTalkIndex)
 	{
 	case 0:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("00_TumbaSay_Call.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pCriminal->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pCriminal->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("Stand01Idle01"));
+
+		m_pCriminal->Get_Component_Transform()->LookAt_ForLandObject((m_vCirminalOriginLookAt * -1.f).OneW());
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER_FROM_BACK_NPC);
+		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
 	case 1:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("01_KuuSay_Uh.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
+
+		m_pCriminal->Get_Component_Transform()->LookAt_ForLandObject((m_vCirminalOriginLookAt * -1.f).OneW());
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
+		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
 	case 2:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("02_TumbaSay_OkCallYou.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pCriminal->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pCriminal->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("Stand04Idle01"));
+
+		m_pCriminal->Get_Component_Transform()->LookAt_ForLandObject((m_vCirminalOriginLookAt * -1.f).OneW());
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
+		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
 	case 3:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_WhatIsBird.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
+
+		m_pCriminal->Get_Component_Transform()->LookAt_ForLandObject((m_vCirminalOriginLookAt * -1.f).OneW());
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_RIGTH);
+		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
 	case 4:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("04_TumbaSay_Umm..This....ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pCriminal->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pCriminal->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("Stand01Idle01"));
+
+		m_pCriminal->Get_Component_Transform()->LookAt_ForLandObject((m_vCirminalOriginLookAt * -1.f).OneW());
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
+		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
 	}
 }
