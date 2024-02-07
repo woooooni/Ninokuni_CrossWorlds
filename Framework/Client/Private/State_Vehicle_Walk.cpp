@@ -32,7 +32,10 @@ void CState_Vehicle_Walk::Tick_State(_float fTimeDelta)
 {
 	// 플레이어 움직임이 막혀있다면 return;
 	if (false == CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Is_Move_Input())
+	{
+		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
 		return;
+	}
 
 	_bool bMove = false;
 

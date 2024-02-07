@@ -62,19 +62,19 @@ HRESULT CUI_CostumeTab_Map::Initialize(void* pArg)
 	{
 	case CHARACTER_TYPE::SWORD_MAN:
 		vCamPos = _float3(0.f, 0.9f, -3.f);
-		vLook = _float3(0.f, 0.9, 0.f);
+		vLook = _float3(0.f, 0.9f, 0.f);
 		vUp = _float3(0.f, 1.f, 0.f);
 		break;
 
 	case CHARACTER_TYPE::ENGINEER:
 		vCamPos = _float3(0.f, 0.7f, -2.3f);
-		vLook = _float3(0.f, 0.7, 0.f);
+		vLook = _float3(0.f, 0.7f, 0.f);
 		vUp = _float3(0.f, 1.f, 0.f);
 		break;
 
 	case CHARACTER_TYPE::DESTROYER:
 		vCamPos = _float3(0.f, 0.9f, -3.f);
-		vLook = _float3(0.f, 0.9, 0.f);
+		vLook = _float3(0.f, 0.9f, 0.f);
 		vUp = _float3(0.f, 1.f, 0.f);
 		break;
 	}

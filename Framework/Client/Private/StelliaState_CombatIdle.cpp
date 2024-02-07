@@ -2,6 +2,7 @@
 #include "StelliaState_CombatIdle.h"
 
 #include "Stellia.h"
+#include "UI_Manager.h"
 
 CStelliaState_CombatIdle::CStelliaState_CombatIdle(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
@@ -11,6 +12,8 @@ CStelliaState_CombatIdle::CStelliaState_CombatIdle(CStateMachine* pStateMachine)
 HRESULT CStelliaState_CombatIdle::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
+
+	m_bFirst = false;
 
 	return S_OK;
 }
@@ -24,6 +27,12 @@ void CStelliaState_CombatIdle::Enter_State(void* pArg)
 		m_iAtkIndex = 0;
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_BERSERK);
 		return;
+	}
+
+	if (false == m_bFirst)
+	{
+		m_bFirst = true;
+		CUI_Manager::GetInstance()->OnOff_MiniMap(false);
 	}
 
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Stand02"));
@@ -100,6 +109,7 @@ void CStelliaState_CombatIdle::Tick_State(_float fTimeDelta)
 
 void CStelliaState_CombatIdle::Exit_State()
 {
+	// m_bFirst는 제어하지 않는다.
 }
 
 CStelliaState_CombatIdle* CStelliaState_CombatIdle::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

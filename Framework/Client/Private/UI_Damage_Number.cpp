@@ -46,17 +46,19 @@ HRESULT CUI_Damage_Number::Initialize(void* pArg)
 	m_tInfo.fY = m_vTargetPosition.y;
 	_float fNumSize;
 
-	if (m_FontDesc.bIsPlayer)
+	if (true == m_FontDesc.bIsPlayer)
 		fNumSize = 112.f * 0.23f;
 	else
 	{
-		if (m_FontDesc.bIsBoss)
+		if (true == m_FontDesc.bIsBoss)
 		{
-			fNumSize = 112.f * 0.4f;
+			_float fRandom = GI->RandomFloat(0.2f, 0.32f);
+			fNumSize = 112.f * fRandom;
 		}
 		else
 		{
-			fNumSize = 112.f * 0.25f;
+			_float fRandom = GI->RandomFloat(0.16f, 0.2f);
+			fNumSize = 112.f * fRandom;
 		}
 	}
 

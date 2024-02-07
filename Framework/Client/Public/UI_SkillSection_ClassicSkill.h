@@ -15,7 +15,7 @@ protected:
 
 public:
 	virtual void Set_CharacterType(CHARACTER_TYPE eType) override;
-	void Set_Clicked(_bool bClick) { m_bClicked = bClick; }
+	void Set_Clicked(_bool bClick);
 	_bool Is_Clicked() { return m_bClicked; }
 	void Hide_UI(_bool bHide) { m_bHide = bHide; m_bHideFinish = false; }
 

@@ -16,7 +16,7 @@ protected:
 public:
 	virtual void Set_CharacterType(CHARACTER_TYPE eType) override;
 	void Hide_UI(_bool bHide) { m_bHide = bHide; m_bHideFinish = false; }
-	void Set_Clicked(_bool bClick) { m_bClicked = bClick; }
+	void Set_Clicked(_bool bClick);
 	_bool Is_Clicked() { return m_bClicked; }
 
 public:
@@ -33,6 +33,7 @@ public:
 
 private:
 	UI_SPECIALSKILL m_eType = { UICLASSICSKILL_END };
+	class CSkill* m_pSkill = { nullptr };
 
 	CTexture* m_pMaskTextureCom = { nullptr };
 	CTexture* m_pFXTextureCom = { nullptr };

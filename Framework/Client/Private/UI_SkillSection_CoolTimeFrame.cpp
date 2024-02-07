@@ -29,7 +29,7 @@ void CUI_SkillSection_CoolTimeFrame::Set_CharacterType(CHARACTER_TYPE eType)
 void CUI_SkillSection_CoolTimeFrame::Use_Skill()
 {
 	m_bUsable = false;
-	m_fCurGauge = 0.f;
+	m_fCurGauge = m_pSkill->Get_CurrCoolTime();
 }
 
 HRESULT CUI_SkillSection_CoolTimeFrame::Initialize_Prototype()
@@ -70,11 +70,12 @@ void CUI_SkillSection_CoolTimeFrame::Tick(_float fTimeDelta)
 	{
 		Movement_BasedOnHiding(fTimeDelta);
 
-		if (!m_bUsable)
+		if (false == m_bUsable)
 		{
 			m_iPass = 19;
 
-			m_fCurGauge += fTimeDelta;
+//			m_fCurGauge += fTimeDelta;
+			m_fCurGauge = m_pSkill->Get_CurrCoolTime();
 
 			if (m_fMaxGauge <= m_fCurGauge)
 			{
@@ -184,6 +185,7 @@ HRESULT CUI_SkillSection_CoolTimeFrame::Ready_Skill()
 	}
 
 	m_fMaxGauge = m_pSkill->Get_CoolTime();
+	m_fCurGauge = m_pSkill->Get_CurrCoolTime();
 
 	return S_OK;
 }

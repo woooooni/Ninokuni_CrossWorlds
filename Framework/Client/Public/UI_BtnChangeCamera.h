@@ -43,6 +43,7 @@ private:
 	HRESULT	Bind_ShaderResources();
 	void Key_Input(_float fTimeDelta);
 	void Movement_BasedOnHiding(_float fTimeDelta);
+	void Update_CameraMode();
 
 public:
 	static CUI_BtnChangeCamera* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);

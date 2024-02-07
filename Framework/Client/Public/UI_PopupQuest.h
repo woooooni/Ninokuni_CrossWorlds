@@ -61,6 +61,7 @@ private:
 
 	_float4 m_vTypeColor = _float4(0.f, 0.f, 0.f, 1.f);
 	_float4 m_vTextColor = _float4(0.f, 0.f, 0.f, 1.f);
+	_float4 m_vMeterColor = _float4(0.67f, 0.7f, 0.63f, 1.f);
 
 	vector<QUEST_INFO> m_Quest;
 

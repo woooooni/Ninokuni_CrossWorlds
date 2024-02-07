@@ -183,10 +183,10 @@ void CUI_Dialog_Window::Tick_Text(_float fTimeDelta)
 void CUI_Dialog_Window::Add_Text()
 {
 	// Name
-
 	CRenderer::TEXT_DESC NameDesc = {};
-	_int iLength = wcslen(m_szName);
-	_int iOffset = (iLength - 1) * 10;
+	_int iLength = wcslen(m_szName) - 1;
+	_int iSpaceCount = CUI_Manager::GetInstance()->Count_WordSpacing(m_szName);
+	_int iOffset = (iLength - iSpaceCount) * 10 + (iSpaceCount * 6); // 글자 수 오프셋 + 띄어쓰기 오프셋
 
 	NameDesc.strText = m_szName;
 	NameDesc.strFontTag = L"Default_Bold";
@@ -198,25 +198,23 @@ void CUI_Dialog_Window::Add_Text()
 
 	//Contents
 	_int iTotalLength = m_iTextCount + 4;
-	_int iMaxLength = 46;
+	_int iMaxLength = 44; // 46 -> 44
 	_uint iDestIndex = 0;
 
 	TCHAR sTempText[MAX_PATH];
 	ZeroMemory(sTempText, sizeof(TCHAR) * MAX_PATH);
 
-	for (_uint i = 0; i < iTotalLength; i++)
+	for (_int i = 0; i < iTotalLength; i++)
 	{
 		if (iDestIndex > m_iMaxCount)
 		{
 			break;
 		}
 
-		//sTempText[i] = m_szInfoText[i];
 		sTempText[iDestIndex++] = m_szInfoText[i];
 
 		if ((i + 1) % iMaxLength == 0)
 		{
-			//sTempText[i + 1] = '\n';
 			sTempText[iDestIndex++] = '\n';
 		}
 	}

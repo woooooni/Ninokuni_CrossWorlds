@@ -2,6 +2,7 @@
 #include "UI_BtnChangeCamera.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Camera_Group.h"
 
 CUI_BtnChangeCamera::CUI_BtnChangeCamera(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_BtnShowMenu")
@@ -48,6 +49,7 @@ void CUI_BtnChangeCamera::Tick(_float fTimeDelta)
 	if (m_bActive)
 	{
 		Movement_BasedOnHiding(fTimeDelta);
+		Update_CameraMode();
 
 		__super::Tick(fTimeDelta);
 	}
@@ -143,34 +145,36 @@ HRESULT CUI_BtnChangeCamera::Bind_ShaderResources()
 
 void CUI_BtnChangeCamera::Key_Input(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::LBTN))
-	{
-		if (0 <= m_iTextureIndex && m_iTextureIndex <= 1)
-			m_iTextureIndex++;
-		else if (2 == m_iTextureIndex)
-			m_iTextureIndex = 0;
+	// 클릭 이벤트없이 카메라 모드를 따라간다.
 
-		switch (m_iTextureIndex)
-		{
-		case 0:
-			// 카메라 전환 1
-			CUI_Manager::GetInstance()->OnOff_Announce(m_iTextureIndex, true);
-			break;
-
-		case 1:
-			// 카메라 전환 2
-			CUI_Manager::GetInstance()->OnOff_Announce(m_iTextureIndex, true);
-			break;
-
-		case 2:
-			// 카메라 전환 3
-			CUI_Manager::GetInstance()->OnOff_Announce(m_iTextureIndex, true);
-			break;
-		}
+//	if (KEY_TAP(KEY::LBTN))
+//	{
+//		if (0 <= m_iTextureIndex && m_iTextureIndex <= 1)
+//			m_iTextureIndex++;
+//		else if (2 == m_iTextureIndex)
+//			m_iTextureIndex = 0;
+//
+//		switch (m_iTextureIndex)
+//		{
+//		case 0:
+//			// 카메라 전환 1
+//			CUI_Manager::GetInstance()->OnOff_Announce(m_iTextureIndex, true);
+//			break;
+//
+//		case 1:
+//			// 카메라 전환 2
+//			CUI_Manager::GetInstance()->OnOff_Announce(m_iTextureIndex, true);
+//			break;
+//
+//		case 2:
+//			// 카메라 전환 3
+//			CUI_Manager::GetInstance()->OnOff_Announce(m_iTextureIndex, true);
+//			break;
+//		}
 
 		GI->Stop_Sound(CHANNELID::SOUND_UI);
 		GI->Play_Sound(TEXT("UI_Fx_MainHud_Btn_Camera_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
-	}
+//		}
 }
 
 void CUI_BtnChangeCamera::Movement_BasedOnHiding(_float fTimeDelta)
@@ -215,6 +219,27 @@ void CUI_BtnChangeCamera::Movement_BasedOnHiding(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 	}
+}
+
+void CUI_BtnChangeCamera::Update_CameraMode()
+{
+	CCamera_Follow* pCameraFollow = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+	if (nullptr == pCameraFollow)
+	{
+		/* 3 : 팔로우 카메라가 아닌 다른 카메라들 중 하나인 상태*/
+		m_iTextureIndex = 2;
+	}
+	else if (false == pCameraFollow->Is_WideView())
+	{
+		/* 1 : 팔로우 카메라 - 디폴트 뷰 */
+		m_iTextureIndex = 0;
+	}
+	else
+	{
+		/* 2 : 팔로우 카메라 - 와이드뷰 뷰 */
+		m_iTextureIndex = 1;
+	}
+
 }
 
 CUI_BtnChangeCamera* CUI_BtnChangeCamera::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

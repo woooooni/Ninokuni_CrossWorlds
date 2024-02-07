@@ -68,13 +68,13 @@ HRESULT CMainApp::Initialize()
 	
 	// Set Start Type
 	{
-		g_eStartLevel = LEVELID::LEVEL_TOOL;					/* 시작 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_LOGO;					/* 시작 레벨 타입 */
 
 		g_iStartQuestLevel = QUEST_LEVEL::QL_1_INTRO_TOUR;		/* 시작 퀘스트 레벨 */
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;			/* 모델 로드할 캐릭터 타입 */
 
-		g_ePlayCharacter = LOAD_CHARACTER_TYPE::ALL_CH;			/* 게임 플레이 캐릭터 타입 */
+		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;			/* 게임 플레이 캐릭터 타입 */
 	}
 
 	// Open Level
@@ -790,6 +790,9 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ImajinnSection_Vehicle"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/ImajinnSlot/Icon_Vehicle.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ImajinnSection_Vehicle_FXTexture"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/ImajinnSlot/Icon_Vehicle_FxTexture.png")))))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_DefaultBackground"),

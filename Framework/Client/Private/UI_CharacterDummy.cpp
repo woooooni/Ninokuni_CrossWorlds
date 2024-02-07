@@ -63,7 +63,7 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 	_float3 vCamPos, vLook, vUp;
 
 	vCamPos = _float3(0.f, 0.9f, -3.f);
-	vLook = _float3(0.f, 0.9, 0.f);
+	vLook = _float3(0.f, 0.9f, 0.f);
 	vUp = _float3(0.f, 1.f, 0.f);
 
 	m_vCamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));

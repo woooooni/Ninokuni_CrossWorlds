@@ -1408,7 +1408,7 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	pButton = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 64.f * 0.8;
+	UIDesc.fCX = 64.f * 0.8f;
 	UIDesc.fCY = UIDesc.fCX;
 	UIDesc.fX = UIDesc.fCX * 0.5f + (fOffset * 2.f);
 	UIDesc.fY = 135.f;
@@ -4463,6 +4463,45 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 	return S_OK;
 }
 
+_int CUI_Manager::Count_WordSpacing(const wstring& strText)
+{
+	// 문장의 공백을 세어준다.
+	_int iCount = 0;
+	for (wchar_t strSpace : strText)
+	{
+		if (strSpace == L' ')
+			iCount++;
+	}
+
+	return iCount;
+}
+
+_int CUI_Manager::Count_OnlyWords(const wstring& strText)
+{
+	// 문장의 공백, 문장부호를 제외하고 단어의 수만 세어준다.
+	_int iLength = strText.length();
+	_int iPunc = Exclude_PunctuationMarks(strText);
+	_int iTotal = iLength - iPunc;
+
+	if (0 > iTotal)
+		return -1;
+
+	return iTotal;
+}
+
+_int CUI_Manager::Exclude_PunctuationMarks(const wstring& strText)
+{
+	// 문장에 있는 문장부호의 수만 세어준다. (우선 . ! ? , ~)
+	_int iCount = 0;
+	for (wchar_t strSpace : strText)
+	{
+		if (strSpace == L',' || strSpace == L'.' || strSpace == L'?' || strSpace == L'!' || strSpace == L'~')
+			iCount++;
+	}
+
+	return iCount;
+}
+
 HRESULT CUI_Manager::Ready_BossHPBar(CBoss* pBoss, void* pArg)
 {
 	if (nullptr == pBoss)
@@ -6820,7 +6859,7 @@ HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
 
 		if (bOnOff) // On
 		{
-			if (Is_DefaultSettingOn())
+			if (true == Is_DefaultSettingOn())
 				OnOff_GamePlaySetting(false);
 
 			if (!m_pDialogWindow->Get_Active())
@@ -8874,6 +8913,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_AddItem_Popup"),
 		CUI_AddItem::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Vehicle_FX"),
+		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Vehicle_FX", CUI_Basic::UI_BASIC::VEHICLE_FX), LAYER_UI))) // 원형만 생성한다.
 		return E_FAIL;
 
 	return S_OK;

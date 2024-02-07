@@ -98,7 +98,7 @@ void CUI_Dialog_MiniWindow::LateTick(_float fTimeDelta)
 		TCHAR sTempText[MAX_PATH];
 		ZeroMemory(sTempText, sizeof(TCHAR) * MAX_PATH);
 
-		for (_uint i = 0; i < iTotalLength; i++)
+		for (_int i = 0; i < iTotalLength; i++)
 		{
 			if (iDestIndex > m_strContents.length())
 			{

@@ -15,6 +15,9 @@ private:
 	CRiding_Manager();
 	virtual ~CRiding_Manager() = default;
 
+public: // Getter & Setter
+	_bool Is_CharacterOnBoard() { return m_bIsRiding; }
+
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void Tick(_float fTimeDelta);
@@ -35,6 +38,8 @@ public:
 private:
 	class CVehicle_Udadak* m_pUdadak = { nullptr };
 	class CVehicle_Flying_Biplane* m_pBiplane = { nullptr };
+
+	_bool m_bIsRiding = { false }; // 우다닥을 탈때만 제어한다.
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

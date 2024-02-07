@@ -2,6 +2,8 @@
 #include "UI_SkillSection_SpecialSkill.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Skill_Manager.h"
+#include "Skill.h"
 
 CUI_SkillSection_SpecialSkill::CUI_SkillSection_SpecialSkill(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_SPECIALSKILL eType)
 	: CUI(pDevice, pContext, L"UI_SkillSection_SpecialSkill")
@@ -19,6 +21,17 @@ void CUI_SkillSection_SpecialSkill::Set_CharacterType(CHARACTER_TYPE eType)
 {
 	m_eCurPlayerType = eType;
 	Set_SkillType();
+}
+
+void CUI_SkillSection_SpecialSkill::Set_Clicked(_bool bClick)
+{
+	if (true == bClick)
+	{
+		m_fOriginCoolTime = m_pSkill->Get_CoolTime();	// 스킬 쿨타임을 받아온다.
+		m_fCoolTime = m_fOriginCoolTime;	// 대입한다.
+	}
+
+	m_bClicked = bClick;
 }
 
 HRESULT CUI_SkillSection_SpecialSkill::Initialize_Prototype()
@@ -75,7 +88,8 @@ void CUI_SkillSection_SpecialSkill::Tick(_float fTimeDelta)
 
 		if (m_bClicked)
 		{
-			m_fCoolTime -= fTimeDelta;
+//			m_fCoolTime -= fTimeDelta;
+			m_fCoolTime = m_fOriginCoolTime - (m_pSkill->Get_CurrCoolTime());
 			m_iPass = 6;
 
 			if (m_fCoolTime <= 0.f)
@@ -241,42 +255,105 @@ void CUI_SkillSection_SpecialSkill::Key_Input(_float fTimeDelta)
 
 void CUI_SkillSection_SpecialSkill::Set_SkillType()
 {
-	//	if (m_ePlayerType == eType)
-	//		return;
-
+	CSkill* pTemp = nullptr;
 	// CHaracterType에따른 SkillType을 설정한다 (For Texture Component)
-
 	switch (m_eCurPlayerType)
 	{
 	case CHARACTER_TYPE::SWORD_MAN: // 0, 1, 2
 		if (UI_SPECIALSKILL::SKILL_FIRST == m_eType)
+		{
 			m_iTextureIndex = 0;
+
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::SWORDMAN_ACANE_BARRIER);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		if (UI_SPECIALSKILL::SKILL_SECOND == m_eType)
+		{
 			m_iTextureIndex = 1;
+
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::SWORDMAN_FROZEN_STORM);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		if (UI_SPECIALSKILL::SKILL_THIRD == m_eType)
+		{
 			m_iTextureIndex = 2;
+
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::SWORDMAN_SWORD_TEMPEST);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		break;
 
 	case CHARACTER_TYPE::DESTROYER: // 3, 4, 5
 		if (UI_SPECIALSKILL::SKILL_FIRST == m_eType)
+		{
 			m_iTextureIndex = 3;
+
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::DESTROYER_FRENGE_CHARGE);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		if (UI_SPECIALSKILL::SKILL_SECOND == m_eType)
+		{
 			m_iTextureIndex = 4;
+
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::DESTROYER_BATTLE_CRY);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		if (UI_SPECIALSKILL::SKILL_THIRD == m_eType)
+		{
 			m_iTextureIndex = 5;
+
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::DESTROYER_IGNORE_PAIN);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		break;
 
 	case CHARACTER_TYPE::ENGINEER: // 6, 7, 8
 		if (UI_SPECIALSKILL::SKILL_FIRST == m_eType)
+		{
 			m_iTextureIndex = 6;
+
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::ENGINEER_FLASH_HEAL);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		if (UI_SPECIALSKILL::SKILL_SECOND == m_eType)
+		{
 			m_iTextureIndex = 7;
+
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::ENGINEER_TIMELAB);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		if (UI_SPECIALSKILL::SKILL_THIRD == m_eType)
+		{
 			m_iTextureIndex = 8;
+
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::ENGINEER_HEALINGTREE);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		break;
 	}
 
-	m_fOriginCoolTime = 10.f; // Temp
+	if (nullptr == m_pSkill)
+		return;
+
+	m_fOriginCoolTime = m_pSkill->Get_CoolTime();
 	m_fCoolTime = m_fOriginCoolTime;
 }
 
