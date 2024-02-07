@@ -17,10 +17,12 @@ private:
 		TYPE_ET2_E_MAINLINE_01,
 		TYPE_ET2_E_MAINLINE_02,
 
-		TYPE_ET2_E_CIRCLELINE,
-		TYPE_ET2_E_LINEEFFECT,
-
+		TYPE_ET2_E_LINEEFFECT_01,
+		TYPE_ET2_E_LINEEFFECT_02,
+		TYPE_ET2_E_LINEEFFECT_03,
 		TYPE_ET2_P_CIRCLES,
+
+		TYPE_ET2_E_CIRCLELINE,
 
 		TYPE_ET3_V_FINISH,
 
@@ -45,6 +47,15 @@ protected:
 private:
 	class CEffect* m_pMainLine_01 = nullptr;
 	class CEffect* m_pMainLine_02 = nullptr;
+	class CEffect* m_pMainLine_03 = nullptr;
+	class CEffect* m_pMainLine_04 = nullptr;
+
+	class CEffect* m_pMainLineEffect_01 = nullptr;
+	class CEffect* m_pMainLineEffect_02 = nullptr;
+	class CEffect* m_pMainLineEffect_03 = nullptr;
+
+	class CParticle* m_pCircleParticle_01 = nullptr;
+	class CParticle* m_pCircleParticle_02 = nullptr;
 
 public:
 	static CVfx_Stellia_Skill_Laser* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
