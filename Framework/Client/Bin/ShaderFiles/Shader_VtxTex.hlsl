@@ -94,29 +94,72 @@ cbuffer CB_Moon
     float fDissolveTime = 5.0f;
 };
 
+//float2 RotateUV(float2 uv, float angle)
+//{
+//    float s = sin(angle);
+//    float c = cos(angle);
+//    float2x2 rotationMatrix = float2x2(c, -s, s, c);
+//    return mul(uv - 0.5, rotationMatrix) + 0.5;
+//}
+
 PS_OUT PS_MOON_MAIN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
-
+	
     float4 vWhiteColor  = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
-    float4 vRedColor = g_RedTexture.Sample(LinearSampler, In.vTexUV);
+    float4 vRedColor    = g_RedTexture.Sample(LinearSampler, In.vTexUV);
+    if (0.2f >= vWhiteColor.a)
+        discard;
+	
+	// 텍스처 좌표 회전
+    //float  rotationAngle = fDissolveWeight / 2.f; // 시간에 따라 회전 각도 계산
+    //float2 rotatedUV = RotateUV(In.vTexUV, rotationAngle);
+
+    //float4 vDissolve = g_DissolveTexture.Sample(LinearSampler, rotatedUV);
     float4 vDissolve = g_DissolveTexture.Sample(LinearSampler, In.vTexUV);
     float fDissolveAlpha = bStartChange == true ? saturate(1.0f - fDissolveWeight / fDissolveTime + vDissolve.r) : 1.0f;
     // Dissolve의 Alpha의 Weight가 늘어날수록 Dissolve의 알파가 0이 된다.
 	
-    if (fDissolveAlpha < 0.5f)
+    if (fDissolveAlpha < 0.45f)
     {
         Out.vBloom = vBloomColor;
         Out.vColor = vRedColor;
+
     }
-	else
+	
+    else if (fDissolveAlpha < 0.47f)
+    {
+        Out.vBloom = float4(1.000f, 0.311f, 0.f, 1.f);
+        Out.vColor = Out.vBloom;
+    }
+    else if (fDissolveAlpha < 0.52f)
+    {
+        Out.vBloom = float4(1.f, 0.816f, 0.275f, 1.f);
+        Out.vColor = Out.vBloom;
+    }
+	
+    else if (fDissolveAlpha < 0.53f)
+    {
+        Out.vBloom = float4(1.f, 1.f, 1.f, 1.f);
+        Out.vColor = Out.vBloom;
+    }
+	
+    else if (fDissolveAlpha < 0.54f)
+    {
+        Out.vBloom = float4(1.f, 0.816f, 0.275f, 1.f);
+        Out.vColor = Out.vBloom;
+    }
+    else if (fDissolveAlpha < 0.55f)
+    {
+        Out.vBloom = float4(1.000f, 0.311f, 0.f, 1.f);
+        Out.vColor = Out.vBloom;
+    }
+
+    else // 원래색
     {
         Out.vBloom = vBloomColor;
         Out.vColor = vWhiteColor;
     }
-	
-    if (0.0001f >= Out.vColor.a)
-        discard;
 	
     return Out;
 }
