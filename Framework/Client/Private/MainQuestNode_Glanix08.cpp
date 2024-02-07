@@ -68,12 +68,13 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix08::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_KINGDOMHALL)
 	{
+		// 다음 노드에서 DestSpot Position을 업데이트 한다.
 		CUI_PopupQuest::QUEST_INFO QuestDesc = {};
 		QuestDesc.strType = m_strNextQuestTag;
 		QuestDesc.strTitle = m_strNextQuestName;
 		QuestDesc.strContents = m_strNextQuestContent;
 		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+
 		CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 		m_bIsClear = true;

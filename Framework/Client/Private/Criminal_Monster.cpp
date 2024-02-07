@@ -65,9 +65,8 @@ HRESULT CCriminal_Monster::Initialize(void* pArg)
 	CGameObject* pHPBar = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Monster_WorldHPBar"), LAYER_TYPE::LAYER_UI);
 	if (nullptr == pHPBar)
 		return E_FAIL;
-
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
-	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 1.5f);
+	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 2.f);
 
 	m_vBloomPower = _float3(0.8f, 0.8f, 0.8f);
 

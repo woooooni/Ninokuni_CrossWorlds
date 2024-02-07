@@ -41,6 +41,7 @@ public: // Get/Set
 	_bool			Is_UIClicked() { return m_bEvent; }
 
 	_float2			Get_ProjectionPosition(class CTransform* pTransform);
+	_float			Calculate_Distance_FromPlayer(_float4 vPosition);
 
 	void			Set_MainDialogue(_tchar* pszName, _tchar* pszText);
 	void			Set_MiniDialogue(wstring strName, wstring strContents);
@@ -56,7 +57,7 @@ public: // Get/Set
 	void			Get_QuestInfo();
 
 	void			Set_QuestDestSpot(_int iWindow);
-	void			Calculate_QuestDestSpot(_float4 vDestPos);
+	void			Set_QuestDestSpotPosition(_float4 vDestPos);
 
 	_int			Get_SelectedCharacter();
 	_float			Get_DistanceofMovement_SkillBG();

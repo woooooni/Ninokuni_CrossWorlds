@@ -9,6 +9,7 @@
 #include "Quest_Manager.h"
 
 #include "GameNpc.h"
+#include "UI_PopupQuest.h"
 
 CMainQuestNode_Invasion02_2::CMainQuestNode_Invasion02_2()
 {
@@ -29,6 +30,14 @@ void CMainQuestNode_Invasion02_2::Start()
 {
 	Vec4 vSpotPos = { 0.f, 10.f, 71.5f, 1.f };
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
+
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestName;
+	QuestDesc.strContents = m_strQuestContent;
+	QuestDesc.bCreateSpot = true;
+	QuestDesc.vDestPosition = vSpotPos;
+	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Invasion02_2::Tick(const _float& fTimeDelta)

@@ -10,6 +10,7 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Riding_Manager.h"
 #include "UI_Manager.h"
 #include "UI_Fade.h"
 
@@ -25,6 +26,8 @@
 #include "Ruby.h"
 
 #include "Camera_Action.h"
+
+_bool CLevel_WitchForest::g_bFirstEnter = false;
 
 CLevel_WitchForest::CLevel_WitchForest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -71,7 +74,7 @@ HRESULT CLevel_WitchForest::Initialize()
 		return E_FAIL;
 	
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
-		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 5.f);
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
 
 	/* Camera Action */
 	{
@@ -84,6 +87,12 @@ HRESULT CLevel_WitchForest::Initialize()
 	}
 
 	GI->Play_BGM(TEXT("BGM_Field_Village_Winter_Po_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
+
+	if (false == g_bFirstEnter)
+	{
+		g_bFirstEnter = true;
+		CUI_Manager::GetInstance()->OnOff_MapName(true, TEXT("숲의 입구"));
+	}
 
 	return S_OK;
 }
@@ -211,6 +220,9 @@ HRESULT CLevel_WitchForest::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 	}
+
+	if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_GameObjectToLayer(LEVELID::LEVEL_WITCHFOREST)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -622,6 +634,36 @@ HRESULT CLevel_WitchForest::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
 		return E_FAIL;
+
+	// MapName Trigger (strMapName만 완료)
+//	TriggerDesc = {};
+//	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
+//	TriggerDesc.strMapName = L"숲의 입구";
+//	TriggerDesc.vStartPosition = { 107.93f, -50.f, 5.067f, 1.f };
+//	TriggerDesc.vExtents = { 100.f, 200.f, 100.f };
+//	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+//		return E_FAIL;
+//	
+//	TriggerDesc = {};
+//	TriggerDesc.strMapName = L"정령의 쉼터";
+//	TriggerDesc.vStartPosition = { -79.747f, -50.f, 70.857f, 1.f };
+//	TriggerDesc.vExtents = { 100.f, 200.f, 100.f };
+//	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+//		return E_FAIL;
+//
+//	TriggerDesc = {};
+//	TriggerDesc.strMapName = L"초승달 평원 북부";
+//	TriggerDesc.vStartPosition = { -124.5f, -50.f, 290.2f, 1.f };
+//	TriggerDesc.vExtents = { 200.f, 200.f, 150.f };
+//	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+//		return E_FAIL;
+//
+//	TriggerDesc = {};
+//	TriggerDesc.strMapName = L"반디 정원";
+//	TriggerDesc.vStartPosition = { -124.5f, -50.f, 290.2f, 1.f };
+//	TriggerDesc.vExtents = { 200.f, 200.f, 150.f };
+//	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+//		return E_FAIL;
 
 	return S_OK;
 }

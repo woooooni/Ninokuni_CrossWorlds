@@ -33,7 +33,6 @@ void CMainQuestNode_Invasion04::Start()
 	QuestDesc.strTitle = m_strQuestName;
 	QuestDesc.strContents = m_strQuestContent;
 	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
-//	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	// Delete_Npc();
 
@@ -53,6 +52,14 @@ void CMainQuestNode_Invasion04::Start()
 	{
 		Vec4 vSpotPos = Set_DestSpot(m_pRuslan);
 		m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
+
+		CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+		QuestDesc.strType = m_strQuestTag;
+		QuestDesc.strTitle = m_strQuestName;
+		QuestDesc.strContents = m_strQuestContent;
+		QuestDesc.bCreateSpot = true;
+		QuestDesc.vDestPosition = vSpotPos;
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 	}
 
 }

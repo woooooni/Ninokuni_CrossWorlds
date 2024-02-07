@@ -16,8 +16,8 @@ HRESULT CMainQuestNode_Glanix07::Initialize()
 	__super::Initialize();
 
 	m_strQuestTag = TEXT("[메인]");
-	m_strQuestName = TEXT("다시 에스타나비아로");
-	m_strQuestContent = TEXT("왔던 길을 돌아가 에스타나비아로 돌아가기");
+	m_strQuestName = TEXT("다시 에스타바니아로");
+	m_strQuestContent = TEXT("왔던 길을 돌아가 에스타바니아로 돌아가기");
 
 	m_strNextQuestTag = TEXT("[메인]");
 	m_strNextQuestName = TEXT("성으로");
@@ -43,7 +43,6 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix07::Tick(const _float& fTimeDelta)
 		QuestDesc.strTitle = m_strNextQuestName;
 		QuestDesc.strContents = m_strNextQuestContent;
 		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;

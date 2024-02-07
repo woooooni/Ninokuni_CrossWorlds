@@ -91,7 +91,7 @@ void CGlanixState_IntroFinish::Exit_State()
 	{
 		/* Start Fade In */
 		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
-			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_fFadeInTime, false);
+			CUI_Manager::GetInstance()->Get_Fade()->Renew_Fade(false, m_fFadeInTime, false);
 
 		/* On UI */
 		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())

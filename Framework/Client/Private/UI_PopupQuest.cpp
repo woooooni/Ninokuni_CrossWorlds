@@ -177,7 +177,6 @@ const CUI_PopupQuest::QUEST_INFO& CUI_PopupQuest::Get_QuestContents(_int iSlotNu
 {
 	// 첫번째 윈도우에서 클릭된 창에 해당하는 퀘스트 정보를 가지고 온다.
 	// 예외처리는 UIManager에서 수행한다.
-
 	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
 	QuestDesc = m_Quest[iSlotNum];
 
@@ -241,10 +240,6 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 
 			if (m_bProgressing)
 			{
-				// 문제 생기면 지우기. 24.02.03
-//				if (false == CUI_Manager::GetInstance()->Is_FadeFinished())
-//					return;
-
 				if (LEVELID::LEVEL_EVERMORE == GI->Get_CurrentLevel() &&
 					true == CUIMinigame_Manager::GetInstance()->Is_GrandprixIntroStarted())
 					return;
@@ -289,6 +284,23 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 					ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY);
 					m_pRendererCom->Add_Text(ContentsDesc);
 
+					if (true == m_Quest[0].bCreateSpot) // [24.02.07 미완성] QuestSpot이 지정되어 있다면
+					{
+						_float fDistance = CUI_Manager::GetInstance()->Calculate_Distance_FromPlayer(m_Quest[0].vDestPosition);
+						_float fOffset = (to_wstring(_int(fDistance)).length() - 1) * 5.f;
+
+						if (1.f <= fDistance)
+						{
+							CRenderer::TEXT_DESC DistanceDesc;
+							DistanceDesc.strText = to_wstring(_int(fDistance)) + L"M";
+							DistanceDesc.strFontTag = L"Default_Medium";
+							DistanceDesc.vScale = { 0.25f, 0.25f };
+							DistanceDesc.vColor = m_vTextColor;
+							DistanceDesc.vPosition = _float2(m_tInfo.fX + 110.f - fOffset, m_tInfo.fY + 20.f);
+							m_pRendererCom->Add_Text(DistanceDesc);
+						}
+					}
+
 					if (2 <= m_Quest.size())
 					{
 						if (TEXT("[메인]") == m_Quest[1].strType)
@@ -322,6 +334,23 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 						ContentsDesc.vColor = m_vTextColor;
 						ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + fOffsetY);
 						m_pRendererCom->Add_Text(ContentsDesc);
+
+						if (true == m_Quest[1].bCreateSpot) // [24.02.07 미완성] QuestSpot이 지정되어 있다면
+						{
+							_float fDistance = CUI_Manager::GetInstance()->Calculate_Distance_FromPlayer(m_Quest[1].vDestPosition);
+							_float fOffset = (to_wstring(_int(fDistance)).length() - 1) * 5.f;
+
+							if (1.f <= fDistance)
+							{
+								CRenderer::TEXT_DESC DistanceDesc;
+								DistanceDesc.strText = to_wstring(_int(fDistance)) + L"M";
+								DistanceDesc.strFontTag = L"Default_Medium";
+								DistanceDesc.vScale = { 0.25f, 0.25f };
+								DistanceDesc.vColor = m_vTextColor;
+								DistanceDesc.vPosition = _float2(m_tInfo.fX + 110.f - fOffset, m_tInfo.fY + 20.f);
+								m_pRendererCom->Add_Text(DistanceDesc);
+							}
+						}
 
 						if (3 <= m_Quest.size())
 						{
@@ -357,6 +386,23 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 							ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + (fOffsetY * 2.f));
 							m_pRendererCom->Add_Text(ContentsDesc);
 
+							if (true == m_Quest[2].bCreateSpot) // [24.02.07 미완성] QuestSpot이 지정되어 있다면
+							{
+								_float fDistance = CUI_Manager::GetInstance()->Calculate_Distance_FromPlayer(m_Quest[2].vDestPosition);
+								_float fOffset = (to_wstring(_int(fDistance)).length() - 1) * 5.f;
+
+								if (1.f <= fDistance)
+								{
+									CRenderer::TEXT_DESC DistanceDesc;
+									DistanceDesc.strText = to_wstring(_int(fDistance)) + L"M";
+									DistanceDesc.strFontTag = L"Default_Medium";
+									DistanceDesc.vScale = { 0.25f, 0.25f };
+									DistanceDesc.vColor = m_vTextColor;
+									DistanceDesc.vPosition = _float2(m_tInfo.fX + 110.f - fOffset, m_tInfo.fY + 20.f);
+									m_pRendererCom->Add_Text(DistanceDesc);
+								}
+							}
+
 							if (4 <= m_Quest.size())
 							{
 								if (TEXT("[메인]") == m_Quest[3].strType)
@@ -389,6 +435,23 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 								ContentsDesc.vColor = m_vTextColor;
 								ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + (fOffsetY * 3.f));
 								m_pRendererCom->Add_Text(ContentsDesc);
+
+								if (true == m_Quest[3].bCreateSpot) // [24.02.07 미완성] QuestSpot이 지정되어 있다면
+								{
+									_float fDistance = CUI_Manager::GetInstance()->Calculate_Distance_FromPlayer(m_Quest[3].vDestPosition);
+									_float fOffset = (to_wstring(_int(fDistance)).length() - 1) * 5.f;
+
+									if (1.f <= fDistance)
+									{
+										CRenderer::TEXT_DESC DistanceDesc;
+										DistanceDesc.strText = to_wstring(_int(fDistance)) + L"M";
+										DistanceDesc.strFontTag = L"Default_Medium";
+										DistanceDesc.vScale = { 0.25f, 0.25f };
+										DistanceDesc.vColor = m_vTextColor;
+										DistanceDesc.vPosition = _float2(m_tInfo.fX + 110.f - fOffset, m_tInfo.fY + 20.f);
+										m_pRendererCom->Add_Text(DistanceDesc);
+									}
+								}
 							}
 						}
 					}
