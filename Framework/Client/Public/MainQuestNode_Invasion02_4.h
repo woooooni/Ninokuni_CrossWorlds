@@ -23,6 +23,9 @@ private:
 
 	_bool m_bIsWitchAppear = false;
 
+	_float	m_fWitchOriginHeight = 0.f;
+	_float	m_fWitchDestHeight = 12.f;
+
 public:
 	static CMainQuestNode_Invasion02_4* Create();
 	virtual void Free() override;

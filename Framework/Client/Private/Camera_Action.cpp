@@ -99,6 +99,9 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		case CCamera_Action::ENDING:
 			Tick_Ending(fTimeDelta);
 			break;
+		case CCamera_Action::WITCH_INVASION:
+			Tick_Witch_Invasion(fTimeDelta);
+			break;
 		default:
 			break;
 		}
@@ -179,6 +182,44 @@ void CCamera_Action::Set_NpcTransformByBackupDesc(class CTransform* pNpcTransfor
 	pNpcTransform->LookAt(m_tActionTalkBackUpDesc.vOriginLookAt);
 
 	pNpcTransform->Set_Position(m_tActionTalkBackUpDesc.vOriginPosition);
+}
+
+HRESULT CCamera_Action::Ready_Action_Witch_Invasion(CGameObject* pGameObject)
+{
+	if (nullptr == pGameObject)
+		return E_FAIL;
+
+	m_tActionWitchInvasionDesc.pWitchObject = pGameObject;
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Start_Action_Witch_Invasion()
+{
+	if (nullptr == m_tActionWitchInvasionDesc.pWitchObject)
+		return E_FAIL;
+
+	m_eCurActionType = CAMERA_ACTION_TYPE::WITCH_INVASION;
+
+	CModel* pWitchModel = m_tActionWitchInvasionDesc.pWitchObject->Get_Component_Model();
+	CTransform* pWitchTransform = m_tActionWitchInvasionDesc.pWitchObject->Get_Component_Transform();
+
+	if (nullptr == pWitchModel || nullptr == pWitchTransform)
+		return E_FAIL;
+
+	Vec4 vPos = Vec4(pWitchTransform->Get_Position()) + pWitchTransform->Get_RelativeOffset({ 1.f, -18.f, 4.25f, 1.f });
+	m_pTransformCom->Set_Position(vPos.OneW());
+
+	Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(0) * pWitchTransform->Get_WorldMatrix();
+	Vec4 vLookAt;
+	memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+
+
+	vLookAt += m_pTransformCom->Get_RelativeOffset(m_tActionWitchInvasionDesc.vLookAtOffset).ZeroW();
+
+	m_pTransformCom->LookAt(vLookAt.OneW());
+
+	return S_OK;
 }
 
 Vec4 CCamera_Action::Get_LookAt()
@@ -278,8 +319,11 @@ HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pNpc)
 
 
 	/* 카메라 세팅 */
-	if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(m_iKey)))
-		return E_FAIL;
+	//if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(m_iKey)))
+	//	return E_FAIL;
+
+	/* 대화 중간 액션 카메라의 액션 타입이 바뀌는 경우 존재*/
+	CCamera_Manager::GetInstance()->Set_CurCamera(m_iKey);
 
 
 	/* 쿠우 + 플레이어*/
@@ -301,6 +345,8 @@ HRESULT CCamera_Action::Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_T
 {
 	if (nullptr == m_tActionTalkDesc.pTransform_Kuu || nullptr == m_tActionTalkDesc.pTransform_Player)
 		return E_FAIL;
+
+	m_eCurActionType = CAMERA_ACTION_TYPE::TALK;
 
 	Set_Talk_Transform(eType);
 
@@ -942,6 +988,26 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 	m_pTransformCom->LookAt(vCamLookAt.OneW());
 
 	m_tActionTalkDesc.vPrevLookAt = vCamLookAt.OneW();
+}
+
+void CCamera_Action::Tick_Witch_Invasion(_float fTimeDelta)
+{
+	if (nullptr == m_tActionWitchInvasionDesc.pWitchObject)
+		return;
+
+	CModel* pWitchModel = m_tActionWitchInvasionDesc.pWitchObject->Get_Component_Model();
+	CTransform* pWitchTransform = m_tActionWitchInvasionDesc.pWitchObject->Get_Component_Transform();
+
+	if (nullptr == pWitchModel || nullptr == pWitchTransform)
+		return;
+
+	Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(0) * pWitchTransform->Get_WorldMatrix();
+	Vec4 vLookAt;
+	memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+
+	vLookAt += m_pTransformCom->Get_RelativeOffset(m_tActionWitchInvasionDesc.vLookAtOffset).ZeroW();
+
+	m_pTransformCom->LookAt(vLookAt.OneW());
 }
 
 HRESULT CCamera_Action::Ready_Components()

@@ -7,8 +7,9 @@
 #include "UI_Manager.h"
 
 #include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
 
-#include "Camera_Manager.h"
 #include "Camera_Group.h"
 
 #include "DreamMazeWitch_Npc.h"
@@ -73,9 +74,9 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02_4::Tick(const _float& fTimeDelta)
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 			/* 대화 카메라 종료 */
-			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			if (nullptr != pActionCam)
-				pActionCam->Finish_Action_Talk();
+			//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+			//if (nullptr != pActionCam)
+			//	pActionCam->Finish_Action_Talk();
 		}
 
 		// 대화는 하나고 마녀의 연출이 필요하기에 여기서 강제로 조건 걸어주기.
@@ -92,11 +93,48 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02_4::Tick(const _float& fTimeDelta)
 
 	if (m_bIsWitchAppear)
 	{
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		if (nullptr == pActionCam)
+			return NODE_STATE::NODE_FAIL;
+
 		// 마녀 등장해서 내려오기 시작
 		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, _uint(LAYER_NPC), TEXT("Prorotype_GameObject_DreamMazeWitch_Npc"), nullptr, &m_pWitch)))
-		{
 			MSG_BOX("Fail AddGameObj : Quest DreamerMazeWitch");
+
+		// 초기 높이 값 기억 및 데이터 세팅 
+		pActionCam->Ready_Action_Witch_Invasion(m_pWitch);
+		m_fWitchOriginHeight = Vec4(m_pWitch->Get_Component_Transform()->Get_Position()).y;
+
+		// 대화 카메라 세팅을 위해 일시적으로 높이 낮춰주기
+		{
+			Vec4 vPos = m_pWitch->Get_Component_Transform()->Get_Position();
+			vPos.y = m_fWitchDestHeight;
+			m_pWitch->Get_Component_Transform()->Set_Position(vPos);
 		}
+
+		/* 대화 카메라 다시 세팅 */
+		{
+			pActionCam->Start_Action_Talk(m_pWitch);
+		}
+
+		// 플레이어가 카메라에 안나오게 내려주기 
+		CCharacter* pCharacter = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+		if (nullptr != pCharacter)
+		{
+			Vec4 vPos = pCharacter->Get_Component_Transform()->Get_Position();
+			vPos.y -= 3.f;
+			pCharacter->Get_Component_Transform()->Set_Position(vPos);
+		}
+
+		// 다시 높이 높여주기 
+		{
+			Vec4 vPos = m_pWitch->Get_Component_Transform()->Get_Position();
+			vPos.y = m_fWitchOriginHeight;
+			m_pWitch->Get_Component_Transform()->Set_Position(vPos);
+		}
+
+		/* 내려오는 컷신 실행 */
+		pActionCam->Start_Action_Witch_Invasion();
 
 		m_pWitch->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_INVASION_APPEAR);
 
@@ -109,6 +147,8 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02_4::Tick(const _float& fTimeDelta)
 		if (m_pWitch->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CDreamMazeWitch_Npc::WITCHSTATE_INVASION_IDLE)
 		{
 			// 갔다와서 여기 바로 걸리는지 확인. 바로 걸리면 안되거덩
+
+			// 다시 대화 캠으로 변경 (플레이어나 npc 먼저 대화 시작)
 			m_bIsClear = true;
 			return NODE_STATE::NODE_FAIL;
 		}
@@ -137,7 +177,6 @@ void CMainQuestNode_Invasion02_4::TalkEvent()
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
 		break;
 	}
-
 }
 
 CMainQuestNode_Invasion02_4* CMainQuestNode_Invasion02_4::Create()

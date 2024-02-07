@@ -19,7 +19,7 @@ public:
 	enum CAMERA_ACTION_TYPE { 
 		LOBBY, DOOR, TALK, WINDMILL, 
 		SWORDMAN_BURST, ENGINEER_BURST, DESTROYER_BURST, 
-		STADIUM, ENDING,
+		STADIUM, ENDING, WITCH_INVASION,
 		CAMERA_ACTION_END };
 
 public:
@@ -210,6 +210,14 @@ public:
 
 	}ACTION_TALK_BACKUP_DESC;
 
+	typedef struct tagWitchInvasionDesc
+	{
+		class CGameObject* pWitchObject = nullptr;
+
+		Vec4 vLookAtOffset = { 0.5f, -1.f, 0.f, 1.f };
+
+	}ACTION_WITCH_INVASION_DESC;
+
 private:
 	CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_Action(const CCamera_Action& rhs);
@@ -239,6 +247,9 @@ public:
 
 	HRESULT Start_Action_Ending();
 
+	HRESULT Ready_Action_Witch_Invasion(CGameObject* pGameObject);
+	HRESULT Start_Action_Witch_Invasion();
+
 	// 캐릭터 버스트 스킬 액션.
 	HRESULT Start_Action_SwordManBurst(class CTransform* pSwordManTransform);
 	HRESULT Start_Action_EngineerBurst(class CTransform* pEngineerTransform);
@@ -263,6 +274,7 @@ private:
 	void Tick_Stadium(_float fTimeDelta);
 	void Tick_Ending(_float fTimeDelta);
 	void Tick_Criminal(_float fTimeDelta);
+	void Tick_Witch_Invasion(_float fTimeDelta);
 
 	void Tick_SwordManBurst(_float fTimeDelta);
 	void Tick_EngineerBurst(_float fTimeDelta);
@@ -288,6 +300,7 @@ private:
 	ACTION_STADIUM_DESC		m_tActionStadiumDesc	= {};
 	ACTION_ENDING_DESC		m_tActionEndingDesc		= {};
 	ACTION_TALK_BACKUP_DESC m_tActionTalkBackUpDesc = {};
+	ACTION_WITCH_INVASION_DESC m_tActionWitchInvasionDesc = {};
 
 	ACTION_SWORDMAN_BURST_DESC m_tActionSwordManBurstDesc	= {};
 	ACTION_ENGINEER_BURST_DESC m_tActionEngineerBurstDesc	= {};
