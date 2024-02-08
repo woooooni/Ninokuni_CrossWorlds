@@ -129,9 +129,24 @@ void CUI_SkillSection_SpecialSkill::LateTick(_float fTimeDelta)
 				TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
 
 				if (iTemp < 10)
-					TextDesc.vPosition = _float2(m_vTextPosition.x + 10.f, m_vTextPosition.y);
+					TextDesc.vPosition = _float2(m_vTextPosition.x + 9.f, m_vTextPosition.y);
 				else
 					TextDesc.vPosition = m_vTextPosition;
+
+				// Outline
+				CRenderer::TEXT_DESC OutlineDesc;
+				OutlineDesc.strText = TextDesc.strText;
+				OutlineDesc.strFontTag = TextDesc.strFontTag;
+				OutlineDesc.vScale = TextDesc.vScale;
+				OutlineDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+				OutlineDesc.vPosition = _float2(TextDesc.vPosition.x - 1.2f, TextDesc.vPosition.y);
+				m_pRendererCom->Add_Text(OutlineDesc);
+				OutlineDesc.vPosition = _float2(TextDesc.vPosition.x + 1.2f, TextDesc.vPosition.y);
+				m_pRendererCom->Add_Text(OutlineDesc);
+				OutlineDesc.vPosition = _float2(TextDesc.vPosition.x, TextDesc.vPosition.y - 1.2f);
+				m_pRendererCom->Add_Text(OutlineDesc);
+				OutlineDesc.vPosition = _float2(TextDesc.vPosition.x, TextDesc.vPosition.y + 1.2f);
+				m_pRendererCom->Add_Text(OutlineDesc);
 
 				m_pRendererCom->Add_Text(TextDesc);
 			}

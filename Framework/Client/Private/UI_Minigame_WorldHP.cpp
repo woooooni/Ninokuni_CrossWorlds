@@ -196,11 +196,11 @@ HRESULT CUI_Minigame_WorldHP::Ready_State()
 
 HRESULT CUI_Minigame_WorldHP::Bind_ShaderResources()
 {
-	_float4x4	WorldMatrix;
-	XMStoreFloat4x4(&WorldMatrix, m_BarWorldMatrix);
-	
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &WorldMatrix)))
-		return E_FAIL;
+//	_float4x4	WorldMatrix;
+//	XMStoreFloat4x4(&WorldMatrix, m_BarWorldMatrix);
+//	
+//	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &WorldMatrix)))
+//		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &GI->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ))))

@@ -62,6 +62,7 @@
 #include "UI_Dialog_Window.h"
 #include "UI_BtnQuickQuest.h"
 #include "UI_World_NameTag.h"
+#include "UI_Stellia_Timer.h"
 #include "UI_CostumeTab_Map.h"
 #include "UI_Inventory_Slot.h"
 #include "UI_Setting_Slider.h"
@@ -8917,6 +8918,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Vehicle_FX"),
 		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Vehicle_FX", CUI_Basic::UI_BASIC::VEHICLE_FX), LAYER_UI))) // 원형만 생성한다.
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Stellia_Timer"),
+		CUI_Stellia_Timer::Create(m_pDevice, m_pContext), LAYER_UI))) // 원형만 생성한다
 		return E_FAIL;
 
 	return S_OK;

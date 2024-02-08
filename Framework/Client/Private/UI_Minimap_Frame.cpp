@@ -2,6 +2,8 @@
 #include "UI_Minimap_Frame.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
 
 CUI_Minimap_Frame::CUI_Minimap_Frame(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MINIMAP eType)
 	: CUI(pDevice, pContext, L"UI_Minimap_Frame")
@@ -44,6 +46,9 @@ void CUI_Minimap_Frame::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+	
+		if (MINIMAP_ARROW == m_eType)
+			Tick_Arrow(fTimeDelta);
 
 		__super::Tick(fTimeDelta);
 	}
@@ -169,6 +174,33 @@ void CUI_Minimap_Frame::Key_Input(_float fTimeDelta)
 			CUI_Manager::GetInstance()->OnOff_WorldMap(true);
 		}
 	}
+}
+
+void CUI_Minimap_Frame::Tick_Arrow(_float fTimeDelta)
+{
+	// 카메라 방향에 따라서 나침반을 돌린다.
+	_vector vStandard = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+	_vector vLook;
+
+	CCamera* pCurCamera = CCamera_Manager::GetInstance()->Get_CurCamera();
+	if (nullptr == pCurCamera)
+		return;
+	CTransform* pCameraTrans = pCurCamera->Get_Transform();
+	if (nullptr == pCameraTrans)
+		return;
+
+	vLook = pCameraTrans->Get_Look();
+	vLook = XMVector3Normalize(vLook);
+
+// 두 벡터 사이의 각도 계산
+	_float fDot = XMVectorGetX(XMVector3Dot(vStandard, vLook));
+	_float fDegree = XMConvertToDegrees(acos(fDot));
+	
+	// 두 벡터의 외적을 통해 회전 방향 결정
+	if (XMVectorGetY(XMVector3Cross(vStandard, vLook)) > 0.f)
+	fDegree *= -1.f;
+	
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(fDegree));
 }
 
 CUI_Minimap_Frame* CUI_Minimap_Frame::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MINIMAP eType)
