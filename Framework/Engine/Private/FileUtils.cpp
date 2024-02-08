@@ -91,3 +91,17 @@ void CFileUtils::Read(OUT string& data)
 	delete[] temp;
 }
 
+void CFileUtils::Read(OUT string& data, _bool bwchar)
+{
+	_uint size = Read<_uint>();
+
+	if (size == 0)
+		return;
+
+	_tchar* temp = new _tchar[size + 1];
+	temp[size] = 0;
+	Read((void**)&temp, size);
+	data = CUtils::TCharToString(temp);
+	delete[] temp;
+}
+

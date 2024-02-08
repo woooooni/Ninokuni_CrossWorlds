@@ -38,17 +38,17 @@ HRESULT CTrigger::Initialize_Prototype()
 
 HRESULT CTrigger::Initialize(void* pArg)
 {
-	if (pArg == nullptr)
-		return E_FAIL;
+	//if (pArg == nullptr)
+	//	return E_FAIL;
 
-	TRIGGER_DESC* pTriggerDesc = (TRIGGER_DESC*)pArg;
+	//TRIGGER_DESC* pTriggerDesc = (TRIGGER_DESC*)pArg;
 
-	m_eTriggerType = pTriggerDesc->eTriggerType;
-	m_vExtents = pTriggerDesc->vExtents;
-	m_strBGM = pTriggerDesc->strBGM;
-	m_strMapName = pTriggerDesc->strMapName;
-	m_vAt = pTriggerDesc->vAt;
-	m_vEye = pTriggerDesc->vEye;
+	//m_eTriggerType = pTriggerDesc->eTriggerType;
+	//m_vExtents = pTriggerDesc->vExtents;
+	//m_strBGM = pTriggerDesc->strBGM;
+	//m_strMapName = pTriggerDesc->strMapName;
+	//m_vAt = pTriggerDesc->vAt;
+	//m_vEye = pTriggerDesc->vEye;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -59,7 +59,7 @@ HRESULT CTrigger::Initialize(void* pArg)
 	if (FAILED(Ready_Collider()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(pTriggerDesc->vStartPosition));
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(pTriggerDesc->vStartPosition));
 
 	return S_OK;
 }
@@ -101,15 +101,15 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 		switch (m_eTriggerType)
 		{
 		case TRIGGER_TYPE::TRIGGER_MAP_NAME:
-			GI->Set_ShadowLight(GI->Get_CurrentLevel(), m_vEye, m_vAt, Vec4(0.0f, 1.0f, 0.0f, 0.0f));
+			//GI->Set_ShadowLight(GI->Get_CurrentLevel(), m_vEye, m_vAt, Vec4(0.0f, 1.0f, 0.0f, 0.0f));
 
-			if (m_strMapName == TEXT(""))
+			if (m_strMapName == L"")
 				return;
 			CUI_Manager::GetInstance()->OnOff_MapName(true, m_strMapName);
 			break;
 
 		case TRIGGER_TYPE::TRIGGER_CHANGE_BGM:
-			GI->Play_BGM(CUtils::ToWString(m_strBGM), 1.f, true);
+			GI->Play_BGM(m_strBGM, 1.f, true);
 			break;
 
 		case TRIGGER_TYPE::TRIGGER_BOSS_GIANTY_ENTER:

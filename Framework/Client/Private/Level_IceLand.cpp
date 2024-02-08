@@ -65,6 +65,9 @@ HRESULT CLevel_IceLand::Initialize()
 	if(FAILED(Ready_Layer_Prop(LAYER_TYPE::LAYER_PROP)))
 		return E_FAIL;
 
+	if (FAILED(Ready_Trigger(TEXT("Winter"))))
+		return E_FAIL;
+
 	if (FAILED(Ready_Layer_Effect(LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
@@ -928,6 +931,98 @@ HRESULT CLevel_IceLand::Ready_Light(const wstring& strLightFilePath)
 		if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
 			return E_FAIL;
 	}
+	return S_OK;
+}
+
+HRESULT CLevel_IceLand::Ready_Trigger(const wstring& strTriggerName)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strTriggerName + L"/" + strTriggerName + L"Trigger.json";
+
+	Json json = GI->Json_Load(strMapFilePath);
+	Json parsedObjs = json["TriggerInfo"];
+
+	for (const auto& obj : parsedObjs)
+	{
+		for (const auto& objInfo : obj)
+		{
+			string protoTypeTag = objInfo["ProtoTypeTag"];
+			string objectTag = objInfo["ObjectTag"];
+
+			Vec4 vRight, vUp, vLook, vPos;
+			Vec4 vAt, vEye, vCamUp;
+			_uint eTriggerType;
+
+			wstring strBgmName;
+			wstring strMapName;
+
+			vRight.x = objInfo["Right"]["x"];
+			vRight.y = objInfo["Right"]["y"];
+			vRight.z = objInfo["Right"]["z"];
+
+			vUp.x = objInfo["Up"]["x"];
+			vUp.y = objInfo["Up"]["y"];
+			vUp.z = objInfo["Up"]["z"];
+
+			vLook.x = objInfo["Look"]["x"];
+			vLook.y = objInfo["Look"]["y"];
+			vLook.z = objInfo["Look"]["z"];
+
+			vPos.x = objInfo["Position"]["x"];
+			vPos.y = objInfo["Position"]["y"];
+			vPos.z = objInfo["Position"]["z"];
+			vPos.w = objInfo["Position"]["w"];
+
+			eTriggerType = objInfo["TriggerType"];
+			strBgmName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(objInfo["BgmName"]));
+			strMapName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(objInfo["MapName"]));
+			vAt.x = objInfo["At"]["x"];
+			vAt.y = objInfo["At"]["y"];
+			vAt.z = objInfo["At"]["z"];
+			vAt.w = objInfo["At"]["w"];
+
+			vEye.x = objInfo["Eye"]["x"];
+			vEye.y = objInfo["Eye"]["y"];
+			vEye.z = objInfo["Eye"]["z"];
+			vEye.w = objInfo["Eye"]["w"];
+
+			vCamUp.x = objInfo["CamUp"]["x"];
+			vCamUp.y = objInfo["CamUp"]["y"];
+			vCamUp.z = objInfo["CamUp"]["z"];
+			vCamUp.w = objInfo["CamUp"]["w"];
+
+
+			CGameObject* pGameObject = nullptr;
+			if (GI->Add_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, CUtils::ToWString(protoTypeTag), nullptr,
+				&pGameObject))
+			{
+				MSG_BOX("Load Object Failed : Trigger");
+				return E_FAIL;
+			}
+
+			CTrigger* pTrigger = static_cast<CTrigger*>(pGameObject);
+			CTransform* pTransform = pTrigger->Get_Component_Transform();
+			if (nullptr == pTransform)
+			{
+				MSG_BOX("Not Found Transform");
+				return E_FAIL;
+			}
+
+			pTransform->Set_Right(vRight);
+			pTransform->Set_Up(vUp);
+			pTransform->Set_Look(vLook);
+			pTransform->Set_Position(vPos);
+
+			pTrigger->Set_TriggerType(static_cast<TRIGGER_TYPE>(eTriggerType));
+			pTrigger->Set_BgmName(strBgmName);
+			pTrigger->Set_strMapName(strMapName);
+
+			pTrigger->Set_At(vAt);
+			pTrigger->Set_Eye(vEye);
+			pTrigger->Set_Up(vCamUp);
+		}
+	}
+
+
 	return S_OK;
 }
 

@@ -79,24 +79,24 @@ HRESULT CLevel_Tool::Initialize()
 	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
 	//	return E_FAIL;
 		// Triggers.
-	CTrigger::TRIGGER_DESC TriggerDesc;
-	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
-	TriggerDesc.strMapName = TEXT("³²¹® ±¤Àå");
-	TriggerDesc.vStartPosition = { 0.f, -20.f, 0.f, 1.f };
-	TriggerDesc.vExtents = { 30.f, 20.f, 30.f };
-	TriggerDesc.vAt = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	TriggerDesc.vEye = Vec4(7.0f, 100.0f, 0.0f, 1.0f);
+	//CTrigger::TRIGGER_DESC TriggerDesc;
+	//TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
+	//TriggerDesc.strMapName = TEXT("³²¹® ±¤Àå");
+	//TriggerDesc.vStartPosition = { 0.f, -20.f, 0.f, 1.f };
+	//TriggerDesc.vExtents = { 30.f, 20.f, 30.f };
+	//TriggerDesc.vAt = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	//TriggerDesc.vEye = Vec4(7.0f, 100.0f, 0.0f, 1.0f);
 
-	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
-		return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
 
-	TriggerDesc.strMapName = TEXT("¼­¹® ±¤Àå");
-	TriggerDesc.vStartPosition = { -65.841f, -20.f, 13.031f, 1.f };
-	TriggerDesc.vExtents = { 32.5f, 15.f, 45.f };
-	TriggerDesc.vAt = Vec4(0.0f, -574.0f, 0.0f, 1.0f);
-	TriggerDesc.vEye = Vec4(-60.622f, 100.0f, -39.127f, 1.0f);
-	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
-		return E_FAIL;
+	//TriggerDesc.strMapName = TEXT("¼­¹® ±¤Àå");
+	//TriggerDesc.vStartPosition = { -65.841f, -20.f, 13.031f, 1.f };
+	//TriggerDesc.vExtents = { 32.5f, 15.f, 45.f };
+	//TriggerDesc.vAt = Vec4(0.0f, -574.0f, 0.0f, 1.0f);
+	//TriggerDesc.vEye = Vec4(-60.622f, 100.0f, -39.127f, 1.0f);
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
 
 
 	//TriggerDesc.vStartPosition = { -85.5f, -20.f, 60.6f, 1.f };
@@ -108,11 +108,11 @@ HRESULT CLevel_Tool::Initialize()
 
 
 
-	TriggerDesc.strMapName = TEXT("µ¿¹® ±¤Àå");
-	TriggerDesc.vStartPosition = { 88.85f, -20.f, 60.6f, 1.f };
-	TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
-	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
-		return E_FAIL;
+	//TriggerDesc.strMapName = TEXT("µ¿¹® ±¤Àå");
+	//TriggerDesc.vStartPosition = { 88.85f, -20.f, 60.6f, 1.f };
+	//TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
 
 
 

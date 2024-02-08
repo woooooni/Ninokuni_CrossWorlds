@@ -1270,6 +1270,12 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 
 			for (_uint j = 0; j < iObjectCount; ++j)
 			{
+				_uint ObjectType;
+				File->Read(ObjectType);
+
+				if (OBJ_TYPE::OBJ_TRIGGER == ObjectType)
+					continue;
+
 				// 3. Object_Prototype_Tag
 				wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
 				wstring strObjectTag = CUtils::ToWString(File->Read<string>());

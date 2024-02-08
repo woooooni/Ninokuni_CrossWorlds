@@ -56,10 +56,27 @@ HRESULT CLight_Manager::Set_ShadowLight(_uint iLevelIndex, _vector vEye, _vector
 		Add_ShadowLight(iLevelIndex, vEye, vAt, vUp);
 	else
 	{
-		_float4x4 LightViewMatrix;
-		XMStoreFloat4x4(&LightViewMatrix, XMMatrixLookAtLH(vEye, vAt, vUp));
+		//_float4x4 LightViewMatrix;
+		//XMStoreFloat4x4(&LightViewMatrix, XMMatrixLookAtLH(vEye, vAt, vUp));
 
-		iter->second = LightViewMatrix;
+		CCamera_Manager* pCameraManager = GET_INSTANCE(CCamera_Manager);
+		if (nullptr == pCameraManager)
+			return S_OK;
+
+		CCamera* pCamera = pCameraManager->Get_CurCamera();
+		if (nullptr == pCamera)
+			return S_OK;
+
+		//const LIGHTDESC* pLightDesc = GI->Get_LightDesc(0);
+		Vec3 eyePos = vEye;
+		Vec4 eyePosVec = Vec4(eyePos.x, eyePos.y, eyePos.z, 1.0f);
+		Vec3 normalizeLightDir = vAt;
+		normalizeLightDir.Normalize();
+		Vec4 vTargetPosVec = Vec4(eyePos.x + normalizeLightDir.x, eyePos.y + normalizeLightDir.y, eyePos.z + normalizeLightDir.z, 1.0f);
+		Vec4 vLightUp = vUp;
+		Matrix lightVIewMatrix = ::XMMatrixLookAtLH(eyePosVec, vTargetPosVec, vUp);
+
+		iter->second = lightVIewMatrix;
 	}
 
 	return S_OK;

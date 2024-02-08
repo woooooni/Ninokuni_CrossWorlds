@@ -237,8 +237,8 @@ HRESULT CMainApp::Initialize_Client()
 			if (FAILED(GI->Add_ShadowLight(LEVEL_KINGDOMHALL, vEye, vAt, vUp)))
 				return E_FAIL;
 
-			vEye = XMVectorSet(-215.f, 400.f, 200.f, 1.f);
-			vAt = XMVectorSet(590.f, -1200.f, 3.f, 1.f);
+			vEye = XMVectorSet(-383.130f, 302.242f, -54.922f, 1.f);
+			vAt = XMVectorSet(1667.000f, -1171.000f, 578.000f, 1.f);
 			vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 			if (FAILED(GI->Add_ShadowLight(LEVEL_ICELAND, vEye, vAt, vUp)))
 				return E_FAIL;
