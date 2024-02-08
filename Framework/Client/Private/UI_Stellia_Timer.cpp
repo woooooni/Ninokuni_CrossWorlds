@@ -117,6 +117,7 @@ HRESULT CUI_Stellia_Timer::Set_Owner()
 	CGameObject* pOwner = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, TEXT("Stellia"));
 	if (nullptr == pOwner)
 		return E_FAIL;
+
 	if (nullptr == dynamic_cast<CStellia*>(pOwner))
 		return E_FAIL;
 

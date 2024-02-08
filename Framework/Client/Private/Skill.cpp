@@ -39,7 +39,7 @@ void CSkill::Tick(_float fTimeDelta)
 		m_fAccCoolTime += fTimeDelta;
 		if (m_fAccCoolTime >= m_fCoolTime)
 		{
-			m_fAccCoolTime = 0.f;
+			m_fAccCoolTime = m_fCoolTime;
 			m_bUseable = true;
 		}
 	}
@@ -56,7 +56,7 @@ _bool CSkill::Use_Skill()
 	if (true == m_bUseable)
 	{
 		m_bUseable = false;
-		m_fAccCoolTime = 0.f; 
+		m_fAccCoolTime = 0.f;
 		return true;
 	}
 	else
