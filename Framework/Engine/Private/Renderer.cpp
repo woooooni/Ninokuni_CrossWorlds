@@ -1321,7 +1321,7 @@ HRESULT CRenderer::Render_RadialBlur()
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
 
-	if (FAILED(Render_AlphaBlendTargetMix(L"Target_RadialBlur", L"MRT_Blend", false)))
+	if (FAILED(Render_AlphaBlendTargetMix(L"Target_RadialBlur", L"MRT_Blend", true)))
 		return E_FAIL;
 
 

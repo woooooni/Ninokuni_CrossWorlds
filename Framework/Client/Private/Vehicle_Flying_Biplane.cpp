@@ -520,6 +520,9 @@ HRESULT CVehicle_Flying_Biplane::Ready_Trails()
 
 void CVehicle_Flying_Biplane::Look_For_Target()
 {
+	if (nullptr == m_pTarget)
+		return;
+
 	CTransform* pTargetTransform = m_pTarget->Get_Component_Transform();
 	Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() - m_pTransformCom->Get_Position());
 
@@ -638,10 +641,15 @@ void CVehicle_Flying_Biplane::Update_RiderState()
 		if (nullptr == pStateCom)
 			return;
 
-		if (CVehicle::VEHICLE_STATE::VEHICLE_RUN == m_pStateCom->Get_CurrState() &&
-			CCharacter::STATE::FLYING_RUNSTART != pStateCom->Get_CurrState())
+		if (CVehicle::VEHICLE_STATE::VEHICLE_RUN == m_pStateCom->Get_CurrState() && CCharacter::STATE::FLYING_RUNSTART != pStateCom->Get_CurrState())
 		{
 			if (CCharacter::STATE::FLYING_RUN != pStateCom->Get_CurrState())
+				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::FLYING_RUN);
+		}
+
+		if (CVehicle::VEHICLE_STATE::VEHICLE_BOSS_IDLE == m_pStateCom->Get_CurrState())
+		{
+			if(CCharacter::STATE::FLYING_RUN != pStateCom->Get_CurrState())
 				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::FLYING_RUN);
 		}
 
@@ -694,7 +702,8 @@ void CVehicle_Flying_Biplane::On_Damaged(const COLLISION_INFO& tInfo)
 		m_pRigidBodyCom->Add_Velocity(vDir, 30.f, true);
 	}
 
-	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_DAMAGED);
+	if(m_pStateCom->Get_CurrState() != CVehicle::VEHICLE_STATE::VEHICLE_BOSS_IDLE)
+		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_DAMAGED);
 }
 
 HRESULT CVehicle_Flying_Biplane::Ready_Colliders()

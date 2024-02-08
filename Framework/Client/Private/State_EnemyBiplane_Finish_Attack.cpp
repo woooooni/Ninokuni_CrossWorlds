@@ -44,8 +44,6 @@ void CState_EnemyBiplane_Finish_Attack::Enter_State(void* pArg)
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
     m_bUpdate = false;
-
-    
 }
 
 void CState_EnemyBiplane_Finish_Attack::Tick_State(_float fTimeDelta)

@@ -25,10 +25,10 @@ public:
 	virtual void Exit_State() override;
 
 public:
-	void Shoot_Normal();
-	void Shoot_Pattern_0();
-	void Shoot_Pattern_1();
-	void Shoot_Pattern_2();
+	void Shoot_Normal(_float fTimeDelta);
+	void Shoot_Pattern_0(_float fTimeDelta);
+	void Shoot_Pattern_1(_float fTimeDelta);
+	void Shoot_Pattern_2(_float fTimeDelta);
 	
 
 

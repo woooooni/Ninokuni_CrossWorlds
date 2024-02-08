@@ -31,6 +31,10 @@ HRESULT CState_VehicleFlying_BossStage_Stand::Initialize(const list<wstring>& An
 
     if (nullptr == m_pVehicle || nullptr == m_pVehicle_Flying_Biplane || nullptr == m_pFollowCamera)
         return E_FAIL;
+
+    for (auto& pCollider : m_pVehicle_Flying_Biplane->Get_Collider(CCollider::DETECTION_TYPE::BOUNDARY))
+        pCollider->Set_Radius(100.f);
+
     
     return S_OK;
 }
@@ -96,24 +100,54 @@ void CState_VehicleFlying_BossStage_Stand::Tick_State(_float fTimeDelta)
         return;
     }
 
+    if (KEY_HOLD(KEY::Q))
+    {
+        _vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
+        _vector vLook = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+        _float fDot = XMVectorGetX(XMVector3Dot(vRight, vLook));
+
+        m_pTransformCom->Rotation_Acc(vRight, acos(fDot) * fTimeDelta * -1.f);
+    }
+
+    if (KEY_HOLD(KEY::E))
+    {
+        _vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
+        _vector vLook = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+        _float fDot = XMVectorGetX(XMVector3Dot(vRight, vLook));
+
+        m_pTransformCom->Rotation_Acc(vRight, acos(fDot) * fTimeDelta);
+    }
+
     if (KEY_HOLD(KEY::W))
     {
-        return;
+        m_pVehicle_Flying_Biplane->Look_For_Target();
+        if (nullptr != m_pVehicle_Flying_Biplane->Get_Target())
+        {
+            Vec4 vTargetPos = m_pVehicle_Flying_Biplane->Get_Target()->Get_Component_Transform()->Get_Position();
+            Vec3 vDir = vTargetPos - Vec4(m_pTransformCom->Get_Position());
+            if (vDir.Length() > 2.f)
+                m_pTransformCom->Move(1.f * XMVector3Normalize(m_pTransformCom->Get_Look()), 5.f, fTimeDelta);
+        }
+        else        
+            m_pTransformCom->Move(1.f * XMVector3Normalize(m_pTransformCom->Get_Look()), 5.f, fTimeDelta);
     }
 
     if (KEY_HOLD(KEY::A))
     {
-        return;
+        m_pVehicle_Flying_Biplane->Look_For_Target();
+        m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 5.f, fTimeDelta);
     }
 
     if (KEY_HOLD(KEY::S))
     {
-        return;
+        m_pVehicle_Flying_Biplane->Look_For_Target();
+        m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Look()), 5.f, fTimeDelta);
     }
 
     if (KEY_HOLD(KEY::D))
     {
-        return;
+        m_pVehicle_Flying_Biplane->Look_For_Target();
+        m_pTransformCom->Move(1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 5.f, fTimeDelta);
     }
 
 
