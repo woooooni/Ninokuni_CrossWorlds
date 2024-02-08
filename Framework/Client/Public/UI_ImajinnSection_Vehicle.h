@@ -32,6 +32,9 @@ private:
 private:
 	void Key_Input(_float fTimeDelta);
 
+private:
+	class CUI_Basic* m_pFX = { nullptr };
+
 public:
 	static CUI_ImajinnSection_Vehicle* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
 	virtual CGameObject* Clone(void* pArg);

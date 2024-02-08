@@ -37,7 +37,7 @@ void CSubQuestNode_FindCat04::Start()
 	if (m_pDog == nullptr)
 	{
 		OBJECT_INIT_DESC DogDesc = {};
-		DogDesc.vStartPosition = { -86.8, 0.f, 134.6f, 1.f };
+		DogDesc.vStartPosition = { -86.8f, 0.f, 134.6f, 1.f };
 
 		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, _uint(LAYER_DYNAMIC), TEXT("Prorotype_GameObject_Animal_WelshCorgi"), &DogDesc, &m_pDog)))
 			MSG_BOX("Retry Add_GameObject Fail : m_pDog");
@@ -70,7 +70,7 @@ CBTNode::NODE_STATE CSubQuestNode_FindCat04::Tick(const _float& fTimeDelta)
 		if (m_pDog == nullptr)
 		{
 			OBJECT_INIT_DESC DogDesc = {};
-			DogDesc.vStartPosition = { -86.8, 0.f, 134.6f, 1.f };
+			DogDesc.vStartPosition = { -86.8f, 0.f, 134.6f, 1.f };
 
 			if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, _uint(LAYER_DYNAMIC), TEXT("Prorotype_GameObject_Animal_WelshCorgi"), &DogDesc, &m_pDog)))
 				MSG_BOX("Retry Add_GameObject Fail : m_pDog");

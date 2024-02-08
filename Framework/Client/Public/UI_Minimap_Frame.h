@@ -37,6 +37,7 @@ private:
 
 private:
 	void Key_Input(_float fTimeDelta);
+	void Tick_Arrow(_float fTimeDelta);
 
 public:
 	static CUI_Minimap_Frame* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_MINIMAP eType);

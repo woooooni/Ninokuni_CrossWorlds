@@ -118,7 +118,7 @@ HRESULT CLevel_WitchForest::Tick(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::F8))
 	{
-		GI->Add_GameObject(LEVEL_WITCHFOREST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"));
+		GI->Add_GameObject(LEVEL_WITCHFOREST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Stellia"));
 	}
 
 	return S_OK;

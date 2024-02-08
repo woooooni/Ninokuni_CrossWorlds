@@ -89,6 +89,9 @@ void CUI_World_NPCSpeechBalloon::Tick(_float fTimeDelta)
 		if (nullptr == m_pOwner)
 			return;
 
+		if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
+			return;
+
 		m_fActiveTimeAcc += fTimeDelta;
 
 		if (5.f < m_fActiveTimeAcc)
@@ -140,6 +143,9 @@ void CUI_World_NPCSpeechBalloon::LateTick(_float fTimeDelta)
 	{
 		if (nullptr != m_pOwner && m_bHide == false)
 		{
+			if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
+				return;
+
 			if (CAMERA_TYPE::CUTSCENE_MAP == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
 				return;
 
@@ -219,6 +225,9 @@ void CUI_World_NPCSpeechBalloon::LateTick(_float fTimeDelta)
 				{
 					if (m_bResizeDone)
 					{
+						if (true == CUI_Manager::GetInstance()->Is_Background_Active())
+							return;
+
 						_int iLength = m_strContents.length() - 1;
 						_float2 vFontPos = _float2(m_vTextPos.x - (iLength * 6.f), m_vTextPos.y - 10.f);
 

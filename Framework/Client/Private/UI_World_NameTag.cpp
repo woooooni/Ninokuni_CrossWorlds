@@ -247,8 +247,9 @@ void CUI_World_NameTag::LateTick_GamePlay(_float fTimeDelta)
 			if (CUI_Manager::GetInstance()->Is_FadeFinished())
 			{
 				wstring strName = CGame_Manager::GetInstance()->Get_UserName();
-				_int iLength = strName.length() - 1;
-				_float2 vFontPos = _float2(m_vTextPos.x - (iLength * 8.f), m_vTextPos.y);
+				_int iSpaceCount = CUI_Manager::GetInstance()->Count_WordSpacing(strName);
+				_int iLength = strName.length() - (1 + iSpaceCount);
+				_float2 vFontPos = _float2(m_vTextPos.x - ((iLength * 8.f) + (iSpaceCount * 5.f)), m_vTextPos.y);
 
 				CRenderer::TEXT_DESC TextDesc = {};
 				TextDesc.strText = strName;

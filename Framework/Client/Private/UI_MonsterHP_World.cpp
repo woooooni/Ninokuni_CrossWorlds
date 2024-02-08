@@ -133,10 +133,10 @@ void CUI_MonsterHP_World::Tick(_float fTimeDelta)
 			memcpy(&StatDesc, &(m_pOwner->Get_Stat()), sizeof(CMonster::MONSTER_STAT));
 
 			m_fCurHP = StatDesc.fHp;
-		}
 
-		if (m_pOwner->Is_Dead())
-			Set_Dead(true);
+			if (m_fCurHP == 0.f || m_pOwner->Is_ReserveDead() || m_pOwner->Is_Dead())
+				Set_Dead(true);
+		}
 
 		__super::Tick(fTimeDelta);
 	}
@@ -165,7 +165,6 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 				CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
 
 				_float4x4 matTargetWorld = pTransform->Get_WorldFloat4x4();
-				//matTargetWorld._42 += 1.5f;
 				matTargetWorld._42 += m_fOffsetY;
 
 				_float4x4 matWorld;
@@ -177,10 +176,6 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 				XMStoreFloat4x4(&matWindow, XMLoadFloat4x4(&matWorld) * matView * matProj);
 
 				_float3 vWindowPos = *(_float3*)&matWindow.m[3][0];
-				// &matWindow.m[3][0] -> 포지션의 시작 주소를 얻고,
-				// (_float3*) -> _float3 포인터로 캐스팅
-				// * -> 그 값을 가져온다.
-
 				vWindowPos.x /= vWindowPos.z;
 				vWindowPos.y /= vWindowPos.z;
 				m_tInfo.fX = vWindowPos.x * g_iWinSizeX * 0.5f + (g_iWinSizeX * 0.5f);
@@ -332,10 +327,13 @@ void CUI_MonsterHP_World::Set_Text(_float2 ScreenPos)
 	// Todo : Text글자길이로 x값 정렬하기
 
 	_int iSubLength = m_strSubName.empty() ? 0 : static_cast<_int>(m_strSubName.length());
-	_float fSubX = vSubPosition.x - iSubLength * 5.f;
+//	_int iSubWordsCount = CUI_Manager::GetInstance()->Count_OnlyWords(m_strSubName); // 맵 이름의 순수 단어 개수를 확인한다.
+	_int iSubSpaceCount = CUI_Manager::GetInstance()->Count_WordSpacing(m_strSubName); // 맵 이름의 띄어쓰기 개수를 확인한다.
+	_float fSubX = vSubPosition.x - ((iSubLength - iSubSpaceCount) * 5.5f + (iSubSpaceCount * 1.8f));
 
 	_int iNameLength = m_strName.empty() ? 0 : static_cast<_int>(m_strName.length());
-	_float fNameX = vTextPosition.x - iNameLength * 8.f;
+	_int iSpaceCount = CUI_Manager::GetInstance()->Count_WordSpacing(m_strName); // 이름의 띄어쓰기 개수를 확인한다.
+	_float fNameX = vTextPosition.x - ((iNameLength - iSpaceCount) * 7.f + (iSubSpaceCount * 2.f));
 
 	// 몬스터 설명부분 (이름 위에 뜨는 Sub Text) -> 외곽선
 	CRenderer::TEXT_DESC MonsterDesc;

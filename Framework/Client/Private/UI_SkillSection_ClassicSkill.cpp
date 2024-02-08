@@ -23,6 +23,17 @@ void CUI_SkillSection_ClassicSkill::Set_CharacterType(CHARACTER_TYPE eType)
 	Set_SkillType();
 }
 
+void CUI_SkillSection_ClassicSkill::Set_Clicked(_bool bClick)
+{
+	if (true == bClick)
+	{
+		m_fOriginCoolTime = m_pSkill->Get_CoolTime();	// 스킬 쿨타임을 받아온다.
+		m_fCoolTime = m_fOriginCoolTime;	// 대입한다.
+	}
+
+	m_bClicked = bClick;
+}
+
 HRESULT CUI_SkillSection_ClassicSkill::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -75,9 +86,10 @@ void CUI_SkillSection_ClassicSkill::Tick(_float fTimeDelta)
 
 		Movement_BasedOnHiding(fTimeDelta);
 
-		if (m_bClicked)
+		if (true == m_bClicked)
 		{
-			m_fCoolTime -= fTimeDelta;
+			//m_fCoolTime -= fTimeDelta;
+			m_fCoolTime = m_fOriginCoolTime - (m_pSkill->Get_CurrCoolTime());
 			m_iPass = 6;
 
 			if (m_fCoolTime <= 0.f)
@@ -103,7 +115,7 @@ void CUI_SkillSection_ClassicSkill::LateTick(_float fTimeDelta)
 		if (0 > m_iTextureIndex)
 			return;
 
-		if (m_bClicked)
+		if (true == m_bClicked)
 		{
 			if (_int(m_fCoolTime) + 1 > 0)
 			{
@@ -117,10 +129,26 @@ void CUI_SkillSection_ClassicSkill::LateTick(_float fTimeDelta)
 				TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
 
 				if (iTemp < 10)
-					TextDesc.vPosition = _float2(m_vTextPosition.x + 10.f, m_vTextPosition.y);
+					TextDesc.vPosition = _float2(m_vTextPosition.x + 9.f, m_vTextPosition.y);
 				else
 					TextDesc.vPosition = m_vTextPosition;
 
+				// Outline
+				CRenderer::TEXT_DESC OutlineDesc;
+				OutlineDesc.strText = TextDesc.strText;
+				OutlineDesc.strFontTag = TextDesc.strFontTag;
+				OutlineDesc.vScale = TextDesc.vScale;
+				OutlineDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+				OutlineDesc.vPosition = _float2(TextDesc.vPosition.x - 1.2f, TextDesc.vPosition.y);
+				m_pRendererCom->Add_Text(OutlineDesc);
+				OutlineDesc.vPosition = _float2(TextDesc.vPosition.x + 1.2f, TextDesc.vPosition.y);
+				m_pRendererCom->Add_Text(OutlineDesc);
+				OutlineDesc.vPosition = _float2(TextDesc.vPosition.x, TextDesc.vPosition.y - 1.2f);
+				m_pRendererCom->Add_Text(OutlineDesc);
+				OutlineDesc.vPosition = _float2(TextDesc.vPosition.x, TextDesc.vPosition.y + 1.2f);
+				m_pRendererCom->Add_Text(OutlineDesc);
+
+				// OriginText
 				m_pRendererCom->Add_Text(TextDesc);
 			}
 		}
@@ -328,7 +356,6 @@ void CUI_SkillSection_ClassicSkill::Set_SkillType()
 	}
 
 	m_fOriginCoolTime = m_pSkill->Get_CoolTime();
-	//m_fOriginCoolTime = 9.f;
 	m_fCoolTime = m_fOriginCoolTime;
 }
 

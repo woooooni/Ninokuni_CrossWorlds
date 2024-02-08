@@ -51,8 +51,8 @@ void CUI_Minimap_Icon::Set_Owner(CGameObject* pOwner, _bool bIsCamera)
 			m_eType = ICON_PORTAL;
 			break;
 
-		case OBJ_TYPE::OBJ_NPC:
-			eObjType = OBJ_TYPE::OBJ_NPC;
+		case OBJ_TYPE::OBJ_QUESTSPOT:
+			eObjType = OBJ_TYPE::OBJ_QUESTSPOT;
 			m_eType = ICON_NPC;
 			break;
 

@@ -14,6 +14,7 @@ public:
 		TARGETARROW_LEFT, TARGETARROW_RIGHT, COSTUME_INSTALL,
 		WORLDMAP_ICON,
 		UISTATIC_TITLELINE, UISTATIC_MENUDECO_L, UISTATIC_MENUDECO_R,
+		VEHICLE_FX,
 		UIBASIC_END };
 
 protected:
@@ -44,9 +45,9 @@ public:
 private:
 	UI_BASIC m_eType = { UI_BASIC::UIBASIC_END };
 
-	_float m_bFade = { false }; // Alpha값으로 FadeIn, Out을 하는 것들을 구분함.
+	_bool m_bFade = { false }; // Alpha값으로 FadeIn, Out을 하는 것들을 구분함.
 	_uint m_iPass = { 1 };
-	_float m_bAlpha = { false }; // Alpha값을 조정하면서 깜빡이는 UI들에게 사용함.
+	_bool m_bAlpha = { false }; // Alpha값을 조정하면서 깜빡이는 UI들에게 사용함.
 
 	vector<wstring> m_RandomNickname;
 	_uint m_iTextureIndex = { 0 };

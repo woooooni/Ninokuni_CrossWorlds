@@ -96,6 +96,9 @@ void CGlanixState_IntroFinish::Exit_State()
 		/* On UI */
 		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+		// ¹Ì´Ï¸ÊÀ» ²ö´Ù
+		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+			CUI_Manager::GetInstance()->OnOff_MiniMap(false);
 
 		/* Finish CutScene */
 		if (FAILED(pCutSceneCam->Finish_CutScene()))

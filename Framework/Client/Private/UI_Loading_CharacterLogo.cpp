@@ -90,7 +90,7 @@ HRESULT CUI_Loading_CharacterLogo::Render()
 	{
 		TCHAR sTempText[MAX_PATH];
 		ZeroMemory(sTempText, sizeof(TCHAR) * MAX_PATH);
-		for (_uint i = 0; i < m_iTextCount; ++i)
+		for (_int i = 0; i < m_iTextCount; ++i)
 		{
 			sTempText[i] = m_szInfoText[i];
 		}

@@ -128,18 +128,12 @@ void CUI_Basic::Tick(_float fTimeDelta)
 
 	if (m_bActive)
 	{
-		if (m_bFade)
-		{
+		if (true == m_bFade)
 			Tick_FadeObject(fTimeDelta);
-		}
-		else
-		{
-
-		}
 
 		if (m_eType == UILOBBY_ANNOUNCE)
 		{
-			if (!m_bAlpha)
+			if (false == m_bAlpha)
 			{
 				if (m_fAlpha <= 0.7f)
 				{
@@ -162,6 +156,34 @@ void CUI_Basic::Tick(_float fTimeDelta)
 					m_fAlpha = 0.7f;
 				}
 			}
+		}
+		else if (m_eType == VEHICLE_FX) // 알파값을 조정한다.
+		{
+			if (true == m_bAlpha)
+			{
+				m_fAlpha -= fTimeDelta * 2.f;
+
+				if (m_fAlpha <= 0.f)
+				{
+					m_bAlpha = false;
+					m_fAlpha = 0.f;
+				}
+			}
+			else
+			{
+				m_fAlpha += fTimeDelta * 2.f;
+
+
+
+				if (1.f <= m_fAlpha)
+				{
+					m_bAlpha = true;
+					m_fAlpha = 1.f;
+				}
+			}
+
+			// 회전시킨다
+			m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 0.f, 1.f, 0.f), fTimeDelta * 2.f);
 		}
 
 		__super::Tick(fTimeDelta);
@@ -415,6 +437,14 @@ HRESULT CUI_Basic::Ready_Components()
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
 		m_fAlpha = 0.7f;
+		break;
+
+	case VEHICLE_FX:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ImajinnSection_Vehicle_FXTexture"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_bAlpha = true;
+		m_fAlpha = 1.f;
 		break;
 
 	default:

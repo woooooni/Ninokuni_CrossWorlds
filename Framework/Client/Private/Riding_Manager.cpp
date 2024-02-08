@@ -124,6 +124,7 @@ HRESULT CRiding_Manager::Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff)
 			{
 				m_pUdadak->Set_Aboard(true);
 				m_pUdadak->Ride(pCharacter);
+				m_bIsRiding = true;
 			}
 		}
 		else
@@ -131,6 +132,7 @@ HRESULT CRiding_Manager::Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff)
 			if (pCharacter == m_pUdadak->Get_Rider())
 			{
 				m_pUdadak->Set_Aboard(false);
+				m_bIsRiding = false;
 			}
 		}
 		break;

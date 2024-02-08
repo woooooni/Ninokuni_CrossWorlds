@@ -71,6 +71,10 @@ public: // Get/Set
 	void			Set_AbleToControlRadio(_bool bControl);
 
 	_bool			Is_Dialog_Active();
+	_bool			Is_Background_Active(); // DefaultBackground가 활성화 되어있는지
+	_int			Count_WordSpacing(const wstring& strText);
+	_int			Count_OnlyWords(const wstring& strText);
+	_int			Exclude_PunctuationMarks(const wstring& strText);
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -44,7 +44,7 @@ void CUI_PopupQuest::Set_Contents(const wstring& strQuestType, const wstring& st
 	if (4 <= m_Quest.size())
 		return;
 
-	/*B
+	/*
 	_float4(0.957f, 0.784f, 0.067f, 1.f) 메인
 	_float4(0.165f, 0.984f, 0.957f, 1.f) 명성
 	_float4(0.373f, 0.863f, 0.647f, 1.f) 제비
@@ -60,10 +60,13 @@ void CUI_PopupQuest::Set_Contents(const wstring& strQuestType, const wstring& st
 		m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
 	else if (TEXT("[서브]") == strQuestType)
 		m_vTypeColor = _float4(0.165f, 0.984f, 0.957f, 1.f);
+	else if (TEXT("[수배]") == strQuestType)
+		m_vTypeColor = _float4(0.914f, 0.443f, 0.392f, 1.f);
 	else
 		m_vTypeColor = _float4(0.373f, 0.863f, 0.647f, 1.f);
 
 	m_vTextColor = _float4(0.804f, 0.843f, 0.741f, 1.f);
+	m_vMeterColor = _float4(0.67f, 0.7f, 0.63f, 1.f);
 
 	QUEST_INFO QuestDesc = {};
  	QuestDesc.strType = strQuestType;
@@ -77,8 +80,6 @@ void CUI_PopupQuest::Set_Contents(const QUEST_INFO& tQuestInfo)
 	if (4 <= m_Quest.size())
 		return;
 
-//	QUEST_INFO QuestDesc = {};
-//	memcpy(&QuestDesc, &tQuestInfo, sizeof(QUEST_INFO));
 	QUEST_INFO QuestDesc = {};
 	QuestDesc = tQuestInfo;
 
@@ -88,10 +89,14 @@ void CUI_PopupQuest::Set_Contents(const QUEST_INFO& tQuestInfo)
 		m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
 	else if (TEXT("[서브]") == QuestDesc.strType)
 		m_vTypeColor = _float4(0.165f, 0.984f, 0.957f, 1.f);
+	else if (TEXT("[수배]") == QuestDesc.strType)
+		m_vTypeColor = _float4(0.914f, 0.443f, 0.392f, 1.f);
 	else
 		m_vTypeColor = _float4(0.373f, 0.863f, 0.647f, 1.f);
 
 	m_vTextColor = _float4(0.804f, 0.843f, 0.741f, 1.f);
+	m_vMeterColor = _float4(0.67f, 0.7f, 0.63f, 1.f);
+	//m_vMeterColor = _float4(0.4f, 0.44f, 0.34f, 1.f);
 
 	m_Quest.push_back(QuestDesc);
 }
@@ -177,10 +182,8 @@ const CUI_PopupQuest::QUEST_INFO& CUI_PopupQuest::Get_QuestContents(_int iSlotNu
 {
 	// 첫번째 윈도우에서 클릭된 창에 해당하는 퀘스트 정보를 가지고 온다.
 	// 예외처리는 UIManager에서 수행한다.
-	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-	QuestDesc = m_Quest[iSlotNum];
 
-	return QuestDesc;
+	return m_Quest[iSlotNum];
 }
 
 HRESULT CUI_PopupQuest::Initialize_Prototype()
@@ -257,6 +260,8 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 						m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
 					else if (TEXT("[서브]") == m_Quest[0].strType)
 						m_vTypeColor = _float4(0.165f, 0.984f, 0.957f, 1.f);
+					else if (TEXT("[수배]") == m_Quest[0].strType)
+						m_vTypeColor = _float4(0.914f, 0.443f, 0.392f, 1.f);
 					else
 						m_vTypeColor = _float4(0.373f, 0.863f, 0.647f, 1.f);
 
@@ -284,7 +289,7 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 					ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY);
 					m_pRendererCom->Add_Text(ContentsDesc);
 
-					if (true == m_Quest[0].bCreateSpot) // [24.02.07 미완성] QuestSpot이 지정되어 있다면
+					if (true == m_Quest[0].bCreateSpot)
 					{
 						_float fDistance = CUI_Manager::GetInstance()->Calculate_Distance_FromPlayer(m_Quest[0].vDestPosition);
 						_float fOffset = (to_wstring(_int(fDistance)).length() - 1) * 5.f;
@@ -295,7 +300,7 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 							DistanceDesc.strText = to_wstring(_int(fDistance)) + L"M";
 							DistanceDesc.strFontTag = L"Default_Medium";
 							DistanceDesc.vScale = { 0.25f, 0.25f };
-							DistanceDesc.vColor = m_vTextColor;
+							DistanceDesc.vColor = m_vMeterColor;
 							DistanceDesc.vPosition = _float2(m_tInfo.fX + 110.f - fOffset, m_tInfo.fY + 20.f);
 							m_pRendererCom->Add_Text(DistanceDesc);
 						}
@@ -307,6 +312,8 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 							m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
 						else if (TEXT("[서브]") == m_Quest[1].strType)
 							m_vTypeColor = _float4(0.165f, 0.984f, 0.957f, 1.f);
+						else if (TEXT("[수배]") == m_Quest[1].strType)
+							m_vTypeColor = _float4(0.914f, 0.443f, 0.392f, 1.f);
 						else
 							m_vTypeColor = _float4(0.373f, 0.863f, 0.647f, 1.f);
 
@@ -335,7 +342,7 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 						ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + fOffsetY);
 						m_pRendererCom->Add_Text(ContentsDesc);
 
-						if (true == m_Quest[1].bCreateSpot) // [24.02.07 미완성] QuestSpot이 지정되어 있다면
+						if (true == m_Quest[1].bCreateSpot)
 						{
 							_float fDistance = CUI_Manager::GetInstance()->Calculate_Distance_FromPlayer(m_Quest[1].vDestPosition);
 							_float fOffset = (to_wstring(_int(fDistance)).length() - 1) * 5.f;
@@ -346,8 +353,8 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 								DistanceDesc.strText = to_wstring(_int(fDistance)) + L"M";
 								DistanceDesc.strFontTag = L"Default_Medium";
 								DistanceDesc.vScale = { 0.25f, 0.25f };
-								DistanceDesc.vColor = m_vTextColor;
-								DistanceDesc.vPosition = _float2(m_tInfo.fX + 110.f - fOffset, m_tInfo.fY + 20.f);
+								DistanceDesc.vColor = m_vMeterColor;
+								DistanceDesc.vPosition = _float2(m_tInfo.fX + 110.f - fOffset, m_tInfo.fY + 20.f + fOffsetY);
 								m_pRendererCom->Add_Text(DistanceDesc);
 							}
 						}
@@ -358,6 +365,8 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 								m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
 							else if (TEXT("[서브]") == m_Quest[2].strType)
 								m_vTypeColor = _float4(0.165f, 0.984f, 0.957f, 1.f);
+							else if (TEXT("[수배]") == m_Quest[2].strType)
+								m_vTypeColor = _float4(0.914f, 0.443f, 0.392f, 1.f);
 							else
 								m_vTypeColor = _float4(0.373f, 0.863f, 0.647f, 1.f);
 
@@ -386,7 +395,7 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 							ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + (fOffsetY * 2.f));
 							m_pRendererCom->Add_Text(ContentsDesc);
 
-							if (true == m_Quest[2].bCreateSpot) // [24.02.07 미완성] QuestSpot이 지정되어 있다면
+							if (true == m_Quest[2].bCreateSpot)
 							{
 								_float fDistance = CUI_Manager::GetInstance()->Calculate_Distance_FromPlayer(m_Quest[2].vDestPosition);
 								_float fOffset = (to_wstring(_int(fDistance)).length() - 1) * 5.f;
@@ -397,8 +406,8 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 									DistanceDesc.strText = to_wstring(_int(fDistance)) + L"M";
 									DistanceDesc.strFontTag = L"Default_Medium";
 									DistanceDesc.vScale = { 0.25f, 0.25f };
-									DistanceDesc.vColor = m_vTextColor;
-									DistanceDesc.vPosition = _float2(m_tInfo.fX + 110.f - fOffset, m_tInfo.fY + 20.f);
+									DistanceDesc.vColor = m_vMeterColor;
+									DistanceDesc.vPosition = _float2(m_tInfo.fX + 110.f - fOffset, m_tInfo.fY + 20.f + (fOffsetY * 2.f));
 									m_pRendererCom->Add_Text(DistanceDesc);
 								}
 							}
@@ -409,6 +418,8 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 									m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
 								else if (TEXT("[서브]") == m_Quest[3].strType)
 									m_vTypeColor = _float4(0.165f, 0.984f, 0.957f, 1.f);
+								else if (TEXT("[수배]") == m_Quest[3].strType)
+									m_vTypeColor = _float4(0.914f, 0.443f, 0.392f, 1.f);
 								else
 									m_vTypeColor = _float4(0.373f, 0.863f, 0.647f, 1.f);
 
@@ -436,7 +447,7 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 								ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + (fOffsetY * 3.f));
 								m_pRendererCom->Add_Text(ContentsDesc);
 
-								if (true == m_Quest[3].bCreateSpot) // [24.02.07 미완성] QuestSpot이 지정되어 있다면
+								if (true == m_Quest[3].bCreateSpot)
 								{
 									_float fDistance = CUI_Manager::GetInstance()->Calculate_Distance_FromPlayer(m_Quest[3].vDestPosition);
 									_float fOffset = (to_wstring(_int(fDistance)).length() - 1) * 5.f;
@@ -447,8 +458,8 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 										DistanceDesc.strText = to_wstring(_int(fDistance)) + L"M";
 										DistanceDesc.strFontTag = L"Default_Medium";
 										DistanceDesc.vScale = { 0.25f, 0.25f };
-										DistanceDesc.vColor = m_vTextColor;
-										DistanceDesc.vPosition = _float2(m_tInfo.fX + 110.f - fOffset, m_tInfo.fY + 20.f);
+										DistanceDesc.vColor = m_vMeterColor;
+										DistanceDesc.vPosition = _float2(m_tInfo.fX + 110.f - fOffset, m_tInfo.fY + 20.f + (fOffsetY * 3.f));
 										m_pRendererCom->Add_Text(DistanceDesc);
 									}
 								}

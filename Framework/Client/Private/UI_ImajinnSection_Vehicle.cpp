@@ -1,7 +1,11 @@
 #include "stdafx.h"
 #include "UI_ImajinnSection_Vehicle.h"
 #include "GameInstance.h"
+
 #include "UI_Manager.h"
+#include "Riding_Manager.h"
+
+#include "UI_Basic.h"
 
 CUI_ImajinnSection_Vehicle::CUI_ImajinnSection_Vehicle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_ImajinnSection_Vehicle")
@@ -34,6 +38,29 @@ HRESULT CUI_ImajinnSection_Vehicle::Initialize(void* pArg)
 
 	m_bActive = true;
 	m_bUseMouse = true;
+
+	/* 부모의 정보 */
+	_float2 vOffset = _float2(160.f, -2.f);
+
+	CUI::UI_INFO ParentUIDesc = {};
+	ZeroMemory(&ParentUIDesc, sizeof(CUI::UI_INFO));
+	ParentUIDesc.fCX = 540.f * 0.6f;
+	ParentUIDesc.fCY = 172.f * 0.55f;
+	ParentUIDesc.fX = g_iWinSizeX * 0.5f + vOffset.x;
+	ParentUIDesc.fY = g_iWinSizeY - ParentUIDesc.fCY * 0.5f - 15.f + vOffset.y;
+
+	/* Clone할 UI */
+	_float fSize = 64.f * 0.6f;
+	CUI::UI_INFO UIDesc = {};
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = fSize;
+	UIDesc.fCY = fSize;
+	UIDesc.fX = ParentUIDesc.fX;
+	UIDesc.fY = ParentUIDesc.fY;
+	CGameObject* pTemp = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Vehicle_FX"), LAYER_TYPE::LAYER_UI, &UIDesc);
+	if (nullptr == pTemp)
+		return E_FAIL;
+	m_pFX = dynamic_cast<CUI_Basic*>(pTemp);
 	
 	return S_OK;
 }
@@ -42,6 +69,12 @@ void CUI_ImajinnSection_Vehicle::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (true == CRiding_Manager::GetInstance()->Is_CharacterOnBoard())
+		{
+			if (nullptr != m_pFX)
+				m_pFX->Tick(fTimeDelta);
+		}
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -50,6 +83,12 @@ void CUI_ImajinnSection_Vehicle::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (true == CRiding_Manager::GetInstance()->Is_CharacterOnBoard())
+		{
+			if (nullptr != m_pFX)
+				m_pFX->LateTick(fTimeDelta);
+		}
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
@@ -64,6 +103,12 @@ HRESULT CUI_ImajinnSection_Vehicle::Render()
 		m_pShaderCom->Begin(1);
 
 		m_pVIBufferCom->Render();
+
+		if (true == CRiding_Manager::GetInstance()->Is_CharacterOnBoard())
+		{
+			if (nullptr != m_pFX)
+				m_pFX->Render();
+		}
 	}
 
 	return S_OK;
@@ -171,5 +216,6 @@ void CUI_ImajinnSection_Vehicle::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pFX);
 	Safe_Release(m_pTextureCom);
 }

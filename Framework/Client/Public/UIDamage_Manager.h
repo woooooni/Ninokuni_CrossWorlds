@@ -45,8 +45,8 @@ private:
 	ID3D11DeviceContext* m_pContext = nullptr;
 
 private:
-	_uint m_iStandard = { 1100 };
-	_uint m_iMaxStandard = { 1200 };
+	_int m_iStandard = { 1100 };
+	_int m_iMaxStandard = { 1200 };
 
 public:
 	virtual void Free() override;
