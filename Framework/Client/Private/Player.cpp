@@ -96,7 +96,7 @@ HRESULT CPlayer::Tag_Character(CHARACTER_TYPE eType)
 		if (FAILED(m_pCharacter->Tag_In(pPrevCharacterTransform->Get_Position())))
 			return E_FAIL;
 
-		CUI_Manager::GetInstance()->Update_PlayerSlot(eType);
+		// CUI_Manager::GetInstance()->Update_PlayerSlot(eType);
 	}
 	return S_OK;
 }

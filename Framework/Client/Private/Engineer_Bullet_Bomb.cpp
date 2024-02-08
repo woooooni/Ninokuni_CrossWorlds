@@ -73,7 +73,8 @@ void CEngineer_Bullet_Bomb::Tick(_float fTimeDelta)
 		if (m_fAccOnOff >= m_fOnOffTime)
 		{
 			m_fAccOnOff = 0.f;
-			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, !Get_Collider(CCollider::DETECTION_TYPE::ATTACK)[0]->Is_Active());
+			_bool bActive = Get_Collider(CCollider::DETECTION_TYPE::ATTACK)[0]->Is_Active();
+			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, !bActive);
 		}
 	}
 }
@@ -153,8 +154,10 @@ void CEngineer_Bullet_Bomb::Collision_Enter(const COLLISION_INFO& tInfo)
 		vector<CCollider*>& AttackColliders = Get_Collider(CCollider::DETECTION_TYPE::ATTACK);
 		for (auto& pCollider : AttackColliders)
 		{
+			pCollider->Set_AttackType(CCollider::ATTACK_TYPE::WEAK);
 			pCollider->Set_Radius(10.f);
 		}
+		Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 	}
 	
 }

@@ -816,7 +816,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			return E_FAIL;
 
 		if (GI->Add_Prototype(TEXT("Prorotype_GameObject_Grandprix_Goal"),
-			CGrandprix_Goal::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_ETC))
+			CGrandprix_Goal::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_ETC, true))
 			return E_FAIL;
 		
 		g_bLevelFirst[LEVEL_EVERMORE] = true;

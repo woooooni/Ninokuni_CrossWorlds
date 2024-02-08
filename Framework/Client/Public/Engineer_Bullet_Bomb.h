@@ -29,10 +29,10 @@ private:
 	_float m_fAccEffect = 0.f;
 	_bool m_bCollisionEffect = false;
 
+
 private:
 	_float m_fAccOnOff  = 0.f;
 	_float m_fOnOffTime = 0.2f;
-
 public:
 	static CEngineer_Bullet_Bomb* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
