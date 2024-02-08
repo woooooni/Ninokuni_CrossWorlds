@@ -370,6 +370,7 @@ float4 Shadow_Caculation(PS_IN In, float vDepthX, float vDepthY)
 	vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
 
 	vector	vLightPos = mul(vWorldPos, g_LightViewMatrix);
+    
 	float3 vLightDir = normalize(float3(0.f, 0.f, 0.f) - vLightPos.xyz);
 
 	vLightPos = mul(vLightPos, g_CamProjMatrix);

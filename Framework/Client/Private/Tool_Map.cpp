@@ -23,6 +23,7 @@
 #include "Ruby.h"
 
 
+
 CTool_Map::CTool_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CTool(pDevice, pContext)
 {
@@ -264,6 +265,9 @@ void CTool_Map::AddTrigger(LEVELID iLevelID, LAYER_TYPE iLayerType)
 
 	for (auto& Pair : vecPrototypeList)
 	{
+		if (Pair.second->Get_ObjectType() != OBJ_TRIGGER)
+			continue;
+
 		if (ImGui::Selectable(CUtils::ToString(Pair.first).c_str()))
 		{
 			if (true == m_bAddTrigger)
@@ -1819,6 +1823,11 @@ void CTool_Map::Map_TriggerBox()
 					ImGui::PushItemWidth(150.f);
 					ImGui::DragFloat3("Position", &vWorldPosition.m128_f32[0], 0.1f, -1000.f, 1000.f);
 					ImGui::DragFloat3("Scale", &vScaled.x, 0.01f, 0.01f, 100.f);
+					ImGui::DragFloat3("Eye", &m_pTriggerObj->Get_Eye().x);
+					ImGui::DragFloat3("At", &m_pTriggerObj->Get_At().x);
+					ImGui::DragFloat3("Up", &m_pTriggerObj->Get_Up().x);
+
+					GI->Set_ShadowLight(LEVEL_TOOL, m_pTriggerObj->Get_Eye(), m_pTriggerObj->Get_At(), m_pTriggerObj->Get_Up());
 					ImGui::PopItemWidth();
 
 					pTransform->Set_Scale(vScaled);
@@ -1933,21 +1942,36 @@ void CTool_Map::Map_TriggerBox()
 			if (nullptr != m_pTriggerObj)
 			{
 				ImGui::PushItemWidth(120.0f);
+			
 				static char Bgmbuffer[256] = "";
 				static char MapNameBuffer[256] = "";
+
 				if (ImGui::InputText("BgmName", Bgmbuffer, sizeof(Bgmbuffer))) {}; ImGui::SameLine();
 				if (ImGui::InputText("MapNameBuffer", MapNameBuffer, sizeof(MapNameBuffer))) {};
 
 				ImGui::Spacing();
 				if (ImGui::Button("BgmNameSave"))
-					m_pTriggerObj->Set_BgmName(Bgmbuffer);
+				{
+					_tchar* pStr;
+					_int strSize = MultiByteToWideChar(CP_ACP, 0, Bgmbuffer, -1, NULL, NULL);
+					pStr = new _tchar[strSize];
+					
+					MultiByteToWideChar(CP_ACP, 0, Bgmbuffer, ::strlen(Bgmbuffer) + 1, pStr, strSize);
+					m_pTriggerObj->Set_BgmName(pStr);
+					Safe_Delete_Array<_tchar*>(pStr);
+				}
 				ImGui::SameLine();
 				if (ImGui::Button("MapNameSave"))
 				{
-					_tchar tmp[256] = L"";
-					MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, MapNameBuffer, ::strlen(MapNameBuffer), tmp, 256);
-					m_pTriggerObj->Set_strMapName(tmp);
+					_tchar* pStr;
+					_int strSize = MultiByteToWideChar(CP_ACP, 0, MapNameBuffer, -1, NULL, NULL);
+					pStr = new _tchar[strSize];
+
+					MultiByteToWideChar(CP_ACP, 0, MapNameBuffer, ::strlen(MapNameBuffer) + 1, pStr, strSize);
+					m_pTriggerObj->Set_strMapName(pStr);
+					Safe_Delete_Array<_tchar*>(pStr);
 				}
+
 				ImGui::PopItemWidth();
 				ImGui::Spacing();
 			}
@@ -2012,6 +2036,7 @@ HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 
 			for (auto& Object : GameObjects)
 			{
+				File->Write<_uint>(Object->Get_ObjectType());
 				if (Object->Get_ObjectType() == OBJ_TYPE::OBJ_TRIGGER)
 					continue;
 
@@ -2086,12 +2111,18 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_DYNAMIC)
 			continue;
 
-		//GI->Clear_Layer(LEVEL_TOOL, i);
+		GI->Clear_Layer(LEVEL_TOOL, i);
 		{
 			_uint iObjectCount = File->Read<_uint>();
 
 			for (_uint j = 0; j < iObjectCount; ++j)
 			{
+				_uint ObjectType;
+				File->Read(ObjectType);
+
+				if (OBJ_TYPE::OBJ_TRIGGER == ObjectType)
+					continue;
+
 				// 3. Object_Prototype_Tag
 				wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
 				wstring strObjectTag = CUtils::ToWString(File->Read<string>());
@@ -2866,12 +2897,192 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 
 HRESULT CTool_Map::Save_Trigger_Data(const wstring& strTriggerName)
 {
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strTriggerName + L"/" + strTriggerName + L"Trigger.json";
+
+	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVEL_TOOL, LAYER_PROP);
+	_uint iSize = pGameObjects.size();
+
+	Json objs;
+
+	_uint i = 0;
+
+	for (auto& Object : pGameObjects)
+	{
+		_uint iObjectType = Object->Get_ObjectType();
+		if (Object->Get_ObjectType() != OBJ_TYPE::OBJ_TRIGGER)
+			continue;
+
+		CTransform* pTransform = Object->Get_Component_Transform();
+		if (nullptr == pTransform)
+		{
+			MSG_BOX("Find Transform Failed");
+			return E_FAIL;
+		}
+
+		string strProtoTypeTag = CUtils::ToString(Object->Get_PrototypeTag());
+		string strObjectTag = CUtils::ToString(Object->Get_ObjectTag());
+
+		Vec4 vRight, vUp, vLook, vPos;
+		vRight = pTransform->Get_Right();
+		vUp = pTransform->Get_Up();
+		vLook = pTransform->Get_Look();
+		vPos = pTransform->Get_Position();
+
+		CTrigger* pTrigger = static_cast<CTrigger*>(Object);
+		TRIGGER_TYPE eTriggerType = pTrigger->Get_TriggerType();
+		string strBgmName = CUtils::ToString(pTrigger->Get_BgmName());
+		string strMapName = CUtils::ToString(pTrigger->Get_MapName());
+		Vec4 vAt = pTrigger->Get_At();
+		Vec4 vEye = pTrigger->Get_Eye();
+		Vec4 vCamUp = pTrigger->Get_Up();
+
+		Json obj;
+		obj.push_back({
+			{ "ObjectType", iObjectType },
+			{ "ProtoTypeTag", strProtoTypeTag },
+			{ "ObjectTag", strObjectTag },
+			{ "Right",{
+				{"x", vRight.x,},
+				{"y",vRight.y},
+				{"z", vRight.z}}
+			},
+			{ "Up",{
+				{"x", vUp.x,},
+				{"y",vUp.y},
+				{"z", vUp.z}}
+			},
+			{ "Look",{
+				{"x", vLook.x,},
+				{"y",vLook.y},
+				{"z", vLook.z}}
+			},
+			{ "Position",{
+				{"x", vPos.x,},
+				{"y",vPos.y},
+				{"z", vPos.z},
+				{"w", vPos.w}}
+			},
+			{ "TriggerType", eTriggerType },
+			{ "BgmName", strBgmName },
+			{ "MapName", strMapName },
+			{ "At",{
+				{"x",vAt.x},
+				{"y",vAt.y},
+				{"z",vAt.z},
+				{"w",vAt.w}}
+			},
+			{ "Eye",{
+				{"x",vEye.x},
+				{"y",vEye.y},
+				{"z",vEye.z},
+				{"w",vEye.w}}
+			},
+			{ "CamUp",{
+				{"x",vCamUp.x},
+				{"y",vCamUp.y},
+				{"z",vCamUp.z},
+				{"w",vCamUp.w}}
+			}
+	});
+		objs["TriggerInfo"].push_back(obj);
+
+		++i;
+	}
+	GI->Json_Save(strMapFilePath, objs);
+
 	return S_OK;
 }
 
 HRESULT CTool_Map::Load_Trigger_Data(const wstring& strTriggerName)
 {
-	return E_NOTIMPL;
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strTriggerName + L"/" + strTriggerName + L"Trigger.json";
+
+	Json json = GI->Json_Load(strMapFilePath);
+	Json parsedObjs = json["TriggerInfo"];
+
+	for (const auto& obj : parsedObjs)
+	{
+		for (const auto& objInfo : obj)
+		{
+			string protoTypeTag = objInfo["ProtoTypeTag"];
+			string objectTag = objInfo["ObjectTag"];
+
+			Vec4 vRight, vUp, vLook, vPos;
+			Vec4 vAt, vEye, vCamUp;
+			_uint eTriggerType;
+
+			wstring strBgmName;
+			wstring strMapName;
+
+			vRight.x = objInfo["Right"]["x"];
+			vRight.y = objInfo["Right"]["y"];
+			vRight.z = objInfo["Right"]["z"];
+
+			vUp.x = objInfo["Up"]["x"];
+			vUp.y = objInfo["Up"]["y"];
+			vUp.z = objInfo["Up"]["z"];
+
+			vLook.x = objInfo["Look"]["x"];
+			vLook.y = objInfo["Look"]["y"];
+			vLook.z = objInfo["Look"]["z"];
+
+			vPos.x = objInfo["Position"]["x"];
+			vPos.y = objInfo["Position"]["y"];
+			vPos.z = objInfo["Position"]["z"];
+			vPos.w = objInfo["Position"]["w"];
+
+			eTriggerType = objInfo["TriggerType"];
+			strBgmName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(objInfo["BgmName"]));
+			strMapName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(objInfo["MapName"]));
+			vAt.x = objInfo["At"]["x"];
+			vAt.y = objInfo["At"]["y"];
+			vAt.z = objInfo["At"]["z"];
+			vAt.w = objInfo["At"]["w"];
+
+			vEye.x = objInfo["Eye"]["x"];
+			vEye.y = objInfo["Eye"]["y"];
+			vEye.z = objInfo["Eye"]["z"];
+			vEye.w = objInfo["Eye"]["w"];
+
+			vCamUp.x = objInfo["CamUp"]["x"];
+			vCamUp.y = objInfo["CamUp"]["y"];
+			vCamUp.z = objInfo["CamUp"]["z"];
+			vCamUp.w = objInfo["CamUp"]["w"];
+
+
+			CGameObject* pGameObject = nullptr;
+			if (GI->Add_GameObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, CUtils::ToWString(protoTypeTag), nullptr,
+				&pGameObject))
+			{
+				MSG_BOX("Load Object Failed : Trigger");
+				return E_FAIL;
+			}
+
+			CTrigger* pTrigger = static_cast<CTrigger*>(pGameObject);
+			CTransform* pTransform = pTrigger->Get_Component_Transform();
+			if (nullptr == pTransform)
+			{
+				MSG_BOX("Not Found Transform");
+				return E_FAIL;
+			}
+
+			pTransform->Set_Right(vRight);
+			pTransform->Set_Up(vUp);
+			pTransform->Set_Look(vLook);
+			pTransform->Set_Position(vPos);
+
+			pTrigger->Set_TriggerType(static_cast<TRIGGER_TYPE>(eTriggerType));
+			pTrigger->Set_BgmName(strBgmName);
+			pTrigger->Set_strMapName(strMapName);
+
+			pTrigger->Set_At(vAt);
+			pTrigger->Set_Eye(vEye);
+			pTrigger->Set_Up(vCamUp);
+		}
+	}
+
+
+	return S_OK;
 }
 
 #ifdef _DEBUG

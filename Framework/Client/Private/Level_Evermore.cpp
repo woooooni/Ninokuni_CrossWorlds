@@ -76,6 +76,9 @@ HRESULT CLevel_Evermore::Initialize()
 	if (FAILED(Ready_Layer_Prop(LAYER_TYPE::LAYER_PROP)))
 		return E_FAIL;
 
+	if (FAILED(Ready_Trigger(TEXT("Evermore"))))
+		return E_FAIL;
+
 	if (FAILED(Ready_Layer_Dynamic(LAYER_TYPE::LAYER_DYNAMIC, TEXT("Evermore"))))
 		return E_FAIL;
 
@@ -571,32 +574,32 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 
 	// Triggers.
-	CTrigger::TRIGGER_DESC TriggerDesc;
-	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
-	TriggerDesc.strMapName = TEXT("³²¹® ±¤Àå");
-	TriggerDesc.vStartPosition = { 0.f, -20.f, 0.f, 1.f };
-	TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
-	TriggerDesc.vAt = Vec4(0.0f,0.0f,0.0f,1.0f);
-	TriggerDesc.vEye = Vec4(7.0f, 100.0f, 0.0f, 1.0f);
+	//CTrigger::TRIGGER_DESC TriggerDesc;
+	//TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
+	//TriggerDesc.strMapName = TEXT("³²¹® ±¤Àå");
+	//TriggerDesc.vStartPosition = { 0.f, -20.f, 0.f, 1.f };
+	//TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
+	//TriggerDesc.vAt = Vec4(0.0f,0.0f,0.0f,1.0f);
+	//TriggerDesc.vEye = Vec4(7.0f, 100.0f, 0.0f, 1.0f);
 
-	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
-		return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
 
-	TriggerDesc.strMapName = TEXT("¼­¹® ±¤Àå");
-	TriggerDesc.vStartPosition = { -85.5f, -20.f, 60.6f, 1.f };
-	TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
-	TriggerDesc.vAt = Vec4(0.0f, -574.0f, 0.0f, 1.0f);
-	TriggerDesc.vEye = Vec4(-85.0f, 100.0f, 0.0f, 1.0f);
-	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
-		return E_FAIL;
+	//TriggerDesc.strMapName = TEXT("¼­¹® ±¤Àå");
+	//TriggerDesc.vStartPosition = { -85.5f, -20.f, 60.6f, 1.f };
+	//TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
+	//TriggerDesc.vAt = Vec4(0.0f, -574.0f, 0.0f, 1.0f);
+	//TriggerDesc.vEye = Vec4(-85.0f, 100.0f, 0.0f, 1.0f);
+	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
 
-	
+	//
 
-	TriggerDesc.strMapName = TEXT("µ¿¹® ±¤Àå");
-	TriggerDesc.vStartPosition = { 88.85f, -20.f, 60.6f, 1.f };
-	TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
-	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
-		return E_FAIL;
+	//TriggerDesc.strMapName = TEXT("µ¿¹® ±¤Àå");
+	//TriggerDesc.vStartPosition = { 88.85f, -20.f, 60.6f, 1.f };
+	//TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
+	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
 
 
 
@@ -821,6 +824,98 @@ HRESULT CLevel_Evermore::Ready_Light(const wstring& strLightFilePath)
 		if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
 			return E_FAIL;
 	}
+	return S_OK;
+}
+
+HRESULT CLevel_Evermore::Ready_Trigger(const wstring& strTriggerName)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strTriggerName + L"/" + strTriggerName + L"Trigger.json";
+
+	Json json = GI->Json_Load(strMapFilePath);
+	Json parsedObjs = json["TriggerInfo"];
+
+	for (const auto& obj : parsedObjs)
+	{
+		for (const auto& objInfo : obj)
+		{
+			string protoTypeTag = objInfo["ProtoTypeTag"];
+			string objectTag = objInfo["ObjectTag"];
+
+			Vec4 vRight, vUp, vLook, vPos;
+			Vec4 vAt, vEye, vCamUp;
+			_uint eTriggerType;
+
+			wstring strBgmName;
+			wstring strMapName;
+
+			vRight.x = objInfo["Right"]["x"];
+			vRight.y = objInfo["Right"]["y"];
+			vRight.z = objInfo["Right"]["z"];
+
+			vUp.x = objInfo["Up"]["x"];
+			vUp.y = objInfo["Up"]["y"];
+			vUp.z = objInfo["Up"]["z"];
+
+			vLook.x = objInfo["Look"]["x"];
+			vLook.y = objInfo["Look"]["y"];
+			vLook.z = objInfo["Look"]["z"];
+
+			vPos.x = objInfo["Position"]["x"];
+			vPos.y = objInfo["Position"]["y"];
+			vPos.z = objInfo["Position"]["z"];
+			vPos.w = objInfo["Position"]["w"];
+
+			eTriggerType = objInfo["TriggerType"];
+			strBgmName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(objInfo["BgmName"]));
+			strMapName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(objInfo["MapName"]));
+			vAt.x = objInfo["At"]["x"];
+			vAt.y = objInfo["At"]["y"];
+			vAt.z = objInfo["At"]["z"];
+			vAt.w = objInfo["At"]["w"];
+
+			vEye.x = objInfo["Eye"]["x"];
+			vEye.y = objInfo["Eye"]["y"];
+			vEye.z = objInfo["Eye"]["z"];
+			vEye.w = objInfo["Eye"]["w"];
+
+			vCamUp.x = objInfo["CamUp"]["x"];
+			vCamUp.y = objInfo["CamUp"]["y"];
+			vCamUp.z = objInfo["CamUp"]["z"];
+			vCamUp.w = objInfo["CamUp"]["w"];
+
+
+			CGameObject* pGameObject = nullptr;
+			if (GI->Add_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, CUtils::ToWString(protoTypeTag), nullptr,
+				&pGameObject))
+			{
+				MSG_BOX("Load Object Failed : Trigger");
+				return E_FAIL;
+			}
+
+			CTrigger* pTrigger = static_cast<CTrigger*>(pGameObject);
+			CTransform* pTransform = pTrigger->Get_Component_Transform();
+			if (nullptr == pTransform)
+			{
+				MSG_BOX("Not Found Transform");
+				return E_FAIL;
+			}
+
+			pTransform->Set_Right(vRight);
+			pTransform->Set_Up(vUp);
+			pTransform->Set_Look(vLook);
+			pTransform->Set_Position(vPos);
+
+			pTrigger->Set_TriggerType(static_cast<TRIGGER_TYPE>(eTriggerType));
+			pTrigger->Set_BgmName(strBgmName);
+			pTrigger->Set_strMapName(strMapName);
+
+			pTrigger->Set_At(vAt);
+			pTrigger->Set_Eye(vEye);
+			pTrigger->Set_Up(vCamUp);
+		}
+	}
+
+
 	return S_OK;
 }
 

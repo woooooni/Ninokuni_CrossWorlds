@@ -52,6 +52,7 @@ public:
 
 	void Read(void** data, _uint dataSize);
 	void Read(OUT string& data);
+	void Read(OUT string& data, _bool bwchar);
 
 private:
 	HANDLE _handle = INVALID_HANDLE_VALUE;
