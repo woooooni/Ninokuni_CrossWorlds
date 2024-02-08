@@ -225,6 +225,9 @@ void CUI_World_NPCSpeechBalloon::LateTick(_float fTimeDelta)
 				{
 					if (m_bResizeDone)
 					{
+						if (true == CUI_Manager::GetInstance()->Is_Background_Active())
+							return;
+
 						_int iLength = m_strContents.length() - 1;
 						_float2 vFontPos = _float2(m_vTextPos.x - (iLength * 6.f), m_vTextPos.y - 10.f);
 

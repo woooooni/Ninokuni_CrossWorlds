@@ -142,8 +142,8 @@ HRESULT CStellia::Initialize(void* pArg)
 			return E_FAIL;
 	}
 
-	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Stellia_Timer"))))
-		return E_FAIL;
+//	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Stellia_Timer"))))
+//		return E_FAIL;
 
 	return S_OK;
 }

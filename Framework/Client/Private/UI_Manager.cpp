@@ -4477,6 +4477,14 @@ _int CUI_Manager::Count_WordSpacing(const wstring& strText)
 	return iCount;
 }
 
+_bool CUI_Manager::Is_Background_Active()
+{
+	if (nullptr == m_pDefaultBG)
+		return false;
+
+	return m_pDefaultBG->Get_Active();
+}
+
 _int CUI_Manager::Count_OnlyWords(const wstring& strText)
 {
 	// 문장의 공백, 문장부호를 제외하고 단어의 수만 세어준다.
