@@ -476,7 +476,7 @@ PS_OUT PS_RIM(PS_IN In)
         else
         {
             float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
-            fRimPower = pow(fRimPower, 10.f);
+            fRimPower = pow(fRimPower, 1.f);
             
             vector vRimColor = g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor * fRimPower;
 
