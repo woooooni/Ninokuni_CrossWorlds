@@ -121,6 +121,8 @@ HRESULT CUI_Stellia_Timer::Set_Owner()
 		return E_FAIL;
 
 	m_pStellia = dynamic_cast<CStellia*>(pOwner);
+
+	return S_OK;
 }
 
 HRESULT CUI_Stellia_Timer::Ready_State()
