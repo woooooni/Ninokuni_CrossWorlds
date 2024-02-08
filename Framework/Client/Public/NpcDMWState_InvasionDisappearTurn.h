@@ -19,9 +19,10 @@ public:
 	virtual void Exit_State();
 
 private:
-	Vec4 m_vDestLook = {};
-	_float m_fTurnSpeed = 0.f;
-
+	LERP_FLOAT_DESC	m_fLerpHeight = {};
+	_float	m_fLerpDuration = 0.f;
+	LERP_MODE m_eLerpMode = LERP_MODE::TYPEEND;
+	
 public:
 	static CNpcDMWState_InvasionDisappearTurn* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

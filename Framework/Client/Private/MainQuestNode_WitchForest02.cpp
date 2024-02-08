@@ -45,28 +45,28 @@ CBTNode::NODE_STATE CMainQuestNode_WitchForest02::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	/* 플레이어 문여는 액션이 끝나고 대화 카메라 세팅을 위함 */
+	/* 레벨 입장 카메라 액션이 진행중이라면 리턴 */
+	if (!Is_Finish_LevelEnterCameraAction())
+		return NODE_STATE::NODE_RUNNING;
+
+	if (!m_bIsStart)
 	{
-		if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CurrentState() == CCharacter::STATE::NEUTRAL_DOOR_ENTER)
-			return NODE_STATE::NODE_RUNNING;
+		m_bIsStart = true;
 
-		if (!m_bIsStart)
+		/* 대화 카메라 세팅 */
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		if (nullptr != pActionCam)
 		{
-			m_bIsStart = true;
-
-			/* 대화 카메라 세팅 */
-			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			if (nullptr != pActionCam)
-				pActionCam->Start_Action_Talk(nullptr);
-
-			/* 대화 */
-			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-			CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-			TalkEvent();
+			pActionCam->Start_Action_Talk(nullptr);
 		}
+
+		/* 대화 */
+		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+		TalkEvent();
 	}
 
 	/* 대화가 끝나기도 전에 컷신이 재생되는 것을 방지하기 위함, 대화가 시작되고 1.5초(m_fWaitTime)가 지난 뒤에 컷신 재생 가능 */

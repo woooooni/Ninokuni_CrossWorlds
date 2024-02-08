@@ -32,6 +32,18 @@ public:
 		return XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_UP][0]);
 	}
 
+	_vector Get_Back() {
+		return Vec4(XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_LOOK][0]) * -1.f);
+	}
+
+	_vector Get_Left() {
+		return Vec4(XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_RIGHT][0]) * -1.f);
+	}
+
+	_vector Get_Down() {
+		return Vec4(XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_UP][0]) * -1.f);
+	}
+
 	_vector Get_Position() {
 		return XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_POSITION][0]);
 	}
