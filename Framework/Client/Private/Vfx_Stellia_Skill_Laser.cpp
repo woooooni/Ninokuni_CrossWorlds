@@ -90,6 +90,8 @@ HRESULT CVfx_Stellia_Skill_Laser::Initialize_Prototype()
 
 HRESULT CVfx_Stellia_Skill_Laser::Initialize(void* pArg)
 {
+	m_fTimeAcc = 0.5f;
+
 	return S_OK;
 }
 
@@ -158,7 +160,7 @@ void CVfx_Stellia_Skill_Laser::Tick(_float fTimeDelta)
 		else if (m_iCount == TYPE_ET2_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CIRCLELINE])
 		{
 			m_fTimeAcc += fTimeDelta;
-			if (m_fTimeAcc >= 0.2f)
+			if (m_fTimeAcc >= 0.5f)
 			{
 				m_fTimeAcc = 0.f;
 
@@ -166,7 +168,7 @@ void CVfx_Stellia_Skill_Laser::Tick(_float fTimeDelta)
 					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_CIRCLELINE], m_pScaleOffset[TYPE_ET2_E_CIRCLELINE], m_pRotationOffset[TYPE_ET2_E_CIRCLELINE]);
 			}
 
-			if (m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] + 20)
+			if (m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_V_FINISH] - 10)
 				m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET3_V_FINISH && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_V_FINISH])

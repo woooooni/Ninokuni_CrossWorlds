@@ -315,6 +315,7 @@ public:
 	void Set_BloomPower(_float3 fPower) { m_fBlurColor = fPower; }
 	void Set_LifeTime(_float fTime) { m_fLifeTime = fTime; }
 	void Set_DistortionPower(_float fX, _float fY) { m_tEffectDesc.vDistortionPower = _float4(fX, fY, 0.f, 0.f); }
+	void Set_ScaleSpeed(_float fSpeed) { m_fScaleSpeed = fSpeed; }
 
 public:
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }

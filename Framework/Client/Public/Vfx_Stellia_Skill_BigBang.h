@@ -12,7 +12,14 @@ class CVfx_Stellia_Skill_BigBang final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_ET1_,
+		TYPE_ET1_E_SMOKE_IN_01,
+		TYPE_ET1_P_CIRCLES_IN,
+		TYPE_ET1_D_DECAL,
+
+		TYPE_ET2_E_SMOKE_OUT,
+		TYPE_ET2_E_SMOKE_UP,
+		TYPE_ET2_P_CIRCLES_OUTUP,
+
 		TYPE_END
 	};
 
@@ -30,6 +37,11 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	CEffect*   m_pSmokeIn_01 = nullptr;
+	CParticle* m_pCircleInParticle = nullptr;
+	CDecal*    m_pDecal = nullptr;
 
 public:
 	static CVfx_Stellia_Skill_BigBang* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

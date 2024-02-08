@@ -543,6 +543,9 @@ HRESULT CEffect::Bind_ShaderResource_Instance(CShader* pShader)
 	if (FAILED(pShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
+	if (FAILED(pShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+		return E_FAIL;
+
 	if (FAILED(pShader->Bind_RawValue("g_fAlpha_Discard", &m_tEffectDesc.fAlpha_Discard, sizeof(_float))))
 		return E_FAIL;
 	if (FAILED(pShader->Bind_RawValue("g_fBlack_Discard", &m_tEffectDesc.fBlack_Discard, sizeof(_float3))))
@@ -599,11 +602,6 @@ HRESULT CEffect::Bind_ShaderResource_Instance(CShader* pShader)
 		// 둘다 있다면
 		else if (m_pDiffuseTextureCom != nullptr && m_pAlphaTextureCom != nullptr)
 			m_tEffectDesc.iShaderPass = 3;
-	}
-	else if (m_tEffectDesc.iShaderPass == 4)
-	{
-		if (FAILED(pShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
-			return E_FAIL;
 	}
 
 	return S_OK;
