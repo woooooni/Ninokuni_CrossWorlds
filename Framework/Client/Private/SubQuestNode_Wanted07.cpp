@@ -67,11 +67,6 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted07::Tick(const _float& fTimeDelta)
 
 				if (m_iTalkIndex >= m_vecTalkDesc.size())
 				{
-					CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-					QuestDesc.strType = m_strNextQuestTag;
-					QuestDesc.strTitle = m_strNextQuestName;
-					QuestDesc.strContents = m_strNextQuestContent;
-					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 					CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 					m_bIsClear = true;

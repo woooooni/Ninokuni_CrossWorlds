@@ -334,11 +334,14 @@
     <ClInclude Include="..\Public\MainQuest_PlantKiller.h" />
     <ClInclude Include="..\Public\Moon.h" />
     <ClInclude Include="..\Public\NpcDMWState_Attack.h" />
+    <ClInclude Include="..\Public\NpcDMWState_VulcanGun_Attack.h" />
     <ClInclude Include="..\Public\NpcDMWState_Base.h" />
     <ClInclude Include="..\Public\NpcDMWState_Following.h" />
     <ClInclude Include="..\Public\NpcDMWState_Following_Rage02.h" />
     <ClInclude Include="..\Public\NpcDMWState_Following_Rage03.h" />
     <ClInclude Include="..\Public\NpcDMWState_Rage03Laser.h" />
+    <ClInclude Include="..\Public\NpcDMWState_VulcanGun_End.h" />
+    <ClInclude Include="..\Public\NpcDMWState_VulcanGun_Ready.h" />
     <ClInclude Include="..\Public\Skill_Biplane_Burst.h" />
     <ClInclude Include="..\Public\State_CurlingGame_Ending.h" />
     <ClInclude Include="..\Public\State_Enemy.h" />
@@ -1259,6 +1262,7 @@
     <ClInclude Include="..\Public\Witch_BlackHole.h" />
     <ClInclude Include="..\Public\Witch_Laser.h" />
     <ClInclude Include="..\Public\Witch_Rage02Sphere.h" />
+    <ClInclude Include="..\Public\Witch_VulcanBullet.h" />
     <ClInclude Include="..\Public\Zehra.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="MainQuestNode_WitchForest04_2.h" />
@@ -1428,11 +1432,14 @@
     <ClCompile Include="..\Private\MainQuest_PlantKiller.cpp" />
     <ClCompile Include="..\Private\Moon.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Attack.cpp" />
+    <ClCompile Include="..\Private\NpcDMWState_VulcanGun_Attack.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Base.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Following.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Following_Rage02.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Following_Rage03.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_Rage03Laser.cpp" />
+    <ClCompile Include="..\Private\NpcDMWState_VulcanGun_End.cpp" />
+    <ClCompile Include="..\Private\NpcDMWState_VulcanGun_Ready.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_Burst.cpp" />
     <ClCompile Include="..\Private\State_CurlingGame_Ending.cpp" />
     <ClCompile Include="..\Private\State_Enemy.cpp" />
@@ -2358,6 +2365,7 @@
     <ClCompile Include="..\Private\Witch_BlackHole.cpp" />
     <ClCompile Include="..\Private\Witch_Laser.cpp" />
     <ClCompile Include="..\Private\Witch_Rage02Sphere.cpp" />
+    <ClCompile Include="..\Private\Witch_VulcanBullet.cpp" />
     <ClCompile Include="..\Private\Zehra.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">

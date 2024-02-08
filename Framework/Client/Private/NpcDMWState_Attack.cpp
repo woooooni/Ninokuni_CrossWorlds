@@ -41,42 +41,60 @@ void CNpcDMWState_Attack::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pModelCom->Get_CurrAnimationFrame() >= 45 && m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Attack02"))
+	if (CGame_Manager::GetInstance()->Get_Player()->Get_Character() != nullptr)
 	{
-		m_fAccTime += fTimeDelta;
+		Vec4 vPlayerPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform()->Get_Position();
+		m_pTransformCom->LookAt_ForLandObject(vPlayerPos);
 
-		if (!m_bIsAttack && m_fAccTime > m_fSpawnTime)
+		if (m_pModelCom->Get_CurrAnimationFrame() >= 45 && m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Attack02"))
 		{
-			m_fAccTime = m_fSpawnTime - m_fAccTime;
+			m_fAccTime += fTimeDelta;
 
-			if (m_iCurCount >= m_iCount)
+			if (!m_bIsAttack && m_fAccTime > m_fSpawnTime)
 			{
-				m_bIsAttack = true;
-			}
+				m_fAccTime = m_fSpawnTime - m_fAccTime;
 
-			else
-			{
-				Vec4 vBlackHolePos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform()->Get_Position();
-				vBlackHolePos.x += GI->RandomFloat(-10.f, 10.f);
-				vBlackHolePos.y += 2.f;
-				vBlackHolePos.z += GI->RandomFloat(-10.f, 10.f);
-
-				CGameObject* pBlockHole = nullptr;
-
-				if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, L"Prorotype_GameObject_Witch_BlackHole", m_pStellia, &pBlockHole)))
+				if (m_iCurCount >= m_iCount)
 				{
-					MSG_BOX("Add BlackHole Failed.");
-					return;
+					m_bIsAttack = true;
 				}
 
-				CTransform* pBlackHoleTransform = pBlockHole->Get_Component_Transform();
+				else
+				{
+					Vec4 vBlackHolePos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform()->Get_Position();
 
-				pBlackHoleTransform->Set_State(CTransform::STATE_POSITION, vBlackHolePos);
-			
-				m_iCurCount += 1;
+					if (m_iCurCount == 0)
+					{
+						vBlackHolePos.x += 2.f;
+						vBlackHolePos.y += 2.f;
+						vBlackHolePos.z += 2.f;
+					}
+
+					else
+					{
+						vBlackHolePos.x += GI->RandomFloat(-10.f, 10.f);
+						vBlackHolePos.y += 2.f;
+						vBlackHolePos.z += GI->RandomFloat(-10.f, 10.f);
+					}
+
+					CGameObject* pBlockHole = nullptr;
+
+					if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, L"Prorotype_GameObject_Witch_BlackHole", m_pStellia, &pBlockHole)))
+					{
+						MSG_BOX("Add BlackHole Failed.");
+						return;
+					}
+
+					CTransform* pBlackHoleTransform = pBlockHole->Get_Component_Transform();
+
+					pBlackHoleTransform->Set_State(CTransform::STATE_POSITION, vBlackHolePos);
+
+					m_iCurCount += 1;
+				}
 			}
 		}
 	}
+
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{

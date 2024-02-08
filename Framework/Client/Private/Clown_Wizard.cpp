@@ -79,6 +79,8 @@ HRESULT CClown_Wizard::Initialize(void* pArg)
 	m_bStartDissolve = true;
 	m_fDissolveWeight = 10.f;
 
+	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+
 	return S_OK;
 }
 

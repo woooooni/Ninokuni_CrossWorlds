@@ -15,7 +15,7 @@ HRESULT CCriminal_MonsterNode_Dead::Initialize_Prototype(CMonsterBT::BT_MONSTERD
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
-	m_fBlowDeadTime = 1.5f;
+	m_fBlowDeadTime = 1.f;
 
 	return S_OK;
 }
@@ -38,37 +38,41 @@ void CCriminal_MonsterNode_Dead::Start()
 
 CBTNode::NODE_STATE CCriminal_MonsterNode_Dead::Tick(const _float& fTimeDelta)
 {
-	if (m_tBTMonsterDesc.pOwnerModel->Is_Finish() && !m_tBTMonsterDesc.pOwnerModel->Is_Tween())
+	if (!m_bIsDead)
 	{
 		if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD) ||
 			dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_AIR))
 		{
-			if (m_tBTMonsterDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Is_Ground())
+			m_fTime += fTimeDelta;
+			if (m_fTime > m_fBlowDeadTime)
 			{
-				if (!m_bIsDown)
-				{
-					m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_BlackCircleAgent.ao|Down"));
-					m_bIsDown = true;
-				}
+				Vec4 vOwnerPos = m_tBTMonsterDesc.pOwnerTransform->Get_Position();
 
-				m_fTime += fTimeDelta;
-				if (m_fTime > m_fBlowDeadTime)
+				if (m_tBTMonsterDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Is_Ground() ||
+					vOwnerPos.y < -5.1f)
 				{
+					if (!m_bIsDown)
+					{
+						m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_BlackCircleAgent.ao|Down"));
+						m_bIsDown = true;
+					}
+
 					if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::QUESTEVENT_MONSTER_KILL)
+					{
 						CQuest_Manager::GetInstance()->Set_MonsterKillCount(1);
-
-					// m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
+						m_bIsDead = true;
+					}
 				}
 			}
 		}
-		//m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
-	}
-
-	if (!m_bIsDead)
-	{
-		if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::QUESTEVENT_MONSTER_KILL)
-			CQuest_Manager::GetInstance()->Set_MonsterKillCount(1);
-		m_bIsDead = true;
+		else
+		{
+			if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::QUESTEVENT_MONSTER_KILL)
+			{
+				CQuest_Manager::GetInstance()->Set_MonsterKillCount(1);
+				m_bIsDead = true;
+			}
+		}
 	}
 
 	return NODE_STATE::NODE_RUNNING;
