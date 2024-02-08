@@ -75,6 +75,8 @@ public:
 		_bool bInit = false;
 		_bool bSet = false;
 
+		_bool	bFinalBoss = false;
+
 		Vec4 vPrevLookAt;
 
 		CTransform* pTransform_Kuu		= nullptr;
@@ -87,6 +89,7 @@ public:
 		{
 			pTransformNpc = nullptr;
 			bSet = false;
+			bFinalBoss = false;
 		}
 
 	}ACTION_TALK_DESC;
@@ -238,9 +241,9 @@ public:
 	HRESULT Start_Action_Door();
 	HRESULT Start_Action_WindMill(const _bool& bNpcToWindMill); /* 현재 대화 룩 타겟이 NPC일 때 호출*/
 
-	HRESULT Start_Action_Talk(CGameObject* pNpc); /* 처음 대화 시작시 호출 (쿠우 혼자면 nullptr, Npc 있으면 Npc 넘겨줌 */
+	HRESULT Start_Action_Talk(CGameObject* pNpc, const _bool& bFinalBoss = false); /* 처음 대화 시작시 호출 (쿠우 혼자면 nullptr, Npc 있으면 Npc 넘겨줌 */
 	HRESULT Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_TYPE& eType); /* 중간 화자 변경시 호출 */
-	HRESULT Finish_Action_Talk(const CAMERA_TYPE& eNextCameraType = CAMERA_TYPE::FOLLOW); /* 대화 종료시 호출 */
+	HRESULT Finish_Action_Talk(const CAMERA_TYPE& eNextCameraType = CAMERA_TYPE::FOLLOW); /* 대화 종료시 호출 */	
 
 	HRESULT Start_Action_Stadium(const _float& fDuration);
 	HRESULT Finish_Action_Stadium();
@@ -305,7 +308,6 @@ private:
 	ACTION_SWORDMAN_BURST_DESC m_tActionSwordManBurstDesc	= {};
 	ACTION_ENGINEER_BURST_DESC m_tActionEngineerBurstDesc	= {};
 	ACTION_DESTROYER_BURST_DESC m_tActionDestroyerBurstDesc = {};
-
 
 public:
 	static CCamera_Action* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
