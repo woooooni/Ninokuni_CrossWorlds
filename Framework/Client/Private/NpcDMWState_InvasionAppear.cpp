@@ -16,8 +16,7 @@ HRESULT CNpcDMWState_InvasionAppear::Initialize(const list<wstring>& AnimationLi
 
 	m_iCurrAnimIndex = m_AnimIndices[0];
 
-	m_fDuration = 3.f;
-	// m_fDestY = 20.f;
+	m_fDuration = 2.5f;
 	m_fDestY = 12.f; // 변경시 카메라 연출을 위한 높이도 수정 필요(카메라 담당에게 말해주세요)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(0.f, 30.f, 65.f, 1.f));// 아직 구도 안맞아서 일단 z 더 앞으로
@@ -26,11 +25,10 @@ HRESULT CNpcDMWState_InvasionAppear::Initialize(const list<wstring>& AnimationLi
 
 void CNpcDMWState_InvasionAppear::Enter_State(void* pArg)
 {
-	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+	m_pModelCom->Set_Animation(m_iCurrAnimIndex, MIN_TWEEN_DURATION);
 
 	m_tLerpDesc.fCurValue = 30.f;
 	m_tLerpDesc.Start(m_tLerpDesc.fCurValue, m_fDestY, m_fDuration, LERP_MODE::SMOOTHER_STEP);
-	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(0.f, 30.f, 60.f, 1.f));
 }
 
 void CNpcDMWState_InvasionAppear::Tick_State(_float fTimeDelta)

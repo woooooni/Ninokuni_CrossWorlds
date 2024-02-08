@@ -22,6 +22,8 @@ private:
 	_float m_fTime = 0.f;
 	_float m_fWalkTime = 0.f;
 
+	Vec4 m_vDir = {};
+
 public:
 	static CNpcDMWState_InvasionDisappear* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

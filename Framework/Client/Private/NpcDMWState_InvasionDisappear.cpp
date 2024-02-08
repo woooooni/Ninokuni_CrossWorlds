@@ -25,6 +25,8 @@ void CNpcDMWState_InvasionDisappear::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 	m_fTime = 0.f;
+
+	m_vDir = (Vec4(m_pTransformCom->Get_Look()).Normalized() + Vec4(m_pTransformCom->Get_Up()).Normalized()).Normalized().ZeroW();
 }
 
 void CNpcDMWState_InvasionDisappear::Tick_State(_float fTimeDelta)
@@ -32,7 +34,7 @@ void CNpcDMWState_InvasionDisappear::Tick_State(_float fTimeDelta)
 	__super::Tick_State(fTimeDelta);
 	m_fTime += fTimeDelta;
 
-	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pWitch->Get_Stat()->fSpeed, fTimeDelta);
+	m_pTransformCom->Move(m_vDir, m_pWitch->Get_Stat()->fSpeed, fTimeDelta);
 
 	if (m_fTime >= m_fWalkTime)
 	{

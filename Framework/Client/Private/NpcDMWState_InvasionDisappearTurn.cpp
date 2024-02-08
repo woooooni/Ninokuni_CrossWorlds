@@ -15,8 +15,10 @@ HRESULT CNpcDMWState_InvasionDisappearTurn::Initialize(const list<wstring>& Anim
 	__super::Initialize(AnimationList);
 
 	m_iCurrAnimIndex = m_AnimIndices[0];
-
-	m_fTurnSpeed = 5.f;
+	
+	m_fLerpDuration = 1.5f;
+	
+	m_eLerpMode = LERP_MODE::SMOOTHER_STEP;
 
 	return S_OK;
 }
@@ -25,22 +27,27 @@ void CNpcDMWState_InvasionDisappearTurn::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 
-	m_vDestLook = -m_pTransformCom->Get_Look();
+	m_fLerpHeight.Start(
+		Vec3(m_pTransformCom->Get_Position()).y,
+		Vec3(m_pTransformCom->Get_Position()).y + 5.f,
+		m_fLerpDuration,
+		m_eLerpMode);
 }
 
 void CNpcDMWState_InvasionDisappearTurn::Tick_State(_float fTimeDelta)
 {
-	__super::Tick_State(fTimeDelta);
+	__super::Tick_State(fTimeDelta);	
 
-	_float fDotProduck = XMVector3Dot(m_pTransformCom->Get_Look(), m_vDestLook).m128_f32[0];
-	_float fRadianAngle = acosf(fDotProduck / (XMVector3Length(m_pTransformCom->Get_Look()).m128_f32[0] * XMVector3Length(m_vDestLook).m128_f32[0]));
-	_float fDegreeAngle = XMConvertToDegrees(fRadianAngle);
+	if (m_fLerpHeight.bActive)
+	{
+		m_fLerpHeight.Update(fTimeDelta);
 
-	if (fabs(fRadianAngle) > 1.f)
-		m_pTransformCom->Turn(Vec3(0.f, 1.f, 0.f), m_fTurnSpeed, fTimeDelta);
+		Vec4 vPos = m_pTransformCom->Get_Position();
+		vPos.y = m_fLerpHeight.fCurValue;
+		m_pTransformCom->Set_Position(vPos.OneW());
+	}
 	else
 		m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_INVASION_DISAPPEAR);
-
 }
 
 void CNpcDMWState_InvasionDisappearTurn::Exit_State()
