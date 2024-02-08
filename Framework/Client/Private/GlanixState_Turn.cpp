@@ -54,8 +54,8 @@ void CGlanixState_Turn::Enter_State(void* pArg)
 	_vector vDestNormal = XMVector3Normalize(m_pGlanix->Get_TargetDesc().pTragetTransform->Get_Position() - m_pTransformCom->Get_Position());
 
 	/* 보스위 look과 플레이어 위치 - 보스 위치로 나온 방향 벡터의 각도를 구함. */
-	_float fDotProduct = XMVectorGetX(XMVector3Dot(vLookNormal, vDestNormal));
-	_float fAngle = XMConvertToDegrees(acosf(fDotProduct));
+	//_float fDotProduct = XMVectorGetX(XMVector3Dot(vLookNormal, vDestNormal));
+	//_float fAngle = XMConvertToDegrees(acosf(fDotProduct));
 
 	///* 만약 회전모션이 필요할 정도가 아닌 각도라면 3초정도의 idle 상태로 전환.*/
 	//if (fAngle < 20.f)

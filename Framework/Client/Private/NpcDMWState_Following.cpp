@@ -37,22 +37,36 @@ void CNpcDMWState_Following::Tick_State(_float fTimeDelta)
 
 	if (m_pWitch->Get_IsBattle())
 	{
-		if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE1START &&
-			m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE2START &&
-			m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE3START_FADEOUT &&
-			m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE1LOOP_EXPLOSION)
+		if (m_pStellia != nullptr)
 		{
-			m_fAccTime += fTimeDelta;
-			if (m_fAccTime >= m_fAttackCoolTime)
+			if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_JUMPSTAMP &&
+				m_pStellia->Get_Component_Model()->Get_CurrAnimationFrame() > 25)
 			{
-				m_fAccTime = m_fAttackCoolTime - m_fAccTime;
+				m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_VULCAN_READY);
+			}
+			else
+			{
+				__super::Following_Stellia(fTimeDelta);
 
-				if (m_iAtkIndex >= m_vecAtkState.size())
-					m_iAtkIndex = 0;
+				if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE1START &&
+					m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE2START &&
+					m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE3START_FADEOUT &&
+					m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE1LOOP_EXPLOSION &&
+					m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_JUMPSTAMP)
+				{
+					m_fAccTime += fTimeDelta;
+					if (m_fAccTime >= m_fAttackCoolTime)
+					{
+						m_fAccTime = m_fAttackCoolTime - m_fAccTime;
 
-				m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
+						if (m_iAtkIndex >= m_vecAtkState.size())
+							m_iAtkIndex = 0;
 
-				//m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
+						m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
+
+						//m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
+					}
+				}
 			}
 		}
 	}

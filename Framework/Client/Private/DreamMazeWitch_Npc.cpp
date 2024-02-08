@@ -44,6 +44,11 @@ HRESULT CDreamMazeWitch_Npc::Initialize_Prototype()
 
 HRESULT CDreamMazeWitch_Npc::Initialize(void* pArg)
 {
+	/* 툴용 */
+	//m_bIsBattle = true;
+	//m_bIsFollowing = true;
+
+
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
@@ -255,41 +260,6 @@ void CDreamMazeWitch_Npc::Following_Stellia(_float fTimeDelta)
 {
 	if (m_bIsFollowing)
 	{
-		m_pTransformCom->LookAt_ForLandObject(m_pPlayer->Get_Component_Transform()->Get_Position());
-		Vec4 vStelliaPos = m_pStellia->Get_Component_Transform()->Get_Position();
-		Vec4 vReleativePos = {};
-
-		// 레이지1 익스플로전 상태일 때
-		if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE1LOOP_EXPLOSION)
-		{
-			vReleativePos = m_pStellia->Get_Component_Transform()->Get_RelativeOffset({ 0.f , vStelliaPos.y + 8.f, 0.f, 1.f });
-		}
-		// 레이지2 상태일 때
-		else if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE1LOOP_EXPLOSION)
-		{
-			vReleativePos = m_pStellia->Get_Component_Transform()->Get_RelativeOffset({ 0.f , vStelliaPos.y + 8.f, -2.f, 1.f });
-		}
-		// 일반 
-		else
-		{
-			vReleativePos = m_pStellia->Get_Component_Transform()->Get_RelativeOffset({ -5.f , vStelliaPos.y + 8.f, -5.f, 1.f });
-		}
-
-
-		Vec4 vDestPos = Vec4(vReleativePos + vStelliaPos).OneW();
-
-		if (Vec4::Zero == m_vCurPos || m_fDampingLimitDistance < Vec4::Distance(vDestPos, m_vCurPos))
-		{
-			m_vCurPos = vDestPos;
-		}
-		else
-		{
-			const Vec4 vDist = (vDestPos.ZeroW() - m_vCurPos.ZeroW()) * m_fDampingCoefficient;
-			m_vCurPos += vDist;
-			m_vCurPos.y = vDestPos.y;
-		}
-
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(m_vCurPos, 1.f));
 	}
 
 	if (m_bIsFollowingPlayer)

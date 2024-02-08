@@ -71,12 +71,12 @@ HRESULT CKuu::Initialize(void* pArg)
 
 void CKuu::Tick(_float fTimeDelta)
 {
-	if (m_pPlayer != nullptr)
+	if (CGame_Manager::GetInstance()->Get_Player()->Get_Character() != nullptr)
 	{
 		Kuu_Flying(fTimeDelta);
 
 		/* Rotation, Scale */
-		m_pTransformCom->Set_WorldMatrix(m_pPlayerTransform->Get_WorldMatrix());
+		m_pTransformCom->Set_WorldMatrix(CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform()->Get_WorldMatrix());
 		m_pTransformCom->Set_Scale(Vec3{ 0.7f });
 		
 		/* Damping */
@@ -161,8 +161,8 @@ void CKuu::Set_KuuTarget_Player()
 
 Vec4 CKuu::Get_GoalPosition()
 {
-	Vec4 vReleativePos = m_pPlayerTransform->Get_RelativeOffset({ 1.f, m_fY, -0.3f, 1.f });
-	Vec4 vPlayerPos = m_pPlayerTransform->Get_Position();
+	Vec4 vReleativePos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform()->Get_RelativeOffset({ 1.f, m_fY, -0.3f, 1.f });
+	Vec4 vPlayerPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform()->Get_Position();
 
 	return Vec4(vReleativePos + vPlayerPos).OneW();
 }

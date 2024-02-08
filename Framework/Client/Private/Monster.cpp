@@ -66,6 +66,9 @@ HRESULT CMonster::Initialize(void* pArg)
 	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
 		m_bIsInvasion = true;
 
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_RUBY_DEFENCE)
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+
 	return S_OK;
 }
 

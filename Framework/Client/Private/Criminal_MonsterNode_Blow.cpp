@@ -35,7 +35,10 @@ CBTNode::NODE_STATE CCriminal_MonsterNode_Blow::Tick(const _float& fTimeDelta)
 	
 	if (m_fCheckTime >= 0.5f)
 	{
-		if (m_tBTMonsterDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Is_Ground())
+		Vec4 vOwnerPos = m_tBTMonsterDesc.pOwnerTransform->Get_Position();
+
+		if (m_tBTMonsterDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Is_Ground() ||
+			vOwnerPos.y < -5.1f)
 		{
 			if (!m_bIsDown)
 			{

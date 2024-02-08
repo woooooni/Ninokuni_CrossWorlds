@@ -4,12 +4,12 @@
 
 BEGIN(Client)
 
-class CClown_Wizard_DarkBall final : public CMonsterProjectile
+class CWitch_VulcanBullet final : public CMonsterProjectile
 {
 private:
-	CClown_Wizard_DarkBall(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CClown_Wizard_DarkBall(const CClown_Wizard_DarkBall& rhs);
-	virtual ~CClown_Wizard_DarkBall() = default;
+	CWitch_VulcanBullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CWitch_VulcanBullet(const CWitch_VulcanBullet& rhs);
+	virtual ~CWitch_VulcanBullet() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -33,7 +33,11 @@ private:
 
 	_float m_fSpeed = 0.f;
 
-	_float m_fTime = 0.f;
+	_float m_fAccReturnTime = 0.f;
+	_float m_fReturnTime = 0.f;
+	_bool m_bIsReturn = false;
+
+	_float m_fAccDelteTime = 0.f;
 	_float m_fDelteTime = 0.f;
 
 	Vec3 m_vInitLook = {};
@@ -42,7 +46,7 @@ private:
 	_bool m_bCreate = false;
 
 public:
-	static CClown_Wizard_DarkBall* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CWitch_VulcanBullet* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

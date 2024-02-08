@@ -183,8 +183,8 @@ HRESULT CCriminal_Npc::Ready_States()
 
 	m_vecRoaming.push_back({ -47.f, -6.75f, 40.f, 1.0f });
 	m_vecRoaming.push_back({ -72.f, -5.f, 52.f, 1.0f });
-	m_vecRoaming.push_back({ -92.f, -5.f, 39.f, 1.0f });
-	m_vecRoaming.push_back({ -88.f, -2.7f, -4.5f, 1.0f });
+	m_vecRoaming.push_back({ -90.f, -5.f, 37.f, 1.0f });
+	m_vecRoaming.push_back({ -86.f, -2.7f, -1.f, 1.0f });
 	m_vecRoaming.push_back({ -100.f, -5.f, -14.f, 1.0f });
 	m_vecRoaming.push_back({ -89.f, -7.6f, -36.f, 1.0f });
 	m_vecRoaming.push_back({ -57.f, -5.3f, -35.5f, 1.0f });
