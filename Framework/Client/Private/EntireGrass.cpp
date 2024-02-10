@@ -31,7 +31,7 @@ HRESULT CEntireGrass::Initialize(void* pArg)
 	//_float fBladeHeightMin = 0.4f;
 	//_float fBladeHeightMax = 0.7f;
 
-	m_CBGrass.fTessellationGrassDistance = 1.f; // 0.3f
+	m_CBGrass.fTessellationGrassDistance = 0.3f;
 	m_CBGrass.fBladeWidthMin = 0.07f;
 	m_CBGrass.fBladeWidthMax = 0.1f;
 	m_CBGrass.fBladeHeightMin = 0.7f;

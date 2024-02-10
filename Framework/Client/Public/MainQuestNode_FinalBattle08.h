@@ -26,6 +26,9 @@ private:
 	_bool m_bIsTalk = false;
 	_bool m_bIsWitchEscape = false;
 
+	_bool m_bFadeOut = false;
+
+	_bool	m_bStartBlend = false;
 public:
 	static CMainQuestNode_FinalBattle08* Create();
 	virtual void Free() override;

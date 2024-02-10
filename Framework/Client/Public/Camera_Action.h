@@ -239,9 +239,10 @@ public:
 
 	typedef struct tagWitchAwatDesc
 	{
-
+		_uint iBoneNumber = 1;
 		class CGameObject* pWitchObject = nullptr;
 
+		Vec4 vPervLookAt = {};
 	}ACTION_WITCH_AWAY_DESC;
 
 private:

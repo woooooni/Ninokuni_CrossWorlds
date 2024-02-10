@@ -44,18 +44,26 @@ void CMainQuestNode_FinalBattle08::Start()
 		// 스텔리아 죽고 나서, 마녀 도망가는 애니메이션 
 		m_pWitch->Get_Component_Model()->Set_Animation(TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Death"));
 
-		// 카메라 세팅
-		//CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-		//if (nullptr != pFollowCam && pFollowCam->Is_LockOn() && !pFollowCam->Is_Lock_LookHeight())
-		//{
-		//	pFollowCam->Reset_WideView_To_DefaultView(true);
-		//	pFollowCam->Set_Default_Position();
-		//	pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-		//}
+		/* 카메라 락온 해제 */
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+		if (nullptr != pFollowCam && pFollowCam->Is_LockOn() && !pFollowCam->Is_Lock_LookHeight())
+		{
+			pFollowCam->Reset_WideView_To_DefaultView(true);
+			pFollowCam->Set_Default_Position();
+			pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		}
 		
-		//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-		//if (nullptr != pActionCam)
-		//	pActionCam->Start_Action_Witch_Away(m_pWitch);
+		/* 마녀 도망가는 카메라 액션 실행 */
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		if (nullptr != pActionCam)
+		{
+			pActionCam->Start_Action_Witch_Away(m_pWitch);
+			CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
+
+			/* Ui, Input */
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+		}
 	}
 }
 
@@ -78,7 +86,6 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle08::Tick(const _float& fTimeDelta)
 			TalkEvent();
 			m_bIsTalk = true;
 		}
-
 		else
 		{
 			m_fTime += fTimeDelta;
@@ -93,13 +100,37 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle08::Tick(const _float& fTimeDelta)
 			}
 		}
 
+		m_bStartBlend;
+
 		if (m_bIsWitchEscape)
 		{
+			/* 블렌딩 시작 조건 */
 			if (m_pWitch->Get_Component_Model()->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Death") &&
-				m_pWitch->Get_Component_Model()->Is_Finish() && !m_pWitch->Get_Component_Model()->Is_Tween())
+				0.9f <= m_pWitch->Get_Component_Model()->Get_Progress() && !m_pWitch->Get_Component_Model()->Is_Tween())
+			{
+				if (!m_bStartBlend)
+				{
+					m_bStartBlend = true;
+
+					// 카메라 블렌딩 시작 
+					CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+					if (nullptr != pFollowCam)
+					{
+						pFollowCam->Reset_WideView_To_DefaultView(true);
+						pFollowCam->Set_Default_Position();
+						CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
+					}
+				}
+			}
+
+			/* 블렌딩 완료시 다음 노드로 */
+			if (m_bStartBlend && !CCamera_Manager::GetInstance()->Is_Blending_Camera())
 			{
 				m_bIsClear = true;
 
+				/* Ui, Input */
+				CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 				return NODE_STATE::NODE_FAIL;
 			}
 		}

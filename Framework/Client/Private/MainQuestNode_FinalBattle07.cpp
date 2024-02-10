@@ -47,10 +47,8 @@ void CMainQuestNode_FinalBattle07::Start()
 	if (nullptr != pActionCam)
 	{
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
-		//pActionCam->Finish_Action_Talk();
 	}
 
-	/* 락온 설정 */
 	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 	if (nullptr != pFollowCam)
 	{
@@ -65,11 +63,14 @@ void CMainQuestNode_FinalBattle07::Start()
 			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
 		}
 
-		//pFollowCam->Set_LockBoneNumber(3);
-		//
-		//CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Stellia");
-		//if (nullptr != pTarget)
-		//	pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Stellia, Cam_LookAt_Offset_LockOn_Stellia);
+		/* 락온 설정 */
+		{
+			//pFollowCam->Set_LockBoneNumber(3);
+			//
+			//CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Stellia");
+			//if (nullptr != pTarget)
+			//	pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Stellia, Cam_LookAt_Offset_LockOn_Stellia);
+		}
 	}
 
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
