@@ -470,7 +470,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
     vector vBloom = g_BloomTarget.Sample(LinearSampler, In.vTexcoord);
 
 	// Output
-    Out.vColor = (vDiffuse * vShade * vShadow * vSSAO * vOutline) + vSpecular + vBloom;
+    Out.vColor = ((vDiffuse * vShade * vShadow * vSSAO) + vSpecular + vBloom) * vOutline;
 	
 	// Fog
     // float fDistanceFogFactor = DistanceFogFactor_Caculation(vDepthDesc.y * 1000.f);
