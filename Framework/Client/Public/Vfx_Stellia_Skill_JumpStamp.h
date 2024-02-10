@@ -20,6 +20,7 @@ private:
 		TYPE_V_DELETE,
 
 		TYPE_D_DECAL_00,
+		TYPE_E_SPRINGUP,
 		TYPE_E_SHOCK_00,
 		TYPE_E_SHOCK_01,
 		TYPE_E_SMOKE_00,
@@ -47,6 +48,7 @@ protected:
 
 private:
 	class CDecal*  m_pWarningDecal = nullptr;
+	class CEffect* m_pSpringUpEffect = nullptr;
 	class CEffect* m_pRising01Effect = nullptr;
 	class CEffect* m_pRising02Effect = nullptr;
 	class CEffect* m_pShock01Effect = nullptr;

@@ -59,6 +59,11 @@ HRESULT CVfx_Stellia_Skill_JumpStamp::Initialize_Prototype()
 	m_pScaleOffset[TYPE_D_DECAL_00] = _float3(12.f, 1.f, 12.f);
 	m_pRotationOffset[TYPE_D_DECAL_00] = _float3(0.f, 0.f, 0.f);
 
+	m_pFrameTriger[TYPE_E_SPRINGUP] = 90; //
+	m_pPositionOffset[TYPE_E_SPRINGUP] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_E_SPRINGUP]    = _float3(5.f, 5.f, 5.f);
+	m_pRotationOffset[TYPE_E_SPRINGUP] = _float3(0.f, 0.f, 0.f);
+
 	/* 3. Shock01 Effect */
 	m_pFrameTriger[TYPE_E_SHOCK_00] = 90;
 	m_pPositionOffset[TYPE_E_SHOCK_00] = _float3(0.f, -0.5f, 0.f);
@@ -155,6 +160,19 @@ void CVfx_Stellia_Skill_JumpStamp::Tick(_float fTimeDelta)
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_DECAL_00], m_pScaleOffset[TYPE_D_DECAL_00], m_pRotationOffset[TYPE_D_DECAL_00]);
 			m_iCount++;
 		}
+		else if (m_iCount == TYPE_E_SPRINGUP && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_SPRINGUP])
+		{
+			if (nullptr != m_pWarningDecal)
+			{
+				m_pWarningDecal->Start_AlphaDeleate();
+				Safe_Release(m_pWarningDecal);
+			}
+
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_JumpStamp_SpringUp"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_SPRINGUP], m_pScaleOffset[TYPE_E_SPRINGUP], m_pRotationOffset[TYPE_E_SPRINGUP], nullptr, &m_pSpringUpEffect, false);
+			Safe_AddRef(m_pSpringUpEffect);
+			m_iCount++;
+		}
 		else if (m_iCount == TYPE_E_SHOCK_00 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_SHOCK_00])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_JumpStamp_Shock01"),
@@ -245,6 +263,13 @@ void CVfx_Stellia_Skill_JumpStamp::Free()
 	{
 		m_pWarningDecal->Start_AlphaDeleate();
 		Safe_Release(m_pWarningDecal);
+	}
+
+	if (nullptr != m_pSpringUpEffect)
+	{
+		// µðÁ¹ºê
+		m_pSpringUpEffect->Set_Dead(true);
+		Safe_Release(m_pSpringUpEffect);
 	}
 
 	if (nullptr != m_pRising01Effect)
