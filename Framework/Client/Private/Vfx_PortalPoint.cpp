@@ -36,7 +36,7 @@ void CVfx_PortalPoint::Tick(_float fTimeDelta)
 	if (m_iCount == 0 && m_fTimeAcc > 0.f)
 	{
 		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_PortalPoint_Line"),
-			XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 1.3f, 0.f), _float3(5.f, 0.3f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pEffectObject, false);
+			XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 1.3f, 0.f), m_vLineEffectScale, _float3(0.f, 0.f, 0.f), nullptr, &pEffectObject, false);
 		Safe_AddRef(pEffectObject);
 		m_iCount++;
 	}

@@ -248,6 +248,7 @@ HRESULT CLevel_Kingdom::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 	PortalInfo.eCurrentLevel = LEVEL_KINGDOMHALL;
 	PortalInfo.eNextLevel = LEVEL_EVERMORE;
+	PortalInfo.vEffectScale = Vec3(5.f, 0.3f, 1.f);
 
 	if (FAILED(GI->Add_GameObject(LEVEL_KINGDOMHALL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo)))
 		return E_FAIL;

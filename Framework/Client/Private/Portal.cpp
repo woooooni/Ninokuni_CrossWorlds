@@ -4,6 +4,7 @@
 #include "Level_Loading.h"
 #include "Effect_Manager.h"
 #include "Vfx.h"
+#include "Vfx_PortalPoint.h"
 
 #include "Game_Manager.h"
 #include "Player.h"
@@ -39,6 +40,8 @@ HRESULT CPortal::Initialize(void* pArg)
 	m_eCurrentLevel = pPortalDesc->eCurrentLevel;
 	m_eNextLevel = pPortalDesc->eNextLevel;
 	m_vNextPos = pPortalDesc->vNextPosition;
+	m_vRotation = pPortalDesc->vNextRotation;
+	m_vEffectScale = pPortalDesc->vEffectScale;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -68,7 +71,11 @@ void CPortal::Tick(_float fTimeDelta)
 	if (nullptr == pEffectObject)
 	{
 		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_PortalPoint"), m_pTransformCom->Get_WorldMatrix(), nullptr, &pEffectObject);
-		Safe_AddRef(pEffectObject);
+		if (nullptr != pEffectObject)
+		{
+			Safe_AddRef(pEffectObject);
+			static_cast<CVfx_PortalPoint*>(pEffectObject)->Set_LineEffectScale(m_vEffectScale);
+		}
 	}
 
 	GI->Add_CollisionGroup(COLLISION_GROUP::PORTAL, this);
@@ -119,7 +126,7 @@ void CPortal::Collision_Enter(const COLLISION_INFO& tInfo)
 		if (FAILED(GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel, L""))))
 			MSG_BOX("Portal Failde Activate");
 
-		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_EnterLevelPosition(m_vNextPos);
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_EnterLevelPosition(m_vNextPos, &m_vRotation);
 	}
 }
 
@@ -150,7 +157,7 @@ HRESULT CPortal::Ready_Collider()
 {
 	CCollider_AABB::AABB_COLLIDER_DESC AABBDesc;
 	BoundingBox AABBBox;
-	AABBBox.Extents = { 2.f, 1.f, 1.f};
+	AABBBox.Extents = { 4.f, 2.f, 1.f};
 	AABBDesc.tBox = AABBBox;
 	AABBDesc.pNode = nullptr;
 	AABBDesc.pOwnerTransform = m_pTransformCom;

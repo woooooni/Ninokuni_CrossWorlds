@@ -242,7 +242,7 @@ public:
 	
 
 public:
-	void Set_EnterLevelPosition(Vec4 vPosition);
+	void Set_EnterLevelPosition(Vec4 vPosition, Vec3* pRotation = nullptr);
 	void Set_InitialPosition(Vec4 vPosition);
 
 public:

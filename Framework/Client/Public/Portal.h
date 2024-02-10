@@ -21,6 +21,10 @@ public:
 		LEVELID eNextLevel = LEVELID::LEVEL_END;
 
 		Vec4 vNextPosition = { 0.f, 0.f, 0.f, 1.f };
+		Vec3 vNextRotation = { 0.f, 0.f, 0.f };
+
+		Vec3 vEffectScale = { 5.f, 0.3f, 1.f };
+
 	} PORTAL_DESC;
 
 private:
@@ -47,7 +51,12 @@ private:
 private:
 	LEVELID m_eCurrentLevel = LEVELID::LEVEL_END;
 	LEVELID m_eNextLevel = LEVELID::LEVEL_END;
-	Vec4 m_vNextPos = { 0.f, 0.f, 0.f, 1.f };
+
+	Vec4 m_vNextPos  = { 0.f, 0.f, 0.f, 1.f };
+	Vec3 m_vRotation = { 0.f, 0.f, 0.f };
+
+	Vec3 m_vEffectScale = { 5.f, 0.3f, 1.f };
+
 private:
 	class CVfx* pEffectObject = nullptr;
 

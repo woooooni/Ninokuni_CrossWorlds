@@ -18,6 +18,7 @@
 #include "Light.h"
 #include <Utils.h>
 #include <FileUtils.h>
+#include "Portal.h"
 #include "Trigger.h"
 #include "GameNpc.h"
 #include "Animals.h"
@@ -615,6 +616,42 @@ HRESULT CLevel_WitchForest::Ready_Light(const wstring& strLightFilePath)
 
 HRESULT CLevel_WitchForest::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 {
+	CGameObject* pPortal = nullptr;
+
+	CPortal::PORTAL_DESC PortalInfo = {};
+	PortalInfo.vStartPosition = XMVectorSet(4.f, 2.262f, -95.961, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(124.f, 0.f, 111.f, 1.f);
+	PortalInfo.eCurrentLevel = LEVEL_WITCHFOREST;
+	PortalInfo.eNextLevel = LEVEL_EVERMORE;
+	PortalInfo.vEffectScale = Vec3(15.f, 0.3f, 1.f);
+	PortalInfo.vNextRotation = Vec3(8.f, -90.f, 0.f);
+	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo, &pPortal)))
+		return E_FAIL;
+	if (nullptr == pPortal)
+		return E_FAIL;
+	CTransform* pPortalTransform = pPortal->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pPortalTransform)
+		return E_FAIL;
+	pPortalTransform->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-50.f));
+
+
+	PortalInfo.vStartPosition = XMVectorSet(8.f, 2.262f, -91.f, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(124.f, 0.f, 111.f, 1.f);
+	PortalInfo.eCurrentLevel = LEVEL_WITCHFOREST;
+	PortalInfo.eNextLevel = LEVEL_EVERMORE;
+	PortalInfo.vEffectScale = Vec3(15.f, 0.3f, 1.f);
+	PortalInfo.vNextRotation = Vec3(8.f, -90.f, 0.f);
+	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo, &pPortal)))
+		return E_FAIL;
+	if (nullptr == pPortal)
+		return E_FAIL;
+	pPortalTransform = pPortal->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pPortalTransform)
+		return E_FAIL;
+	pPortalTransform->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-50.f));
+
+
+
 	CTrigger::TRIGGER_DESC TriggerDesc;
 	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_WITCH_WOOD_ENTER;
 	TriggerDesc.strMapName = L"";
