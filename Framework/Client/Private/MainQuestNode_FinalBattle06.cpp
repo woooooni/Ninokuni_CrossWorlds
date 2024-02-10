@@ -48,11 +48,12 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle06::Tick(const _float& fTimeDelta)
 		{
 			if (m_pWitch->Get_Component_Model()->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_BossSkillRage01"))
 			{
+				// 마녀 카메라 연출 시그널
 				if(!m_bCamSignal && m_pWitch->Get_Component_Model()->Get_CurrAnimationFrame() == 70)
 				{
 					m_bCamSignal = true;
 					CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-					if (nullptr != pActionCam)
+					if(nullptr != pActionCam)
 						pActionCam->Start_Action_Witch_Roar();
 				}
 
@@ -69,20 +70,6 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle06::Tick(const _float& fTimeDelta)
 		
 		if (m_bIsFadeOut && CUI_Manager::GetInstance()->Is_FadeFinished())
 		{
-			/* 대화 카메라 종료 */
-			{
-				CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-				if (nullptr != pActionCam)
-					pActionCam->Finish_Action_Talk();
-			}
-
-			/* 락온 설정 */
-			{
-
-
-			}
-
-
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
 

@@ -105,6 +105,9 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		case CCamera_Action::WITCH_ROAR:
 			Tick_Witch_Roar(fTimeDelta);
 			break;
+		case CCamera_Action::WITCH_AWAY:
+			Tick_Witch_Away(fTimeDelta);
+			break;
 		default:
 			break;
 		}
@@ -659,6 +662,19 @@ void CCamera_Action::Tick_Talk(_float fTimeDelta)
 	
 }
 
+HRESULT CCamera_Action::Start_Action_Witch_Away(CGameObject* pGameObject)
+{
+	m_eCurActionType = CAMERA_ACTION_TYPE::WITCH_AWAY;
+
+	m_tActionWitchAwayDesc.pWitchObject = pGameObject;
+
+	m_tTargetOffset.vCurVec = { 0.f, 0.f, 0.f, 1.f };
+
+	m_tLookAtOffset.vCurVec = { 0.f, 0.f, 0.f, 1.f };
+
+	return S_OK;
+}
+
 void CCamera_Action::Tick_Blending(const _float fDeltaTime)
 {
 }
@@ -772,11 +788,17 @@ void CCamera_Action::Tick_Witch_Roar(_float fTimeDelta)
 		return;
 
 	if (m_tActionWitchRoarDesc.tTargetOffset.bActive)
+	{
 		m_tActionWitchRoarDesc.tTargetOffset.Update_Lerp(fTimeDelta);
+		if (!m_tActionWitchRoarDesc.bZoomIn && !m_tActionWitchRoarDesc.tTargetOffset.bActive)
+		{
+			Start_Action_Witch_Roar();
+		}
+	}
 
 	if (m_tActionWitchRoarDesc.tLookAtOffset.bActive)
 		m_tActionWitchRoarDesc.tLookAtOffset.Update_Lerp(fTimeDelta);
-
+	
 	/* Position */
 	{
 		Vec4 vPos = Vec4(pWitchTransform->Get_Position()) + pWitchTransform->Get_RelativeOffset(m_tActionWitchRoarDesc.tTargetOffset.vCurVec);
@@ -1138,6 +1160,31 @@ HRESULT CCamera_Action::Ready_Components()
 	return S_OK;
 }
 
+void CCamera_Action::Tick_Witch_Away(_float fTimeDelta)
+{
+	CModel* pWitchModel = m_tActionWitchRoarDesc.pWitchObject->Get_Component_Model();
+	CTransform* pWitchTransform = m_tActionWitchRoarDesc.pWitchObject->Get_Component_Transform();
+
+	if (nullptr == pWitchModel || nullptr == pWitchTransform)
+		return;
+
+	/* Position */
+	{
+		Vec4 vPos = Vec4(pWitchTransform->Get_Position()) + pWitchTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
+		m_pTransformCom->Set_Position(vPos.OneW());
+	}
+
+	/* LookAt */
+	{
+		Vec4 vLookAt = {};
+		const Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(m_tActionWitchRoarDesc.iBoneNumber) * pWitchTransform->Get_WorldMatrix();
+		memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+		vLookAt += m_pTransformCom->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW();
+
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
+}
+
 HRESULT CCamera_Action::Start_Action_WindMill(const _bool& bNpcToWindMill)
 {
 	const _uint iLevel = GI->Get_CurrentLevel();
@@ -1221,23 +1268,43 @@ HRESULT CCamera_Action::Ready_Action_Witch_Roar(CGameObject* pGameObject)
 
 HRESULT CCamera_Action::Start_Action_Witch_Roar()
 {
-	if (!m_tActionWitchRoarDesc.bZoomIn)
+	switch (m_tActionWitchRoarDesc.iCount)
 	{
+	case 0 :
+	{
+		m_tActionWitchRoarDesc.bZoomIn = true;
+
 		// Zoom In 
 		m_tActionWitchRoarDesc.tTargetOffset.Start(
 			{ 0.f, 2.f, 1.f, 1.f }, 3.f, LERP_MODE::SMOOTHER_STEP);
 
 		m_tActionWitchRoarDesc.tLookAtOffset.Start(
 			{ 0.f, 0.f, 0.f, 1.f }, 2.f, LERP_MODE::SMOOTHER_STEP);
+
+		break;
 	}
-	else
+	case 1:
 	{
-		// Zoom Out 
+		m_tActionWitchRoarDesc.bZoomIn = false;
+
+		// Zoom Out 1
 		m_tActionWitchRoarDesc.tTargetOffset.Start(
 			{ 0.f, 2.f, 1.75f, 1.f }, 0.25f, LERP_MODE::SMOOTHER_STEP);
+
+		break;
+	}
+	case 2:
+	{
+		// Zoom Out 2
+		m_tActionWitchRoarDesc.tTargetOffset.Start(
+			{ 0.f, 2.f, 2.75f, 1.f }, 2.f, LERP_MODE::SMOOTHER_STEP);
+		break;
+	}
+	default:
+		break;
 	}
 
-	m_tActionWitchRoarDesc.bZoomIn = !m_tActionWitchRoarDesc.bZoomIn;
+	++m_tActionWitchRoarDesc.iCount;
 
 	return S_OK;
 }

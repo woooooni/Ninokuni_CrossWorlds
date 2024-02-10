@@ -7,6 +7,8 @@
 #include "Effect_Manager.h"
 #include "Decal.h"
 
+#include "Camera_Group.h"
+
 CStelliaState_JumpStamp::CStelliaState_JumpStamp(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -31,6 +33,16 @@ void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	/* Camera */
+	if (27 == m_pModelCom->Get_CurrAnimationFrame() && !m_pModelCom->Is_Tween())
+	{
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+		if (nullptr != pFollowCam && pFollowCam->Is_LockOn() && !pFollowCam->Is_Lock_LookHeight())
+		{
+			pFollowCam->Lock_LookHeight();
+		}
+	}
+
 	if (m_pModelCom->Get_CurrAnimationFrame() < 35)
 		vDestPos = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position();
 
@@ -51,17 +63,6 @@ void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
 		//m_pStateMachineCom->Change_State(CStellia::STELLIA_JUMPSTAMP);
 	}
-
-	/* Camera */
-	//if (35 == m_pModelCom->Get_CurrAnimationFrame())
-	//{
-	//	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-	//	if (nullptr != pFollowCam && !pFollowCam->Is_Lock_LookHeight())
-	//	{
-	//		pFollowCam->Lock_LookHeight();
-	//	}
-	//}
-
 }
 
 void CStelliaState_JumpStamp::Exit_State()

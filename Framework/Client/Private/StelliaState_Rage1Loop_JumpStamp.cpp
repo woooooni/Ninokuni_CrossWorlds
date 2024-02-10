@@ -11,6 +11,8 @@
 #include "Effect_Manager.h"
 #include "Decal.h"
 
+#include "Camera_Group.h"
+
 CStelliaState_Rage1Loop_JumpStamp::CStelliaState_Rage1Loop_JumpStamp(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -34,6 +36,16 @@ void CStelliaState_Rage1Loop_JumpStamp::Enter_State(void* pArg)
 void CStelliaState_Rage1Loop_JumpStamp::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
+
+	/* Camera */
+	if (27 == m_pModelCom->Get_CurrAnimationFrame() && !m_pModelCom->Is_Tween())
+	{
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+		if (nullptr != pFollowCam && pFollowCam->Is_LockOn() && !pFollowCam->Is_Lock_LookHeight())
+		{
+			pFollowCam->Lock_LookHeight();
+		}
+	}
 
 	if (m_pModelCom->Get_CurrAnimationFrame() < 25)
 		vDestPos = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position();

@@ -19,7 +19,7 @@ public:
 	enum CAMERA_ACTION_TYPE { 
 		LOBBY, DOOR, TALK, WINDMILL, 
 		SWORDMAN_BURST, ENGINEER_BURST, DESTROYER_BURST, 
-		STADIUM, ENDING, WITCH_INVASION, WITCH_ROAR,
+		STADIUM, ENDING, WITCH_INVASION, WITCH_ROAR, WITCH_AWAY,
 		CAMERA_ACTION_END };
 
 public:
@@ -233,7 +233,16 @@ public:
 		LERP_VEC4_DESC tLookAtOffset = {};
 		const _float fOriginDist = 3.f;
 
+		_uint iCount = 0;
+
 	}ACTION_WITCH_ROAR_DEAC;
+
+	typedef struct tagWitchAwatDesc
+	{
+
+		class CGameObject* pWitchObject = nullptr;
+
+	}ACTION_WITCH_AWAY_DESC;
 
 private:
 	CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
@@ -270,6 +279,8 @@ public:
 	HRESULT Ready_Action_Witch_Roar(CGameObject* pGameObject);
 	HRESULT Start_Action_Witch_Roar();
 
+	HRESULT Start_Action_Witch_Away(CGameObject* pGameObject);
+
 	// 캐릭터 버스트 스킬 액션.
 	HRESULT Start_Action_SwordManBurst(class CTransform* pSwordManTransform);
 	HRESULT Start_Action_EngineerBurst(class CTransform* pEngineerTransform);
@@ -296,6 +307,7 @@ private:
 	void Tick_Criminal(_float fTimeDelta);
 	void Tick_Witch_Invasion(_float fTimeDelta);
 	void Tick_Witch_Roar(_float fTimeDelta);
+	void Tick_Witch_Away(_float fTimeDelta);
 
 	void Tick_SwordManBurst(_float fTimeDelta);
 	void Tick_EngineerBurst(_float fTimeDelta);
@@ -314,15 +326,17 @@ private:
 	_bool					m_bAction = false;
 	CAMERA_ACTION_TYPE		m_eCurActionType = CAMERA_ACTION_TYPE::CAMERA_ACTION_END;
 
-	ACTION_LOBBY_DESC		m_tActionLobbyDesc		= {};
-	ACTION_DOOR_DESC		m_tActionDoorDesc		= {};
-	ACTION_TALK_DESC		m_tActionTalkDesc		= {};
-	ACTION_WINDMILL_DESC	m_tActionWindMillDesc	= {};
-	ACTION_STADIUM_DESC		m_tActionStadiumDesc	= {};
-	ACTION_ENDING_DESC		m_tActionEndingDesc		= {};
-	ACTION_TALK_BACKUP_DESC m_tActionTalkBackUpDesc = {};
-	ACTION_WITCH_INVASION_DESC m_tActionWitchInvasionDesc = {};
-	ACTION_WITCH_ROAR_DEAC		m_tActionWitchRoarDesc = {};
+	ACTION_LOBBY_DESC			m_tActionLobbyDesc			= {};
+	ACTION_DOOR_DESC			m_tActionDoorDesc			= {};
+	ACTION_TALK_DESC			m_tActionTalkDesc			= {};
+	ACTION_WINDMILL_DESC		m_tActionWindMillDesc		= {};
+	ACTION_STADIUM_DESC			m_tActionStadiumDesc		= {};
+	ACTION_ENDING_DESC			m_tActionEndingDesc			= {};
+	ACTION_TALK_BACKUP_DESC		m_tActionTalkBackUpDesc		= {};
+	ACTION_WITCH_INVASION_DESC	m_tActionWitchInvasionDesc	= {};
+	ACTION_WITCH_ROAR_DEAC		m_tActionWitchRoarDesc		= {};
+	ACTION_WITCH_AWAY_DESC		m_tActionWitchAwayDesc		= {};
+
 	ACTION_SWORDMAN_BURST_DESC m_tActionSwordManBurstDesc	= {};
 	ACTION_ENGINEER_BURST_DESC m_tActionEngineerBurstDesc	= {};
 	ACTION_DESTROYER_BURST_DESC m_tActionDestroyerBurstDesc = {};
