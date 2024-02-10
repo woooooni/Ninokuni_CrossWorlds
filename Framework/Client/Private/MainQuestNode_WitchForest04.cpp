@@ -25,15 +25,15 @@ HRESULT CMainQuestNode_WitchForest04::Initialize()
 
 void CMainQuestNode_WitchForest04::Start()
 {
+	Vec4 vSpotPos = { 89.f, 1.5f, -9.7f, 1.f };
+	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
 	QuestDesc.strType = m_strQuestTag;
 	QuestDesc.strTitle = m_strQuestName;
 	QuestDesc.strContents = m_strQuestContent;
+	QuestDesc.bCreateSpot = true;
+	QuestDesc.vDestPosition = vSpotPos;
 	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
-//	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
-	Vec4 vSpotPos = { 89.f, 1.5f, -9.7f, 1.f };
-	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());

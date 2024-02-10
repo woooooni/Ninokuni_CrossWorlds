@@ -3,10 +3,9 @@
 #include "GameInstance.h"
 #include "UI_Manager.h"
 
-
 // FXTextureCom-> Alpha
 CUI_Announced::CUI_Announced(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_ANNNOUNCE_TYPE eType)
-	: CUI(pDevice, pContext, L"UI_Dialog_Portrait")
+	: CUI(pDevice, pContext, L"UI_Announced")
 	, m_eType(eType)
 {
 }
@@ -30,7 +29,7 @@ void CUI_Announced::Set_Active(_bool bActive, _int iMagicNum)
 	}
 	else
 	{
-
+		m_fTimeAcc = 0.f;
 	}
 
 	m_bActive = bActive;
@@ -77,6 +76,8 @@ void CUI_Announced::Tick(_float fTimeDelta)
 	{
 		if (ANNOUNCE_CAMERA == m_eType)
 			Tick_CameraWindow(fTimeDelta);
+		else if (ANNOUNCE_SKILL == m_eType)
+			Tick_SkillWindow(fTimeDelta);
 
 		__super::Tick(fTimeDelta);
 	}
@@ -91,6 +92,8 @@ void CUI_Announced::LateTick(_float fTimeDelta)
 	{
 		if (ANNOUNCE_CAMERA == m_eType)
 			LateTick_CameraWindow(fTimeDelta);
+		else if (ANNOUNCE_SKILL == m_eType)
+			LateTick_SkillWindow(fTimeDelta);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
@@ -126,9 +129,33 @@ void CUI_Announced::Tick_CameraWindow(_float fTimeDelta)
 	}
 }
 
+void CUI_Announced::Tick_SkillWindow(_float fTimeDelta)
+{
+	if (false == m_bAlpha)
+	{
+		m_fTimeAcc += fTimeDelta;
+
+		if (1.f < m_fTimeAcc)
+		{
+			m_fAlpha -= fTimeDelta;
+
+			if (m_fAlpha < 0.f)
+			{
+				m_fAlpha = 0.f;
+				m_bAlpha = true;
+				Set_Active(false);
+			}
+		}
+	}
+}
+
 void CUI_Announced::LateTick_CameraWindow(_float fTimeDelta)
 {
 
+}
+
+void CUI_Announced::LateTick_SkillWindow(_float fTimeDelta)
+{
 }
 
 HRESULT CUI_Announced::Ready_Components()
@@ -147,6 +174,16 @@ HRESULT CUI_Announced::Ready_Components()
 			TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
 			return E_FAIL;
 		break;
+
+	case UI_ANNNOUNCE_TYPE::ANNOUNCE_SKILL:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillPopup"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Effect_CameraPopup"),
+			TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
+			return E_FAIL;
+		break;
+
 	}
 
 	
@@ -186,6 +223,8 @@ HRESULT CUI_Announced::Bind_ShaderResources()
 	else
 	{
 		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+			return E_FAIL;
+		if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_FXTexture")))
 			return E_FAIL;
 	}
 

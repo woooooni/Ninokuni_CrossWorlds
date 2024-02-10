@@ -5,6 +5,13 @@
 BEGIN(Client)
 class CUI_Stellia_Timer final : public CUI
 {
+public:
+	typedef struct tagStelliaTimerDesc
+	{
+		_float fMaxSec;
+
+	} TIMER_DESC;
+
 protected:
 	CUI_Stellia_Timer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CUI_Stellia_Timer(const CUI_Stellia_Timer& rhs);

@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "UI_MapName_Text.h"
 #include "UI_Manager.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
 
 CUI_MapName_Text::CUI_MapName_Text(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_MapName_Text")
@@ -45,6 +47,9 @@ void CUI_MapName_Text::Tick(_float fTimeDelta)
 	if (MAPNAMETEXT_END == m_eType)
 		return;
 
+	if (CAMERA_TYPE::CUTSCENE_MAP == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+		return;
+
 	if (m_bActive)
 	{
 
@@ -54,6 +59,9 @@ void CUI_MapName_Text::Tick(_float fTimeDelta)
 
 void CUI_MapName_Text::LateTick(_float fTimeDelta)
 {
+	if (CAMERA_TYPE::CUTSCENE_MAP == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+		return;
+
 	if (m_bActive)
 	{
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);

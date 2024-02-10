@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "UI_MapName.h"
 #include "GameInstance.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
 
 CUI_MapName::CUI_MapName(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_MapName")
@@ -58,6 +60,9 @@ HRESULT CUI_MapName::Initialize(void* pArg)
 
 void CUI_MapName::Tick(_float fTimeDelta)
 {
+	if (CAMERA_TYPE::CUTSCENE_MAP == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+		return;
+
 	if (m_bActive)
 	{
 		m_fTimeAcc += fTimeDelta; // 프레임을 돌리기 위해 시간값을 누적한다.
@@ -97,6 +102,9 @@ void CUI_MapName::Tick(_float fTimeDelta)
 
 void CUI_MapName::LateTick(_float fTimeDelta)
 {
+	if (CAMERA_TYPE::CUTSCENE_MAP == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+		return;
+
 	if (m_bActive)
 	{
 		if (6 <= m_iTextureIndex) // MapName 프레임을 전부 돌렸으면

@@ -131,6 +131,10 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 						m_tInfo.fX = m_vCurrentPos.x;
 						m_tInfo.fY = m_vCurrentPos.y;
 
+						// Test Code
+						m_tInfo.fX = g_iWinSizeX * 0.5f;
+						m_tInfo.fY = g_iWinSizeY * 0.5f;
+
 						m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 							XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 					}
@@ -150,6 +154,10 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 
 						m_tInfo.fX = m_vCurrentPos.x;
 						m_tInfo.fY = m_vCurrentPos.y;
+
+						// Test Code
+						m_tInfo.fX = g_iWinSizeX * 0.5f;
+						m_tInfo.fY = g_iWinSizeY * 0.5f;
 
 						m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 							XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));

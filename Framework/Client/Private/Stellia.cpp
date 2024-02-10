@@ -87,6 +87,8 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "UI_Stellia_Timer.h"
+
 CStellia::CStellia(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CBoss(pDevice, pContext, strObjectTag, tStat)
 {
@@ -142,8 +144,13 @@ HRESULT CStellia::Initialize(void* pArg)
 			return E_FAIL;
 	}
 
-//	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Stellia_Timer"))))
+
+	// WH : Timer가 필요한 State의 Start에 넣어줌.
+//	CUI_Stellia_Timer::TIMER_DESC TimerDesc = {};
+//	TimerDesc.fMaxSec = 100.f; // 최대 초
+//	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Stellia_Timer"), &TimerDesc, nullptr)))
 //		return E_FAIL;
+	// Timer가 더 이상 필요 없을때는 Set_Dead 처리하세요
 
 	return S_OK;
 }
