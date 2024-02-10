@@ -25,6 +25,9 @@ public:
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
 
+public:
+	void Set_OffsetPosition(Vec4 vOffset) { m_vOffsetPos = vOffset; }
+
 private:
 	void Update_Rotaion(_float fTimeDelta);
 	void Fire_Bullet();
@@ -34,22 +37,15 @@ private:
 	_float m_fGenEffectTime = 0.5f;
 
 private:
-	_float m_fAccMove = 0.f;
-	_float m_fMoveTime = 3.f;
-	_bool m_bMove = true;
 
 	_float m_fAccFireBullet = 0.f;
 	_float m_fFireBulletTime = 0.05f;
 
 private:
-	Vec3 m_vOffsetPos = {};
+	Vec4 m_vOffsetPos = {};
 
 private:
 	Vec3 m_vRotationAngle = {};
-
-private:
-	class CGameObject* m_pTarget = nullptr;
-	class CTransform* m_pTargetTransform = nullptr;
 
 
 public:

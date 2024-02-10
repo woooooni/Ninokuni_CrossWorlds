@@ -40,6 +40,9 @@ public:
 public:
 	void Set_CameraTarget(_bool bTarget) { m_bCameraTarget = bTarget; }
 
+public:
+	void Set_Speed(_float fSpeed) { m_fMoveSpeed = fSpeed; }
+
 protected:
 	CModel* m_pModelCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };

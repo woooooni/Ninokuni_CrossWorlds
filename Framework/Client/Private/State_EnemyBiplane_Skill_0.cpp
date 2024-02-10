@@ -103,15 +103,16 @@ void CState_EnemyBiplane_Skill_0::Shoot_Missile()
     pMissileTransform->Set_Scale(vScale);
 
     CTransform* pTargetTransform = m_pTarget->Get_CharacterTransformCom();
-
     Vec3 vDir = pTargetTransform->Get_Position() - pMissileTransform->Get_Position();
+
+    Vec4 vRelativePosition = Vec4(pMissileTransform->Get_Position()) + pTargetTransform->Get_RelativeOffset(Vec4(0.f, 1.f, -1.f, 1.f));
+    pMissileTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vRelativePosition, 1.f));
 
     pMissileTransform->Rotation_Look(XMVector3Normalize(vDir));
     pMissileTransform->Rotation_Acc(XMVector3Normalize(pMissileTransform->Get_Right()), XMConvertToRadians(-90.f));
     pMissileTransform->Rotation_Acc(XMVector3Normalize(pMissileTransform->Get_Up()), m_iMissileCount * XMConvertToRadians(10.f));
 
-    Vec4 vRelativePosition = Vec4(pMissileTransform->Get_Position()) + pTargetTransform->Get_RelativeOffset(Vec4(m_iMissileCount, 1.f, -1.f, 1.f));
-    pMissileTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vRelativePosition, 1.f));
+    
 
     if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, pObject)))
     {

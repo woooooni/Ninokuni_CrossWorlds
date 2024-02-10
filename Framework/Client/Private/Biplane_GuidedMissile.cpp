@@ -87,7 +87,7 @@ void CBiplane_GuidedMissile::Tick(_float fTimeDelta)
 					Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 
 					Vec3 vAxis = XMVector3Cross(vLook, vDir);
-					vDir = XMVector3Normalize(pTargetTransform->Get_Position() - m_pTransformCom->Get_Position());
+					vDir = XMVector3Normalize((pTargetTransform->Get_Position() + XMVectorSet(0.f, 1.5f, 0.f, 0.f)) - m_pTransformCom->Get_Position());
 
 					m_pTransformCom->Rotation_Acc(vAxis, XMConvertToRadians(180.f) * fTimeDelta);
 				}

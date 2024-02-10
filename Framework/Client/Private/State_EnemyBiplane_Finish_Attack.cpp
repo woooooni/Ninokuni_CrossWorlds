@@ -11,6 +11,7 @@
 #include "Player.h"
 
 #include "Vehicle_Flying_EnemyBiplane.h"
+#include "Grandprix_Manager.h"
 
 CState_EnemyBiplane_Finish_Attack::CState_EnemyBiplane_Finish_Attack(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
@@ -63,7 +64,7 @@ void CState_EnemyBiplane_Finish_Attack::Tick_State(_float fTimeDelta)
 
 void CState_EnemyBiplane_Finish_Attack::Exit_State()
 {
-
+    CGrandprix_Manager::GetInstance()->Show_GoalObject();
 }
 
 

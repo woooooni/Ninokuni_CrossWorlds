@@ -134,8 +134,6 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 
 		__super::Tick(fTimeDelta);
 
-		if (0.f >= m_tStat.fCurHP)
-			CGrandprix_Manager::GetInstance()->Show_GoalObject();
 
 		if (true == m_bInfinite)
 		{
@@ -480,18 +478,29 @@ void CVehicle_Flying_EnemyBiplane::Update_RiderState()
 		if (nullptr == pStateCom)
 			return;
 
-		if (CVehicle::VEHICLE_STATE::VEHICLE_RUN == m_pStateCom->Get_CurrState() &&
-			CGrandprix_Enemy::ENEMY_STATE::FLYING_RUNSTART != pStateCom->Get_CurrState())
+		switch (m_pStateCom->Get_CurrState())
 		{
-			if (CGrandprix_Enemy::ENEMY_STATE::FLYING_RUN != pStateCom->Get_CurrState())
-				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGrandprix_Enemy::ENEMY_STATE::FLYING_RUN);
-		}
+		case CVehicle::VEHICLE_STATE::VEHICLE_ENTER:
+		case CVehicle::VEHICLE_STATE::VEHICLE_IDLE:
+			if (CGrandprix_Enemy::ENEMY_STATE::FLYING_STAND != pStateCom->Get_CurrState())
+			{
+				pStateCom->Change_State(CGrandprix_Enemy::ENEMY_STATE::FLYING_STAND);
+			}
+			break;
 
-		if (CVehicle::VEHICLE_STATE::VEHICLE_IDLE == m_pStateCom->Get_CurrState())
-		{
-			//if (CGrandprix_Enemy::ENEMY_STATE::FLYING_STAND != pStateCom->Get_CurrState() &&
-			//	CGrandprix_Enemy::ENEMY_STATE::FLYING_RUNSTART != pStateCom->Get_CurrState())
-			//	m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGrandprix_Enemy::ENEMY_STATE::FLYING_STAND);
+		case CVehicle::VEHICLE_STATE::VEHICLE_RUN:
+		case CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND:
+		case CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK:
+		case CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_0:
+		case CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_1:
+		case CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_SKILL_2:
+		case CVehicle::VEHICLE_STATE::VEHICLE_DEAD:
+			if (CGrandprix_Enemy::ENEMY_STATE::FLYING_RUN != pStateCom->Get_CurrState())
+			{
+				m_pStateCom->Change_State(CGrandprix_Enemy::ENEMY_STATE::FLYING_RUN);
+			}
+			break;
+
 		}
 	}
 }

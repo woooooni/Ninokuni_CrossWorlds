@@ -32,6 +32,7 @@ HRESULT CState_EnemyBiplane_Skill_1::Initialize(const list<wstring>& AnimationLi
 
     m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 
+    m_iShootBallCount = -2;
     return S_OK;
 }
 
@@ -43,8 +44,12 @@ void CState_EnemyBiplane_Skill_1::Enter_State(void* pArg)
 
 void CState_EnemyBiplane_Skill_1::Tick_State(_float fTimeDelta)
 {
-    for (_int i = 0; i < 3; ++i)
+    for (_int i = m_iShootBallCount; i <= 2; ++i)
+    {
         Shoot_Bullet_Ball();
+        m_iShootBallCount++;
+    }
+        
 
     m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND);
     return;
@@ -52,7 +57,7 @@ void CState_EnemyBiplane_Skill_1::Tick_State(_float fTimeDelta)
 
 void CState_EnemyBiplane_Skill_1::Exit_State()
 {
-    
+    m_iShootBallCount = -2;
 }
 
 
@@ -75,6 +80,14 @@ void CState_EnemyBiplane_Skill_1::Shoot_Bullet_Ball()
         return;
     }
 
+    CEnemy_Biplane_BulletBall* pBulletBall = dynamic_cast<CEnemy_Biplane_BulletBall*>(pProjectile);
+
+    if (nullptr == pBulletBall)
+    {
+        MSG_BOX("pProjectile Cast Failed. : CState_EnemyBiplane_Skill_1::Shoot_Bullet_Ball()");
+        return;
+    }
+
     CTransform* pProjectileTransform = pProjectile->Get_Component_Transform();
     if (nullptr == pProjectileTransform)
     {
@@ -85,6 +98,8 @@ void CState_EnemyBiplane_Skill_1::Shoot_Bullet_Ball()
     Vec3 vScale = pProjectileTransform->Get_Scale();
     pProjectileTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
     pProjectileTransform->Set_Scale(vScale);
+
+    pBulletBall->Set_OffsetPosition(Vec4(m_iShootBallCount, 1.5f, 2.f, 1.f));
 }
 
 CState_EnemyBiplane_Skill_1* CState_EnemyBiplane_Skill_1::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

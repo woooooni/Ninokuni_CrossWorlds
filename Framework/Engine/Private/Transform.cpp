@@ -121,7 +121,7 @@ void CTransform::Set_Look(_vector vState)
 
 void CTransform::Set_Position(_vector vState)
 {
-	Set_State(STATE::STATE_POSITION, vState);
+	Set_State(STATE::STATE_POSITION, XMVectorSetW(vState, 1.f));
 }
 
 Vec4 CTransform::Get_LookAt()

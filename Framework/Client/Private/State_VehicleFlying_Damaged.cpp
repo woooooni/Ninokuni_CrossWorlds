@@ -46,6 +46,13 @@ void CState_VehicleFlying_Damaged::Enter_State(void* pArg)
     m_pFlying_Vehicle->Set_Infinite(true, 999.f);
 
     CUIMinigame_Manager::GetInstance()->On_DamagedVignette();
+
+
+    CGameObject* pRider = m_pFlying_Vehicle->Get_Rider();
+    if (nullptr != pRider)
+    {
+        pRider->Get_Component_StateMachine()->Change_State(CCharacter::STATE::FLYING_STAND);
+    }
 }
 
 void CState_VehicleFlying_Damaged::Tick_State(_float fTimeDelta)

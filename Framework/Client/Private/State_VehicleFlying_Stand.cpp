@@ -46,6 +46,7 @@ void CState_VehicleFlying_Stand::Enter_State(void* pArg)
     m_pFollowCamera->Set_CanInput(true);
     m_pFollowCamera->Set_MinMaxLimitY(0.7f, 2.1f);
 
+
     CVehicle_Flying_Biplane* pBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pVehicle);
     if (nullptr != pBiplane)
     {
@@ -61,7 +62,12 @@ void CState_VehicleFlying_Stand::Enter_State(void* pArg)
             TrailDesc.vDistortion = Vec2(0.f, 0.f);
             pTrail->Set_TrailDesc(TrailDesc);
         }
-        
+    }
+
+    CGameObject* pRider = m_pVehicle_Flying_Biplane->Get_Rider();
+    if (nullptr != pRider)
+    {
+        pRider->Get_Component_StateMachine()->Change_State(CCharacter::STATE::FLYING_STAND);
     }
     
 }

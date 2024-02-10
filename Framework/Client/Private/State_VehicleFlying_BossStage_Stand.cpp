@@ -41,7 +41,7 @@ HRESULT CState_VehicleFlying_BossStage_Stand::Initialize(const list<wstring>& An
 
 void CState_VehicleFlying_BossStage_Stand::Enter_State(void* pArg)
 {
-    CUI_Manager::GetInstance()->Hide_MouseCursor(false);
+    CUI_Manager::GetInstance()->Hide_MouseCursor(true);
     
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
@@ -49,7 +49,7 @@ void CState_VehicleFlying_BossStage_Stand::Enter_State(void* pArg)
     CVehicle_Flying_Biplane* pBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pVehicle);
     if (nullptr != pBiplane)
     {
-        pBiplane->Stop_Trail();
+        pBiplane->Start_Trail();
 
         for (_uint i = 0; i < CVehicle_Flying_Biplane::BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
         {
@@ -61,7 +61,12 @@ void CState_VehicleFlying_BossStage_Stand::Enter_State(void* pArg)
             TrailDesc.vDistortion = Vec2(0.f, 0.f);
             pTrail->Set_TrailDesc(TrailDesc);
         }
-        
+    }
+
+    CGameObject* pRider = m_pVehicle_Flying_Biplane->Get_Rider();
+    if (nullptr != pRider)
+    {
+        pRider->Get_Component_StateMachine()->Change_State(CCharacter::STATE::FLYING_RUN);
     }
     
 }
@@ -84,14 +89,14 @@ void CState_VehicleFlying_BossStage_Stand::Tick_State(_float fTimeDelta)
         return;
     }
 
-    if (KEY_TAP(KEY::NUM_2))
+    /*if (KEY_TAP(KEY::NUM_2))
     {
         m_pStateMachineCom->Change_State(CVehicle::VEHICLE_RUSH);
 
         CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_RUSH);
         CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_RUSH);
         return;
-    }
+    }*/
 
     if (KEY_TAP(KEY::NUM_3))
     {
@@ -102,20 +107,14 @@ void CState_VehicleFlying_BossStage_Stand::Tick_State(_float fTimeDelta)
 
     if (KEY_HOLD(KEY::Q))
     {
-        _vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
-        _vector vLook = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
-        _float fDot = XMVectorGetX(XMVector3Dot(vRight, vLook));
-
-        m_pTransformCom->Rotation_Acc(vRight, acos(fDot) * fTimeDelta * -1.f);
+        m_pVehicle_Flying_Biplane->Look_For_Target();
+        m_pTransformCom->Move(1.f * XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f)), 5.f, fTimeDelta);
     }
 
     if (KEY_HOLD(KEY::E))
     {
-        _vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
-        _vector vLook = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
-        _float fDot = XMVectorGetX(XMVector3Dot(vRight, vLook));
-
-        m_pTransformCom->Rotation_Acc(vRight, acos(fDot) * fTimeDelta);
+        m_pVehicle_Flying_Biplane->Look_For_Target();
+        m_pTransformCom->Move(-1.f * XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f)), 5.f, fTimeDelta);
     }
 
     if (KEY_HOLD(KEY::W))
@@ -125,7 +124,7 @@ void CState_VehicleFlying_BossStage_Stand::Tick_State(_float fTimeDelta)
         {
             Vec4 vTargetPos = m_pVehicle_Flying_Biplane->Get_Target()->Get_Component_Transform()->Get_Position();
             Vec3 vDir = vTargetPos - Vec4(m_pTransformCom->Get_Position());
-            if (vDir.Length() > 2.f)
+            if (vDir.Length() > 20.f)
                 m_pTransformCom->Move(1.f * XMVector3Normalize(m_pTransformCom->Get_Look()), 5.f, fTimeDelta);
         }
         else        
@@ -148,6 +147,26 @@ void CState_VehicleFlying_BossStage_Stand::Tick_State(_float fTimeDelta)
     {
         m_pVehicle_Flying_Biplane->Look_For_Target();
         m_pTransformCom->Move(1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 5.f, fTimeDelta);
+    }
+
+    if (false == m_bShoot)
+    {
+        m_fTimeAcc += fTimeDelta;
+
+        if (0.1f < m_fTimeAcc)
+        {
+            m_bShoot = true;
+            m_fTimeAcc = 0.f;
+        }
+    }
+
+    if (KEY_HOLD(KEY::LBTN))
+    {
+        if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH)
+        {
+            if (true == m_bShoot)
+                Shoot();
+        }
     }
 
 

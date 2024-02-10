@@ -56,8 +56,16 @@ void CState_VehicleFlying_Backflip::Enter_State(void* pArg)
             TrailDesc.vDistortion = Vec2(0.f, 0.f);
             pTrail->Set_TrailDesc(TrailDesc);
         }
+
+        CGameObject* pRider = pBiplane->Get_Rider();
+        if (nullptr != pRider)
+        {
+            pRider->Get_Component_StateMachine()->Change_State(CCharacter::STATE::FLYING_STAND);
+        }
         
     }
+
+    
     
     m_bFinished = false;
     m_fTimeAcc = 0.f;
