@@ -29,11 +29,11 @@ void CStelliaState_CombatIdle::Enter_State(void* pArg)
 		return;
 	}
 
-	if (false == m_bFirst)
-	{
-		m_bFirst = true;
-		CUI_Manager::GetInstance()->OnOff_MiniMap(false);
-	}
+	//if (false == m_bFirst)
+	//{
+	//	m_bFirst = true;
+	//	CUI_Manager::GetInstance()->OnOff_MiniMap(false);
+	//}
 
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Stand02"));
 

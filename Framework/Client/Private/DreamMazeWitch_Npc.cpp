@@ -14,6 +14,16 @@
 #include "NpcDMWState_Following.h"
 #include "NpcDMWState_Attack.h"
 
+#include "NpcDMWState_VulcanGun_Ready.h"
+#include "NpcDMWState_VulcanGun_Attack.h"
+#include "NpcDMWState_VulcanGun_End.h"
+
+#include "NpcDMWState_Charge_Ready.h"
+#include "NpcDMWState_Charge.h"
+#include "NpcDMWState_Charge_End.h"
+
+#include "NpcDMWState_Rage01QuadBlackHole.h"
+
 #include "NpcDMWState_Following_Rage02.h"
 
 #include "NpcDMWState_Following_Rage03.h"
@@ -205,6 +215,37 @@ HRESULT CDreamMazeWitch_Npc::Ready_States()
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Attack02");
 	m_pStateCom->Add_State(WITCHSTATE_BATTLE_ATTACK, CNpcDMWState_Attack::Create(m_pStateCom, strAnimationName));
+	
+	// VulcanGun
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Stand");
+	m_pStateCom->Add_State(WITCHSTATE_BATTLE_VULCAN_READY, CNpcDMWState_VulcanGun_Ready::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Skill06");
+	m_pStateCom->Add_State(WITCHSTATE_BATTLE_VULCAN_ATTACK, CNpcDMWState_VulcanGun_Attack::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Stand");
+	m_pStateCom->Add_State(WITCHSTATE_BATTLE_VULCAN_END, CNpcDMWState_VulcanGun_End::Create(m_pStateCom, strAnimationName));
+
+	// Charge
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Stand");
+	m_pStateCom->Add_State(WITCHSTATE_BATTLE_CHARGE_READY, CNpcDMWState_Charge_Ready::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Skill03");
+	m_pStateCom->Add_State(WITCHSTATE_BATTLE_CHARGE, CNpcDMWState_Charge::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Stand");
+	m_pStateCom->Add_State(WITCHSTATE_BATTLE_CHARGE_END, CNpcDMWState_Charge_End::Create(m_pStateCom, strAnimationName));
+
+	// Rage1
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Skill04");
+	m_pStateCom->Add_State(WITCHSTATE_BATTLE_QUADBLACKHOLE, CNpcDMWState_Rage01QuadBlackHole::Create(m_pStateCom, strAnimationName));
 
 	// Rage2
 	strAnimationName.clear();
@@ -289,6 +330,7 @@ void CDreamMazeWitch_Npc::Following_Stellia(_float fTimeDelta)
 			if (m_tRage03Lerp.bActive)
 			{
 				Vec4 vCurPos = m_tRage03Lerp.Update_Lerp(fTimeDelta);
+				vCurPos.y = 5.f;
 				m_pTransformCom->LookAt_ForLandObject(CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform()->Get_Position());
 				m_pTransformCom->Set_Position(vCurPos);
 			}

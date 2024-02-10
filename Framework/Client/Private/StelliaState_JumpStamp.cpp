@@ -22,7 +22,7 @@ HRESULT CStelliaState_JumpStamp::Initialize(const list<wstring>& AnimationList)
 void CStelliaState_JumpStamp::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill02_New"));
-
+	m_bIsSetY = false;
 	// Effect Create
 	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_JumpStamp"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
@@ -31,22 +31,66 @@ void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pModelCom->Get_CurrAnimationFrame() < 35)
-		vDestPos = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position();
+	//if (m_pModelCom->Get_CurrAnimationFrame() < 35)
+	//	vDestPos = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position();
 
-	else if (m_pModelCom->Get_CurrAnimationFrame() >= 35 && m_pModelCom->Get_CurrAnimationFrame() <= 80)
+	// 공중에 고정시키기 위함(콜라이더 위로 올리기 위함)
+	if (m_pModelCom->Get_CurrAnimationFrame() == 35)
 	{
+		if (!m_bIsSetY)
+		{
+			Vec4 vStelliaPos = m_pTransformCom->Get_Position();
+			m_pStellia->Get_Component_Rigidbody()->Set_Use_Gravity(false);
+			vStelliaPos.y = 50.f;
+			m_pTransformCom->Set_Position(vStelliaPos);
+			m_pStellia->Get_Component<CPhysX_Controller>(TEXT("Com_Controller"))->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
+			m_bIsSetY = true;
+		}
+	}
+
+	// 다시 내려오기 위함(콜라이더 원상복귀)
+	if (m_pModelCom->Get_CurrAnimationFrame() == 80)
+	{
+		if (m_bIsSetY)
+		{
+			Vec4 vStelliaPos = m_pTransformCom->Get_Position();
+			m_pStellia->Get_Component_Rigidbody()->Set_Use_Gravity(true);
+			vStelliaPos.y = 0.f;
+			m_pTransformCom->Set_Position(vStelliaPos);
+			m_pStellia->Get_Component<CPhysX_Controller>(TEXT("Com_Controller"))->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
+			m_bIsSetY = false;
+		}
+	}
+
+	if (m_pModelCom->Get_CurrAnimationFrame() == 50)
+	{
+		vDestPos = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position();
 		m_pTransformCom->LookAt_ForLandObject(vDestPos);
 
 		Vec4 vFinalPosition = vDestPos;
 		Vec3 vReverseDir = XMVector3Normalize(m_pTransformCom->Get_Position() - vDestPos);
 		vFinalPosition = vFinalPosition + vReverseDir * 3.f;
 
-		XMVECTOR vCurVector = XMVectorLerp(m_pTransformCom->Get_Position(), vFinalPosition, fTimeDelta / 0.35f);
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCurVector);
+		// XMVECTOR vCurVector = XMVectorLerp(m_pTransformCom->Get_Position(), vFinalPosition, fTimeDelta / 0.35f);
+		m_pTransformCom->Set_Position(vFinalPosition);
+		m_pStellia->Get_Component<CPhysX_Controller>(TEXT("Com_Controller"))->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
+	
+		int i = 0;
 	}
 
-	else if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
+	//if (m_pModelCom->Get_CurrAnimationFrame() >= 35 && m_pModelCom->Get_CurrAnimationFrame() <= 80)
+	//{
+	//	m_pTransformCom->LookAt_ForLandObject(vDestPos);
+	//
+	//	Vec4 vFinalPosition = vDestPos;
+	//	Vec3 vReverseDir = XMVector3Normalize(m_pTransformCom->Get_Position() - vDestPos);
+	//	vFinalPosition = vFinalPosition + vReverseDir * 3.f;
+	//
+	//	XMVECTOR vCurVector = XMVectorLerp(m_pTransformCom->Get_Position(), vFinalPosition, fTimeDelta / 0.35f);
+	//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCurVector);
+	//}
+
+	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
 		//m_pStateMachineCom->Change_State(CStellia::STELLIA_JUMPSTAMP);

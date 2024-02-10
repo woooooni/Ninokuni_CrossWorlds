@@ -54,7 +54,7 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle06::Tick(const _float& fTimeDelta)
 				if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 				{
 					m_bIsFadeOut = true;
-					CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 2.f);
+					CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
 				}
 			}
 		}
@@ -62,7 +62,7 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle06::Tick(const _float& fTimeDelta)
 		if (m_bIsFadeOut && CUI_Manager::GetInstance()->Is_FadeFinished())
 		{
 			m_bIsClear = true;
-			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 2.f);
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
 
 			return NODE_STATE::NODE_FAIL;
 		}

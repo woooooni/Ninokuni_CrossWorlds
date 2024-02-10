@@ -39,8 +39,8 @@ void CStelliaState_Rage3ChargeBreak::Tick_State(_float fTimeDelta)
 	{
 		Vec4 vCenterToStellia = m_pStellia->Get_OriginPos() - (Vec4)m_pTransformCom->Get_Position();
 
-		cout << "Speed " << fCurSpeed << endl;
-		cout << "Dist " << fabs(vCenterToStellia.Length()) << endl;
+		//cout << "Speed " << fCurSpeed << endl;
+		//cout << "Dist " << fabs(vCenterToStellia.Length()) << endl;
 
 		if (fabs(vCenterToStellia.Length()) <= m_fAroundDist)
 			m_pTransformCom->Move(m_pTransformCom->Get_Look(), fCurSpeed, fTimeDelta);

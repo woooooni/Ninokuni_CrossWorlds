@@ -42,10 +42,18 @@ void CStelliaState_Rage3Start_FadeIn::Enter_State(void* pArg)
 
 void CStelliaState_Rage3Start_FadeIn::Tick_State(_float fTimeDelta)
 {
-	if (CUI_Manager::GetInstance()->Is_FadeFinished())
+	if (GI->Get_CurrentLevel() != LEVELID::LEVEL_TOOL)
+	{
+		if (CUI_Manager::GetInstance()->Is_FadeFinished())
+		{
+			m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE3TURN_AROUND);
+		}
+	}
+	else
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE3TURN_AROUND);
 	}
+
 }
 
 void CStelliaState_Rage3Start_FadeIn::Exit_State()

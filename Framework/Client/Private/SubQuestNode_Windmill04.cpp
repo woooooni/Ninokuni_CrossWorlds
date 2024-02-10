@@ -27,7 +27,7 @@ HRESULT CSubQuestNode_Windmill04::Initialize()
 
 	m_strNextQuestTag = TEXT("[서브]");
 	m_strNextQuestName = TEXT("풍차 수리");
-	m_strNextQuestContent = TEXT("괴짜 소녀를 찾기");
+	m_strNextQuestContent = TEXT("기계 덕후를 찾기");
 
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/02. SubQuest02_Verde_WindmillRepair/SubQuest_Windmill04.json");
 
@@ -176,7 +176,7 @@ void CSubQuestNode_Windmill04::TalkEvent()
 	case 6:
 		// CSound_Manager::GetInstance()->Play_Sound(TEXT("06_KuuSay_NeverDont.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pBeard->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pBeard->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("c31106000_p010_100110_idl"));
+		m_pBeard->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("c31106000_p200_970003_std"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;

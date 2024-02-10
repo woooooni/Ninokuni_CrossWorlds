@@ -174,10 +174,10 @@ void CStellia::Tick(_float fTimeDelta)
 	//}
 
 	/* юс╫ц */
-	if (KEY_TAP(KEY::C))
-	{
-		m_pStateCom->Change_State(STELLIA_RAGE3TURN_AROUND);
-	}
+	//if (KEY_TAP(KEY::C))
+	//{
+	//	m_pStateCom->Change_State(STELLIA_RAGE3TURN_AROUND);
+	//}
 	if (KEY_TAP(KEY::X))
 	{
 		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
@@ -689,7 +689,7 @@ HRESULT CStellia::Ready_States()
 	m_pStateCom->Add_State(STELLIA_DEAD, CStelliaState_Dead::Create(m_pStateCom, strAnimationName));
 
 	m_pStateCom->Change_State(STELLIA_SPAWN);
-	//m_pStateCom->Change_State(STELLIA_RAGE3START_FADEIN);
+	// m_pStateCom->Change_State(STELLIA_COMBATIDLE);
 
 	return S_OK;
 }

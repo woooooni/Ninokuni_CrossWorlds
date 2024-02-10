@@ -43,6 +43,21 @@ void CNpcDMWState_Attack::Tick_State(_float fTimeDelta)
 
 	if (CGame_Manager::GetInstance()->Get_Player()->Get_Character() != nullptr)
 	{
+		/* 우선 순위 스킬들 */
+		// 스텔리아가 점프 스탬프라면
+		if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_JUMPSTAMP &&
+			m_pStellia->Get_Component_Model()->Get_CurrAnimationFrame() < 10)
+		{
+			m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_VULCAN_READY);
+		}
+		// 스텔리아가 차지 레디 상태라면
+		if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_CHARGE &&
+			m_pStellia->Get_Component_Model()->Get_CurrAnimationFrame() < 10)
+		{
+			m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_CHARGE_READY);
+		}
+
+		/* 우선 순위 스킬이 아니라면 */
 		Vec4 vPlayerPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform()->Get_Position();
 		m_pTransformCom->LookAt_ForLandObject(vPlayerPos);
 

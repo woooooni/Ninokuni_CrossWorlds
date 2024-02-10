@@ -4,11 +4,11 @@
 
 BEGIN(Client)
 
-class CNpcDMWState_VulcanGun_End final : public CNpcDMWState_Base
+class CNpcDMWState_Charge_Ready final : public CNpcDMWState_Base
 {
 private:
-	CNpcDMWState_VulcanGun_End(CStateMachine* pStateMachine);
-	virtual ~CNpcDMWState_VulcanGun_End() = default;
+	CNpcDMWState_Charge_Ready(CStateMachine* pStateMachine);
+	virtual ~CNpcDMWState_Charge_Ready() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -21,19 +21,17 @@ public:
 private:
 	_bool m_bIsMove = false;
 	Vec4 m_vDestPos = {};
-
-	_bool m_bIsUp = false;
-	LERP_FLOAT_DESC m_tUpLerp = {};
-	_float m_fUpTime = 0.f;
-	_float m_fDestY = 0.f;
+	_float m_fDist = 0.f;
 
 	LERP_VEC4_DESC m_tMoveLerp = {};
 	_float m_fMoveTime = 0.f;
 
-
+	_bool m_bIsDown = false;
+	LERP_FLOAT_DESC m_tDownLerp = {};
+	_float m_fDownTime = 0.f;
 
 public:
-	static CNpcDMWState_VulcanGun_End* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CNpcDMWState_Charge_Ready* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 

@@ -19,7 +19,7 @@ HRESULT CStelliaState_Rage3ClawEndCharge::Initialize(const list<wstring>& Animat
 {
 	__super::Initialize(AnimationList);
 
-	m_fAccChargeTime = 0.5f;
+	m_fMinChargeLength = 6.f;
 
 	return S_OK;
 }
@@ -27,15 +27,21 @@ HRESULT CStelliaState_Rage3ClawEndCharge::Initialize(const list<wstring>& Animat
 void CStelliaState_Rage3ClawEndCharge::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill06_New_Loop"));
+
+	m_vStartPos = m_pTransformCom->Get_Position();
 }
 
 void CStelliaState_Rage3ClawEndCharge::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	// 최소 질주 거리 계산(시작하자마자 브레이크 밟는거 방지)
+	Vec4 vCurPos = (Vec4)m_pTransformCom->Get_Position() - m_vStartPos;
+	m_fCurChargeLength = fabs(vCurPos.Length());
+
 	// 스텔리아가 다시 AroundDist 까지 도달하면 돈다.
 	Vec4 vCenterToStellia = m_pStellia->Get_OriginPos() - (Vec4)m_pTransformCom->Get_Position();
-	if (fabs(vCenterToStellia.Length()) >= m_fAroundDist - 5.f && m_fAccChargeTime >= m_fChargeTime)
+	if (fabs(vCenterToStellia.Length()) >= m_fAroundDist - 5.f && m_fCurChargeLength > m_fMinChargeLength)
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE3CLAW_ENDBREAK);
 	}

@@ -37,14 +37,6 @@ void CNpcDMWState_VulcanGun_Attack::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pStellia != nullptr)
-	{
-		if (m_pStellia->Get_Component_Model()->Get_CurrAnimationFrame() > 45)
-		{
-			m_pStellia->Get_Component_Model()->Set_Stop_Animation(true);
-		}
-	}
-
 	// 15프레임 마다
 	if (!m_bIsAttack && m_pModelCom->Get_CurrAnimationFrame() == 40 + (m_iAtkCount * 15))
 	{
@@ -60,7 +52,7 @@ void CNpcDMWState_VulcanGun_Attack::Tick_State(_float fTimeDelta)
 		}
 
 		CTransform* pBulletTransform = pBullet->Get_Component_Transform();
-
+		vBulletPos.y += .5f;
 		pBulletTransform->Set_Position(vBulletPos);
 		pBulletTransform->Set_Look(vBulletLook);
 
@@ -74,7 +66,7 @@ void CNpcDMWState_VulcanGun_Attack::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_FOLLOWING);
+		m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_VULCAN_END);
 		if (m_pStellia != nullptr)
 		{
 			m_pStellia->Get_Component_Model()->Set_Stop_Animation(false);

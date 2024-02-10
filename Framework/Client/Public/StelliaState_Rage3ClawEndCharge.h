@@ -19,8 +19,10 @@ public:
 	virtual void Exit_State();
 
 private:
-	_float m_fAccChargeTime = 0.f;
-	_float m_fChargeTime = 0.f;
+	// 시작하자마자 브레이크 밟는거 방지
+	Vec4 m_vStartPos;
+	_float m_fCurChargeLength = 0.f;
+	_float m_fMinChargeLength = 0.f;
 
 public:
 	static CStelliaState_Rage3ClawEndCharge* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);

@@ -30,10 +30,12 @@ private:
 	_float m_fAccShakeTime = 0.f;
 	_float m_fShakeTime = 0.f;
 
-	// 시작 당시에는 브레이크 조건 거리이기 때문에 방지하기 위함.
 	_int m_iBreakCount = 0;
-	_float m_fAccChargeTime = 0.f;
-	_float m_fChargeTime = 0.f;
+
+	// 시작하자마자 브레이크 밟는거 방지
+	Vec4 m_vStartPos;
+	_float m_fCurChargeLength = 0.f;
+	_float m_fMinChargeLength = 0.f;
 
 public:
 	static CStelliaState_Rage3Charge* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);

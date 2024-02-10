@@ -20,9 +20,10 @@ HRESULT CBaobam_WaterNode_Dead::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC*
 
 void CBaobam_WaterNode_Dead::Start()
 {
-	if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD))
+	if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD) ||
+		dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_AIR))
 	{
-		m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_KnockDown"));
+		// m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_KnockDown"));
 		m_tBTMonsterDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
 			-m_tBTMonsterDesc.pOwnerTransform->Get_Look()
 			, dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Stat().fAirDeadVelocity, false);
@@ -35,28 +36,40 @@ void CBaobam_WaterNode_Dead::Start()
 
 CBTNode::NODE_STATE CBaobam_WaterNode_Dead::Tick(const _float& fTimeDelta)
 {
-
-	if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD))
+	if (!m_bIsDead)
 	{
-		if (m_tBTMonsterDesc.pOwnerModel->Get_CurrAnimationFrame() >= 60 &&
-			m_tBTMonsterDesc.pOwnerModel->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_Baobam_Water.ao|BaoBam_KnockDown"))
+		if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD) ||
+			dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_AIR))
 		{
-			m_tBTMonsterDesc.pOwnerModel->Set_Stop_Animation(true);
-			m_fTime += fTimeDelta;
+			if (m_tBTMonsterDesc.pOwnerModel->Get_CurrAnimationFrame() >= 60 &&
+				m_tBTMonsterDesc.pOwnerModel->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_Baobam_Water.ao|BaoBam_KnockDown"))
+			{
+				Vec4 vOwnerPos = m_tBTMonsterDesc.pOwnerTransform->Get_Position();
 
-			if (m_fTime > m_fBlowDeadTime)
+				if (m_tBTMonsterDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Is_Ground() ||
+					vOwnerPos.y < 4.3f)
+				{
+					m_tBTMonsterDesc.pOwnerModel->Set_Stop_Animation(true);
+					m_fTime += fTimeDelta;
+
+					if (m_fTime > m_fBlowDeadTime)
+					{
+						m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
+						m_bIsDead = true;
+					}
+				}
+			}
+		}
+
+		else
+		{
+			if (m_tBTMonsterDesc.pOwnerModel->Is_Finish() && !m_tBTMonsterDesc.pOwnerModel->Is_Tween())
 			{
 				m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
+				m_bIsDead = true;
 			}
 		}
 	}
-
-	else
-	{
-		if(m_tBTMonsterDesc.pOwnerModel->Is_Finish() && !m_tBTMonsterDesc.pOwnerModel->Is_Tween())
-			m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
-	}
-
 
 	return NODE_STATE::NODE_RUNNING;
 }

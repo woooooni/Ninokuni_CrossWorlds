@@ -20,6 +20,7 @@ public:
 
 private:
 	_vector vDestPos = {};
+	_bool m_bIsSetY = false;
 
 public:
 	static CStelliaState_JumpStamp* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);

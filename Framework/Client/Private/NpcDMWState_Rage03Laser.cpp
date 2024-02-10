@@ -57,9 +57,9 @@ void CNpcDMWState_Rage03Laser::Tick_State(_float fTimeDelta)
 			else
 			{
 				Vec4 vLaserPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform()->Get_Position();
-				vLaserPos.x += GI->RandomFloat(-10.f, 10.f);
+				vLaserPos.x += GI->RandomFloat(-15.f, 15.f);
 				vLaserPos.y += 0.f;
-				vLaserPos.z += GI->RandomFloat(-10.f, 10.f);
+				vLaserPos.z += GI->RandomFloat(-15.f, 15.f);
 
 				CGameObject* pLaser = nullptr;
 

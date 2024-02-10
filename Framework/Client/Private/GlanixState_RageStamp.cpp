@@ -72,8 +72,26 @@ void CGlanixState_RageStamp::Tick_State(_float fTimeDelta)
 		if (false == m_bDownEffectCreate)
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_RageStamp"), m_pTransformCom->Get_WorldMatrix(), m_pGlanix);
+
+			_float4x4 matCrack = {};
+			matCrack._11 = m_pGlanix->Get_PillarsController()->Get_DecalSize();
+			matCrack._22 = 1.f;
+			matCrack._33 = m_pGlanix->Get_PillarsController()->Get_DecalSize();
+
+			matCrack._41 = m_pGlanix->Get_OriginPos().x;
+			matCrack._42 = 2.f;
+			matCrack._43 = m_pGlanix->Get_OriginPos().z;
+			matCrack._44 = 1.f;
+
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_Rage01_Stamp"),
+				XMLoadFloat4x4(&matCrack), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f));
+		
 			m_bDownEffectCreate = true;
 		}
+
+		// Warning µ¥Ä® Á¦°Å
+		if(m_pGlanix->Get_PillarsController() != nullptr)
+			m_pGlanix->Get_PillarsController()->PillarControllerFree();
 	}
 
 	else if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())

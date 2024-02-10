@@ -12,10 +12,10 @@ class CVfx_Stellia_Skill_JumpStamp final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_D_WARNING,
-
 		TYPE_E_RISING_00,
 		TYPE_E_RISING_01,
+
+		TYPE_D_WARNING,
 
 		TYPE_V_DELETE,
 

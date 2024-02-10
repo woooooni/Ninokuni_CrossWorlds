@@ -37,35 +37,56 @@ void CNpcDMWState_Following::Tick_State(_float fTimeDelta)
 
 	if (m_pWitch->Get_IsBattle())
 	{
+
 		if (m_pStellia != nullptr)
 		{
+			// 스텔리아가 점프 스탬프라면
 			if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_JUMPSTAMP &&
-				m_pStellia->Get_Component_Model()->Get_CurrAnimationFrame() > 25)
+				m_pStellia->Get_Component_Model()->Get_CurrAnimationFrame() < 10)
 			{
 				m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_VULCAN_READY);
 			}
-			else
+			// 스텔리아가 차지 레디 상태라면
+			if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_CHARGE &&
+				m_pStellia->Get_Component_Model()->Get_CurrAnimationFrame() < 10)
 			{
-				__super::Following_Stellia(fTimeDelta);
+				m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_CHARGE_READY);
+			}
 
-				if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE1START &&
-					m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE2START &&
-					m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE3START_FADEOUT &&
-					m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE1LOOP_EXPLOSION &&
-					m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_JUMPSTAMP)
+			// 스텔리아가 Rage01 중 idle 상태라면
+			if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE1LOOP_IDLE)
+			{
+				m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_QUADBLACKHOLE);
+			}
+
+			// Rage Following로 전환
+			if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE2START)
+			{
+				m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_FOLLOWING_RAGE02);
+			}
+			else if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE3START_FADEIN)
+			{
+				m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_FOLLOWING_RAGE03);
+			}
+
+			// 일반
+			__super::Following_Stellia(fTimeDelta);
+
+			if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_CHASE ||
+				m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_COMBATIDLE ||
+				m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_TURN)
+			{
+				m_fAccTime += fTimeDelta;
+				if (m_fAccTime >= m_fAttackCoolTime)
 				{
-					m_fAccTime += fTimeDelta;
-					if (m_fAccTime >= m_fAttackCoolTime)
-					{
-						m_fAccTime = m_fAttackCoolTime - m_fAccTime;
+					m_fAccTime = m_fAttackCoolTime - m_fAccTime;
 
-						if (m_iAtkIndex >= m_vecAtkState.size())
-							m_iAtkIndex = 0;
+					if (m_iAtkIndex >= m_vecAtkState.size())
+						m_iAtkIndex = 0;
 
-						m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
+					m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
 
-						//m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
-					}
+					//m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
 				}
 			}
 		}

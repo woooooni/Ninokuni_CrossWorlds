@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "NpcDMWState_VulcanGun_End.h"
+#include "NpcDMWState_Charge_End.h"
 
 #include "GameInstance.h"
 
@@ -10,12 +10,12 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
-CNpcDMWState_VulcanGun_End::CNpcDMWState_VulcanGun_End(CStateMachine* pStateMachine)
+CNpcDMWState_Charge_End::CNpcDMWState_Charge_End(CStateMachine* pStateMachine)
 	: CNpcDMWState_Base(pStateMachine)
 {
 }
 
-HRESULT CNpcDMWState_VulcanGun_End::Initialize(const list<wstring>& AnimationList)
+HRESULT CNpcDMWState_Charge_End::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
@@ -27,7 +27,7 @@ HRESULT CNpcDMWState_VulcanGun_End::Initialize(const list<wstring>& AnimationLis
 	return S_OK;
 }
 
-void CNpcDMWState_VulcanGun_End::Enter_State(void* pArg)
+void CNpcDMWState_Charge_End::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 
@@ -35,7 +35,7 @@ void CNpcDMWState_VulcanGun_End::Enter_State(void* pArg)
 	m_bIsUp = false;
 }
 
-void CNpcDMWState_VulcanGun_End::Tick_State(_float fTimeDelta)
+void CNpcDMWState_Charge_End::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
@@ -49,7 +49,7 @@ void CNpcDMWState_VulcanGun_End::Tick_State(_float fTimeDelta)
 			m_tUpLerp.Start(vCurPos.y, m_fDestY, m_fUpTime, LERP_MODE::SMOOTH_STEP);
 			m_bIsUp = true;
 		}
-		
+
 		// 올라가기
 		if (m_bIsUp)
 		{
@@ -67,7 +67,6 @@ void CNpcDMWState_VulcanGun_End::Tick_State(_float fTimeDelta)
 				{
 					Vec4 vStelliaPos = m_pStellia->Get_Component_Transform()->Get_Position();
 					vStelliaPos.y = m_fDestY;
-
 					m_tMoveLerp.Start(m_pTransformCom->Get_Position(), vStelliaPos, m_fMoveTime, LERP_MODE::SMOOTH_STEP);
 					m_bIsMove = true;
 				}
@@ -100,24 +99,24 @@ void CNpcDMWState_VulcanGun_End::Tick_State(_float fTimeDelta)
 	}
 }
 
-void CNpcDMWState_VulcanGun_End::Exit_State()
+void CNpcDMWState_Charge_End::Exit_State()
 {
 }
 
-CNpcDMWState_VulcanGun_End* CNpcDMWState_VulcanGun_End::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
+CNpcDMWState_Charge_End* CNpcDMWState_Charge_End::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {
-	CNpcDMWState_VulcanGun_End* pInstance = new CNpcDMWState_VulcanGun_End(pStateMachine);
+	CNpcDMWState_Charge_End* pInstance = new CNpcDMWState_Charge_End(pStateMachine);
 
 	if (FAILED(pInstance->Initialize(AnimationList)))
 	{
-		MSG_BOX("Fail Create : CNpcDMWState_VulcanGun_End");
+		MSG_BOX("Fail Create : CNpcDMWState_Charge_End");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CNpcDMWState_VulcanGun_End::Free()
+void CNpcDMWState_Charge_End::Free()
 {
 	__super::Free();
 }

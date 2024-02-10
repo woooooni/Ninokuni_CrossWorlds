@@ -31,11 +31,6 @@ HRESULT CVfx_Stellia_Skill_JumpStamp::Initialize_Prototype()
 	m_pScaleOffset = new _float3[m_iMaxCount];
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
-	m_pFrameTriger[TYPE_D_WARNING] = 0;
-	m_pPositionOffset[TYPE_D_WARNING] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_D_WARNING]    = _float3(15.f, 2.f, 15.f);
-	m_pRotationOffset[TYPE_D_WARNING] = _float3(0.f, 0.f, 0.f);
-
 	/* 0. Rising Trail */
 	m_pFrameTriger[TYPE_E_RISING_00] = 35;
 	m_pPositionOffset[TYPE_E_RISING_00] = _float3(0.f, 0.f, 0.f);
@@ -48,30 +43,36 @@ HRESULT CVfx_Stellia_Skill_JumpStamp::Initialize_Prototype()
 	m_pScaleOffset[TYPE_E_RISING_01] = _float3(1.f, 1.f, 1.f);
 	m_pRotationOffset[TYPE_E_RISING_01] = _float3(0.f, 0.f, 0.f);
 
+	/* 2. Warning Decal */
+	m_pFrameTriger[TYPE_D_WARNING] = 50;
+	m_pPositionOffset[TYPE_D_WARNING] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_D_WARNING] = _float3(15.f, 2.f, 15.f);
+	m_pRotationOffset[TYPE_D_WARNING] = _float3(0.f, 0.f, 0.f);
+
 	m_pFrameTriger[TYPE_V_DELETE] = 80;
 	m_pPositionOffset[TYPE_V_DELETE] = _float3(0.f, 0.f, 0.f);
 	m_pScaleOffset[TYPE_V_DELETE]    = _float3(1.f, 1.f, 1.f);
 	m_pRotationOffset[TYPE_V_DELETE] = _float3(0.f, 0.f, 0.f);
 
-	/* 2. Warning Decal */
+	/* 3. Crack Decal */
 	m_pFrameTriger[TYPE_D_DECAL_00] = 90;
 	m_pPositionOffset[TYPE_D_DECAL_00] = _float3(0.f, 0.f, 0.f);
 	m_pScaleOffset[TYPE_D_DECAL_00] = _float3(12.f, 1.f, 12.f);
 	m_pRotationOffset[TYPE_D_DECAL_00] = _float3(0.f, 0.f, 0.f);
 
-	/* 3. Shock01 Effect */
+	/* 4. Shock01 Effect */
 	m_pFrameTriger[TYPE_E_SHOCK_00] = 90;
 	m_pPositionOffset[TYPE_E_SHOCK_00] = _float3(0.f, -0.5f, 0.f);
 	m_pScaleOffset[TYPE_E_SHOCK_00] = _float3(0.6f, 0.75f, 0.6f);
 	m_pRotationOffset[TYPE_E_SHOCK_00] = _float3(0.f, 0.f, 0.f);
 
-	/* 4. Shock02 Effect */
+	/* 5. Shock02 Effect */
 	m_pFrameTriger[TYPE_E_SHOCK_01] = 90;
 	m_pPositionOffset[TYPE_E_SHOCK_01] = _float3(0.f, -0.5f, 0.f);
 	m_pScaleOffset[TYPE_E_SHOCK_01] = _float3(0.6f, 0.75f, 0.6f);
 	m_pRotationOffset[TYPE_E_SHOCK_01] = _float3(0.f, 90.f, 0.f);
 
-	/* 5. Smoke Effect */
+	/* 6. Smoke Effect */
 	m_pFrameTriger[TYPE_E_SMOKE_00] = 90;
 	m_pPositionOffset[TYPE_E_SMOKE_00] = _float3(0.f, 0.5f, 0.f);
 	m_pScaleOffset[TYPE_E_SMOKE_00] = _float3(4.f, 5.f, 4.f);
@@ -101,25 +102,8 @@ void CVfx_Stellia_Skill_JumpStamp::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
-		// 0
-		if (m_iCount == TYPE_D_WARNING && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_WARNING])
-		{
-			CCharacter* pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-			if (nullptr != pPlayer)
-			{
-				CTransform* pOwnerTransform = pPlayer->Get_Component<CTransform>(L"Com_Transform");
-				if (nullptr != pOwnerTransform)
-				{
-					GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_Warning"),
-						XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_WARNING], m_pScaleOffset[TYPE_D_WARNING], m_pRotationOffset[TYPE_D_WARNING], pPlayer, &m_pWarningDecal, false);
-					Safe_AddRef(m_pWarningDecal);
-				}
-			}
-			m_iCount++;
-		}
-
 		// 35
-		else if (m_iCount == TYPE_E_RISING_00 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_RISING_00])
+		if (m_iCount == TYPE_E_RISING_00 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_RISING_00])
 		{
 			if (nullptr != m_pWarningDecal)
 				m_pWarningDecal->Set_Owner(nullptr);
@@ -135,6 +119,22 @@ void CVfx_Stellia_Skill_JumpStamp::Tick(_float fTimeDelta)
 			m_iCount++;
 		}
 
+		// 50
+		else if (m_iCount == TYPE_D_WARNING && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_WARNING])
+		{
+			CCharacter* pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+			if (nullptr != pPlayer)
+			{
+				CTransform* pOwnerTransform = pPlayer->Get_Component<CTransform>(L"Com_Transform");
+				if (nullptr != pOwnerTransform)
+				{
+					GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_Warning"),
+						XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_WARNING], m_pScaleOffset[TYPE_D_WARNING], m_pRotationOffset[TYPE_D_WARNING], pPlayer, &m_pWarningDecal, false);
+					Safe_AddRef(m_pWarningDecal);
+				}
+			}
+			m_iCount++;
+		}
 		// 80
 		else if (m_iCount == TYPE_V_DELETE && m_iOwnerFrame >= m_pFrameTriger[TYPE_V_DELETE])
 		{

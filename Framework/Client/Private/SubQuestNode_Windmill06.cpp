@@ -21,7 +21,7 @@ HRESULT CSubQuestNode_Windmill06::Initialize()
 
 	m_strQuestTag = TEXT("[서브]");
 	m_strQuestName = TEXT("풍차 수리");
-	m_strQuestContent = TEXT("괴짜 소녀를 찾기");
+	m_strQuestContent = TEXT("기계 덕후를 찾기");
 
 	m_strNextQuestTag = TEXT("[서브]");
 	m_strNextQuestName = TEXT("비행기 배틀!");

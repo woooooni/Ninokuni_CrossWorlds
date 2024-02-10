@@ -144,7 +144,7 @@ void CGlanix::Tick(_float fTimeDelta)
 	}
 
 	/* юс╫ц */
-	if (KEY_TAP(KEY::Z))
+	if (KEY_TAP(KEY::X))
 		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
 
 //#ifdef _DEBUG
@@ -175,6 +175,11 @@ HRESULT CGlanix::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
+
+#ifdef _DEBUG
+	if (nullptr != m_pPillarController)
+		m_pPillarController->Render();
+#endif
 
 	return S_OK;
 }
@@ -695,6 +700,9 @@ CGameObject* CGlanix::Clone(void* pArg)
 void CGlanix::Free()
 {
 	__super::Free();
+
+	if (m_pPillarController != nullptr)
+		m_pPillarController->PillarControllerFree();
 
 	Safe_Delete(m_pPillarController);
 }

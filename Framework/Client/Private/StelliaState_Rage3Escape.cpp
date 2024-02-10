@@ -20,7 +20,8 @@ HRESULT CStelliaState_Rage3Escape::Initialize(const list<wstring>& AnimationList
 	__super::Initialize(AnimationList);
 
 	m_fTurnTime = 1.f;
-	m_fTurnSpeed = 2.5f;
+	m_fTurnSpeed = 1.f;
+	m_fMinChargeLength = 4.f;
 
 	return S_OK;
 }
@@ -43,9 +44,12 @@ void CStelliaState_Rage3Escape::Tick_State(_float fTimeDelta)
 		m_pTransformCom->Turn(Vec3(0.f, 1.f, 0.f), m_fTurnSpeed, fTimeDelta);
 	}
 
+	// 최소 질주 거리 계산(시작하자마자 브레이크 밟는거 방지)
+	Vec4 vCurPos = (Vec4)m_pTransformCom->Get_Position() - m_vStartPos;
+	m_fCurChargeLength = fabs(vCurPos.Length());
 
 	Vec4 vCenterToStellia = m_pStellia->Get_OriginPos() - (Vec4)m_pTransformCom->Get_Position();
-	if (fabs(vCenterToStellia.Length()) > m_fAroundDist - 2.f)
+	if (fabs(vCenterToStellia.Length()) > m_fAroundDist && m_fCurChargeLength > m_fMinChargeLength)
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE3CHARGE_BREAK);
 	}

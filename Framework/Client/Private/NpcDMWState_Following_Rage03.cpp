@@ -51,7 +51,8 @@ void CNpcDMWState_Following_Rage03::Tick_State(_float fTimeDelta)
 	if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE3CHARGE_READY &&
 		m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE3CHARGE &&
 		m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE3CHARGE_BREAK &&
-		m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE3DAMAGE)
+		m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE3DAMAGE &&
+		m_pStellia->Get_Component_StateMachine()->Get_CurrState() != CStellia::STELLIA_RAGE3AROUND_BREAK)
 	{
 		if (m_pWitch->Get_IsBattle())
 		{
