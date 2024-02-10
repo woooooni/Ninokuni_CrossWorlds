@@ -102,6 +102,9 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		case CCamera_Action::WITCH_INVASION:
 			Tick_Witch_Invasion(fTimeDelta);
 			break;
+		case CCamera_Action::WITCH_ROAR:
+			Tick_Witch_Roar(fTimeDelta);
+			break;
 		default:
 			break;
 		}
@@ -210,7 +213,7 @@ HRESULT CCamera_Action::Start_Action_Witch_Invasion()
 	Vec4 vPos = Vec4(pWitchTransform->Get_Position()) + pWitchTransform->Get_RelativeOffset({ 1.f, -18.f, 4.25f, 1.f });
 	m_pTransformCom->Set_Position(vPos.OneW());
 
-	Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(0) * pWitchTransform->Get_WorldMatrix();
+	Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(m_tActionWitchInvasionDesc.iBoneNumber) * pWitchTransform->Get_WorldMatrix();
 	Vec4 vLookAt;
 	memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
 
@@ -760,6 +763,37 @@ void CCamera_Action::Tick_EngineerBurst(_float fTimeDelta)
 
 }
 
+void CCamera_Action::Tick_Witch_Roar(_float fTimeDelta)
+{
+	CModel* pWitchModel = m_tActionWitchRoarDesc.pWitchObject->Get_Component_Model();
+	CTransform* pWitchTransform = m_tActionWitchRoarDesc.pWitchObject->Get_Component_Transform();
+
+	if (nullptr == pWitchModel || nullptr == pWitchTransform)
+		return;
+
+	if (m_tActionWitchRoarDesc.tTargetOffset.bActive)
+		m_tActionWitchRoarDesc.tTargetOffset.Update_Lerp(fTimeDelta);
+
+	if (m_tActionWitchRoarDesc.tLookAtOffset.bActive)
+		m_tActionWitchRoarDesc.tLookAtOffset.Update_Lerp(fTimeDelta);
+
+	/* Position */
+	{
+		Vec4 vPos = Vec4(pWitchTransform->Get_Position()) + pWitchTransform->Get_RelativeOffset(m_tActionWitchRoarDesc.tTargetOffset.vCurVec);
+		m_pTransformCom->Set_Position(vPos.OneW());
+	}
+
+	/* LookAt */
+	{
+		Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(m_tActionWitchRoarDesc.iBoneNumber) * pWitchTransform->Get_WorldMatrix();
+		Vec4 vLookAt;
+		memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+		vLookAt += m_pTransformCom->Get_RelativeOffset(m_tActionWitchRoarDesc.tLookAtOffset.vCurVec).ZeroW();
+
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
+}
+
 void CCamera_Action::Tick_DestroyerBurst(_float fTimeDelta)
 {
 
@@ -1090,7 +1124,7 @@ void CCamera_Action::Tick_Witch_Invasion(_float fTimeDelta)
 	if (nullptr == pWitchModel || nullptr == pWitchTransform)
 		return;
 
-	Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(0) * pWitchTransform->Get_WorldMatrix();
+	Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(m_tActionWitchInvasionDesc.iBoneNumber) * pWitchTransform->Get_WorldMatrix();
 	Vec4 vLookAt;
 	memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
 
@@ -1149,6 +1183,61 @@ HRESULT CCamera_Action::Start_Action_WindMill(const _bool& bNpcToWindMill)
 		m_eCurActionType = CAMERA_ACTION_TYPE::WINDMILL;
 		m_tActionWindMillDesc.bNpcToWindMill = false;
 	}
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Ready_Action_Witch_Roar(CGameObject* pGameObject)
+{
+	m_tActionWitchRoarDesc.pWitchObject = pGameObject;
+
+	CModel*		pWitchModel		= m_tActionWitchRoarDesc.pWitchObject->Get_Component_Model();
+	CTransform* pWitchTransform = m_tActionWitchRoarDesc.pWitchObject->Get_Component_Transform();
+
+	if (nullptr == pWitchModel || nullptr == pWitchTransform)
+		return E_FAIL;
+
+	m_eCurActionType = CAMERA_ACTION_TYPE::WITCH_ROAR;
+
+	m_tActionWitchRoarDesc.tTargetOffset.vCurVec = { 0.f, 1.2f, m_tActionWitchRoarDesc.fOriginDist, 1.f };
+	m_tActionWitchRoarDesc.tLookAtOffset.vCurVec = { 0.f, -0.5f, 0.f, 1.f };
+
+	/* Position */
+	{
+		Vec4 vPos = Vec4(pWitchTransform->Get_Position()) + pWitchTransform->Get_RelativeOffset(m_tActionWitchRoarDesc.tTargetOffset.vCurVec);
+		m_pTransformCom->Set_Position(vPos.OneW());
+	}
+
+	/* LookAt */
+	{
+		Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(m_tActionWitchRoarDesc.iBoneNumber) * pWitchTransform->Get_WorldMatrix();
+		Vec4 vLookAt;
+		memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+		vLookAt += m_pTransformCom->Get_RelativeOffset(m_tActionWitchRoarDesc.tLookAtOffset.vCurVec).ZeroW();
+
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
+}
+
+HRESULT CCamera_Action::Start_Action_Witch_Roar()
+{
+	if (!m_tActionWitchRoarDesc.bZoomIn)
+	{
+		// Zoom In 
+		m_tActionWitchRoarDesc.tTargetOffset.Start(
+			{ 0.f, 2.f, 1.f, 1.f }, 3.f, LERP_MODE::SMOOTHER_STEP);
+
+		m_tActionWitchRoarDesc.tLookAtOffset.Start(
+			{ 0.f, 0.f, 0.f, 1.f }, 2.f, LERP_MODE::SMOOTHER_STEP);
+	}
+	else
+	{
+		// Zoom Out 
+		m_tActionWitchRoarDesc.tTargetOffset.Start(
+			{ 0.f, 2.f, 1.75f, 1.f }, 0.25f, LERP_MODE::SMOOTHER_STEP);
+	}
+
+	m_tActionWitchRoarDesc.bZoomIn = !m_tActionWitchRoarDesc.bZoomIn;
 
 	return S_OK;
 }

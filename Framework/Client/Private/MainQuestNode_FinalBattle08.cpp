@@ -36,6 +36,7 @@ void CMainQuestNode_FinalBattle08::Start()
 
 	if (m_pWitch != nullptr)
 	{
+		// 스텔리아 죽고 나서, 마녀 도망가는 애니메이션 
 		m_pWitch->Get_Component_Model()->Set_Animation(TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Death"));
 	}
 }

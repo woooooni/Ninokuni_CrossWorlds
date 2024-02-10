@@ -346,34 +346,14 @@ HRESULT CStellia::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
-	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(1.f, 10.f, 10.f, 1.f));
-	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-55.f, 1.6, 363.f, 1.f));
+	/* 카메라 컷신과 연동된 상태, 수정 금지 */
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(161.5f, 2.311f, 147.5f, 1.f));
+	
+	m_pTransformCom->FixRotation(0.f, 195.f, 0.f);
 
-	//if (CGameInstance::GetInstance()->Get_CurrentLevel() == LEVELID::LEVEL_TOOL)
-	//{
-	//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-	//	m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
-	//
-	//	m_vOriginPos = m_pTransformCom->Get_Position();
-	//	m_vOriginLook = m_pTransformCom->Get_Look();
-	//	m_vRage3StartPos = Vec4(0.f, 0.f, 40.f, 1.f);
-	//}
-	//else
-	//{
-		//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(138.f, -0.5f, 102.f, 1.f));
-		//m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
-		//
-		//m_vOriginPos = m_pTransformCom->Get_Position();
-		//m_vOriginLook = m_pTransformCom->Get_Look();
-		//m_vRage3StartPos = Vec4(138.f, -0.5f, 132.f, 1.f);
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(161.5f, 2.311f, 147.5f, 1.f));
-		m_pTransformCom->FixRotation(0.f, 195.f, 0.f);
-
-		m_vOriginPos = m_pTransformCom->Get_Position();
-		m_vOriginLook = m_pTransformCom->Get_Look();
-		m_vRage3StartPos = Vec4(165.f, 2.311f, 177.f, 1.f);
-
-	//}
+	m_vOriginPos = m_pTransformCom->Get_Position();
+	m_vOriginLook = m_pTransformCom->Get_Look();
+	m_vRage3StartPos = Vec4(165.f, 2.311f, 177.f, 1.f);
 
 
 

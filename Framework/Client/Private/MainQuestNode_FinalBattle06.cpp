@@ -27,15 +27,13 @@ void CMainQuestNode_FinalBattle06::Start()
 
 	if (m_pWitch != nullptr)
 	{
-		///* 대화 카메라 세팅 */
-		//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-		//if (nullptr != pActionCam)
-		//{
-		//	pActionCam->Start_Action_Talk(m_pWitch);
-		//	pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
-		//}
-
+		// 마녀 컷신 애니메이션 시작
 		m_pWitch->Get_Component_Model()->Set_Animation(TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_BossSkillRage01"));
+		
+		// 마녀 컷신 카메라 연출 시작
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		if (nullptr != pActionCam)
+			pActionCam->Start_Action_Witch_Roar();
 	}
 }
 
@@ -48,21 +46,45 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle06::Tick(const _float& fTimeDelta)
 	{
 		if (m_pWitch != nullptr)
 		{
-			if (m_pWitch->Get_Component_Model()->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_BossSkillRage01") &&
-				m_pWitch->Get_Component_Model()->Get_CurrAnimationFrame() == 100)
+			if (m_pWitch->Get_Component_Model()->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_BossSkillRage01"))
 			{
-				if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
+				if(!m_bCamSignal && m_pWitch->Get_Component_Model()->Get_CurrAnimationFrame() == 70)
 				{
-					m_bIsFadeOut = true;
-					CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 2.f);
+					m_bCamSignal = true;
+					CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+					if (nullptr != pActionCam)
+						pActionCam->Start_Action_Witch_Roar();
+				}
+
+				if(m_pWitch->Get_Component_Model()->Get_CurrAnimationFrame() == 100)
+				{
+					if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
+					{
+						m_bIsFadeOut = true;
+						CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
+					}
 				}
 			}
 		}
 		
 		if (m_bIsFadeOut && CUI_Manager::GetInstance()->Is_FadeFinished())
 		{
+			/* 대화 카메라 종료 */
+			{
+				CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+				if (nullptr != pActionCam)
+					pActionCam->Finish_Action_Talk();
+			}
+
+			/* 락온 설정 */
+			{
+
+
+			}
+
+
 			m_bIsClear = true;
-			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 2.f);
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
 
 			return NODE_STATE::NODE_FAIL;
 		}
