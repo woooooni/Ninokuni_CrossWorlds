@@ -12,6 +12,8 @@ class CVfx_Stellia_Spawn_Roar final : public CVfx
 {
 private:
 	enum TYPE { // L"SKM_Stellia.ao|Stellia_Spawn"
+		TYPE_ET0_D_MAGICCIRCLE,
+
 		// 31 ÂøÁö
 		TYPE_ET1_P_SMOKE,
 		TYPE_ET1_P_CIRCLES,
@@ -36,6 +38,9 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	class CDecal* m_pMagicCircle = nullptr;
 
 public:
 	static CVfx_Stellia_Spawn_Roar* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
