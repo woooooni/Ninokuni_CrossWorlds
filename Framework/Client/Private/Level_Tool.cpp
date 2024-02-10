@@ -136,6 +136,9 @@ HRESULT CLevel_Tool::Tick(_float fTimeDelta)
 	{
 		if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"))))
 			return E_FAIL;
+
+		//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Stellia"))))
+		//	return E_FAIL;
 	}
 
 	CCurlingGame_Manager::GetInstance()->Tick(fTimeDelta);

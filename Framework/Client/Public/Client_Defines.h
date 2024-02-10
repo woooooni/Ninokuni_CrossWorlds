@@ -204,7 +204,7 @@ namespace Client
 
 #define MAX_BEZIER_POINT 4
 
-	/* Lock On - Glanix */
+	/* Lock On  */
 
 	/* Default */
 	static const _float Cam_LockOn_Time_BlendingIn	= 0.f; 
@@ -213,7 +213,10 @@ namespace Client
 	static const Vec4	Cam_Target_Offset_LockOn_Glanix		= Vec4{ 0.7f, 2.f, -6.f, 1.f };
 	static const Vec4	Cam_LookAt_Offset_LockOn_Glanix		= Vec4{ 0.f, 0.5f, 0.f, 1.f };
 
-	static const Vec4 Cam_Target_Offset_LockOn_GrandPrix	= Vec4{ 0.f, 0.f, 0.f, 0.f };
+	static const Vec4	Cam_Target_Offset_LockOn_Stellia	= Vec4{ 0.7f, 2.f, -6.f, 1.f };
+	static const Vec4	Cam_LookAt_Offset_LockOn_Stellia	= Vec4{ 0.f, 2.f, 0.f, 1.f };
+
+	static const Vec4	Cam_Target_Offset_LockOn_GrandPrix	= Vec4{ 0.f, 0.f, 0.f, 0.f };
 
 	/* Item Pattern */
 	static const _float Cam_LerpTime_LockOn_Glanix_ItemPattern_Blending_In = 0.8f;

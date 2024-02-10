@@ -19,7 +19,7 @@ public:
 	enum CAMERA_ACTION_TYPE { 
 		LOBBY, DOOR, TALK, WINDMILL, 
 		SWORDMAN_BURST, ENGINEER_BURST, DESTROYER_BURST, 
-		STADIUM, ENDING, WITCH_INVASION,
+		STADIUM, ENDING, WITCH_INVASION, WITCH_ROAR, WITCH_AWAY,
 		CAMERA_ACTION_END };
 
 public:
@@ -75,6 +75,8 @@ public:
 		_bool bInit = false;
 		_bool bSet = false;
 
+		_bool	bFinalBoss = false;
+
 		Vec4 vPrevLookAt;
 
 		CTransform* pTransform_Kuu		= nullptr;
@@ -87,6 +89,7 @@ public:
 		{
 			pTransformNpc = nullptr;
 			bSet = false;
+			bFinalBoss = false;
 		}
 
 	}ACTION_TALK_DESC;
@@ -212,11 +215,34 @@ public:
 
 	typedef struct tagWitchInvasionDesc
 	{
+		_uint iBoneNumber = 0;
 		class CGameObject* pWitchObject = nullptr;
 
 		Vec4 vLookAtOffset = { 0.5f, -1.f, 0.f, 1.f };
 
 	}ACTION_WITCH_INVASION_DESC;
+
+	typedef struct tagWitchRoarDesc
+	{
+		_uint iBoneNumber = 1;
+		class CGameObject* pWitchObject = nullptr;
+
+		_bool	bZoomIn = false;
+
+		LERP_VEC4_DESC tTargetOffset = {};
+		LERP_VEC4_DESC tLookAtOffset = {};
+		const _float fOriginDist = 3.f;
+
+		_uint iCount = 0;
+
+	}ACTION_WITCH_ROAR_DEAC;
+
+	typedef struct tagWitchAwatDesc
+	{
+
+		class CGameObject* pWitchObject = nullptr;
+
+	}ACTION_WITCH_AWAY_DESC;
 
 private:
 	CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
@@ -238,9 +264,9 @@ public:
 	HRESULT Start_Action_Door();
 	HRESULT Start_Action_WindMill(const _bool& bNpcToWindMill); /* 현재 대화 룩 타겟이 NPC일 때 호출*/
 
-	HRESULT Start_Action_Talk(CGameObject* pNpc); /* 처음 대화 시작시 호출 (쿠우 혼자면 nullptr, Npc 있으면 Npc 넘겨줌 */
+	HRESULT Start_Action_Talk(CGameObject* pNpc, const _bool& bFinalBoss = false); /* 처음 대화 시작시 호출 (쿠우 혼자면 nullptr, Npc 있으면 Npc 넘겨줌 */
 	HRESULT Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_TYPE& eType); /* 중간 화자 변경시 호출 */
-	HRESULT Finish_Action_Talk(const CAMERA_TYPE& eNextCameraType = CAMERA_TYPE::FOLLOW); /* 대화 종료시 호출 */
+	HRESULT Finish_Action_Talk(const CAMERA_TYPE& eNextCameraType = CAMERA_TYPE::FOLLOW); /* 대화 종료시 호출 */	
 
 	HRESULT Start_Action_Stadium(const _float& fDuration);
 	HRESULT Finish_Action_Stadium();
@@ -249,6 +275,11 @@ public:
 
 	HRESULT Ready_Action_Witch_Invasion(CGameObject* pGameObject);
 	HRESULT Start_Action_Witch_Invasion();
+
+	HRESULT Ready_Action_Witch_Roar(CGameObject* pGameObject);
+	HRESULT Start_Action_Witch_Roar();
+
+	HRESULT Start_Action_Witch_Away(CGameObject* pGameObject);
 
 	// 캐릭터 버스트 스킬 액션.
 	HRESULT Start_Action_SwordManBurst(class CTransform* pSwordManTransform);
@@ -275,6 +306,8 @@ private:
 	void Tick_Ending(_float fTimeDelta);
 	void Tick_Criminal(_float fTimeDelta);
 	void Tick_Witch_Invasion(_float fTimeDelta);
+	void Tick_Witch_Roar(_float fTimeDelta);
+	void Tick_Witch_Away(_float fTimeDelta);
 
 	void Tick_SwordManBurst(_float fTimeDelta);
 	void Tick_EngineerBurst(_float fTimeDelta);
@@ -293,19 +326,20 @@ private:
 	_bool					m_bAction = false;
 	CAMERA_ACTION_TYPE		m_eCurActionType = CAMERA_ACTION_TYPE::CAMERA_ACTION_END;
 
-	ACTION_LOBBY_DESC		m_tActionLobbyDesc		= {};
-	ACTION_DOOR_DESC		m_tActionDoorDesc		= {};
-	ACTION_TALK_DESC		m_tActionTalkDesc		= {};
-	ACTION_WINDMILL_DESC	m_tActionWindMillDesc	= {};
-	ACTION_STADIUM_DESC		m_tActionStadiumDesc	= {};
-	ACTION_ENDING_DESC		m_tActionEndingDesc		= {};
-	ACTION_TALK_BACKUP_DESC m_tActionTalkBackUpDesc = {};
-	ACTION_WITCH_INVASION_DESC m_tActionWitchInvasionDesc = {};
+	ACTION_LOBBY_DESC			m_tActionLobbyDesc			= {};
+	ACTION_DOOR_DESC			m_tActionDoorDesc			= {};
+	ACTION_TALK_DESC			m_tActionTalkDesc			= {};
+	ACTION_WINDMILL_DESC		m_tActionWindMillDesc		= {};
+	ACTION_STADIUM_DESC			m_tActionStadiumDesc		= {};
+	ACTION_ENDING_DESC			m_tActionEndingDesc			= {};
+	ACTION_TALK_BACKUP_DESC		m_tActionTalkBackUpDesc		= {};
+	ACTION_WITCH_INVASION_DESC	m_tActionWitchInvasionDesc	= {};
+	ACTION_WITCH_ROAR_DEAC		m_tActionWitchRoarDesc		= {};
+	ACTION_WITCH_AWAY_DESC		m_tActionWitchAwayDesc		= {};
 
 	ACTION_SWORDMAN_BURST_DESC m_tActionSwordManBurstDesc	= {};
 	ACTION_ENGINEER_BURST_DESC m_tActionEngineerBurstDesc	= {};
 	ACTION_DESTROYER_BURST_DESC m_tActionDestroyerBurstDesc = {};
-
 
 public:
 	static CCamera_Action* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

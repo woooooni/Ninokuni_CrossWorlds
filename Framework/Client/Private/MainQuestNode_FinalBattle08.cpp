@@ -2,10 +2,15 @@
 #include "MainQuestNode_FinalBattle08.h"
 
 #include "GameInstance.h"
+#include "Character.h"
+#include "Player.h"
+
 #include "Utils.h"
 
 #include "UI_Manager.h"
 #include "Game_Manager.h"
+
+#include "Camera_Group.h"
 
 #include "DreamMazeWitch_Npc.h"
 
@@ -36,7 +41,21 @@ void CMainQuestNode_FinalBattle08::Start()
 
 	if (m_pWitch != nullptr)
 	{
+		// 스텔리아 죽고 나서, 마녀 도망가는 애니메이션 
 		m_pWitch->Get_Component_Model()->Set_Animation(TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Death"));
+
+		// 카메라 세팅
+		//CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+		//if (nullptr != pFollowCam && pFollowCam->Is_LockOn() && !pFollowCam->Is_Lock_LookHeight())
+		//{
+		//	pFollowCam->Reset_WideView_To_DefaultView(true);
+		//	pFollowCam->Set_Default_Position();
+		//	pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		//}
+		
+		//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		//if (nullptr != pActionCam)
+		//	pActionCam->Start_Action_Witch_Away(m_pWitch);
 	}
 }
 

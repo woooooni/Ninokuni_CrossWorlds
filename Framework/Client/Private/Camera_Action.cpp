@@ -102,6 +102,12 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		case CCamera_Action::WITCH_INVASION:
 			Tick_Witch_Invasion(fTimeDelta);
 			break;
+		case CCamera_Action::WITCH_ROAR:
+			Tick_Witch_Roar(fTimeDelta);
+			break;
+		case CCamera_Action::WITCH_AWAY:
+			Tick_Witch_Away(fTimeDelta);
+			break;
 		default:
 			break;
 		}
@@ -210,7 +216,7 @@ HRESULT CCamera_Action::Start_Action_Witch_Invasion()
 	Vec4 vPos = Vec4(pWitchTransform->Get_Position()) + pWitchTransform->Get_RelativeOffset({ 1.f, -18.f, 4.25f, 1.f });
 	m_pTransformCom->Set_Position(vPos.OneW());
 
-	Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(0) * pWitchTransform->Get_WorldMatrix();
+	Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(m_tActionWitchInvasionDesc.iBoneNumber) * pWitchTransform->Get_WorldMatrix();
 	Vec4 vLookAt;
 	memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
 
@@ -273,7 +279,7 @@ HRESULT CCamera_Action::Start_Action_Lobby()
 	return S_OK;
 }
 
-HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pNpc)
+HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pNpc, const _bool& bFinalBoss)
 {
 	m_tActionTalkDesc.Clear();
 
@@ -317,27 +323,40 @@ HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pNpc)
 		}
 	}
 
-
 	/* 카메라 세팅 */
-	//if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(m_iKey)))
-	//	return E_FAIL;
-
-	/* 대화 중간 액션 카메라의 액션 타입이 바뀌는 경우 존재*/
-	CCamera_Manager::GetInstance()->Set_CurCamera(m_iKey);
-
-
-	/* 쿠우 + 플레이어*/
-	if (nullptr == pNpc)
 	{
-		Set_Talk_Transform(ACTION_TALK_DESC::VIEW_TYPE::KUU_AND_PLAYER);
-		return S_OK;
-	}
-	else if (nullptr != pNpc) /* 쿠우 + 플레이어 + Npc */
-	{
-		Set_Talk_Transform(ACTION_TALK_DESC::VIEW_TYPE::ALL_RIGTH);
+		/* 대화 중간 액션 카메라의 액션 타입이 바뀌는 경우 존재 */
+		CCamera_Manager::GetInstance()->Set_CurCamera(m_iKey);
 
-		Set_Talk_Transform(ACTION_TALK_DESC::VIEW_TYPE::NPC); /* 구현한 다음에 살린다. */
+		/* 기존 코드 */
+		//if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(m_iKey)))
+		//	return E_FAIL;
 	}
+
+
+	if (!bFinalBoss) /* 대화 상대가 마지막 보스가 아닌 경우 */
+	{
+		if (nullptr == pNpc) /* 쿠우 + 플레이어*/
+		{
+			Set_Talk_Transform(ACTION_TALK_DESC::VIEW_TYPE::KUU_AND_PLAYER);
+		}
+		else if (nullptr != pNpc) /* 쿠우 + 플레이어 + Npc */
+		{
+			Set_Talk_Transform(ACTION_TALK_DESC::VIEW_TYPE::ALL_RIGTH);
+			Set_Talk_Transform(ACTION_TALK_DESC::VIEW_TYPE::NPC); 
+		}
+	}
+	else /* 대화 상대가 마지막 보스인 경우 (단독적 트랜스폼 설정) */
+	{
+		m_tActionTalkDesc.pTransform_Player->LookAt_ForLandObject(m_tActionTalkDesc.pTransformNpc->Get_Position());
+
+		m_tActionTalkDesc.pTransformNpc->LookAt_ForLandObject(m_tActionTalkDesc.pTransform_Player->Get_Position());
+
+		m_tActionTalkDesc.bSet = true;
+
+		m_tActionTalkDesc.bFinalBoss = true;
+	}
+
 	return S_OK;
 }
 
@@ -346,6 +365,7 @@ HRESULT CCamera_Action::Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_T
 	if (nullptr == m_tActionTalkDesc.pTransform_Kuu || nullptr == m_tActionTalkDesc.pTransform_Player)
 		return E_FAIL;
 
+	/* 액션카메라 미리 세팅하고 다른 카메라 다녀오는 경우 등 예외적인 경우가 있어서 여기서도 처리 */
 	m_eCurActionType = CAMERA_ACTION_TYPE::TALK;
 
 	Set_Talk_Transform(eType);
@@ -642,6 +662,19 @@ void CCamera_Action::Tick_Talk(_float fTimeDelta)
 	
 }
 
+HRESULT CCamera_Action::Start_Action_Witch_Away(CGameObject* pGameObject)
+{
+	m_eCurActionType = CAMERA_ACTION_TYPE::WITCH_AWAY;
+
+	m_tActionWitchAwayDesc.pWitchObject = pGameObject;
+
+	m_tTargetOffset.vCurVec = { 0.f, 0.f, 0.f, 1.f };
+
+	m_tLookAtOffset.vCurVec = { 0.f, 0.f, 0.f, 1.f };
+
+	return S_OK;
+}
+
 void CCamera_Action::Tick_Blending(const _float fDeltaTime)
 {
 }
@@ -746,6 +779,43 @@ void CCamera_Action::Tick_EngineerBurst(_float fTimeDelta)
 
 }
 
+void CCamera_Action::Tick_Witch_Roar(_float fTimeDelta)
+{
+	CModel* pWitchModel = m_tActionWitchRoarDesc.pWitchObject->Get_Component_Model();
+	CTransform* pWitchTransform = m_tActionWitchRoarDesc.pWitchObject->Get_Component_Transform();
+
+	if (nullptr == pWitchModel || nullptr == pWitchTransform)
+		return;
+
+	if (m_tActionWitchRoarDesc.tTargetOffset.bActive)
+	{
+		m_tActionWitchRoarDesc.tTargetOffset.Update_Lerp(fTimeDelta);
+		if (!m_tActionWitchRoarDesc.bZoomIn && !m_tActionWitchRoarDesc.tTargetOffset.bActive)
+		{
+			Start_Action_Witch_Roar();
+		}
+	}
+
+	if (m_tActionWitchRoarDesc.tLookAtOffset.bActive)
+		m_tActionWitchRoarDesc.tLookAtOffset.Update_Lerp(fTimeDelta);
+	
+	/* Position */
+	{
+		Vec4 vPos = Vec4(pWitchTransform->Get_Position()) + pWitchTransform->Get_RelativeOffset(m_tActionWitchRoarDesc.tTargetOffset.vCurVec);
+		m_pTransformCom->Set_Position(vPos.OneW());
+	}
+
+	/* LookAt */
+	{
+		Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(m_tActionWitchRoarDesc.iBoneNumber) * pWitchTransform->Get_WorldMatrix();
+		Vec4 vLookAt;
+		memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+		vLookAt += m_pTransformCom->Get_RelativeOffset(m_tActionWitchRoarDesc.tLookAtOffset.vCurVec).ZeroW();
+
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
+}
+
 void CCamera_Action::Tick_DestroyerBurst(_float fTimeDelta)
 {
 
@@ -759,20 +829,32 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 	{
 	case CCamera_Action::tagActionTalkDesc::KUU:
 	{
-		const _float fDistance = 2.f;
-		
+		if (m_tActionTalkDesc.bFinalBoss)
+		{
+
+		}
+		else
+		{
+
+		}
+
+		const _float fDistance			= 2.f;
 		const _float fCamLookAtHeight	= 0.2f;
 
 		/* CamPosition */
-		const Vec4 vTargetOffset = { -0.2f, 0.3f, 0.f, 1.f };
-		vCamPosition = Vec4(m_tActionTalkDesc.pKuu->Get_GoalPosition()) 
-			+ Vec4(m_tActionTalkDesc.pTransform_Kuu->Get_Look()).ZeroY().Normalized() * fDistance
-			+ m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vTargetOffset);
-		vCamPosition.w = 1.f;
+		{
+			const Vec4 vTargetOffset = { -0.2f, 0.3f, 0.f, 1.f };
+			vCamPosition = Vec4(m_tActionTalkDesc.pKuu->Get_GoalPosition()) 
+				+ Vec4(m_tActionTalkDesc.pTransform_Kuu->Get_Look()).ZeroY().Normalized() * fDistance
+				+ m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vTargetOffset);
+			vCamPosition.w = 1.f;
+		}
 
 		/* CamLookAt */
-		vCamLookAt = m_tActionTalkDesc.pKuu->Get_GoalPosition();
-		vCamLookAt.y += fCamLookAtHeight;
+		{
+			vCamLookAt = m_tActionTalkDesc.pKuu->Get_GoalPosition();
+			vCamLookAt.y += fCamLookAtHeight;
+		}
 
 		/* Fov */
 		Set_Fov(Cam_Fov_Action_Talk_SuperNarrow);
@@ -780,13 +862,27 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 		break;
 	case CCamera_Action::tagActionTalkDesc::KUU_AND_PLAYER:
 	{
+
+		if (m_tActionTalkDesc.bFinalBoss)
+		{
+
+		}
+		else
+		{
+
+		}
+
 		/* CamPosition */
-		Vec4 vTargetOffSet = { 0.5f, 0.4f, 2.f, 1.f };
-		vCamPosition = m_tActionTalkDesc.pKuu->Get_GoalPosition() + m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vTargetOffSet);
+		{
+			Vec4 vTargetOffSet = { 0.5f, 0.4f, 2.f, 1.f };
+			vCamPosition = m_tActionTalkDesc.pKuu->Get_GoalPosition() + m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vTargetOffSet);
+		}
 
 		/* CamLookAt */
-		Vec4 vLookAtOffset = { -1.f, 0.f, 0.f, 1.f };
-		vCamLookAt = m_tActionTalkDesc.pKuu->Get_GoalPosition() + m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vLookAtOffset);
+		{
+			Vec4 vLookAtOffset = { -1.f, 0.f, 0.f, 1.f };
+			vCamLookAt = m_tActionTalkDesc.pKuu->Get_GoalPosition() + m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vLookAtOffset);
+		}
 
 		/* Fov */
 		Set_Fov(Cam_Fov_Action_Talk_Narrow);
@@ -796,21 +892,37 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 	{
 		if (nullptr == m_tActionTalkDesc.pTransformNpc)
 			return;
-
-		const _float fDistance			= 2.3f;
-		const _float fCamPostionHeight	= 1.4f;
-		const _float fCamLookAtHeight	= 1.2f;
-		const Vec4 vTargetOffset		= { -0.3f, 0.f, 0.f, 1.f };
+		
+		_float	fDistance = 0.f, fCamPostionHeight = 0.f, fCamLookAtHeight = 0.f;
+		Vec4	vTargetOffset		= { };
+		if (m_tActionTalkDesc.bFinalBoss)
+		{
+			fDistance			= 4.f;
+			fCamPostionHeight	= 1.5f;
+			fCamLookAtHeight	= 1.5f;
+			vTargetOffset		= { -0.3f, 0.f, 0.f, 1.f };
+		}
+		else
+		{
+			fDistance			= 2.3f;
+			fCamPostionHeight	= 1.4f;
+			fCamLookAtHeight	= 1.2f;
+			vTargetOffset		= { -0.3f, 0.f, 0.f, 1.f };
+		}
 
 		/* CamPosition */
-		vCamPosition = Vec4(m_tActionTalkDesc.pTransformNpc->Get_Position())
-						+ Vec4(m_tActionTalkDesc.pTransformNpc->Get_Look()).ZeroY().Normalized() * fDistance
-						+ m_tActionTalkDesc.pTransformNpc->Get_RelativeOffset(vTargetOffset);
-		vCamPosition.y += fCamPostionHeight;
+		{
+			vCamPosition = Vec4(m_tActionTalkDesc.pTransformNpc->Get_Position())
+							+ Vec4(m_tActionTalkDesc.pTransformNpc->Get_Look()).ZeroY().Normalized() * fDistance
+							+ m_tActionTalkDesc.pTransformNpc->Get_RelativeOffset(vTargetOffset);
+			vCamPosition.y += fCamPostionHeight;
+		}
 
 		/* CamLookAt */
-		vCamLookAt = m_tActionTalkDesc.pTransformNpc->Get_Position();
-		vCamLookAt.y += fCamLookAtHeight;
+		{
+			vCamLookAt = m_tActionTalkDesc.pTransformNpc->Get_Position();
+			vCamLookAt.y += fCamLookAtHeight;
+		}
 
 		/* Fov */
 		Set_Fov(Cam_Fov_Action_Talk_Narrow);
@@ -919,13 +1031,17 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 		}
 
 		/* CamPosition */
-		Vec4 vTwoThirdsPosToNpc = vPlayerKuuCenterPos + (vDirToNpcLook.ZeroY() * fDistanceToNpc * 0.7f);
-		vCamPosition = vTwoThirdsPosToNpc + (vDirToNpcLeft.ZeroY() * fDistanceToNpc * 1.f);
-		vCamPosition.y += fDistanceToNpc * 0.25f;
+		{
+			Vec4 vTwoThirdsPosToNpc = vPlayerKuuCenterPos + (vDirToNpcLook.ZeroY() * fDistanceToNpc * 0.7f);
+			vCamPosition = vTwoThirdsPosToNpc + (vDirToNpcLeft.ZeroY() * fDistanceToNpc * 1.f);
+			vCamPosition.y += fDistanceToNpc * 0.25f;
+		}
 
 		/* CamLookAt */
-		vCamLookAt = vCenterPosToNpc;
-		vCamLookAt.y -= fDistanceToNpc * 0.0f;
+		{
+			vCamLookAt = vCenterPosToNpc;
+			vCamLookAt.y -= fDistanceToNpc * 0.0f;
+		}
 
 		/* Fov */
 		Set_Fov(Cam_Fov_Action_Talk_Default);
@@ -946,15 +1062,29 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 		if (nullptr == m_tActionTalkDesc.pTransformNpc)
 			return;
 
+		Vec4 vTargetOffset = {};
+
+		if (m_tActionTalkDesc.bFinalBoss)
+		{
+			vTargetOffset = { 1.f, 2.25f, -2.f, 1.f };
+		}
+		else
+		{
+			vTargetOffset = { 1.f, 2.f, -1.f, 1.f };
+		}
+
 		/* CamPosition */
-		const Vec4 vTargetOffset = { 1.f, 2.f, -1.f, 1.f };
-		vCamPosition = (Vec4)m_tActionTalkDesc.pTransformNpc->Get_Position() + (Vec4)m_tActionTalkDesc.pTransformNpc->Get_RelativeOffset(vTargetOffset);
-		vCamPosition.w = 1.f;
+		{
+			vCamPosition = (Vec4)m_tActionTalkDesc.pTransformNpc->Get_Position() + (Vec4)m_tActionTalkDesc.pTransformNpc->Get_RelativeOffset(vTargetOffset);
+			vCamPosition.w = 1.f;
+		}
 
 		/* CamLookAt */
-		Vec4 vPlayerKuuCenterPos = Vec4(m_tActionTalkDesc.pTransform_Kuu->Get_Position() + m_tActionTalkDesc.pTransform_Player->Get_Position()) * 0.5f;
-		vCamLookAt = vPlayerKuuCenterPos;
-		vCamLookAt.w = 1.f;
+		{
+			Vec4 vPlayerKuuCenterPos = Vec4(m_tActionTalkDesc.pTransform_Kuu->Get_Position() + m_tActionTalkDesc.pTransform_Player->Get_Position()) * 0.5f;
+			vCamLookAt = vPlayerKuuCenterPos;
+			vCamLookAt.w = 1.f;
+		}
 
 		/* Fov */
 		Set_Fov(Cam_Fov_Action_Talk_Narrow);
@@ -963,17 +1093,32 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 	case CCamera_Action::tagActionTalkDesc::NPC_FROM_BACK_KUU_AND_PLAYER:
 	{
 		if (nullptr == m_tActionTalkDesc.pTransformNpc)
-		return;
+			return;
+
+		Vec4 vTargetOffset = {}, vLookAtOffset = {};
+
+		if (m_tActionTalkDesc.bFinalBoss)
+		{
+			vTargetOffset = { 0.f, 0.5f, -1.3f, 1.f };
+			vLookAtOffset = { 0.f, 1.f, 0.f, 1.f };
+		}
+		else
+		{
+			vTargetOffset = { 0.f, 1.f, -1.3f, 1.f };
+			vLookAtOffset = { 0.f, 1.f, 0.f, 1.f };
+		}
 
 		/* CamPosition */
-		const Vec4 vTargetOffset = { 0.f, 1.f, -1.3f, 1.f };
-		vCamPosition = m_tActionTalkDesc.pKuu->Get_GoalPosition() + m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vTargetOffset);
-		vCamPosition.w = 1.f;
+		{
+			vCamPosition = m_tActionTalkDesc.pKuu->Get_GoalPosition() + m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vTargetOffset);
+			vCamPosition.w = 1.f;
+		}
 
 		/* CamLookAt */
-		const Vec4 vLookAtOffset = { 0.f, 1.f, 0.f, 1.f };
-		vCamLookAt = (Vec4)m_tActionTalkDesc.pTransformNpc->Get_Position() + (Vec4)m_tActionTalkDesc.pTransformNpc->Get_RelativeOffset(vLookAtOffset);
-		vCamLookAt.w = 1.f;
+		{
+			vCamLookAt = (Vec4)m_tActionTalkDesc.pTransformNpc->Get_Position() + (Vec4)m_tActionTalkDesc.pTransformNpc->Get_RelativeOffset(vLookAtOffset);
+			vCamLookAt.w = 1.f;
+		}
 
 		/* Fov */
 		Set_Fov(Cam_Fov_Action_Talk_Narrow);
@@ -1001,7 +1146,7 @@ void CCamera_Action::Tick_Witch_Invasion(_float fTimeDelta)
 	if (nullptr == pWitchModel || nullptr == pWitchTransform)
 		return;
 
-	Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(0) * pWitchTransform->Get_WorldMatrix();
+	Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(m_tActionWitchInvasionDesc.iBoneNumber) * pWitchTransform->Get_WorldMatrix();
 	Vec4 vLookAt;
 	memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
 
@@ -1013,6 +1158,31 @@ void CCamera_Action::Tick_Witch_Invasion(_float fTimeDelta)
 HRESULT CCamera_Action::Ready_Components()
 {
 	return S_OK;
+}
+
+void CCamera_Action::Tick_Witch_Away(_float fTimeDelta)
+{
+	CModel* pWitchModel = m_tActionWitchRoarDesc.pWitchObject->Get_Component_Model();
+	CTransform* pWitchTransform = m_tActionWitchRoarDesc.pWitchObject->Get_Component_Transform();
+
+	if (nullptr == pWitchModel || nullptr == pWitchTransform)
+		return;
+
+	/* Position */
+	{
+		Vec4 vPos = Vec4(pWitchTransform->Get_Position()) + pWitchTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
+		m_pTransformCom->Set_Position(vPos.OneW());
+	}
+
+	/* LookAt */
+	{
+		Vec4 vLookAt = {};
+		const Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(m_tActionWitchRoarDesc.iBoneNumber) * pWitchTransform->Get_WorldMatrix();
+		memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+		vLookAt += m_pTransformCom->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW();
+
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
 }
 
 HRESULT CCamera_Action::Start_Action_WindMill(const _bool& bNpcToWindMill)
@@ -1060,6 +1230,81 @@ HRESULT CCamera_Action::Start_Action_WindMill(const _bool& bNpcToWindMill)
 		m_eCurActionType = CAMERA_ACTION_TYPE::WINDMILL;
 		m_tActionWindMillDesc.bNpcToWindMill = false;
 	}
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Ready_Action_Witch_Roar(CGameObject* pGameObject)
+{
+	m_tActionWitchRoarDesc.pWitchObject = pGameObject;
+
+	CModel*		pWitchModel		= m_tActionWitchRoarDesc.pWitchObject->Get_Component_Model();
+	CTransform* pWitchTransform = m_tActionWitchRoarDesc.pWitchObject->Get_Component_Transform();
+
+	if (nullptr == pWitchModel || nullptr == pWitchTransform)
+		return E_FAIL;
+
+	m_eCurActionType = CAMERA_ACTION_TYPE::WITCH_ROAR;
+
+	m_tActionWitchRoarDesc.tTargetOffset.vCurVec = { 0.f, 1.2f, m_tActionWitchRoarDesc.fOriginDist, 1.f };
+	m_tActionWitchRoarDesc.tLookAtOffset.vCurVec = { 0.f, -0.5f, 0.f, 1.f };
+
+	/* Position */
+	{
+		Vec4 vPos = Vec4(pWitchTransform->Get_Position()) + pWitchTransform->Get_RelativeOffset(m_tActionWitchRoarDesc.tTargetOffset.vCurVec);
+		m_pTransformCom->Set_Position(vPos.OneW());
+	}
+
+	/* LookAt */
+	{
+		Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(m_tActionWitchRoarDesc.iBoneNumber) * pWitchTransform->Get_WorldMatrix();
+		Vec4 vLookAt;
+		memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+		vLookAt += m_pTransformCom->Get_RelativeOffset(m_tActionWitchRoarDesc.tLookAtOffset.vCurVec).ZeroW();
+
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
+}
+
+HRESULT CCamera_Action::Start_Action_Witch_Roar()
+{
+	switch (m_tActionWitchRoarDesc.iCount)
+	{
+	case 0 :
+	{
+		m_tActionWitchRoarDesc.bZoomIn = true;
+
+		// Zoom In 
+		m_tActionWitchRoarDesc.tTargetOffset.Start(
+			{ 0.f, 2.f, 1.f, 1.f }, 3.f, LERP_MODE::SMOOTHER_STEP);
+
+		m_tActionWitchRoarDesc.tLookAtOffset.Start(
+			{ 0.f, 0.f, 0.f, 1.f }, 2.f, LERP_MODE::SMOOTHER_STEP);
+
+		break;
+	}
+	case 1:
+	{
+		m_tActionWitchRoarDesc.bZoomIn = false;
+
+		// Zoom Out 1
+		m_tActionWitchRoarDesc.tTargetOffset.Start(
+			{ 0.f, 2.f, 1.75f, 1.f }, 0.25f, LERP_MODE::SMOOTHER_STEP);
+
+		break;
+	}
+	case 2:
+	{
+		// Zoom Out 2
+		m_tActionWitchRoarDesc.tTargetOffset.Start(
+			{ 0.f, 2.f, 2.75f, 1.f }, 2.f, LERP_MODE::SMOOTHER_STEP);
+		break;
+	}
+	default:
+		break;
+	}
+
+	++m_tActionWitchRoarDesc.iCount;
 
 	return S_OK;
 }

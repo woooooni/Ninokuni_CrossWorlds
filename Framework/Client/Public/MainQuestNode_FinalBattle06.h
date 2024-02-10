@@ -18,7 +18,7 @@ private:
 	CGameObject* m_pWitch = nullptr;
 	_bool m_bIsFadeOut = false;
 
-
+	_bool m_bCamSignal = false;
 public:
 	static CMainQuestNode_FinalBattle06* Create();
 	virtual void Free() override;

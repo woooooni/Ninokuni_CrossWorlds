@@ -442,7 +442,7 @@ HRESULT CCamera_Follow::Lock_LookHeight()
 
 	m_bLockLookHeight = true;
 
-	const Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(0)
+	const Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(m_iLockBoneNumber)
 						* m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix();
 
 	m_fLockLookHeight = matLookWorld.m[3][1];
@@ -587,7 +587,6 @@ Vec4 CCamera_Follow::Calculate_Look()
 {
 	Vec4 vLookAt, vLookAtOffset;
 
-
 	CTransform* pTargetTransform = m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform");
 
 	/* 룩앳 위치 */
@@ -598,12 +597,12 @@ Vec4 CCamera_Follow::Calculate_Look()
 			vLookAt = m_tBlendingLookAtPosition.vCurVec;
 		else
 		{
-			Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(0)
+			Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(m_iLockBoneNumber)
 								* m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix();
 
 			memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
 			
-			/* 높이 락이 걸린 경우 (기안티) */
+			/* 높이 락이 걸린 경우 */
 			if (m_bLockLookHeight)
 			{
 				if (vLookAt.y <= m_fLockLookHeight)

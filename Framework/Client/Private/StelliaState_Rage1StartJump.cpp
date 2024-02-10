@@ -35,10 +35,10 @@ void CStelliaState_Rage1StartJump::Tick_State(_float fTimeDelta)
 	__super::Tick_State(fTimeDelta);
 
 	/* Camera */
-	if (35 == m_pModelCom->Get_CurrAnimationFrame())
+	if (27 == m_pModelCom->Get_CurrAnimationFrame() && !m_pModelCom->Is_Tween())
 	{
 		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-		if (nullptr != pFollowCam && !pFollowCam->Is_Lock_LookHeight())
+		if (nullptr != pFollowCam && pFollowCam->Is_LockOn() && !pFollowCam->Is_Lock_LookHeight())
 		{
 			pFollowCam->Lock_LookHeight();
 		}

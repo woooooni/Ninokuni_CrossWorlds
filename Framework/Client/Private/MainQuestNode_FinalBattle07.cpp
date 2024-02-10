@@ -6,9 +6,11 @@
 
 #include "UI_Manager.h"
 #include "Game_Manager.h"
+#include "Character.h"
+#include "Player.h"
+
 #include "Quest_Manager.h"
 
-#include "Camera_Manager.h"
 #include "Camera_Group.h"
 
 #include "Stellia.h"
@@ -40,9 +42,35 @@ HRESULT CMainQuestNode_FinalBattle07::Initialize()
 
 void CMainQuestNode_FinalBattle07::Start()
 {
+	/* 카메라 연출 종료 */
 	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
 	if (nullptr != pActionCam)
-		pActionCam->Finish_Action_Talk();
+	{
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
+		//pActionCam->Finish_Action_Talk();
+	}
+
+	/* 락온 설정 */
+	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	if (nullptr != pFollowCam)
+	{
+		/* 기존 세팅 초기화 */
+		{
+			pFollowCam->Reset_WideView_To_DefaultView(true);
+			pFollowCam->Set_Default_Position();
+
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+
+			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+		}
+
+		//pFollowCam->Set_LockBoneNumber(3);
+		//
+		//CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Stellia");
+		//if (nullptr != pTarget)
+		//	pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Stellia, Cam_LookAt_Offset_LockOn_Stellia);
+	}
 
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 
