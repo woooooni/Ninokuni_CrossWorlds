@@ -15,7 +15,7 @@ public:
         RENDER_DECAL, RENDER_EFFECT, RENDER_LENSFLARE, RENDER_GODRAY, RENDER_ALPHABLEND,
 		RENDER_CASCADE,
 		RENDER_UI, 
-		/*RENDER_SHADOW_UI,*/ RENDER_NONBLEND_UI,RENDER_UI_MINIMAP, RENDER_UI_MINIMAP_ICON,
+		/*RENDER_SHADOW_UI,*/ RENDER_NONBLEND_UI, RENDER_UI_MINIMAP, RENDER_UI_MINIMAP_ICON,
 		RENDER_UI_EFFECT_NONBLEND, RENDER_UI_EFFECT_BLEND,
 		RENDER_CURSOR,
 
@@ -100,39 +100,35 @@ public:
 	virtual HRESULT Initialize(void* pArg) override;
 
 public:
+	const _bool& Get_RenderSwitch(_uint iIndex) const { return m_bRenderSwitch[iIndex]; }
+	void Set_RenderSwitch(uint32 iIndex, _bool onoff)
+	{
+		if (iIndex >= RENDER_SWITCH::SWITCH_END)
+			return;
+
+		m_bRenderSwitch[iIndex] = onoff;
+	}
+
+public:
 	void Set_Fog(_float4 vFogColor, _float fFogStart, _float fFogEnd)
 	{
-		m_vFogColor    = vFogColor;
+		m_vFogColor = vFogColor;
 		m_fFogStartEnd = _float2(fFogStart, fFogEnd);
 	}
 
+	void Set_FogColor(Vec4 vFogColor) { m_vFogColor = vFogColor; }
+	Vec4 Get_FogColor() { return m_vFogColor; }
+
+	void Set_FogDesc(const FOG_DESC& FogDesc) { m_FogDesc = FogDesc; }
+	const FOG_DESC& Get_FogDesc() { return m_FogDesc; }
+
+public:
 	void Set_LineColor(_float4 vLineColor)
 	{
 		m_vLineColor = vLineColor;
 	}
 
-public: // UI Setting Option을 위한 Get/Set
-	_bool Get_NatrualDraw() { return m_bNaturalDraw; }
-	void Set_NaturalDraw(_bool bSet) { m_bNaturalDraw = bSet; }
-
-	_bool Get_ShadowDraw() { return m_bShadowDraw; }
-	void Set_ShadowDraw(_bool bSet) { m_bShadowDraw = bSet; }
-
-	_bool Get_SsaoDraw() { return m_bSsaoDraw; }
-	void Set_SsaoDraw(_bool bSet) { m_bSsaoDraw = bSet; }
-
-	_bool Get_OutlineDraw() { return m_bOutlineDraw; }
-	void Set_OutlineDraw(_bool bSet) { m_bOutlineDraw = bSet; }
-
-	_bool Get_BlurDraw() { return m_bBlurDraw; }
-	void Set_BlurDraw(_bool bSet) { m_bBlurDraw = bSet; }
-
-	_bool Get_BloomDraw() { return m_bBlomDraw; }
-	void Set_BloomDraw(_bool bSet) { m_bBlomDraw = bSet; }
-
-	_bool Get_PbrDraw() { return m_bPbrDraw; }
-	void Set_PbrDraw(_bool bSet) { m_bPbrDraw = bSet; }
-
+public:
 	_bool Get_RadialBlur() { return m_bRadialBlurDraw; }
 
 	// Quality : 얼마나 샘플할 건지, Power : 얼마나 뭉갤건지.
@@ -142,43 +138,6 @@ public: // UI Setting Option을 위한 Get/Set
 		m_fRadialBlurQuality = max(1.f, fQuality);
 		m_bRadialBlurDraw = bSet;
 	}
-
-	void Set_MinimapView(_float4x4 matView) { m_MinimapView = matView; }
-	_float4x4 Get_MinimapView() { return m_MinimapView; }
-	_float4x4 Get_MinimapProj() { return m_MinimapProj; }
-
-	void Set_FogDesc(const FOG_DESC& FogDesc) { m_FogDesc = FogDesc; }
-	const FOG_DESC& Get_FogDesc() { return m_FogDesc; }
-
-	void Set_FogColor(Vec4 vFogColor) { m_vFogColor = vFogColor; }
-	Vec4 Get_FogColor() { return m_vFogColor; }
-
-public:
-	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pGameObject);
-	HRESULT Add_RenderGroup_Instancing(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix);
-	HRESULT Add_RenderGroup_AnimInstancing(RENDERGROUP eRenderGroup, class CGameObject* pGameObject, _float4x4 WorldMatrix, const TweenDesc& TweenInstanceDesc, const ANIMODEL_INSTANCE_DESC& AnimModelInstanceDesc);
-	HRESULT Add_RenderGroup_Instancing_Effect(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix, const EFFECT_INSTANCE_DESC& EffectInstanceDesc);
-	HRESULT Add_Text(const TEXT_DESC& TextDesc);
-
-	HRESULT Check_Option();
-
-#ifdef _DEBUG
-public:
-	HRESULT Add_Debug(class CComponent* pDebug) {
-		if (nullptr == pDebug)
-			return E_FAIL;
-
-		m_RenderDebug.push_back(pDebug);
-		Safe_AddRef(pDebug);
-		return S_OK;
-	}
-
-	void Set_PlayerPosition(_vector vPosition) { XMStoreFloat4(&m_vPlayerPosition, vPosition); }
-
-#endif
-
-public:
-	HRESULT Draw();
 
 public:
 	SCREEN_EFFECT Get_Current_ScreenEffect() { return m_eCurrentScreenEffect; }
@@ -201,6 +160,85 @@ public:
 	Vec2 Get_ScreenEffectAcc() { return m_vScreenEffectAcc; }
 	void Set_ScreenEffectAcc(const Vec2& vEffectAcc) { m_vScreenEffectAcc = vEffectAcc; }
 	void Add_ScreenEffectAcc(const Vec2& vEffectAcc) { m_vScreenEffectAcc += vEffectAcc; }
+
+public:
+	void Set_MinimapView(_float4x4 matView) { m_MinimapView = matView; }
+	_float4x4 Get_MinimapView() { return m_MinimapView; }
+	_float4x4 Get_MinimapProj() { return m_MinimapProj; }
+
+public: // UI Setting Option을 위한 Get/Set
+	_bool Get_NatrualDraw() { return m_bNaturalDraw; }
+	void Set_NaturalDraw(_bool bSet) 
+	{ 
+		m_bNaturalDraw = bSet; 
+		Check_Option();
+	}
+
+	_bool Get_ShadowDraw() { return m_bShadowDraw; }
+	void Set_ShadowDraw(_bool bSet) 
+	{ 
+		m_bShadowDraw = bSet; 
+		Check_Option();
+	}
+
+	_bool Get_SsaoDraw() { return m_bSsaoDraw; }
+	void Set_SsaoDraw(_bool bSet)
+	{ 
+		m_bSsaoDraw = bSet; 
+		Check_Option();
+	}
+
+	_bool Get_OutlineDraw() { return m_bOutlineDraw; }
+	void Set_OutlineDraw(_bool bSet) 
+	{ 
+		m_bOutlineDraw = bSet; 
+		Check_Option();
+	}
+
+	_bool Get_BlurDraw() { return m_bBlurDraw; }
+	void Set_BlurDraw(_bool bSet) 
+	{ 
+		m_bBlurDraw = bSet; 
+		Check_Option();
+	}
+
+	_bool Get_BloomDraw() { return m_bBlomDraw; }
+	void Set_BloomDraw(_bool bSet) 
+	{ 
+		m_bBlomDraw = bSet; 
+		Check_Option();
+	}
+
+	_bool Get_PbrDraw() { return m_bPbrDraw; }
+	void Set_PbrDraw(_bool bSet) 
+	{ 
+		m_bPbrDraw = bSet; 
+		Check_Option();
+	}
+
+public:
+	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pGameObject);
+	HRESULT Add_RenderGroup_Instancing(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix);
+	HRESULT Add_RenderGroup_AnimInstancing(RENDERGROUP eRenderGroup, class CGameObject* pGameObject, _float4x4 WorldMatrix, const TweenDesc& TweenInstanceDesc, const ANIMODEL_INSTANCE_DESC& AnimModelInstanceDesc);
+	HRESULT Add_RenderGroup_Instancing_Effect(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix, const EFFECT_INSTANCE_DESC& EffectInstanceDesc);
+	HRESULT Add_Text(const TEXT_DESC& TextDesc);
+
+#ifdef _DEBUG
+public:
+	HRESULT Add_Debug(class CComponent* pDebug) {
+		if (nullptr == pDebug)
+			return E_FAIL;
+
+		m_RenderDebug.push_back(pDebug);
+		Safe_AddRef(pDebug);
+		return S_OK;
+	}
+
+	void Set_PlayerPosition(_vector vPosition) { XMStoreFloat4(&m_vPlayerPosition, vPosition); }
+#endif
+
+public:
+	HRESULT Draw();
 
 private:
 	HRESULT Draw_BackGround();
@@ -276,11 +314,21 @@ private:
 
 #ifdef _DEBUG
 private:
+	HRESULT Input_Key();
+
 	HRESULT Render_Debug();
 	HRESULT Render_Debug_Target();
-
 #endif // DEBUG
-	HRESULT Input_Key();
+
+private:
+	HRESULT Check_Option();
+
+	// SSAO
+	void BuildFrustumFarCorners();
+	void BuildOffsetVectors();
+
+	HRESULT InitializeScreenQuad();
+	HRESULT RenderScreenQuad();
 
 private:
 	HRESULT Create_Buffer();
@@ -304,8 +352,6 @@ private:
 	class CShader* m_pShaders[RENDERER_SHADER_TYPE::SHADER_END];
 	class CShader* m_pIntancingShaders[INSTANCING_SHADER_TYPE::TYPE_END];
 
-	class CTexture* m_pPerlinNoiseTextureCom = nullptr;
-
 	class CVIBuffer_Rect*       m_pVIBuffer = { nullptr };
 	class CVIBuffer_Instancing* m_pVIBuffer_Instancing = nullptr;
 	_float4x4 m_WorldMatrix, m_ViewMatrix, m_ProjMatrix;
@@ -314,10 +360,9 @@ private:
 	class CTarget_Manager* m_pTarget_Manager = { nullptr };
 	class CLight_Manager*  m_pLight_Manager = { nullptr };
 
-private:
-	//_bool m_bWorldMeshRender = true;
-	//_bool m_bUIMeshRender    = true;
-	// Fog
+private: // Fog
+	class CTexture* m_pPerlinNoiseTextureCom = nullptr;
+
 	_float4	m_vFogColor    = _float4(0.f, 0.635f, 1.f, 1.f);
 	_float2	m_fFogStartEnd = _float2(300.f, 600.f);
 	
@@ -326,8 +371,11 @@ private:
 	_float4 m_vLineColor = _float4(0.5f, 0.4f, 0.2f, 1.f);
 
 private: 
+	_bool  m_bRenderSwitch[RENDER_SWITCH::SWITCH_END] = { true, false };
+
 	_bool	m_bDebugDraw   = false;
 	_bool   m_bOption      = false;
+
 	// On/Off_Option
 	_bool   m_bNaturalDraw = true;
 	_bool   m_bShadowDraw  = true;
@@ -336,44 +384,21 @@ private:
 	_bool   m_bBlurDraw    = true;
 	_bool   m_bBlomDraw    = true;
 	_bool	m_bRadialBlurDraw = false;
-
-	// 구현 필요
-	_bool   m_bPbrDraw  = false;
-
-public:
-	const _bool& Get_RenderSwitch(_uint iIndex) const { return m_bRenderSwitch[iIndex]; }
-	void Set_RenderSwitch(uint32 iIndex, _bool onoff)
-	{
-		if (iIndex >= RENDER_SWITCH::SWITCH_END)
-			return;
-
-		m_bRenderSwitch[iIndex] = onoff;
-	}
-private:
-	_bool  m_bRenderSwitch[RENDER_SWITCH::SWITCH_END] = { true, false };
+	_bool   m_bPbrDraw        = false;
 
 private:
 	_float m_fRadialBlurQuality = 16.f;
 	_float m_fRadialBlurPower = 0.1f;
 
-
 private: // Minimap
 	_float4x4 m_MinimapView;
 	_float4x4 m_MinimapProj;
 
-private:
-	_float	m_fBias = 0.2f;
-	_float4	m_vPlayerPosition = {0.f, 0.f, 0.f, 1.f};
-
-private:
-	// SSAO
+private: // SSAO
 	Vec4 m_vFrustumFarCorner[4];
 	Vec4 m_vOffsets[26];
 
 	class CTexture* m_pRandomVectorTexture = nullptr;
-
-	void BuildFrustumFarCorners();
-	void BuildOffsetVectors();
 
 	// ScreenQuad
 	ID3D11Buffer* m_pQuadVertexBuffer = nullptr;
@@ -389,15 +414,15 @@ private:
 	_int m_iQuadVerCount;
 	_int m_iQuadIndexCount;
 
-	HRESULT InitializeScreenQuad();
-	HRESULT RenderScreenQuad();
 private:
 	 class CTexture* m_pScreenTextureCom = nullptr;
 
-private:
 	Vec2 m_vScreenEffectAcc = { 0.f, 0.f };
 	SCREEN_EFFECT m_eCurrentScreenEffect = SCREEN_EFFECT::SCREENEFFECT_END;
 
+private:
+	_float	m_fBias = 0.2f;
+	_float4	m_vPlayerPosition = {0.f, 0.f, 0.f, 1.f};
 
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
