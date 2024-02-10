@@ -41,11 +41,18 @@ void CState_VehicleFlying_Rush::Enter_State(void* pArg)
     m_fAccRadialBlurPower = 0.1f;
     CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(XMConvertToRadians(80.f), 0.5f);
 
+    m_pModelCom->Set_Animation(m_AnimIndices[0]);
+
     CVehicle_Flying_Biplane* pFlyingBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pVehicle);
     if (nullptr != pFlyingBiplane)
     {
         CUIMinigame_Manager::GetInstance()->OnOff_RushVignette(true);
         pFlyingBiplane->Generate_Trail(L"", L"T_e_Skl_In_Slash_Line003.png", L"", Vec4(1.f, 1.f, 1.f, 0.5f), 22);
+        CGameObject* pRider = pFlyingBiplane->Get_Rider();
+        if (nullptr != pRider)
+        {
+            pRider->Get_Component_StateMachine()->Change_State(CCharacter::STATE::FLYING_STAND);
+        }
     }
 
 }

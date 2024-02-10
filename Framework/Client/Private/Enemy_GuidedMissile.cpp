@@ -47,7 +47,7 @@ HRESULT CEnemy_GuidedMissile::Initialize(void* pArg)
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
-	m_fDeletionTime = 10.f;
+	m_fDeletionTime = 4.f;
 	m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 	m_pTargetTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform();
 
@@ -72,8 +72,7 @@ void CEnemy_GuidedMissile::Tick(_float fTimeDelta)
 			Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 
 			Vec3 vAxis = XMVector3Cross(vLook, vDir);
-			vDir = XMVector3Normalize(m_pTargetTransform->Get_Position() - m_pTransformCom->Get_Position());
-
+			vDir = XMVector3Normalize((m_pTargetTransform->Get_Position() + XMVectorSet(0.f, 1.5f, 0.f, 0.f)) - m_pTransformCom->Get_Position());
 			m_pTransformCom->Rotation_Acc(vAxis, XMConvertToRadians(180.f) * fTimeDelta);
 		}
 	}

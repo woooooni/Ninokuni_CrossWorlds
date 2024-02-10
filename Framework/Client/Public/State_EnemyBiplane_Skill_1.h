@@ -31,6 +31,9 @@ private:
 private:
 	void Shoot_Bullet_Ball();
 
+private:
+	_int m_iShootBallCount = -2;
+
 public:
 	static CState_EnemyBiplane_Skill_1* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

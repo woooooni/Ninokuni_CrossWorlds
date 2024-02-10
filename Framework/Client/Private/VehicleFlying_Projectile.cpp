@@ -58,7 +58,7 @@ void CVehicleFlying_Projectile::Tick(_float fTimeDelta)
 	__super::Tick(fTimeDelta);
 
 	m_fAccDeletionTime += fTimeDelta;
-	if (true == m_bCameraTarget && m_fAccDeletionTime >= 3.f)
+	if (true == m_bCameraTarget && m_fAccDeletionTime >= 4.f)
 	{
 		m_bCameraTarget = false;
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());

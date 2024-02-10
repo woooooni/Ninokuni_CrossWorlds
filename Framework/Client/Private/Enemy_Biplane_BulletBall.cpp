@@ -50,22 +50,7 @@ HRESULT CEnemy_Biplane_BulletBall::Initialize(void* pArg)
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
 
-	m_pTargetTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform();
-
-	if (nullptr == m_pTargetTransform)
-		return E_FAIL;
-
-	_int iRandomX = 0;
-	while (0 == iRandomX)	
-		iRandomX = GI->RandomInt(-5, 5);
-
-	_int iRandomZ = 0;
-	while (0 == iRandomZ)
-		iRandomZ = GI->RandomInt(-5, 5);
-
-	m_vOffsetPos = Vec3(iRandomX, 0.f, iRandomZ);
-
-	m_fDeletionTime = 20.f;
+	m_fDeletionTime = 10.f;
 
 	return S_OK;
 }
@@ -75,13 +60,8 @@ void CEnemy_Biplane_BulletBall::Tick(_float fTimeDelta)
 	
 	__super::Tick(fTimeDelta);
 
-	Vec4 vTargetPos = Vec4(m_pTargetTransform->Get_Position()) + m_pTargetTransform->Get_RelativeOffset(Vec4(m_vOffsetPos).OneW());
-	vTargetPos = vTargetPos.OneW();
-
-	Vec3 vDir = vTargetPos - Vec4(m_pTransformCom->Get_Position());
-
-	if (vDir.Length() > 0.1f)
-		m_pTransformCom->Move(XMVector3Normalize(vDir), 30.f, fTimeDelta);
+	Vec4 vPosition = Vec4(m_pOwner->Get_Component_Transform()->Get_Position()) + m_pOwner->Get_Component_Transform()->Get_RelativeOffset(Vec4(m_vOffsetPos).OneW());
+	m_pTransformCom->Set_Position(vPosition);
 
 
 	m_fAccFireBullet += fTimeDelta;
@@ -197,31 +177,34 @@ void CEnemy_Biplane_BulletBall::Update_Rotaion(_float fTimeDelta)
 
 void CEnemy_Biplane_BulletBall::Fire_Bullet()
 {
-	CVehicleFlying_Projectile::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
-	ProjectileDesc.pOwner = m_pOwner;
-
-	CEnemy_Biplane_Bullet* pBullet = CPool<CEnemy_Biplane_Bullet>::Get_Obj();
-
-	if (nullptr == pBullet)
+	for (_int i = -2; i <= 2; ++i)
 	{
-		pBullet = dynamic_cast<CEnemy_Biplane_Bullet*>(GI->Clone_GameObject(L"Prototype_GameObject_Enemy_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc));
+		CVehicleFlying_Projectile::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
+		ProjectileDesc.pOwner = m_pOwner;
+
+		CEnemy_Biplane_Bullet* pBullet = CPool<CEnemy_Biplane_Bullet>::Get_Obj();
+
+		if (nullptr == pBullet)
+		{
+			pBullet = dynamic_cast<CEnemy_Biplane_Bullet*>(GI->Clone_GameObject(L"Prototype_GameObject_Enemy_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc));
+		}
+
+
+		if (nullptr == pBullet)
+			return;
+
+		pBullet->Set_Owner(m_pOwner);
+
+		CTransform* pTransform = pBullet->Get_Component<CTransform>(L"Com_Transform");
+		Vec3 vScale = pTransform->Get_Scale();
+
+		pTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+		pTransform->Set_Scale(vScale);
+
+		pTransform->Rotation_Acc(XMVector3Normalize(pTransform->Get_Up()), XMConvertToRadians(90.f) * i);
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, pBullet)))
+			MSG_BOX("Generate Bullet Failed.");
 	}
-
-
-	if (nullptr == pBullet)
-		return;
-
-	pBullet->Set_Owner(m_pOwner);
-
-	CTransform* pTransform = pBullet->Get_Component<CTransform>(L"Com_Transform");
-	Vec3 vScale = pTransform->Get_Scale();
-	
-	pTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
-	pTransform->Set_Scale(vScale);
-
-
-	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, pBullet)))
-		MSG_BOX("Generate Bullet Failed.");
 }
 
 

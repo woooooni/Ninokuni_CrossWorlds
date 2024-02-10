@@ -51,7 +51,7 @@ void CBiplane_Thunder_Cloud::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Smoke"), this);
+	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Smoke"), this, Vec3(0.f, 25.f, 0.f));
 
 	Tick_Target(fTimeDelta);
 

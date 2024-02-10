@@ -106,7 +106,7 @@ void CVehicle_Flying_Biplane::Tick(_float fTimeDelta)
 		__super::Tick(fTimeDelta);
 		GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_BODY, this);
 
-		Update_RiderState();
+		// Update_RiderState();
 
 
 		if (nullptr != m_pRigidBodyCom)
@@ -451,6 +451,7 @@ HRESULT CVehicle_Flying_Biplane::Ready_States()
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_BOSS_IDLE, CState_VehicleFlying_BossStage_Stand::Create(m_pStateCom, strAnimationNames));
 
+
 	/*strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE, CState_VehicleFlying_Stand::Create(m_pStateCom, strAnimationNames));
@@ -641,30 +642,29 @@ void CVehicle_Flying_Biplane::Update_RiderState()
 		if (nullptr == pStateCom)
 			return;
 
-		if (CVehicle::VEHICLE_STATE::VEHICLE_RUN == m_pStateCom->Get_CurrState() && CCharacter::STATE::FLYING_RUNSTART != pStateCom->Get_CurrState())
+		switch (m_pStateCom->Get_CurrState())
 		{
+		case CVehicle::VEHICLE_STATE::VEHICLE_RUN :
+		case CVehicle::VEHICLE_STATE::VEHICLE_BOSS_IDLE:
 			if (CCharacter::STATE::FLYING_RUN != pStateCom->Get_CurrState())
-				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::FLYING_RUN);
-		}
+			{
+				pStateCom->Change_State(CCharacter::STATE::FLYING_RUN);
+			}
+			break;
 
-		if (CVehicle::VEHICLE_STATE::VEHICLE_BOSS_IDLE == m_pStateCom->Get_CurrState())
-		{
-			if(CCharacter::STATE::FLYING_RUN != pStateCom->Get_CurrState())
-				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::FLYING_RUN);
-		}
-
-		if (CVehicle::VEHICLE_STATE::VEHICLE_IDLE == m_pStateCom->Get_CurrState())
-		{
-			if (CCharacter::STATE::FLYING_STAND != pStateCom->Get_CurrState() &&
-				CCharacter::STATE::FLYING_RUNSTART != pStateCom->Get_CurrState())
-				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::FLYING_STAND);
-		}
-
-		if (CVehicle::VEHICLE_STATE::VEHICLE_RUSH == m_pStateCom->Get_CurrState())
-		{
+		case CVehicle::VEHICLE_STATE::VEHICLE_IDLE:
+		case CVehicle::VEHICLE_STATE::VEHICLE_RUSH:
+		case CVehicle::VEHICLE_STATE::VEHICLE_DAMAGED:
+		case CVehicle::VEHICLE_STATE::VEHICLE_BACKFLIP:
 			if (CCharacter::STATE::FLYING_STAND != pStateCom->Get_CurrState())
-				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::FLYING_STAND);
+			{
+				pStateCom->Change_State(CCharacter::STATE::FLYING_STAND);
+			}
+			break;
+
+
 		}
+
 	}
 }
 
@@ -685,8 +685,12 @@ void CVehicle_Flying_Biplane::On_Damaged(const COLLISION_INFO& tInfo)
 		// 데미지 공식
 		m_tStat.fCurHP = max(0.f, m_tStat.fCurHP - 1500.f);
 
-		m_pRigidBodyCom->Set_FrictionScale(2.f);
-		m_pRigidBodyCom->Add_Velocity(vDir, 20.f, true);
+		if (m_pStateCom->Get_CurrState() != CVehicle::VEHICLE_STATE::VEHICLE_BOSS_IDLE)
+		{
+			m_pRigidBodyCom->Set_FrictionScale(2.f);
+			m_pRigidBodyCom->Add_Velocity(vDir, 20.f, true);
+		}
+		
 	}
 
 	else if (wstring::npos != strAttackerName.find(L"Enemy_GuidedMissile"))
@@ -698,9 +702,14 @@ void CVehicle_Flying_Biplane::On_Damaged(const COLLISION_INFO& tInfo)
 		// 데미지 공식
 		m_tStat.fCurHP = max(0.f, m_tStat.fCurHP - 3000.f);
 
-		m_pRigidBodyCom->Set_FrictionScale(2.f);
-		m_pRigidBodyCom->Add_Velocity(vDir, 30.f, true);
+		if (m_pStateCom->Get_CurrState() != CVehicle::VEHICLE_STATE::VEHICLE_BOSS_IDLE)
+		{
+			m_pRigidBodyCom->Set_FrictionScale(2.f);
+			m_pRigidBodyCom->Add_Velocity(vDir, 30.f, true);
+		}
 	}
+
+	CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.3f, 19.f, 0.3f);
 
 	if(m_pStateCom->Get_CurrState() != CVehicle::VEHICLE_STATE::VEHICLE_BOSS_IDLE)
 		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_DAMAGED);

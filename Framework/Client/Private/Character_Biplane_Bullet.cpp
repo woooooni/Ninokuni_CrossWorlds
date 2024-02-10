@@ -44,6 +44,7 @@ HRESULT CCharacter_Biplane_Bullet::Initialize(void* pArg)
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 	m_fDeletionTime = 1.5f;
 
+	m_fMoveSpeed = 40.f;
 	m_vBloomPower = Vec3(1.f, 1.f, 0.f);
 	return S_OK;
 }

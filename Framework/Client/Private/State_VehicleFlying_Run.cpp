@@ -11,6 +11,7 @@
 #include "Vehicle_Flying_Biplane.h"
 
 #include "Pool.h"
+#include "Character.h"
 
 CState_VehicleFlying_Run::CState_VehicleFlying_Run(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
@@ -49,6 +50,13 @@ void CState_VehicleFlying_Run::Enter_State(void* pArg)
 	if (nullptr != pBiplane)
 	{
 		pBiplane->Start_Trail(CVehicle_Flying_Biplane::BIPLANE_TRAIL::TAIL);
+	}
+
+
+	CGameObject* pRider = m_pVehicle_Flying_Biplane->Get_Rider();
+	if (nullptr != pRider)
+	{
+		pRider->Get_Component_StateMachine()->Change_State(CCharacter::STATE::FLYING_RUN);
 	}
 }
 

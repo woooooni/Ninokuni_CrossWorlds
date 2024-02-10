@@ -40,6 +40,7 @@ HRESULT CEnemy_Biplane_Bullet::Initialize(void* pArg)
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
 	m_vBloomPower = Vec3(1.f, 1.f, 1.f);
+	m_fDeletionTime = 5.f;
 
 	return S_OK;
 }
