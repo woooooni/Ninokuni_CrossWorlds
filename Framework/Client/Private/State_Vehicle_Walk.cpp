@@ -4,6 +4,7 @@
 #include "Vehicle.h"
 #include "Game_Manager.h"
 #include "Player.h"
+#include "Particle_Manager.h"
 
 CState_Vehicle_Walk::CState_Vehicle_Walk(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
@@ -135,6 +136,11 @@ void CState_Vehicle_Walk::Tick_State(_float fTimeDelta)
 			m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
 			return;
 		}
+	}
+	else
+	{
+		GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle_To_Matrix(&m_fEffectAcc, CUtils::Random_Float(0.5f, 1.f), fTimeDelta, 
+			TEXT("Particle_Smoke"), m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.2f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 	}
 }
 

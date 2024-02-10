@@ -24,6 +24,7 @@ public:
 
 private:
 	_float m_fMoveSpeed = { 3.f };
+	_float m_fEffectAcc = { 0.f };
 
 public:
 	static CState_Vehicle_Walk* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
