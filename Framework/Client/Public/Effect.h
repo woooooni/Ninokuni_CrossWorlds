@@ -330,6 +330,9 @@ public:
 	void Set_AnimationLoop(_bool bLoop)           { m_tEffectDesc.bAnimationLoop = bLoop; }
 	void Set_AnimationFinishDelete(_bool bDelete) { m_bAnimationFinishDelete = bDelete; }
 
+	void Set_ScaleMinDelete(_bool bDelete) { m_bScaleMinDelete = bDelete; }
+	void Set_ScaleMinSize(_float3 fXYZ) { m_tEffectDesc.fScaleSizeMin = fXYZ; }
+
 public:
 	class CTexture* Get_DiffuseTexture()    { return m_pDiffuseTextureCom; }
 	class CTexture* Get_AlphaTexture()      { return m_pAlphaTextureCom; }
@@ -362,6 +365,7 @@ private:
 	_float m_fScaleChange   = 0.f;
 	_float m_fScaleChangeStartTime  = 0.f;
 	_float m_fScaleChangeStartDelay = 0.f;
+	_bool m_bScaleMinDelete = true;
 
 	// ¿Ãµø
 	_float3	m_fVelocity      = _float3(0.f, 0.f, 0.f);
