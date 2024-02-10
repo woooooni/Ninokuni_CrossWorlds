@@ -64,9 +64,12 @@ void CUIMinigame_Manager::Set_HPOwner(CGameObject* pOwner, _uint eEnemyID)
 
 void CUIMinigame_Manager::Set_TargetUI(CVehicle_Flying* pTarget)
 {
-	if (nullptr == m_pTarget || nullptr == pTarget)
+	if (false == Is_BiplaneFlying())
 		return;
 
+	if (nullptr == m_pTarget || nullptr == pTarget)
+		return;
+	
 	m_pTarget->Set_Target(pTarget);
 }
 

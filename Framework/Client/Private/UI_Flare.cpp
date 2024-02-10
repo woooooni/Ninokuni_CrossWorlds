@@ -28,7 +28,6 @@ HRESULT CUI_Flare::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	// Temp : 임시로 사이즈 별도지정함
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 

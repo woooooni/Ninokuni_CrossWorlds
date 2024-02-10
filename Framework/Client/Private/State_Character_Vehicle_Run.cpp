@@ -27,7 +27,31 @@ void CState_Character_Vehicle_Run::Enter_State(void* pArg)
 
 void CState_Character_Vehicle_Run::Tick_State(_float fTimeDelta)
 {
+    /*
+    _int iRandom = GI->RandomInt(0, 3);
+    switch (iRandom)
+    {
+    case 0:
+        GI->Play_Sound(TEXT("Veh_Udadak_Fear_Breathe_1_1.mp3"), CHANNELID::SOUND_VEHICLE,
+            GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+        break;
 
+    case 1:
+        GI->Play_Sound(TEXT("Veh_Udadak_Fear_Breathe_1_2.mp3"), CHANNELID::SOUND_VEHICLE,
+            GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+        break;
+
+    case 2:
+        GI->Play_Sound(TEXT("Veh_Udadak_Fear_Breathe_1_3.mp3"), CHANNELID::SOUND_VEHICLE,
+            GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+        break;
+
+    case 3:
+        GI->Play_Sound(TEXT("Veh_Udadak_Fear_Breathe_1_4.mp3"), CHANNELID::SOUND_VEHICLE,
+            GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+        break;
+    }
+    */
     __super::OnBoard_Input(fTimeDelta);
 }
 

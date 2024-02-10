@@ -49,15 +49,6 @@ void CUI_InGame_Setting_OpenBtn::Tick(_float fTimeDelta)
 	{
 		Movement_BasedOnHiding(fTimeDelta);
 
-//		m_tInfo.fCX = 64.f * 0.6f;
-//		m_tInfo.fCY = m_tInfo.fCX;
-//		m_tInfo.fX = m_tInfo.fCX * 0.5f + 20.f;
-//		m_tInfo.fY = g_iWinSizeY - (m_tInfo.fCY * 0.5f) - 10.f;
-//
-//		m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-//		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-//			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
-//
 		__super::Tick(fTimeDelta);
 	}
 }

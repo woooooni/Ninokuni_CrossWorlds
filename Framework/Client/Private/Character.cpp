@@ -29,6 +29,7 @@
 #include "CurlingGame_Prop.h"
 #include "CurlingGame_Stone.h"
 #include "Particle.h"
+#include "Riding_Manager.h"
 
 USING(Client)
 CCharacter::CCharacter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
@@ -1004,6 +1005,9 @@ _bool CCharacter::Decrease_HP(_int iDecrease)
 	m_tStat.iHp = max(0, m_tStat.iHp - iDecrease);
 	if (0 == m_tStat.iHp)
 	{
+		// 확인 필요
+		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::VEHICLE_TYPE::UDADAK, false);
+
 		m_pStateCom->Change_State(CCharacter::DEAD);
 		return true;
 	}

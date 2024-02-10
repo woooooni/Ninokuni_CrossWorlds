@@ -80,6 +80,10 @@ void CUI_Minigame_Aim::Tick(_float fTimeDelta)
 
 		if (m_bActive)
 		{
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_Comm_TargetScan_1_St.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 			CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
 
 			_float4 Temp;

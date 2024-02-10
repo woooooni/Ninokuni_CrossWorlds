@@ -19,7 +19,12 @@ void CUI_Grandprix_IntroIcons::Set_Active(_bool bActive)
 {
 	if (true == bActive)
 	{
-
+		if (m_eType == GRANDPRIX_INTRO::VS_ICON)
+		{
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_Comm_VS_1_St.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+		}
 	}
 	else
 	{
