@@ -1264,6 +1264,8 @@ HRESULT CCamera_Action::Ready_Action_Witch_Roar(CGameObject* pGameObject)
 
 		m_pTransformCom->LookAt(vLookAt.OneW());
 	}
+
+	return S_OK;
 }
 
 HRESULT CCamera_Action::Start_Action_Witch_Roar()
