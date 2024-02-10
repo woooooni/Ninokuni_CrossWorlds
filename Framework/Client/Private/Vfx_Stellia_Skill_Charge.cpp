@@ -64,7 +64,7 @@ void CVfx_Stellia_Skill_Charge::Tick(_float fTimeDelta)
 		else if (m_iCount == TYPE_ET2_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_SMOKE])
 		{
 			m_fTimeAcc += fTimeDelta;
-			if (m_fTimeAcc >= 0.25f)
+			if (m_fTimeAcc >= 0.3f)
 			{
 				if (nullptr != m_pDecal)
 				{
@@ -77,9 +77,9 @@ void CVfx_Stellia_Skill_Charge::Tick(_float fTimeDelta)
 				{
 					m_fTimeAcc = 0.f;
 
-					GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Swing_Smoke"),
+					GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Charge_Smoke"),
 						pOwnerTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET2_SMOKE], m_pScaleOffset[TYPE_ET2_SMOKE], m_pRotationOffset[TYPE_ET2_SMOKE]);
-					GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Swing_Circle"),
+					GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Charge_Circle"),
 						pOwnerTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET2_SMOKE], m_pScaleOffset[TYPE_ET2_SMOKE], m_pRotationOffset[TYPE_ET2_SMOKE]);
 				}
 			}

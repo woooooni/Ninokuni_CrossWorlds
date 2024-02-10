@@ -25,6 +25,8 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
+private:
+	_float m_fEffectAcc = { 0.f };
 
 public:
 	static CState_Character_Neutral_Pick_Small_Walk* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

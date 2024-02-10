@@ -825,7 +825,7 @@ void CEffect::Change_Scale(_float fTimeDelta)
 						WorldMatrix.r[CTransform::STATE_LOOK] -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK)) * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.z;
 					}
 
-					if (1.f == fScaleFinish.x && 1.f == fScaleFinish.y && 1.f == fScaleFinish.z)
+					if (m_bScaleMinDelete && 1.f == fScaleFinish.x && 1.f == fScaleFinish.y && 1.f == fScaleFinish.z)
 						m_bEffectDie = true;
 					else
 						m_pTransformCom->Set_WorldMatrix(WorldMatrix);

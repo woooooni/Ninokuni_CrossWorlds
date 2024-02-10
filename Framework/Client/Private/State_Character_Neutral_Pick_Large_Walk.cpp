@@ -6,6 +6,8 @@
 #include "Game_Manager.h"
 #include "Kuu.h"
 
+#include "Particle_Manager.h"
+
 CState_Character_Neutral_Pick_Large_Walk::CState_Character_Neutral_Pick_Large_Walk(CStateMachine* pMachine)
     : CState_Character(pMachine)
 {
@@ -57,6 +59,9 @@ void CState_Character_Neutral_Pick_Large_Walk::Tick_State(_float fTimeDelta)
 
 			pTargetTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vHandCenterPosition, 1.f));
 		}
+
+		GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle_To_Matrix(&m_fEffectAcc, CUtils::Random_Float(0.5f, 1.f), fTimeDelta,
+			TEXT("Particle_Smoke"), m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.2f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 	}
 	else
 	{

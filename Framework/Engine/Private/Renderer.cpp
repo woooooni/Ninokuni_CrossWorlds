@@ -25,9 +25,6 @@ CRenderer::CRenderer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 
 HRESULT CRenderer::Initialize_Prototype()
 {
-	int  i = sizeof(ANIMODEL_INSTANCE_DESC);
-
-
 	// Create_Buffer
 	if (FAILED(Create_Buffer()))
 		return E_FAIL;
@@ -44,12 +41,12 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(Set_TargetsMrt()))
 		return E_FAIL;
 
-	// Set_Debug
-#ifdef _DEBUG
+#ifdef _DEBUG // Set_Debug
 	if (FAILED(Set_Debug()))
 		return E_FAIL;
 #endif // DEBUG
 
+	// Ready_Textures
 	if (FAILED(Ready_Textures()))
 		return E_FAIL;
 
@@ -57,19 +54,15 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(Initialize_SSAO()))
 		return E_FAIL;
 
-	XMStoreFloat4x4(&m_MinimapProj, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), 1600.f / 900.f, 0.2f, 1000.0f));
-
 	return S_OK;
 }
 
 HRESULT CRenderer::Initialize(void * pArg)
 {
-
-
 	return S_OK;
 }
 
-#pragma region Add / Check
+#pragma region Add
 HRESULT CRenderer::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject* pGameObject)
 {
 	if (eRenderGroup >= RENDER_END)
@@ -201,57 +194,13 @@ HRESULT CRenderer::Add_Text(const TEXT_DESC& TextDesc)
 	m_RenderTexts.push_back(TextDesc);
 	return S_OK;
 }
-
-HRESULT CRenderer::Check_Option()
-{
-	if (!m_bNaturalDraw)
-	{
-		if (FAILED(Render_ClearTarget(L"Target_Aurora_Diffuse")))
-			return E_FAIL;
-	}
-	if (!m_bShadowDraw)
-	{
-		if (FAILED(Render_ClearTarget(L"Target_ShadowDepth")))
-			return E_FAIL;
-	}
-	if (!m_bSsaoDraw)
-	{
-		if (FAILED(Render_ClearTarget(L"Target_SSAO_Blur")))
-			return E_FAIL;
-	}
-	if (!m_bOutlineDraw)
-	{
-		if (FAILED(Render_ClearTarget(L"Target_Outline")))
-			return E_FAIL;
-	}
-	if (!m_bBlurDraw)
-	{
-		if (FAILED(Render_ClearTarget(L"Target_SSAO_Blur")))
-			return E_FAIL;
-
-		if (FAILED(Render_ClearTarget(L"Target_SSAO")))
-			return E_FAIL;
-	}
-	if (!m_bBlomDraw)
-	{
-		if (FAILED(Render_ClearTarget(L"Target_Bloom_Blur")))
-			return E_FAIL;
-	}
-	//if (!m_bPbrDraw)
-	//{
-	//	if (FAILED(Render_ClearTarget(L"")))
-	//		return E_FAIL;
-	//}
-
-	return S_OK;
-}
 #pragma endregion
 
 #pragma region Draw
 HRESULT CRenderer::Draw()
 {
-	Input_Key();
 #ifdef _DEBUG
+	Input_Key();
 #endif // DEBUG
 
 	if (FAILED(Draw_BackGround()))
@@ -259,20 +208,6 @@ HRESULT CRenderer::Draw()
 
 	if (FAILED(Draw_World()))
 		return E_FAIL;
-
-	/*
-	if (FAILED(Render_GodRay()))
-		return E_FAIL;
-
-	CLight_Manager* pLightManger = GET_INSTANCE(CLight_Manager);
-	const CGameObject* pLight = pLightManger->Get_Sun();
-
-	if (nullptr != pLight)
-	{
-		if (FAILED(Render_AlphaBlendTargetMix(L"Target_GodRay", L"MRT_Blend", false)))
-			return E_FAIL;
-	}
-	*/
 
 	if (FAILED(Draw_UI()))
 		return E_FAIL;
@@ -310,7 +245,7 @@ HRESULT CRenderer::Draw_BackGround()
 	if (FAILED(Render_Aurora()))    // MRT_Aurora / MRT_Blend
 		return E_FAIL;
 
-	/*if (FAILED(Render_Sun()))     // 
+	/*if (FAILED(Render_Sun())) 
 		  return E_FAIL;*/
 
 	if (FAILED(Render_NonLight()))  // MRT_Blend
@@ -326,18 +261,12 @@ HRESULT CRenderer::Draw_World()
 		if (FAILED(Render_NonBlend())) // MRT_GameObjects -> Diffuse / Normal / Depth / Bloom
 			return E_FAIL;
 
-
 		if (FAILED(Render_Shadow())) // MRT_Shadow -> ShadowDepth
-			return E_FAIL;
-
-		if (FAILED(Render_Shadow_Caculation()))
-			return E_FAIL;
-
-		if (FAILED(Render_Blur(L"Target_ShadowDepth_Caculation", L"MRT_Shadow_Caculation_Blur", true, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
 			return E_FAIL;
 
 		if (FAILED(Render_Lights())) // MRT_Lights -> Shade / Specular
 			return E_FAIL;
+
 
 		if (FAILED(Render_UI_Minimap())) // Temp
 			return E_FAIL;
@@ -385,13 +314,9 @@ HRESULT CRenderer::Draw_World()
 	if (FAILED(Draw_WorldEffect()))
 		return E_FAIL;
 
-	if (FAILED(Render_Blur(L"Target_Effect_Distortion", L"MRT_Distrotion_Blur", true, BLUR_HOR_LOW, BLUR_VER_LOW, BLUR_UP_ONEMAX)))
+	if (FAILED(Render_AlphaBlend()))
 		return E_FAIL;
 
-	if (FAILED(Render_Distortion()))
-		return E_FAIL;
-
-	
 	if (true == m_bRenderSwitch[RENDER_SWITCH::GODRAY_SWITCH])
 	{
 		if (FAILED(Render_GodRay()))
@@ -401,19 +326,11 @@ HRESULT CRenderer::Draw_World()
 			return E_FAIL;
 	}
 
-	if (FAILED(Render_AlphaBlend()))
-		return E_FAIL;
-
-
-	
-
 	if (true == m_bRadialBlurDraw)
 	{
 		if (FAILED(Render_RadialBlur()))
 			return E_FAIL;
 	}
-
-	
 
 	return S_OK;
 }
@@ -422,7 +339,6 @@ HRESULT CRenderer::Draw_WorldEffect()
 {
 	if (FAILED(Render_Effect()))
 		return E_FAIL;
-
 
 	if (FAILED(Render_Decal()))
 		return E_FAIL;
@@ -462,6 +378,13 @@ HRESULT CRenderer::Draw_WorldEffect()
 			return E_FAIL;
 	}
 
+
+	if (FAILED(Render_Blur(L"Target_Effect_Distortion", L"MRT_Distrotion_Blur", true, BLUR_HOR_HIGH, BLUR_VER_HIGH, BLUR_UP_ONEADD)))
+		return E_FAIL;
+
+	if (FAILED(Render_Distortion()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -470,20 +393,18 @@ HRESULT CRenderer::Draw_UI()
 	if (FAILED(Render_UI()))
 		return E_FAIL;
 
-//	if (FAILED(Render_UI_Minimap()))
-//		return E_FAIL;
-
 	if (FAILED(Render_Text()))
 		return E_FAIL;
 
 	// Target : Object
 	{
-		//if (FAILED(Render_Shadow_UI()))
-		//	return E_FAIL;
 		if (true == m_bRenderSwitch[RENDER_SWITCH::UIMESH_SWITCH])
 		{
 			if (FAILED(Render_NonBlend_UI()))
 				return E_FAIL;
+
+			//if (FAILED(Render_Shadow_UI()))
+            //	return E_FAIL;
 
 			if (FAILED(Render_Stencil_ONLY()))
 				return E_FAIL;
@@ -500,6 +421,7 @@ HRESULT CRenderer::Draw_UI()
 			if (FAILED(Render_Lights_UI()))
 				return E_FAIL;
 
+			// Target : Bloom
 			{
 				if (m_bBlomDraw)
 				{
@@ -526,8 +448,6 @@ HRESULT CRenderer::Draw_UI()
 	if (FAILED(Draw_UIEffect()))
 		return E_FAIL;
 	
-
-
 	return S_OK;
 }
 
@@ -565,33 +485,6 @@ HRESULT CRenderer::Draw_UIEffect()
 
 	return S_OK;
 }
-
-HRESULT CRenderer::Input_Key()
-{
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::F2))
-	{
-		m_bDebugDraw = !m_bDebugDraw;
-	}
-	else if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::F3))
-	{
-		m_bOption = !m_bOption;
-
-		m_bNaturalDraw = m_bOption;
-		m_bShadowDraw = m_bOption;
-		//m_bSsaoDraw = m_bOption;
-		m_bOutlineDraw = m_bOption;
-		m_bBlurDraw = m_bOption;
-		m_bBlomDraw = m_bOption;
-		m_bPbrDraw = m_bOption;
-
-		Check_Option();
-	}
-
-	return S_OK;
-}
-
-#ifdef _DEBUG
-#endif // DEBUG
 #pragma endregion
 
 #pragma region Render
@@ -790,7 +683,6 @@ HRESULT CRenderer::Render_Blending_Mirror()
 	return S_OK;;
 }
 
-
 // MRT_Shadow
 HRESULT CRenderer::Render_Shadow()
 {
@@ -838,6 +730,12 @@ HRESULT CRenderer::Render_Shadow()
 	}
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	if (FAILED(Render_Shadow_Caculation()))
+		return E_FAIL;
+
+	if (FAILED(Render_Blur(L"Target_ShadowDepth_Caculation", L"MRT_Shadow_Caculation_Blur", true, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
 		return E_FAIL;
 
 	return S_OK;
@@ -973,7 +871,6 @@ HRESULT CRenderer::Render_Lights()
 	return S_OK;
 }
 
-
 // MRT_SSAO
 HRESULT CRenderer::Render_Ssao()
 {
@@ -1025,6 +922,7 @@ HRESULT CRenderer::Render_Ssao()
 
 	return S_OK;
 }
+
  // MRT_Outline
 HRESULT CRenderer::Render_OutLine()
 {
@@ -1198,7 +1096,6 @@ HRESULT CRenderer::Render_Deferred()
 
 	return S_OK;
 }
-
 
 // MRT_Effect
 HRESULT CRenderer::Render_Effect()
@@ -1413,7 +1310,6 @@ HRESULT CRenderer::Render_AlphaBlend()
 	return S_OK;
 }
 
-
 // MRT_GodRay
 HRESULT CRenderer::Render_GodRay()
 {
@@ -1466,7 +1362,6 @@ HRESULT CRenderer::Render_GodRay()
 	return S_OK;
 }
 
-
 // MRT_Blend
 HRESULT CRenderer::Render_UI()
 {
@@ -1511,59 +1406,58 @@ HRESULT CRenderer::Render_Text()
 	return S_OK;
 }
 
-
 // MRT_Shadow_UI
-//HRESULT CRenderer::Render_Shadow_UI()
-//{
-	// Begin_Shadow_UI_MRT
-	//if (FAILED(m_pTarget_Manager->Begin_Shadow_MRT(m_pContext, TEXT("MRT_Shadow_UI"))))
-	//	return E_FAIL;
+/*HRESULT CRenderer::Render_Shadow_UI()
+{
+	 Begin_Shadow_UI_MRT
+	if (FAILED(m_pTarget_Manager->Begin_Shadow_MRT(m_pContext, TEXT("MRT_Shadow_UI"))))
+		return E_FAIL;
 
-	//for (auto& iter : m_RenderObjects[RENDER_SHADOW_UI])
-	//{
-	//	if (m_bShadowDraw)
-	//	{
-	//		if (FAILED(iter->Render_ShadowDepth()))
-	//			return E_FAIL;
-	//	}
-	//	Safe_Release(iter);
-	//}
-	//m_RenderObjects[RENDER_SHADOW_UI].clear();
+	for (auto& iter : m_RenderObjects[RENDER_SHADOW_UI])
+	{
+		if (m_bShadowDraw)
+		{
+			if (FAILED(iter->Render_ShadowDepth()))
+				return E_FAIL;
+		}
+		Safe_Release(iter);
+	}
+	m_RenderObjects[RENDER_SHADOW_UI].clear();
 
-	//for (auto& Pair : m_Render_Instancing_Objects[RENDER_SHADOW_UI])
-	//{
-	//	if (nullptr == Pair.second.pGameObject)
-	//		continue;
+	for (auto& Pair : m_Render_Instancing_Objects[RENDER_SHADOW_UI])
+	{
+		if (nullptr == Pair.second.pGameObject)
+			continue;
 
-	//	if (m_bShadowDraw)
-	//	{
-	//		if (Pair.second.eShaderType == INSTANCING_SHADER_TYPE::ANIM_MODEL)
-	//		{
-	//			if (FAILED(m_pIntancingShaders[Pair.second.eShaderType]->Bind_RawValue("g_AnimInstancingDesc", Pair.second.AnimInstanceDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * Pair.second.AnimInstanceDesc.size())))
-	//				return E_FAIL;
-	//		}
+		if (m_bShadowDraw)
+		{
+			if (Pair.second.eShaderType == INSTANCING_SHADER_TYPE::ANIM_MODEL)
+			{
+				if (FAILED(m_pIntancingShaders[Pair.second.eShaderType]->Bind_RawValue("g_AnimInstancingDesc", Pair.second.AnimInstanceDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * Pair.second.AnimInstanceDesc.size())))
+					return E_FAIL;
+			}
 
-	//		if (FAILED(Pair.second.pGameObject->Render_Instance_Shadow(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
-	//			return E_FAIL;
+			if (FAILED(Pair.second.pGameObject->Render_Instance_Shadow(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
+				return E_FAIL;
 
-	//		if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel_Shadow(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc, Pair.second.AnimInstanceDesc)))
-	//			return E_FAIL;
-	//	}
+			if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel_Shadow(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc, Pair.second.AnimInstanceDesc)))
+				return E_FAIL;
+		}
 
-	//	Pair.second.TweenDesc.clear();
-	//	Pair.second.WorldMatrices.clear();
-	//	Pair.second.AnimInstanceDesc.clear();
-	//	Pair.second.EffectInstancingDesc.clear();
-	//	
-	//	Safe_Release(Pair.second.pGameObject);
-	//	Pair.second.pGameObject = nullptr;
-	//}
+		Pair.second.TweenDesc.clear();
+		Pair.second.WorldMatrices.clear();
+		Pair.second.AnimInstanceDesc.clear();
+		Pair.second.EffectInstancingDesc.clear();
+		
+		Safe_Release(Pair.second.pGameObject);
+		Pair.second.pGameObject = nullptr;
+	}
 
-	//if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-	//	return E_FAIL;
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
 
-	//return S_OK;
-//}
+	return S_OK;
+}*/
 
 // MRT_GameObjects_UI
 HRESULT CRenderer::Render_NonBlend_UI()
@@ -1765,7 +1659,6 @@ HRESULT CRenderer::Render_UI_Minimap_Icon()
 	return S_OK;
 }
 
-
 // MRT_Effect_UI
 HRESULT CRenderer::Render_UIEffectNonBlend()
 {
@@ -1805,7 +1698,6 @@ HRESULT CRenderer::Render_UIEffectBlend()
 
 	return S_OK;
 }
-
 
 HRESULT CRenderer::Render_Screen_Effect()
 {
@@ -2629,6 +2521,7 @@ HRESULT CRenderer::Create_Target()
 	m_WorldMatrix._22 = ViewportDesc.Height;
 	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(ViewportDesc.Width, ViewportDesc.Height, 0.f, 1.f));
+	XMStoreFloat4x4(&m_MinimapProj, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), 1600.f / 900.f, 0.2f, 1000.0f));
 
 	return S_OK;
 }
@@ -3030,6 +2923,77 @@ HRESULT CRenderer::Set_Debug()
 #endif // DEBUG
 #pragma endregion
 
+#pragma region Etc
+#ifdef _DEBUG
+HRESULT CRenderer::Input_Key()
+{
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::F2))
+	{
+		m_bDebugDraw = !m_bDebugDraw;
+	}
+	else if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::F3))
+	{
+		m_bOption = !m_bOption;
+
+		m_bNaturalDraw = m_bOption;
+		m_bShadowDraw = m_bOption;
+		//m_bSsaoDraw = m_bOption;
+		m_bOutlineDraw = m_bOption;
+		m_bBlurDraw = m_bOption;
+		m_bBlomDraw = m_bOption;
+		m_bPbrDraw = m_bOption;
+
+		Check_Option();
+	}
+
+	return S_OK;
+}
+#endif // DEBUG
+
+HRESULT CRenderer::Check_Option()
+{
+	if (!m_bNaturalDraw)
+	{
+		if (FAILED(Render_ClearTarget(L"Target_Aurora_Diffuse")))
+			return E_FAIL;
+	}
+	if (!m_bShadowDraw)
+	{
+		if (FAILED(Render_ClearTarget(L"Target_ShadowDepth")))
+			return E_FAIL;
+	}
+	if (!m_bSsaoDraw)
+	{
+		if (FAILED(Render_ClearTarget(L"Target_SSAO_Blur")))
+			return E_FAIL;
+	}
+	if (!m_bOutlineDraw)
+	{
+		if (FAILED(Render_ClearTarget(L"Target_Outline")))
+			return E_FAIL;
+	}
+	if (!m_bBlurDraw)
+	{
+		if (FAILED(Render_ClearTarget(L"Target_SSAO_Blur")))
+			return E_FAIL;
+
+		if (FAILED(Render_ClearTarget(L"Target_SSAO")))
+			return E_FAIL;
+	}
+	if (!m_bBlomDraw)
+	{
+		if (FAILED(Render_ClearTarget(L"Target_Bloom_Blur")))
+			return E_FAIL;
+	}
+	//if (!m_bPbrDraw)
+	//{
+	//	if (FAILED(Render_ClearTarget(L"")))
+	//		return E_FAIL;
+	//}
+
+	return S_OK;
+}
+
 void CRenderer::BuildFrustumFarCorners()
 {
 	// 바인딩 하기 전에 카메라의 절두체를 갱신해준다.
@@ -3078,7 +3042,7 @@ void CRenderer::BuildOffsetVectors()
 	}
 
 
-	
+
 	{
 		// 6개의 표면 중심점 벡터
 		m_vOffsets[8] = Vec4(-1.0f, 0.0f, 0.0f, 0.0f);
@@ -3128,7 +3092,6 @@ void CRenderer::BuildOffsetVectors()
 
 }
 
-
 HRESULT CRenderer::InitializeScreenQuad()
 {
 	m_iQuadVerCount = 4;
@@ -3168,12 +3131,12 @@ HRESULT CRenderer::InitializeScreenQuad()
 	vertexBufferDesc.CPUAccessFlags = 0;
 	vertexBufferDesc.MiscFlags = 0;
 	vertexBufferDesc.StructureByteStride = 0;
-	
+
 	D3D11_SUBRESOURCE_DATA vertexData;
 	vertexData.pSysMem = pVertices;
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
-	if(FAILED(m_pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &m_pQuadVertexBuffer)))
+	if (FAILED(m_pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &m_pQuadVertexBuffer)))
 		return E_FAIL;
 
 	D3D11_BUFFER_DESC  indexBufferDesc;
@@ -3204,7 +3167,7 @@ HRESULT CRenderer::RenderScreenQuad()
 
 	_uint stride = sizeof(QuadVertex);
 	_uint offset = 0;
-	
+
 	m_pContext->IASetVertexBuffers(0, 1, &m_pQuadVertexBuffer, &stride, &offset);
 
 	m_pContext->IASetIndexBuffer(m_pQuadIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
@@ -3216,6 +3179,9 @@ HRESULT CRenderer::RenderScreenQuad()
 	return S_OK;
 
 }
+#pragma endregion
+
+
 CRenderer * CRenderer::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
 	CRenderer*	pInstance = new CRenderer(pDevice, pContext);
