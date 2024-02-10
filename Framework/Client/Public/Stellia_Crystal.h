@@ -28,9 +28,18 @@ private:
 	CTransform* m_pTransformCom = nullptr;
 	CModel* m_pModelCom = nullptr;
 	CTexture* m_pTextureCom = nullptr;
+	CTexture* m_pDissoveTexture = nullptr;
 
 private:
 	_int		m_iCrystalType = 0;
+
+private:
+	_bool m_bStartDissolve = false;
+	_float4 m_vDissolveColor = _float4(0.427f, 0.894f, 1.f, 1.f);
+	_float  m_fDissolveTotal = 10.f;
+	_float  m_fDissolveDuration = 5.f;
+	_float  m_fDissolveWeight = 0.f;
+	_float  m_fDissolveSpeed = 5.f;
 
 private:
 	virtual HRESULT Ready_Components();

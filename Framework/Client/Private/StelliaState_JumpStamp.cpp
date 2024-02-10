@@ -43,9 +43,6 @@ void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 		}
 	}
 
-	if (m_pModelCom->Get_CurrAnimationFrame() < 35)
-		vDestPos = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position();
-
 	// 공중에 고정시키기 위함(콜라이더 위로 올리기 위함)
 	if (m_pModelCom->Get_CurrAnimationFrame() == 35)
 	{
