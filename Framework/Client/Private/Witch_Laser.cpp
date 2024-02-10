@@ -48,7 +48,7 @@ HRESULT CWitch_Laser::Initialize(void* pArg)
 
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false); 
 
-	m_fActiveTime = 1.5f;
+	m_fActiveTime = .5f;
 
 	return S_OK;
 }

@@ -4,12 +4,12 @@
 
 BEGIN(Client)
 
-class CWitch_VulcanBullet final : public CMonsterProjectile
+class CWitch_ChargeBullet final : public CMonsterProjectile
 {
 private:
-	CWitch_VulcanBullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CWitch_VulcanBullet(const CWitch_VulcanBullet& rhs);
-	virtual ~CWitch_VulcanBullet() = default;
+	CWitch_ChargeBullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CWitch_ChargeBullet(const CWitch_ChargeBullet& rhs);
+	virtual ~CWitch_ChargeBullet() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -33,10 +33,6 @@ private:
 
 	_float m_fSpeed = 0.f;
 
-	_float m_fAccReturnTime = 0.f;
-	_float m_fReturnTime = 0.f;
-	_bool m_bIsReturn = false;
-
 	_float m_fAccDelteTime = 0.f;
 	_float m_fDelteTime = 0.f;
 
@@ -45,7 +41,7 @@ private:
 	_bool m_bCreate = false;
 
 public:
-	static CWitch_VulcanBullet* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CWitch_ChargeBullet* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

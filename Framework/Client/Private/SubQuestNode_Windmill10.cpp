@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_Fade.h"
 #include "UI_PopupQuest.h"
 #include "Game_Manager.h"
 #include "Building.h"
@@ -91,36 +92,51 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill10::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (KEY_TAP(KEY::LBTN))
+	if (GI->Get_CurrentLevel() == LEVELID::LEVEL_EVERMORE)
 	{
-		Safe_Delete_Array(m_szpOwner);
-		Safe_Delete_Array(m_szpTalk);
-
-		m_iTalkIndex += 1;
-
-		if (m_iTalkIndex >= m_vecTalkDesc.size())
+		if (KEY_TAP(KEY::LBTN) && !m_bIsFadeOut)
 		{
-			CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-			QuestDesc.strType = m_strNextQuestTag;
-			QuestDesc.strTitle = m_strNextQuestName;
-			QuestDesc.strContents = m_strNextQuestContent;
-			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+			Safe_Delete_Array(m_szpOwner);
+			Safe_Delete_Array(m_szpTalk);
 
-			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
+			m_iTalkIndex += 1;
 
-			/* 10, 11, 12 노드는 하나의 씬으로 진행 (따라서 12에서 대화캠을 꺼준다) */
+			if (m_iTalkIndex >= m_vecTalkDesc.size())
+			{
+				CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+				QuestDesc.strType = m_strNextQuestTag;
+				QuestDesc.strTitle = m_strNextQuestName;
+				QuestDesc.strContents = m_strNextQuestContent;
+				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+				//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
-			return NODE_STATE::NODE_FAIL;
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
+				CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
+
+				/* 10, 11, 12 노드는 하나의 씬으로 진행 (따라서 12에서 대화캠을 꺼준다) */
+				m_bIsFadeOut = true;
+			}
+
+			if (m_iTalkIndex < m_vecTalkDesc.size())
+			{
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+			}
 		}
 
-		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+		if (m_bIsFadeOut)
+		{
+			if (m_bIsFadeOut && CUI_Manager::GetInstance()->Is_FadeFinished())
+			{
+				m_bIsClear = true;
 
-		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-		TalkEvent();
+				return NODE_STATE::NODE_FAIL;
+			}
+		}
 	}
 
 	return NODE_STATE::NODE_RUNNING;

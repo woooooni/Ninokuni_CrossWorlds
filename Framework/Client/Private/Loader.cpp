@@ -78,6 +78,8 @@
 #include "DreamMazeWitch_Npc.h"
 #include "Witch_BlackHole.h"
 #include "Witch_VulcanBullet.h"
+#include "Witch_ChargeBullet.h"
+#include "Witch_Rage01QuadBlackHole.h"
 #include "Witch_Laser.h"
 #include "Witch_Rage02Sphere.h"
 
@@ -1969,8 +1971,8 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown_Wizard", CClown_Wizard::Create(m_pDevice, m_pContext, TEXT("Clown_Wizard"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown_Wizard_DarkBall", CClown_Wizard_DarkBall::Create(m_pDevice, m_pContext, TEXT("Clown_Wizard_DarkBall")), LAYER_PROP, true)))
-	//	return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown_Wizard_DarkBall", CClown_Wizard_DarkBall::Create(m_pDevice, m_pContext, TEXT("Clown_Wizard_DarkBall")), LAYER_PROP, true)))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Dark", CBaobam_Dark::Create(m_pDevice, m_pContext, TEXT("Baobam_Dark"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
 
@@ -1985,8 +1987,12 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_BlackHole", CWitch_BlackHole::Create(m_pDevice, m_pContext, TEXT("Witch_BlackHole")), LAYER_PROP, true)))
 		return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_VulcanBullet", CWitch_VulcanBullet::Create(m_pDevice, m_pContext, TEXT("Witch_VulcanBullet")), LAYER_PROP, true)))
-	//	return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_VulcanBullet", CWitch_VulcanBullet::Create(m_pDevice, m_pContext, TEXT("Witch_VulcanBullet")), LAYER_PROP, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_ChargeBullet", CWitch_ChargeBullet::Create(m_pDevice, m_pContext, TEXT("Witch_ChargeBullet")), LAYER_PROP, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_Rage01QuadBlackHole", CWitch_Rage01QuadBlackHole::Create(m_pDevice, m_pContext, TEXT("Witch_Rage01QuadBlackHole")), LAYER_PROP, true)))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_Rage02Sphere", CWitch_Rage02Sphere::Create(m_pDevice, m_pContext, TEXT("Witch_Rage02Sphere")), LAYER_PROP, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_Laser", CWitch_Laser::Create(m_pDevice, m_pContext, TEXT("Witch_Laser")), LAYER_PROP, true)))

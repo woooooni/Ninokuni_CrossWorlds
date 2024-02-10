@@ -28,7 +28,7 @@ void CStelliaState_CombatIdle::Enter_State(void* pArg)
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_BERSERK);
 		return;
 	}
-
+	
 	if (false == m_bFirst)
 	{
 		m_bFirst = true;

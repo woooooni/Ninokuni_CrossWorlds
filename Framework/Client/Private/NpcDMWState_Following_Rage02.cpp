@@ -21,7 +21,7 @@ HRESULT CNpcDMWState_Following_Rage02::Initialize(const list<wstring>& Animation
 
 	m_iCurrAnimIndex = m_AnimIndices[0];
 
-	m_fSphereCreateTime = .5f;
+	m_fSphereCreateTime = .3f;
 
 	return S_OK;
 }
@@ -52,8 +52,8 @@ void CNpcDMWState_Following_Rage02::Tick_State(_float fTimeDelta)
 			m_fAccTime = m_fSphereCreateTime - m_fAccTime;
 
 			Vec4 vSpherePos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform()->Get_Position();
-			vSpherePos.x += GI->RandomFloat(-15.f, 15.f);
-			vSpherePos.z += GI->RandomFloat(-15.f, 15.f);
+			vSpherePos.x += GI->RandomFloat(-10.f, 10.f);
+			vSpherePos.z += GI->RandomFloat(-10.f, 10.f);
 
 			CGameObject* pSphere = nullptr;
 

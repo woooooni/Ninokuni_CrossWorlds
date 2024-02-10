@@ -21,6 +21,9 @@ private:
 	CGameObject* m_pCriminal = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
+	_float m_fAccSkipTime = 0.f;
+	_float m_fSkipTime = 0.f;
+
 private:
 	Vec4 m_vCirminalOriginLookAt = {};
 public:

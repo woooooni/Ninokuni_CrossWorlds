@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_Fade.h"
 #include "UI_PopupQuest.h"
 
 #include "Camera_Manager.h"
@@ -33,22 +34,7 @@ HRESULT CSubQuestNode_Windmill11::Initialize()
 
 void CSubQuestNode_Windmill11::Start()
 {
-	/* 풍차 비춰주기 */
-	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-	if (nullptr != pActionCam)
-	{
-		pActionCam->Start_Action_WindMill(true);
-
-		CGameObject* pGameObject = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_BUILDING, L"Evermore_Wind_WindMillaA_02");
-		if (nullptr != pGameObject)
-		{
-			CBuilding* pWindMill = dynamic_cast<CBuilding*>(pGameObject);
-			if (nullptr != pWindMill)
-			{
-				pWindMill->Set_QuestClear(true);
-			}
-		}
-	}
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
 }
 
 CBTNode::NODE_STATE CSubQuestNode_Windmill11::Tick(const _float& fTimeDelta)
@@ -56,20 +42,46 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill11::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	/* 풍차 비춰주기가 끝났다면 다음으로 넘어간다. */
-	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-	if (nullptr != pActionCam)
+	if (!CUI_Manager::GetInstance()->Is_FadeFinished())
+		return NODE_STATE::NODE_RUNNING;
+
+	if (!m_bIsActionCam)
 	{
-		if (CCamera_Action::CAMERA_ACTION_TYPE::WINDMILL != pActionCam->Get_Camera_ActionType())
+		/* 풍차 비춰주기 */
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		if (nullptr != pActionCam)
 		{
-			CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-			QuestDesc.strType = m_strNextQuestTag;
-			QuestDesc.strTitle = m_strNextQuestName;
-			QuestDesc.strContents = m_strNextQuestContent;
-			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
-			m_bIsClear = true;
-			return NODE_STATE::NODE_FAIL;
+			pActionCam->Start_Action_WindMill(true);
+
+			CGameObject* pGameObject = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_BUILDING, L"Evermore_Wind_WindMillaA_02");
+			if (nullptr != pGameObject)
+			{
+				CBuilding* pWindMill = dynamic_cast<CBuilding*>(pGameObject);
+				if (nullptr != pWindMill)
+				{
+					pWindMill->Set_QuestClear(true);
+				}
+			}
+		}
+		m_bIsActionCam = true;
+	}
+	else
+	{
+		/* 풍차 비춰주기가 끝났다면 다음으로 넘어간다. */
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		if (nullptr != pActionCam)
+		{
+			if (CCamera_Action::CAMERA_ACTION_TYPE::WINDMILL != pActionCam->Get_Camera_ActionType())
+			{
+				CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+				QuestDesc.strType = m_strNextQuestTag;
+				QuestDesc.strTitle = m_strNextQuestName;
+				QuestDesc.strContents = m_strNextQuestContent;
+				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+			//	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+				m_bIsClear = true;
+				return NODE_STATE::NODE_FAIL;
+			}
 		}
 	}
 

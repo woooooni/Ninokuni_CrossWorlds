@@ -39,6 +39,8 @@ HRESULT CSubQuestNode_Wanted03_2::Initialize()
 		m_vecTalkDesc.push_back(sTalkDesc);
 	}
 
+	m_fSkipTime = 1.5f;
+
 	return S_OK;
 }
 
@@ -80,15 +82,53 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted03_2::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (KEY_TAP(KEY::LBTN))
+	// 일반 대화
+	if (KEY_TAP(KEY::LBTN) && m_iTalkIndex < m_vecTalkDesc.size() - 2)
 	{
 		Safe_Delete_Array(m_szpOwner);
 		Safe_Delete_Array(m_szpTalk);
 
 		m_iTalkIndex += 1;
 
-		if (m_iTalkIndex >= m_vecTalkDesc.size())
+		if (m_iTalkIndex >= m_vecTalkDesc.size() - 2)
 		{
+			m_pCriminal->Get_Component_StateMachine()->Change_State(CCriminal_Npc::NPC_CRIMINAL_STATE::NPC_CRIMINAL_ESCAPE);
+		}
+
+		if (m_iTalkIndex < m_vecTalkDesc.size() - 2)
+		{
+			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+			CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+			TalkEvent();
+		}
+	}
+
+	// 어 이 자식 튄다!
+	if (m_iTalkIndex == m_vecTalkDesc.size() - 2 && 
+		m_pCriminal->Get_Component_StateMachine()->Get_CurrState() == CCriminal_Npc::NPC_CRIMINAL_STATE::NPC_CRIMINAL_ESCAPERUN)
+	{
+		m_iTalkIndex += 1;
+
+		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+		TalkEvent();
+	}
+
+	// 넘어가기 전 1.5초 정도 텀
+	if (m_iTalkIndex == m_vecTalkDesc.size() - 1)
+	{
+		m_fAccSkipTime += fTimeDelta;
+		if (m_fAccSkipTime >= m_fSkipTime)
+		{
+			Safe_Delete_Array(m_szpOwner);
+			Safe_Delete_Array(m_szpTalk);
+
 			m_bIsClear = true;
 			CUI_PopupQuest::QUEST_INFO QuestDesc = {};
 			QuestDesc.strType = m_strNextQuestTag;
@@ -102,18 +142,10 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted03_2::Tick(const _float& fTimeDelta)
 			if (nullptr != pActionCam)
 				pActionCam->Finish_Action_Talk();
 
-			m_pCriminal->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCriminal_Npc::NPC_CRIMINAL_STATE::NPC_CRIMINAL_ESCAPE);
-
 			return NODE_STATE::NODE_FAIL;
 		}
-
-		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-		TalkEvent();
 	}
+	
 
 	return NODE_STATE::NODE_RUNNING;
 }
@@ -180,7 +212,13 @@ void CSubQuestNode_Wanted03_2::TalkEvent()
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
+	case 5:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_WhatIsBird.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
+		break;
 	}
+
 }
 
 CSubQuestNode_Wanted03_2* CSubQuestNode_Wanted03_2::Create()

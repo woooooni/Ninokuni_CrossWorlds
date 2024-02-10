@@ -23,14 +23,15 @@ void CStelliaState_Rage3TurnAround::Enter_State(void* pArg)
 	{
 		m_bIsRight = true;
 		// Right 구하기
-		m_vDestLook = XMVector3Cross(Vec3(0.f, 1.f, 0.f), XMVector3Normalize(m_pTransformCom->Get_Look()));
+		m_vDestLook = (Vec3)m_pTransformCom->Get_Position() - m_pStellia->Get_OriginPos();
+		m_vDestLook = XMVector3Rotate(m_vDestLook, XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians(-90.f), 0.0f));
 		m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_RightTurn"));
 	}
 	else
 	{
 		m_bIsRight = false;
 		m_vDestLook = XMVector3Rotate(m_pTransformCom->Get_Look(), XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians(-90.f), 0.0f));
-		m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_RightTurn"));
+		m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_LeftTurn"));
 	}
 
 }
@@ -39,19 +40,50 @@ void CStelliaState_Rage3TurnAround::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	_vector vCrossProduct = XMVector3Cross(XMVector3Normalize(m_pTransformCom->Get_Look()), XMVector3Normalize(m_vDestLook));
+	m_fTurnSpeed = (m_bIsRight) ? 2.0f : -2.0f;
+
+	Vec3 vCurLook = m_pTransformCom->Get_Look();
+
+	vCurLook.Normalize();
+	m_vDestLook.Normalize();
+
+	Vec3 vCrossProduct = XMVector3Cross(vCurLook, m_vDestLook);
 	_float fCrossProductY = XMVectorGetY(vCrossProduct);
 
-	if (!m_bIsRight)
+	cout << fCrossProductY << endl;
+
+	if (m_bIsRight)
 	{
+		// 솔직히 이거 왜 0보다 작을 때로 해야 하는지 모르겠다....
 		if (fCrossProductY < 0.f)
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), -m_fTurnSpeed, fTimeDelta);
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fTurnSpeed, fTimeDelta);
 	}
 	else
 	{
-		if (fCrossProductY > 0.f)
+		if (fCrossProductY < 0.f)
 			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fTurnSpeed, fTimeDelta);
 	}
+
+	//_vector vCrossProduct = XMVector3Cross(XMVector3Normalize(m_pTransformCom->Get_Look()), XMVector3Normalize(m_vDestLook));
+	//_float fCrossProductY = XMVectorGetY(vCrossProduct);
+	//
+	//m_fTurnSpeed = (m_bIsRight) ? 2.0f : -2.0f;
+	//
+	//if (m_bIsRight && fCrossProductY > 0.f)
+	//	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fTurnSpeed, fTimeDelta);
+	//else if (!m_bIsRight && fCrossProductY < 0.f)
+	//	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fTurnSpeed, fTimeDelta);
+
+	//if (!m_bIsRight)
+	//{
+	//	if (fCrossProductY < 0.f)
+	//		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), -m_fTurnSpeed, fTimeDelta);
+	//}
+	//else
+	//{
+	//	if (fCrossProductY > 0.f)
+	//		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fTurnSpeed, fTimeDelta);
+	//}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{

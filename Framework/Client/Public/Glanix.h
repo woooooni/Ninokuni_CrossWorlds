@@ -86,6 +86,7 @@ private:
 	_uint	m_iSlowStack = 0;
 
 	class CGlanix_IcePillar_Controller* m_pPillarController = nullptr;
+
 public:
 	static CGlanix* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);
 	virtual CGameObject* Clone(void* pArg) override;

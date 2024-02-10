@@ -19,6 +19,8 @@ public:
 	virtual void Exit_State();
 
 private:
+	Vec3 m_vDestLook = {};
+
 	_float m_fAccAroundTime = 0.f;
 	_float m_fAroundTime = 0.f;
 

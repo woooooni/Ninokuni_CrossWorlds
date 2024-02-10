@@ -45,7 +45,7 @@ protected:
 	/* Damping */
 	Vec4		 m_vCurPos = Vec4::Zero;
 	const _float m_fDampingCoefficient = 0.027f; /* (144 프레임 기준 댐핑 계수 - 0과 1사이 범위를 갖으며, 값이 클수록 빨리 따라감)*/
-	const _float m_fDampingLimitDistance = 100.f;
+	const _float m_fDampingLimitDistance = 1000.f;
 
 	/* 공격 패턴 위한 변수들 */
 	vector<_uint> m_vecAtkState;

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Witch_VulcanBullet.h"
+#include "Witch_ChargeBullet.h"
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
@@ -9,18 +9,18 @@
 #include "Particle_Manager.h"
 #include "Particle.h"
 
-CWitch_VulcanBullet::CWitch_VulcanBullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CWitch_ChargeBullet::CWitch_ChargeBullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CMonsterProjectile(pDevice, pContext, strObjectTag)
 {
 }
 
-CWitch_VulcanBullet::CWitch_VulcanBullet(const CWitch_VulcanBullet& rhs)
+CWitch_ChargeBullet::CWitch_ChargeBullet(const CWitch_ChargeBullet& rhs)
 	: CMonsterProjectile(rhs)
 {
 
 }
 
-HRESULT CWitch_VulcanBullet::Initialize_Prototype()
+HRESULT CWitch_ChargeBullet::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -28,7 +28,7 @@ HRESULT CWitch_VulcanBullet::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CWitch_VulcanBullet::Initialize(void* pArg)
+HRESULT CWitch_ChargeBullet::Initialize(void* pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -42,14 +42,13 @@ HRESULT CWitch_VulcanBullet::Initialize(void* pArg)
 	Set_Collider_Elemental(m_pOwner->Get_Stat().eElementType);
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, true);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
-	m_fReturnTime = 3.f;
 	m_fDelteTime = 6.f;
 	m_fSpeed = 10.f;
 
 	return S_OK;
 }
 
-void CWitch_VulcanBullet::Tick(_float fTimeDelta)
+void CWitch_ChargeBullet::Tick(_float fTimeDelta)
 {
 	// 이펙트 생성
 	if (!m_bCreate)
@@ -66,45 +65,31 @@ void CWitch_VulcanBullet::Tick(_float fTimeDelta)
 		m_bCreate = true;
 	}
 
-	
-	m_fAccReturnTime += fTimeDelta;
-	// 다시 반대로 돌아오기
-	if (!m_bIsReturn && m_fAccReturnTime > m_fReturnTime)
-	{
-		m_bIsReturn = true;
-	}
 
-	if (m_bIsReturn)
+	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fSpeed, fTimeDelta);
+
+	m_fAccDelteTime += fTimeDelta;
+	// 지우기
+	if (m_fAccDelteTime > m_fDelteTime)
 	{
-		m_pTransformCom->Move(m_pTransformCom->Get_Look(), -m_fSpeed, fTimeDelta);
-	
-		m_fAccDelteTime += fTimeDelta;
-		// 지우기
-		if (m_fAccDelteTime > m_fDelteTime)
-		{
-			Set_Dead(true);
-		}
-	}
-	else
-	{
-		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fSpeed, fTimeDelta);
+		Set_Dead(true);
 	}
 
 
 	__super::Tick(fTimeDelta);
 }
 
-void CWitch_VulcanBullet::LateTick(_float fTimeDelta)
+void CWitch_ChargeBullet::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 }
 
-HRESULT CWitch_VulcanBullet::Render()
+HRESULT CWitch_ChargeBullet::Render()
 {
 	return S_OK;
 }
 
-HRESULT CWitch_VulcanBullet::Render_ShadowDepth()
+HRESULT CWitch_ChargeBullet::Render_ShadowDepth()
 {
 	//if (FAILED(__super::Render_ShadowDepth()))
 	//	return E_FAIL;
@@ -113,7 +98,7 @@ HRESULT CWitch_VulcanBullet::Render_ShadowDepth()
 }
 
 
-void CWitch_VulcanBullet::Collision_Enter(const COLLISION_INFO& tInfo)
+void CWitch_ChargeBullet::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
@@ -127,17 +112,17 @@ void CWitch_VulcanBullet::Collision_Enter(const COLLISION_INFO& tInfo)
 	}
 }
 
-void CWitch_VulcanBullet::Collision_Continue(const COLLISION_INFO& tInfo)
+void CWitch_ChargeBullet::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);
 }
 
-void CWitch_VulcanBullet::Collision_Exit(const COLLISION_INFO& tInfo)
+void CWitch_ChargeBullet::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Exit(tInfo);
 }
 
-HRESULT CWitch_VulcanBullet::Ready_Components()
+HRESULT CWitch_ChargeBullet::Ready_Components()
 {
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
@@ -194,7 +179,7 @@ HRESULT CWitch_VulcanBullet::Ready_Components()
 }
 
 #pragma region Ready_Colliders
-HRESULT CWitch_VulcanBullet::Ready_Colliders()
+HRESULT CWitch_ChargeBullet::Ready_Colliders()
 {
 	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
 	ZeroMemory(&SphereDesc, sizeof SphereDesc);
@@ -217,32 +202,32 @@ HRESULT CWitch_VulcanBullet::Ready_Colliders()
 
 #pragma endregion
 
-CWitch_VulcanBullet* CWitch_VulcanBullet::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CWitch_ChargeBullet* CWitch_ChargeBullet::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 {
-	CWitch_VulcanBullet* pInstance = new CWitch_VulcanBullet(pDevice, pContext, strObjectTag);
+	CWitch_ChargeBullet* pInstance = new CWitch_ChargeBullet(pDevice, pContext, strObjectTag);
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Create Failed : CWitch_VulcanBullet");
+		MSG_BOX("Create Failed : CWitch_ChargeBullet");
 		Safe_Release(pInstance);
 		return nullptr;
 	}
 	return pInstance;
 }
 
-CGameObject* CWitch_VulcanBullet::Clone(void* pArg)
+CGameObject* CWitch_ChargeBullet::Clone(void* pArg)
 {
-	CWitch_VulcanBullet* pInstance = new CWitch_VulcanBullet(*this);
+	CWitch_ChargeBullet* pInstance = new CWitch_ChargeBullet(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Cloned : CWitch_VulcanBullet");
+		MSG_BOX("Failed to Cloned : CWitch_ChargeBullet");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CWitch_VulcanBullet::Free()
+void CWitch_ChargeBullet::Free()
 {
 	__super::Free();
 }
