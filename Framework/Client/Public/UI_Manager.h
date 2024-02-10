@@ -179,7 +179,8 @@ public: // Lobby
 	HRESULT Off_OtherSubBtn(_uint iMagicNum);
 	void	OnOff_MapName(_bool bOnOff, const wstring& strMapName = TEXT(""));
 
-	HRESULT OnOff_Announce(_int iMagicNum, _bool bOnOff);
+	HRESULT OnOff_CameraAnnounce(_int iMagicNum, _bool bOnOff);
+	void	OnOff_SkillAnnounce(_bool bOnOff);
 	HRESULT OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum);
 	HRESULT OnOff_QuestWindow(_bool bOnOff);
 	HRESULT OnOff_QuestPopup(_bool bOnOff);
@@ -296,6 +297,7 @@ private:
 	class CUI_BossHP_Bar*					m_pBossHPBar = { nullptr };
 
 	class CUI_Announced*					m_pCameraAnnounce = { nullptr };
+	class CUI_Announced*					m_pSkillAnnounce = { nullptr };
 
 	class CUI_Emoticon_Window*				m_pEmoticonWindow = { nullptr };
 	class CUI_Emoticon_SpeechBalloon*		m_pBalloon = { nullptr };

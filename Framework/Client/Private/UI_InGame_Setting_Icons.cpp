@@ -152,7 +152,9 @@ void CUI_InGame_Setting_Icons::Key_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::LBTN))
 	{
 		if (m_eType == CAMERA_DEFAULT)
+		{
 			CUI_Manager::GetInstance()->Reset_SettingCamera();
+		}
 
 		//CUI_Manager::GetInstance()->OnOff_InGameSetWindow(true);
 	}

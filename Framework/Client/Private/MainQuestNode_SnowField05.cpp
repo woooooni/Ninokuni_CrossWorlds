@@ -61,7 +61,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 		QuestDesc.strTitle = m_strQuestName;
 		QuestDesc.strContents = m_strQuestContent;
 		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strQuestTag, m_strQuestName, m_strQuestContent);
+
 		m_iPrevKillCount = CQuest_Manager::GetInstance()->Get_QuestClearStack();
 	}
 
@@ -142,7 +142,6 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 				QuestDesc.strTitle = m_strNextQuestName;
 				QuestDesc.strContents = m_strNextQuestContent;
 				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 				CQuest_Manager::GetInstance()->Clear_MonsterKillCount();
 				CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);

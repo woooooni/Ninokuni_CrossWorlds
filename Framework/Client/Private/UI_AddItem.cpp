@@ -130,12 +130,20 @@ void CUI_AddItem::Tick(_float fTimeDelta)
 
 		if (false == m_bDisappear)
 		{
+			GI->Stop_Sound(CHANNELID::SOUND_UI); // UI_Fx_Result_Item_1
+			GI->Play_Sound(TEXT("UI_Fx_Comm_ItemLooting_Appear_1.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 			m_fTimeAcc += fTimeDelta;
 
 			if (m_fTimeAcc > 1.f)
 			{
 				m_bDisappear = true;
 				m_fTimeAcc = 0.f;
+
+				GI->Stop_Sound(CHANNELID::SOUND_UI);
+				GI->Play_Sound(TEXT("UI_Fx_Comm_ItemLooting_Disappear_1.mp3"), CHANNELID::SOUND_UI,
+					GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 			}
 		}
 

@@ -2661,6 +2661,14 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pCameraAnnounce);
 
+	pAnnounce = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Announced_Skill"), &UIDesc, &pAnnounce)))
+		return E_FAIL;
+	m_pSkillAnnounce = dynamic_cast<CUI_Announced*>(pAnnounce);
+	if (nullptr == m_pSkillAnnounce)
+		return E_FAIL;
+	Safe_AddRef(m_pSkillAnnounce);
+
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 	UIDesc.fCX = 540.f * 0.6f;
 	UIDesc.fCY = 440.f * 0.6f;
@@ -4176,6 +4184,12 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pCameraAnnounce)))
 		return E_FAIL;
 	Safe_AddRef(m_pCameraAnnounce);
+
+	if (nullptr == m_pSkillAnnounce)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pSkillAnnounce)))
+		return E_FAIL;
+	Safe_AddRef(m_pSkillAnnounce);
 
 	if (nullptr == m_pEmoticonWindow)
 		return E_FAIL;
@@ -6776,10 +6790,9 @@ HRESULT CUI_Manager::Off_OtherSubBtn(_uint iMagicNum)
 
 void CUI_Manager::OnOff_MapName(_bool bOnOff, const wstring& strMapName)
 {
-	if (nullptr == m_pUIMapName)
+	if (nullptr == m_pUIMapName || nullptr == m_pMapNameText)
 		return;
-	if (nullptr == m_pMapNameText)
-		return;
+
 	if (true == bOnOff && m_pUIMapName->Get_Active()) // MapName이 보여지는 중이라면 return한다.
 		return;
 
@@ -7451,7 +7464,7 @@ HRESULT CUI_Manager::OnOff_SkillWindowSlot(_uint iMenuType, _bool bOnOff)
 	return S_OK;
 }
 
-HRESULT CUI_Manager::OnOff_Announce(_int iMagicNum, _bool bOnOff)
+HRESULT CUI_Manager::OnOff_CameraAnnounce(_int iMagicNum, _bool bOnOff)
 {
 	if (0 > iMagicNum || 2 < iMagicNum)
 		return E_FAIL;
@@ -7754,6 +7767,25 @@ void CUI_Manager::Set_EmoticonType(_uint iIndex)
 		return;
 
 	m_pBalloon->Set_EmoticonType(iIndex);
+}
+
+void CUI_Manager::OnOff_SkillAnnounce(_bool bOnOff)
+{
+	if (nullptr == m_pSkillAnnounce)
+		return;
+
+	if (true == bOnOff)
+	{
+		// Active중이면 그냥 둔다
+		if (true == m_pSkillAnnounce->Get_Active())
+			return;
+
+		m_pSkillAnnounce->Set_Active(true);
+	}
+	else
+	{
+		m_pSkillAnnounce->Set_Active(false);
+	}
 }
 
 
@@ -8338,6 +8370,9 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Announced_Camera"),
 		CUI_Announced::Create(m_pDevice, m_pContext, CUI_Announced::ANNOUNCE_CAMERA), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Announced_Skill"),
+		CUI_Announced::Create(m_pDevice, m_pContext, CUI_Announced::ANNOUNCE_SKILL), LAYER_UI)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Monster_WorldHPBar"),
@@ -9260,6 +9295,7 @@ void CUI_Manager::Free()
 	Safe_Release(m_pPlayerSelected);
 
 	Safe_Release(m_pRecommend);
+	Safe_Release(m_pSkillAnnounce);
 
 	for (auto& pFrame : m_CoolTimeFrame)
 		Safe_Release(pFrame);

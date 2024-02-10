@@ -158,17 +158,17 @@ void CUI_BtnChangeCamera::Key_Input(_float fTimeDelta)
 //		{
 //		case 0:
 //			// 카메라 전환 1
-//			CUI_Manager::GetInstance()->OnOff_Announce(m_iTextureIndex, true);
+//			CUI_Manager::GetInstance()->OnOff_CameraAnnounce(m_iTextureIndex, true);
 //			break;
 //
 //		case 1:
 //			// 카메라 전환 2
-//			CUI_Manager::GetInstance()->OnOff_Announce(m_iTextureIndex, true);
+//			CUI_Manager::GetInstance()->OnOff_CameraAnnounce(m_iTextureIndex, true);
 //			break;
 //
 //		case 2:
 //			// 카메라 전환 3
-//			CUI_Manager::GetInstance()->OnOff_Announce(m_iTextureIndex, true);
+//			CUI_Manager::GetInstance()->OnOff_CameraAnnounce(m_iTextureIndex, true);
 //			break;
 //		}
 

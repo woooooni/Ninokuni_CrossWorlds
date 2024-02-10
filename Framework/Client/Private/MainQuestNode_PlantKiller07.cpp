@@ -12,6 +12,7 @@
 #include "Ruby.h"
 #include <FileUtils.h>
 #include <Utils.h>
+#include "UI_PopupQuest.h"
 
 CMainQuestNode_PlantKiller07::CMainQuestNode_PlantKiller07()
 {
@@ -59,6 +60,14 @@ CBTNode::NODE_STATE CMainQuestNode_PlantKiller07::Tick(const _float& fTimeDelta)
 	{
 		Vec4 vSpotPos = Vec4(-75.815f, 11.195f, 46.207f, 1.0f);
 		m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
+	
+		CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+		QuestDesc.strType = m_strQuestTag;
+		QuestDesc.strTitle = m_strQuestName;
+		QuestDesc.strContents = m_strQuestContent;
+		QuestDesc.bCreateSpot = true;
+		QuestDesc.vDestPosition = vSpotPos;
+		CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
 	}
 
 	// юс╫ц

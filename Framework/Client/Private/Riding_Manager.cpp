@@ -125,6 +125,10 @@ HRESULT CRiding_Manager::Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff)
 				m_pUdadak->Set_Aboard(true);
 				m_pUdadak->Ride(pCharacter);
 				m_bIsRiding = true;
+				
+				GI->Stop_Sound(CHANNELID::SOUND_VEHICLE);
+				GI->Play_Sound(TEXT("Veh_Udadak_Hello_1.mp3"), CHANNELID::SOUND_VEHICLE,
+					GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
 			}
 		}
 		else
@@ -133,6 +137,10 @@ HRESULT CRiding_Manager::Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff)
 			{
 				m_pUdadak->Set_Aboard(false);
 				m_bIsRiding = false;
+
+				GI->Stop_Sound(CHANNELID::SOUND_VEHICLE);
+				GI->Play_Sound(TEXT("Veh_Udadak_Bye_1.mp3"), CHANNELID::SOUND_VEHICLE,
+					GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
 			}
 		}
 		break;

@@ -6,7 +6,7 @@ BEGIN(Client)
 class CUI_Announced final : public CUI
 {
 public:
-	enum UI_ANNNOUNCE_TYPE{ ANNOUNCE_CAMERA, ANNOUNCED_END };
+	enum UI_ANNNOUNCE_TYPE{ ANNOUNCE_CAMERA, ANNOUNCE_SKILL, ANNOUNCED_END };
 
 protected:
 	CUI_Announced(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_ANNNOUNCE_TYPE eType);
@@ -25,7 +25,9 @@ public:
 
 public:
 	void Tick_CameraWindow(_float fTimeDelta);
+	void Tick_SkillWindow(_float fTimeDelta);
 	void LateTick_CameraWindow(_float fTimeDelta);
+	void LateTick_SkillWindow(_float fTimeDelta);
 
 private:
 	UI_ANNNOUNCE_TYPE m_eType = { ANNOUNCED_END };
@@ -34,6 +36,7 @@ private:
 	_int m_iTextureIndex = { 0 };
 	_bool m_bArrived = { false };
 
+	_float m_fTimeAcc = { 0.f };
 	_float m_fSpeed = { 80.f };
 	_float2 m_vOriginPosition = _float2(0.f, 0.f);
 	_float2 m_vStartPosition = _float2(0.f, 0.f);

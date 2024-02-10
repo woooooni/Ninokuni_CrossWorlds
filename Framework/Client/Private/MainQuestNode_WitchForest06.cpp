@@ -34,7 +34,6 @@ void CMainQuestNode_WitchForest06::Start()
 	QuestDesc.strTitle = m_strQuestName;
 	QuestDesc.strContents = m_strQuestContent;
 	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
-//	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 	
 	m_pWitchWood = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_BUILDING, L"Witch_Wood_Wall");
 }

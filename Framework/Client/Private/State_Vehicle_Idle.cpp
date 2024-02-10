@@ -22,6 +22,8 @@ HRESULT CState_Vehicle_Idle::Initialize(const list<wstring>& AnimationList)
 
     if (nullptr == m_pVehicle)
         return E_FAIL;
+
+    // 우다닥만 사용하는 탈 것 상태
     
     return S_OK;
 }
@@ -32,6 +34,31 @@ void CState_Vehicle_Idle::Enter_State(void* pArg)
     
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+
+//    GI->Stop_Sound(CHANNELID::SOUND_VEHICLE);
+//    _int iRandom = GI->RandomInt(0, 3);
+//    switch (iRandom)
+//    {
+//    case 0:
+//        GI->Play_Sound(TEXT("Veh_Udadak_Idle_1_1.mp3"), CHANNELID::SOUND_VEHICLE,
+//            GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+//        break;
+//
+//    case 1:
+//        GI->Play_Sound(TEXT("Veh_Udadak_Idle_2_1.mp3"), CHANNELID::SOUND_VEHICLE,
+//            GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+//        break;
+//
+//    case 2:
+//        GI->Play_Sound(TEXT("Veh_Udadak_Idle_2_2.mp3"), CHANNELID::SOUND_VEHICLE,
+//            GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+//        break;
+//
+//    case 3:
+//        GI->Play_Sound(TEXT("Veh_Udadak_Idle_6.mp3"), CHANNELID::SOUND_VEHICLE,
+//            GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+//        break;
+//    }
 }
 
 void CState_Vehicle_Idle::Tick_State(_float fTimeDelta)
@@ -40,6 +67,32 @@ void CState_Vehicle_Idle::Tick_State(_float fTimeDelta)
     {
         m_iCurrAnimIndex = m_AnimIndices[GI->RandomInt(0, m_AnimIndices.size() - 1)];
         m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+
+        /*
+        _int iRandom = GI->RandomInt(0, 3);
+        switch (iRandom)
+        {
+        case 0:
+            GI->Play_Sound(TEXT("Veh_Udadak_Idle_1_1.mp3"), CHANNELID::SOUND_VEHICLE,
+                GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+            break;
+
+        case 1:
+            GI->Play_Sound(TEXT("Veh_Udadak_Idle_2_1.mp3"), CHANNELID::SOUND_VEHICLE,
+                GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+            break;
+
+        case 2:
+            GI->Play_Sound(TEXT("Veh_Udadak_Idle_2_2.mp3"), CHANNELID::SOUND_VEHICLE,
+                GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+            break;
+
+        case 3:
+            GI->Play_Sound(TEXT("Veh_Udadak_Idle_6.mp3"), CHANNELID::SOUND_VEHICLE,
+                GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+            break;
+        }
+        */
     }
 
     // 플레이어 움직임이 막혀있다면 return;

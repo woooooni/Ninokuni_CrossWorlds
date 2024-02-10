@@ -35,6 +35,13 @@ void CMainQuestNode_SnowField06::Start()
 
 	// 임시로 monster에 
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestName;
+	QuestDesc.strContents = m_strQuestContent;
+	QuestDesc.bCreateSpot = true;
+	QuestDesc.vDestPosition = vSpotPos;
+	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 }
 
 CBTNode::NODE_STATE CMainQuestNode_SnowField06::Tick(const _float& fTimeDelta)
@@ -58,7 +65,6 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField06::Tick(const _float& fTimeDelta)
 					QuestDesc.strTitle = m_strNextQuestName;
 					QuestDesc.strContents = m_strNextQuestContent;
 					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);

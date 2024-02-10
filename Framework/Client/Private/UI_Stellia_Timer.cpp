@@ -31,10 +31,18 @@ HRESULT CUI_Stellia_Timer::Initialize_Prototype()
 
 HRESULT CUI_Stellia_Timer::Initialize(void* pArg)
 {
+	if (nullptr == pArg)
+		return E_FAIL;
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	if (FAILED(__super::Initialize(pArg)))
+	CUI::UI_INFO UIDesc = {};
+	UIDesc.fCX = 355.f;
+	UIDesc.fCY = 15.f;
+	UIDesc.fX = 708.5f;
+	UIDesc.fY = 759.f;
+	if (FAILED(__super::Initialize(&UIDesc)))
 		return E_FAIL;
 
 	if (FAILED(Ready_State()))
@@ -43,12 +51,11 @@ HRESULT CUI_Stellia_Timer::Initialize(void* pArg)
 //	if (FAILED(Set_Owner()))
 //		return E_FAIL;
 
-	m_bActive = true;
-
-	// TestCode
-	m_fMaxSecond = 20.f;
+	TIMER_DESC TimerDesc = *((TIMER_DESC*)(pArg));
+	m_fMaxSecond = TimerDesc.fMaxSec;
 	m_fCurSecond = m_fMaxSecond;
-	//
+
+	m_bActive = true;
 
 	return S_OK;
 }
@@ -128,11 +135,6 @@ HRESULT CUI_Stellia_Timer::Set_Owner()
 
 HRESULT CUI_Stellia_Timer::Ready_State()
 {
-	m_tInfo.fCX = 355.f;
-	m_tInfo.fCY = 15.f;
-	m_tInfo.fX = 708.5f;
-	m_tInfo.fY = 759.f;
-
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
