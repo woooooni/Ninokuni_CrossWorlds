@@ -74,7 +74,7 @@ HRESULT CMainApp::Initialize()
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;			/* 모델 로드할 캐릭터 타입 */
 
-		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;			/* 게임 플레이 캐릭터 타입 */
+		g_ePlayCharacter = LOAD_CHARACTER_TYPE::DESTROYER_CH;			/* 게임 플레이 캐릭터 타입 */
 	}
 
 	// Open Level

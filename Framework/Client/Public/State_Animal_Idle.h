@@ -24,6 +24,9 @@ public:
 	virtual void Exit_State() override;
 
 private:
+	void SelectSound();
+
+private:
 	_bool m_bExit = false;
 	_int m_iPrevAnim = 0;
 

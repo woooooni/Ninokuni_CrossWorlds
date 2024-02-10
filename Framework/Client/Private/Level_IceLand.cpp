@@ -319,7 +319,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	
 
 
-	CTrigger::TRIGGER_DESC TriggerDesc;
+	/*CTrigger::TRIGGER_DESC TriggerDesc;
 	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
 	TriggerDesc.strMapName = L"코에루코 설원";
 	TriggerDesc.vStartPosition = { 107.93f, -50.f, 5.067f, 1.f };
@@ -337,18 +337,10 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 	TriggerDesc.strMapName = L"얼어붙은 유령숲";
 	TriggerDesc.vStartPosition = { -124.5f, -50.f, 290.2f, 1.f };
-	TriggerDesc.vExtents = { 200.f, 200.f, 150.f };
+	TriggerDesc.vExtents = { 200.f, 200.f, 150.f };*/
 
-	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
-		return E_FAIL;
-
-
-	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_WHALE_ENTER;
-	TriggerDesc.vStartPosition = { -23.680f, -0.2f, 30.443f, 1.f };
-	TriggerDesc.vExtents = { 15.0f, 15.0f, 15.0f };
-
-	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
-		return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
 
 
 	CRespawn_Box::RESPAWN_DESC RespawnDesc = {};
@@ -992,7 +984,7 @@ HRESULT CLevel_IceLand::Ready_Trigger(const wstring& strTriggerName)
 
 
 			CGameObject* pGameObject = nullptr;
-			if (GI->Add_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, CUtils::ToWString(protoTypeTag), nullptr,
+			if (GI->Add_GameObject(LEVELID::LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, CUtils::ToWString(protoTypeTag), nullptr,
 				&pGameObject))
 			{
 				MSG_BOX("Load Object Failed : Trigger");

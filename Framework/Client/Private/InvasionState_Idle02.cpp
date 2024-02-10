@@ -25,6 +25,7 @@ void CInvasionState_Idle02::Enter_State(void* pArg)
 void CInvasionState_Idle02::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
+
 }
 
 void CInvasionState_Idle02::Exit_State()

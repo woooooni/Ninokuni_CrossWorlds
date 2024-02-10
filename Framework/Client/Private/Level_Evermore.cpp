@@ -35,6 +35,7 @@
 #include "Riding_Manager.h"
 #include "Inventory_Manager.h"
 #include "Grandprix_Manager.h"
+#include "Monster.h"
 
 _bool CLevel_Evermore::g_bFirstEnter = false;
 
@@ -78,6 +79,12 @@ HRESULT CLevel_Evermore::Initialize()
 
 	if (FAILED(Ready_Trigger(TEXT("Evermore"))))
 		return E_FAIL;
+
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
+	{
+		if (FAILED(Ready_Layer_Monster(TEXT("Evermore"))))
+			return E_FAIL;
+	}
 
 	if (FAILED(Ready_Layer_Dynamic(LAYER_TYPE::LAYER_DYNAMIC, TEXT("Evermore"))))
 		return E_FAIL;
@@ -333,8 +340,73 @@ HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	return S_OK;
 }
 
-HRESULT CLevel_Evermore::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
+HRESULT CLevel_Evermore::Ready_Layer_Monster(const wstring& strMonsterFileName)
 {
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMonsterFileName + L"/" + strMonsterFileName + L"Monster.map";
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strMapFilePath, FileMode::Read);
+
+
+	GI->Clear_Layer(LEVEL_TOOL, LAYER_TYPE::LAYER_MONSTER);
+	_uint iObjectCount = File->Read<_uint>();
+
+	for (_uint j = 0; j < iObjectCount; ++j)
+	{
+		// 3. Object_Prototype_Tag
+		wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+		wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+		// 6. Obejct States
+		_float4 vRight, vUp, vLook, vPos;
+
+		File->Read<_float4>(vRight);
+		File->Read<_float4>(vUp);
+		File->Read<_float4>(vLook);
+		File->Read<_float4>(vPos);
+
+
+		OBJECT_INIT_DESC Init_Data = {};
+		Init_Data.vStartPosition = vPos;
+		CGameObject* pObj = nullptr;
+
+		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_MONSTER, strPrototypeTag, &Init_Data, &pObj)))
+		{
+			MSG_BOX("Load_Objects_Failed.");
+			return E_FAIL;
+		}
+
+		if (nullptr == pObj)
+		{
+			MSG_BOX("Add_Object_Failed.");
+			return E_FAIL;
+		}
+		pObj->Set_ObjectTag(strObjectTag);
+
+		CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+		if (nullptr == pTransform)
+		{
+			MSG_BOX("Get_Transform_Failed.");
+			return E_FAIL;
+		}
+
+
+
+		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+
+		_bool bInvastion = static_cast<CMonster*>(pObj)->Get_Invasition();
+		if (true == bInvastion)
+		{
+			_uint invasionState;
+			File->Read<_uint>(invasionState);
+			static_cast<CMonster*>(pObj)->Set_InvasionState(static_cast<CMonster::MONSTER_INVASION_STATE>(invasionState));
+		}
+	}
+
+	MSG_BOX("Monster_Loaded.");
 	return S_OK;
 }
 

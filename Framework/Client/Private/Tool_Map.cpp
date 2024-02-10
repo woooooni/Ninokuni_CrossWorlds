@@ -1208,6 +1208,8 @@ void CTool_Map::MapMonsterSpace()
 				ChangeState();
 				m_iMonsterState = 0;
 			} ImGui::SameLine();
+			if (ImGui::RadioButton("Patrol Setting", (1 == m_iMonsterState)))
+				m_iMonsterState = 1;
 
 			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"몬스터 오브젝트");
 			if (nullptr != m_pSelectObj)
@@ -1262,71 +1264,165 @@ void CTool_Map::MapMonsterSpace()
 
 			ImGui::SameLine();
 
-			ImGui::PushItemWidth(110.f);
 
-			static const char* szLevelType = nullptr;
-
-			if (ImGui::BeginCombo(u8"Level_Type", szLevelType))
+			if (0 == m_iMonsterState)
 			{
-				for (_uint i = 0; i < 2; ++i)
-				{
-					_bool IsSelected = (szLevelType == m_ImguiLevelName[i]);
+				ImGui::PushItemWidth(110.f);
+				static const char* szLevelType = nullptr;
 
-					if (ImGui::Selectable(m_ImguiLevelName[i], IsSelected))
+				if (ImGui::BeginCombo(u8"Level_Type", szLevelType))
+				{
+					for (_uint i = 0; i < 3; ++i)
 					{
-						szLevelType = m_ImguiLevelName[i];
-						m_iMonsterLevel = i;
-						m_strLevelMonsterName = CUtils::ToWString(m_ImguiLevelName[i]);
+						_bool IsSelected = (szLevelType == m_ImguiLevelName[i]);
+
+						if (ImGui::Selectable(m_ImguiLevelName[i], IsSelected))
+						{
+							szLevelType = m_ImguiLevelName[i];
+							m_iMonsterLevel = i;
+							m_strLevelMonsterName = CUtils::ToWString(m_ImguiLevelName[i]);
+						}
 					}
+					ImGui::EndCombo();
 				}
-				ImGui::EndCombo();
-			}
 
-			ImGui::PopItemWidth();
+				ImGui::PopItemWidth();
 
-			ImGui::Dummy(ImVec2(0.0f, 5.0f));
+				ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
-			if (ImGui::Button(u8"몬스터 추가"))
-			{
-				m_pSelectObj = nullptr;
-				m_bAddMonster = true;
-
-			}ImGui::SameLine();
-
-			if (ImGui::Button(u8"배치된 몬스터"))
-				m_bAddMonster = false;
-
-			if (true == m_bAddMonster)
-			{
-				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"추가할 몬스터 선택");
-
-				if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(300.0f, 0.0f)))
-					AddMapMonster(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_MONSTER);
-
-				ImGui::ListBoxFooter();
-			}
-			else
-			{
-				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"맵에 배치된 몬스터 리스트");
-				if (ImGui::ListBoxHeader("##OBJECTLIST", ImVec2(300.0f, 0.0f)))
+				if (ImGui::Button(u8"몬스터 추가"))
 				{
-					if (0 == m_iMonsterState)
-						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_MONSTER);
+					m_pSelectObj = nullptr;
+					m_bAddMonster = true;
+
+				}ImGui::SameLine();
+
+				if (ImGui::Button(u8"배치된 몬스터"))
+					m_bAddMonster = false;
+
+				if (true == m_bAddMonster)
+				{
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"추가할 몬스터 선택");
+
+					if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(300.0f, 0.0f)))
+						AddMapMonster(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_MONSTER);
+
+					ImGui::ListBoxFooter();
+				}
+				else
+				{
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"맵에 배치된 몬스터 리스트");
+					if (ImGui::ListBoxHeader("##OBJECTLIST", ImVec2(300.0f, 0.0f)))
+					{
+						if (0 == m_iMonsterState)
+							BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_MONSTER);
+					}
+
+					ImGui::ListBoxFooter();
 				}
 
-				ImGui::ListBoxFooter();
+				ImGui::Spacing();
+
+				if (ImGui::Button(u8"Save"))
+					Save_Monster_Data(m_strLevelMonsterName);
+
+				ImGui::SameLine();
+
+				if (ImGui::Button(u8"Load"))
+					Load_Monster_Data(m_strLevelMonsterName);
+
 			}
+			else if (1 == m_iMonsterState)
+			{
+				ImGuiStyle& imguiStyle = ImGui::GetStyle();
 
-			ImGui::Spacing();
+				const _float splitterButton = 10.0f;
+				ImGui::Dummy(ImVec2(0.0f, splitterButton * 0.5f));
+				ImGui::Indent(5.0f);
+				ImGui::Text("Monster State Setting");
+				ImGui::Unindent(5.0f);
+				ImGui::Dummy(ImVec2(0.0f, splitterButton * 0.5f));
 
-			if (ImGui::Button(u8"Save"))
-				Save_Monster_Data(m_strLevelMonsterName);
+				ImGui::BeginChild("Settings", ImVec2(ImGui::GetWindowSize().x - (imguiStyle.ScrollbarSize / 1.5f),
+					275.0f), true);
+				ImGui::PushItemWidth(150.0f);
 
-			ImGui::SameLine();
+				if (ImGui::CollapsingHeader("Setting Panel", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Text("Setting Option");	ImGui::SameLine(ImGui::GetWindowWidth() - 90.0f);
+					ImGui::Text("State");			ImGui::SameLine(ImGui::GetWindowWidth() - 123.0f);
 
-			if (ImGui::Button(u8"Load"))
-				Load_Monster_Data(m_strLevelMonsterName);
+					static const char* szLevelType = nullptr;
 
+					if (ImGui::BeginCombo("##Set State", szLevelType))
+					{
+						for (_uint i = 0; i < CMonster::MONSTER_INVASION_STATE::INVASION_STATE_END; ++i)
+						{
+							_bool IsSelected = (szLevelType == m_InvasionMonsterStateSelectableName[i]);
+
+							if (ImGui::Selectable(m_InvasionMonsterStateSelectableName[i], IsSelected))
+							{
+								if (nullptr == m_pSelectObj)
+									break;
+
+								// TODO NpcState
+								// 세팅 해놓고 나중에 Get으로 저장할 때 불러오면 됨.
+
+								if (m_InvasionMonsterStateSelectableName[i] == "ATTACK")
+									static_cast<CMonster*>(m_pSelectObj)->Set_InvasionState(CMonster::MONSTER_INVASION_STATE::INVASION_STATE_ATTACK);
+								else if (m_InvasionMonsterStateSelectableName[i] == "IDLE01")
+									static_cast<CMonster*>(m_pSelectObj)->Set_InvasionState(CMonster::MONSTER_INVASION_STATE::INVASION_STATE_IDLE01);
+								else if (m_InvasionMonsterStateSelectableName[i] == "IDLE02")
+									static_cast<CMonster*>(m_pSelectObj)->Set_InvasionState(CMonster::MONSTER_INVASION_STATE::INVASION_STATE_IDLE02);
+								else if (m_InvasionMonsterStateSelectableName[i] == "DEAD")
+									static_cast<CMonster*>(m_pSelectObj)->Set_InvasionState(CMonster::MONSTER_INVASION_STATE::INVASION_STATE_DEAD);
+							}
+						}
+						ImGui::EndCombo();
+					}
+					ImGui::Separator();
+
+					ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.4f, 0.4f, 0.5f, 1.0f));
+
+				/*	if (ImGui::CollapsingHeader("Points", ImGuiTreeNodeFlags_DefaultOpen))
+					{
+						ImGui::Separator();
+
+						if (nullptr != m_pSelectObj)
+						{
+							vector<Vec4>* romingPoints = static_cast<CGameNpc*>(m_pSelectObj)->Get_RoamingArea();
+							_uint iSize = romingPoints->size();
+
+							for (_uint i = 0; i < iSize; ++i)
+							{
+								ImGui::DragFloat3(("Points_" + std::to_string(i)).c_str(), &(*romingPoints)[i].x);
+								ImGui::Spacing();
+							}
+
+							CGameNpc::NPC_STAT* eStat = static_cast<CGameNpc*>(m_pSelectObj)->Get_Stat();
+							ImGui::DragFloat("Speed", &(eStat->fSpeed), 0.1f, 0.1f, 20.0f);
+
+							if (ImGui::Button("Undo", ImVec2(80.0f, 20.0f)))
+							{
+								if (romingPoints->size() > 0)
+								{
+									romingPoints->pop_back();
+									if (static_cast<CGameNpc*>(m_pSelectObj)->Get_CurRoamingIndex() >= romingPoints->size())
+										static_cast<CGameNpc*>(m_pSelectObj)->Set_CurRoamingIndex(static_cast<CGameNpc*>(m_pSelectObj)->Get_CurRoamingIndex() - 1);
+								}
+
+							} ImGui::SameLine();
+
+							if (ImGui::Button("All Romove", ImVec2(150.0f, 20.0f))) { RomingClear(); } ImGui::SameLine();
+
+						}
+					}*/
+
+					ImGui::PopItemWidth();
+					ImGui::PopStyleColor();
+				}
+				ImGui::EndChild();
+			}
 		}
 		ImGui::EndChild();
 	}
@@ -2589,43 +2685,41 @@ HRESULT CTool_Map::Save_Monster_Data(const wstring& strMonsterFileName)
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMapFilePath, FileMode::Write);
 
-	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+
+	list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, LAYER_TYPE::LAYER_MONSTER);
+	File->Write<_uint>(GameObjects.size());
+
+	for (auto& Object : GameObjects)
 	{
-		if (LAYER_TYPE::LAYER_MONSTER != i)
-			continue;
-
-			// 2. ObjectCount
-		list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);
-		File->Write<_uint>(GameObjects.size());
-
-		for (auto& Object : GameObjects)
+		CTransform* pTransform = Object->Get_Component<CTransform>(L"Com_Transform");
+		if (nullptr == pTransform)
 		{
-			CTransform* pTransform = Object->Get_Component<CTransform>(L"Com_Transform");
-			if (nullptr == pTransform)
-			{
-				MSG_BOX("Find_Transform_Failed.");
-				return E_FAIL;
-			}
-
-			// 3. Object_Prototype_Tag
-			File->Write<string>(CUtils::ToString(Object->Get_PrototypeTag()));
-
-			// 4. Object_Tag
-			File->Write<string>(CUtils::ToString(Object->Get_ObjectTag()));
-
-			// 5. Obejct States
-			_float4 vRight, vUp, vLook, vPos;
-
-			XMStoreFloat4(&vRight, pTransform->Get_State(CTransform::STATE_RIGHT));
-			XMStoreFloat4(&vUp, pTransform->Get_State(CTransform::STATE_UP));
-			XMStoreFloat4(&vLook, pTransform->Get_State(CTransform::STATE_LOOK));
-			XMStoreFloat4(&vPos, pTransform->Get_State(CTransform::STATE_POSITION));
-
-			File->Write<_float4>(vRight);
-			File->Write<_float4>(vUp);
-			File->Write<_float4>(vLook);
-			File->Write<_float4>(vPos);
+			MSG_BOX("Find_Transform_Failed.");
+			return E_FAIL;
 		}
+
+		// 3. Object_Prototype_Tag
+		File->Write<string>(CUtils::ToString(Object->Get_PrototypeTag()));
+
+		// 4. Object_Tag
+		File->Write<string>(CUtils::ToString(Object->Get_ObjectTag()));
+
+		// 5. Obejct States
+		_float4 vRight, vUp, vLook, vPos;
+
+		XMStoreFloat4(&vRight, pTransform->Get_State(CTransform::STATE_RIGHT));
+		XMStoreFloat4(&vUp, pTransform->Get_State(CTransform::STATE_UP));
+		XMStoreFloat4(&vLook, pTransform->Get_State(CTransform::STATE_LOOK));
+		XMStoreFloat4(&vPos, pTransform->Get_State(CTransform::STATE_POSITION));
+
+		File->Write<_float4>(vRight);
+		File->Write<_float4>(vUp);
+		File->Write<_float4>(vLook);
+		File->Write<_float4>(vPos);
+
+		_bool bInvastion = static_cast<CMonster*>(Object)->Get_Invasition();
+		if(true == bInvastion)
+			File->Write<_uint>(static_cast<CMonster*>(Object)->Get_InvastionState());
 	}
 
 	MSG_BOX("Monster_Saved.");
@@ -2639,64 +2733,65 @@ HRESULT CTool_Map::Load_Monster_Data(const wstring& strMonsterFileName)
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMapFilePath, FileMode::Read);
 
-	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+
+	GI->Clear_Layer(LEVEL_TOOL, LAYER_TYPE::LAYER_MONSTER);
+	_uint iObjectCount = File->Read<_uint>();
+
+	for (_uint j = 0; j < iObjectCount; ++j)
 	{
-		if (LAYER_TYPE::LAYER_MONSTER != i)
-			continue;
+		// 3. Object_Prototype_Tag
+		wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+		wstring strObjectTag = CUtils::ToWString(File->Read<string>());
 
-		GI->Clear_Layer(LEVEL_TOOL, i);
+		// 6. Obejct States
+		_float4 vRight, vUp, vLook, vPos;
 
-		
-		_uint iObjectCount = File->Read<_uint>();
+		File->Read<_float4>(vRight);
+		File->Read<_float4>(vUp);
+		File->Read<_float4>(vLook);
+		File->Read<_float4>(vPos);
 
-		for (_uint j = 0; j < iObjectCount; ++j)
+
+		OBJECT_INIT_DESC Init_Data = {};
+		Init_Data.vStartPosition = vPos;
+		CGameObject* pObj = nullptr;
+
+		if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_MONSTER, strPrototypeTag, &Init_Data, &pObj)))
 		{
-			// 3. Object_Prototype_Tag
-			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
-			wstring strObjectTag = CUtils::ToWString(File->Read<string>());
-
-			// 6. Obejct States
-			_float4 vRight, vUp, vLook, vPos;
-
-			File->Read<_float4>(vRight);
-			File->Read<_float4>(vUp);
-			File->Read<_float4>(vLook);
-			File->Read<_float4>(vPos);
-
-
-			OBJECT_INIT_DESC Init_Data = {};
-			Init_Data.vStartPosition = vPos;
-			CGameObject* pObj = nullptr;
-
-			if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, &Init_Data, &pObj)))
-			{
-				MSG_BOX("Load_Objects_Failed.");
-				return E_FAIL;
-			}
-
-			if (nullptr == pObj)
-			{
-				MSG_BOX("Add_Object_Failed.");
-				return E_FAIL;
-			}
-			pObj->Set_ObjectTag(strObjectTag);
-
-			CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
-			if (nullptr == pTransform)
-			{
-				MSG_BOX("Get_Transform_Failed.");
-				return E_FAIL;
-			}
-
-
-
-			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
-			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
-			pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
-			pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+			MSG_BOX("Load_Objects_Failed.");
+			return E_FAIL;
 		}
-		
+
+		if (nullptr == pObj)
+		{
+			MSG_BOX("Add_Object_Failed.");
+			return E_FAIL;
+		}
+		pObj->Set_ObjectTag(strObjectTag);
+
+		CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+		if (nullptr == pTransform)
+		{
+			MSG_BOX("Get_Transform_Failed.");
+			return E_FAIL;
+		}
+
+
+
+		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+
+		_bool bInvastion = static_cast<CMonster*>(pObj)->Get_Invasition();
+		if (true == bInvastion)
+		{
+			_uint invasionState;
+			File->Read<_uint>(invasionState);
+			static_cast<CMonster*>(pObj)->Set_InvasionState(static_cast<CMonster::MONSTER_INVASION_STATE>(invasionState));
+		}
 	}
+
 	MSG_BOX("Monster_Loaded.");
 	return S_OK;
 }

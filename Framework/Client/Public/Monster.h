@@ -155,6 +155,11 @@ public:
 
 public:
 	MONSTER_TYPE Get_Monster_Type() { return m_eMonsterType; }
+	const MONSTER_INVASION_STATE& Get_InvastionState() const { return m_eInvasionState; }
+
+	void Set_InvasionState(MONSTER_INVASION_STATE eState);
+
+	const _bool& Get_Invasition() const { return m_bIsInvasion; }
 
 protected:
 	virtual HRESULT Ready_Components() PURE;
@@ -179,6 +184,7 @@ protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 
 protected:
 	MONSTER_STAT m_tStat = {};
+	MONSTER_INVASION_STATE m_eInvasionState = MONSTER_INVASION_STATE::INVASION_STATE_IDLE01;
 	wstring strKorName = TEXT("");
 	wstring strSubName = TEXT("");
 

@@ -36,7 +36,7 @@ private:
 	HRESULT Ready_Layer_Npc(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Light(const wstring& strLightFilePath);
 	HRESULT Ready_Layer_Prop(const LAYER_TYPE eLayerType);
-
+	HRESULT Ready_Trigger(const wstring& strTriggerName);
 public:
 	static class CLevel_WitchForest* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

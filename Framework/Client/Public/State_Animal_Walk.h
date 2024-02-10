@@ -23,7 +23,10 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
-public:
+private:
+	void SelectSound();
+
+private:
 	_bool m_bIsWalk = true;
 	_float m_fRandom[2] = { 0.0f, 0.0f };
 

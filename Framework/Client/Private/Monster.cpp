@@ -63,7 +63,7 @@ HRESULT CMonster::Initialize(void* pArg)
 	m_fNearDist = 9999.f;
 	m_fTargetSearchDist = 30.f;
 
-	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION || GI->Get_CurrentLevel() == LEVELID::LEVEL_TOOL)
 		m_bIsInvasion = true;
 
 	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_RUBY_DEFENCE)
@@ -662,6 +662,12 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 	Create_HitEffect(pCharacter);
 	Start_RimLight();
 	Start_MonsterHittedEvent(tInfo.pOther);
+}
+
+void CMonster::Set_InvasionState(MONSTER_INVASION_STATE eState)
+{
+	m_eInvasionState = eState;
+	m_pStateCom->Change_State(m_eInvasionState);
 }
 
 HRESULT CMonster::Ready_RoamingPoint()
