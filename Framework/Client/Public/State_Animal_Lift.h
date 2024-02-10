@@ -24,6 +24,10 @@ public:
 	virtual void Exit_State() override;
 
 private:
+	void SelectSound();
+	void SelectLiftFinishSound();
+
+private:
 	_float m_fChangeMotionTime = 5.0f;
 	_float m_fNextTime = 0.0f;
 	_bool  m_bFirstLift = true;

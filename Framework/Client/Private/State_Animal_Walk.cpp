@@ -22,6 +22,8 @@ HRESULT CState_Animal_Walk::Initialize(const list<wstring>& AnimationList)
 void CState_Animal_Walk::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_AnimIndices[0]);
+
+	SelectSound();
 }
 
 void CState_Animal_Walk::Tick_State(_float fTimeDelta)
@@ -105,6 +107,50 @@ void CState_Animal_Walk::Exit_State()
 	}
 
 	m_bExit = true;
+}
+
+void CState_Animal_Walk::SelectSound()
+{
+	wstring strobjtag = m_pOwner->Get_ObjectTag();
+	Vec4 vCamPos = GI->Get_CamPosition();
+	Vec4 vPos = m_pTransformCom->Get_Position();
+	Vec4 vDistVector = vPos - vCamPos;
+	_float fDist = vDistVector.Length();
+
+	if (TEXT("Animal_Cat") == strobjtag)
+	{
+		// Test Cat
+
+
+	}
+	else if (TEXT("Animal_Dochi") == strobjtag)
+	{
+		GI->Play_Sound(TEXT("Dochi_V_Walk_1.mp3"), CHANNELID::SOUND_VOICE_ANIMAL2, 1.0f, true, fDist);
+	}
+	else if (TEXT("Animal_DuckGoo") == strobjtag)
+	{
+		GI->Play_Sound(TEXT("Duckgoo_V_Run_1_2.mp3"), CHANNELID::SOUND_VOICE_ANIMAL3, 1.0f, true, fDist);
+	}
+	else if (TEXT("Animal_Fox") == strobjtag)
+	{
+
+	}
+	else if (TEXT("Animal_Rabbit") == strobjtag)
+	{
+
+	}
+	else if (TEXT("Animal_PolarBear") == strobjtag)
+	{
+
+	}
+	else if (TEXT("Animal_Ermine") == strobjtag)
+	{
+
+	}
+	else if (TEXT("Animal_WelshCorgi") == strobjtag)
+	{
+
+	}
 }
 
 CState_Animal_Walk* CState_Animal_Walk::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

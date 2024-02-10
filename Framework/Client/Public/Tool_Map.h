@@ -138,7 +138,7 @@ private:
 	const char* m_ImguiSelectableTrrigerNameList[LEVEL_LIST_END] =
 	{ "Lobby", "Evermore", "Kingdom", "Winter", "Witch" };
 
-	const char* m_ImguiLevelName[2] = { "Winter", "Witch" };
+	const char* m_ImguiLevelName[3] = { "Evermore", "Winter", "Witch" };
 
 	// 선택한 오브젝트
 	CGameObject* m_pSelectObj = nullptr;

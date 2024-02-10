@@ -76,7 +76,10 @@ void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume
 		|| eID == CHANNELID::SOUND_VOICE_MONSTER1 
 		|| eID == CHANNELID::SOUND_VOICE_MONSTER2 
 		|| eID == CHANNELID::SOUND_VOICE_MONSTER3 
-		|| eID == CHANNELID::SOUND_FOOT_MONSTER)
+		|| eID == CHANNELID::SOUND_FOOT_MONSTER
+		|| eID == CHANNELID::SOUND_VOICE_ANIMAL
+		|| eID == CHANNELID::SOUND_VOICE_ANIMAL2
+		|| eID == CHANNELID::SOUND_VOICE_ANIMAL3)
 	{
 		if (fCamDistance > 10.f)		
 			fFinalVolume = 0.f;

@@ -24,6 +24,9 @@ public:
 	virtual void Exit_State() override;
 
 private:
+	void SelectSound();
+
+private:
 	_bool m_bIsRun = true;
 	Vec4 m_vDirection;
 
