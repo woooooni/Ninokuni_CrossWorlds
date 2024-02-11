@@ -229,7 +229,12 @@ public:
 	void Set_OffsetPosition(Vec4 offset) { m_vAddOffsetPos = offset; }
 	void Set_DeleteParticle(_bool bParticleDelete) { m_bParticleDelete = bParticleDelete; }
 
-	void Set_LoopParticle(_bool bLoop)   { m_tParticleDesc.bParticleLoop = bLoop; }
+	void Set_LoopParticle(_bool bLoop)   
+	{ 
+		m_tParticleDesc.bParticleLoop = bLoop; 
+		if (false == m_tParticleDesc.bParticleLoop)
+			Set_DeleteParticle(true);
+	}
 	void Set_Rigidbody(_bool bRigidbody) { m_tRigidbodyDesc.bRigidbody = bRigidbody; }
 	void Add_Velocity(Vec4 _vMinVelocity, Vec4 _vMaxVelocity);
 
