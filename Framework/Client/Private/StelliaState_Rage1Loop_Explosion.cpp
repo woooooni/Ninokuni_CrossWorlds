@@ -45,10 +45,7 @@ void CStelliaState_Rage1Loop_Explosion::Enter_State(void* pArg)
 	m_pStellia->Set_StelliaHit(false);
 
 	// Effect Create
-	CTransform* pTransformCom = m_pStellia->Get_Component<CTransform>(L"Com_Transform");
-	if (pTransformCom == nullptr)
-		return;
-	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage01Explosion"), pTransformCom->Get_WorldMatrix(), m_pStellia);
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage01Explosion"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Rage1Loop_Explosion::Tick_State(_float fTimeDelta)

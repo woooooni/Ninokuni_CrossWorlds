@@ -10,6 +10,8 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Effect_Manager.h"
+
 CStelliaState_Rage3Charge::CStelliaState_Rage3Charge(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -36,6 +38,9 @@ void CStelliaState_Rage3Charge::Enter_State(void* pArg)
 	m_iClickPower = 0;
 
 	m_vStartPos = m_pTransformCom->Get_Position();
+
+	// Effect Create
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage03Charge"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)

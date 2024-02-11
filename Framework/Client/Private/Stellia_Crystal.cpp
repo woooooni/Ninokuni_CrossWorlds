@@ -54,6 +54,13 @@ HRESULT CStellia_Crystal::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	// Start Dissolve
+	m_bStartDissolve = true;
+	m_fDissolveWeight = 10.f;
+	m_pDissoveTexture = static_cast<CTexture*>(GI->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise")));
+	if (m_pDissoveTexture == nullptr)
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -61,10 +68,45 @@ void CStellia_Crystal::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
+	// Start Dissolve
+	if (true == m_bStartDissolve)
+	{
+		switch (m_iCrystalType)
+		{
+		case 0: // CRYSTAL_AURA
+			m_vDissolveColor = _float4(0.212f, 0.620f, 1.f, 1.f);
+			break;
+		case 1: // CRYSTAL_SKY
+			m_vDissolveColor = _float4(0.715f, 0.995f, 1.f, 1.f);
+			break;
+		case 2: // CRYSTAL_GOLD
+			m_vDissolveColor = _float4(1.f, 0.96f, 0.466f, 1.f);
+			break;
+		}
+
+		m_fDissolveWeight -= m_fDissolveSpeed * fTimeDelta;
+		if (m_fDissolveWeight < 0.f)
+		{
+			m_fDissolveWeight = 0.f;
+			m_bStartDissolve = false;
+		}
+	}
+
 	GI->Add_CollisionGroup(COLLISION_GROUP::PROP, this);
 
-	if (m_pModelCom->Is_Finish())
-		this->Set_Dead(true);
+	if (m_bReserveDead) // Dissolve
+	{
+		if (m_fDissolveWeight >= m_fDissolveTotal)
+		{
+			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
+			Set_Dead(true);
+			return;
+		}
+		else
+			m_fDissolveWeight += m_fDissolveSpeed * fTimeDelta;
+	}
+	else if (m_pModelCom->Is_Finish())
+		m_bReserveDead = true;
 }
 
 void CStellia_Crystal::LateTick(_float fTimeDelta)
@@ -104,6 +146,17 @@ HRESULT CStellia_Crystal::Render()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3	))))
 		return E_FAIL;
 
+	// Dissolve --------------------------------------------------------------------
+	if (FAILED(m_pDissoveTexture->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture", 51)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_DissolveDuration", &m_fDissolveDuration, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fDissolveWeight, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vDissolveColor", &m_vDissolveColor, sizeof(_float4))))
+		return E_FAIL;
+	// -----------------------------------------------------------------------------
 
 	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
 		return E_FAIL;
@@ -124,7 +177,9 @@ HRESULT CStellia_Crystal::Render()
 				return E_FAIL;
 		}
 
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+		if (m_bStartDissolve || m_bReserveDead)
+			iPassIndex = 2;
+		else if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 			iPassIndex = 0;
 		else
 			iPassIndex++;
@@ -204,4 +259,5 @@ void CStellia_Crystal::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pModelCom);
+	Safe_Release(m_pDissoveTexture);
 }

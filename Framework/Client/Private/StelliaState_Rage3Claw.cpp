@@ -4,6 +4,8 @@
 #include "Stellia.h"
 #include "Animation.h"
 
+#include "Effect_Manager.h"
+
 CStelliaState_Rage3Claw::CStelliaState_Rage3Claw(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -19,6 +21,9 @@ HRESULT CStelliaState_Rage3Claw::Initialize(const list<wstring>& AnimationList)
 void CStelliaState_Rage3Claw::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Attack01"));
+
+	// Effect Create
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage03Claw"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Rage3Claw::Tick_State(_float fTimeDelta)

@@ -31,7 +31,7 @@ HRESULT CVfx_Stellia_Skill_BigBang::Initialize_Prototype()
 	
 	{
 		m_pFrameTriger[TYPE_ET1_E_SMOKE_IN_01] = 4;
-		m_pPositionOffset[TYPE_ET1_E_SMOKE_IN_01] = _float3(0.f, 1.f, 0.f);
+		m_pPositionOffset[TYPE_ET1_E_SMOKE_IN_01] = _float3(0.f, 1.1f, 0.f);
 		m_pScaleOffset[TYPE_ET1_E_SMOKE_IN_01]    = _float3(15.f, 1.f, 15.f);
 		m_pRotationOffset[TYPE_ET1_E_SMOKE_IN_01] = _float3(0.f, 0.f, 0.f);
 

@@ -60,12 +60,11 @@ HRESULT CVfx_Stellia_Skill_JumpStamp::Initialize_Prototype()
 	m_pScaleOffset[TYPE_D_DECAL_00] = _float3(12.f, 1.f, 12.f);
 	m_pRotationOffset[TYPE_D_DECAL_00] = _float3(0.f, 0.f, 0.f);
 
-	m_pFrameTriger[TYPE_E_SPRINGUP] = 90; //
+	m_pFrameTriger[TYPE_E_SPRINGUP] = 90;
 	m_pPositionOffset[TYPE_E_SPRINGUP] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_E_SPRINGUP]    = _float3(5.f, 5.f, 5.f);
+	m_pScaleOffset[TYPE_E_SPRINGUP]    = _float3(6.f, 8.f, 6.f);
 	m_pRotationOffset[TYPE_E_SPRINGUP] = _float3(0.f, 0.f, 0.f);
 
-	/* 3. Shock01 Effect */
 	/* 4. Shock01 Effect */
 	m_pFrameTriger[TYPE_E_SHOCK_00] = 90;
 	m_pPositionOffset[TYPE_E_SHOCK_00] = _float3(0.f, -0.5f, 0.f);
@@ -111,8 +110,8 @@ void CVfx_Stellia_Skill_JumpStamp::Tick(_float fTimeDelta)
 		// 35
 		if (m_iCount == TYPE_E_RISING_00 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_RISING_00])
 		{
-			if (nullptr != m_pWarningDecal)
-				m_pWarningDecal->Set_Owner(nullptr);
+			//if (nullptr != m_pWarningDecal)
+			//	m_pWarningDecal->Set_Owner(nullptr);
 
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_Rising_Trail"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_RISING_00], m_pScaleOffset[TYPE_E_RISING_00], m_pRotationOffset[TYPE_E_RISING_00]);
@@ -135,7 +134,7 @@ void CVfx_Stellia_Skill_JumpStamp::Tick(_float fTimeDelta)
 				if (nullptr != pOwnerTransform)
 				{
 					GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_Warning"),
-						XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_WARNING], m_pScaleOffset[TYPE_D_WARNING], m_pRotationOffset[TYPE_D_WARNING], pPlayer, &m_pWarningDecal, false);
+						pOwnerTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_D_WARNING], m_pScaleOffset[TYPE_D_WARNING], m_pRotationOffset[TYPE_D_WARNING], nullptr, &m_pWarningDecal, false);
 					Safe_AddRef(m_pWarningDecal);
 				}
 			}
@@ -268,8 +267,10 @@ void CVfx_Stellia_Skill_JumpStamp::Free()
 
 	if (nullptr != m_pSpringUpEffect)
 	{
-		// µðÁ¹ºê
-		m_pSpringUpEffect->Set_Dead(true);
+		m_pSpringUpEffect->Start_Dissolve(73, // Index
+			_float4(0.760f, 0.611f, 1.f, 1.f),// Color
+			4.f,   // Speed
+			10.f); // Total
 		Safe_Release(m_pSpringUpEffect);
 	}
 

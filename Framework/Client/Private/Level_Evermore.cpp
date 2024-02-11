@@ -592,17 +592,17 @@ HRESULT CLevel_Evermore::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 {
-	// Portal Test
 	// Evermore -> KINGDOM
 	CPortal::PORTAL_DESC PortalInfo = {};
 	PortalInfo.vStartPosition = XMVectorSet(-0.35f, 9.9f, 145.f, 1.f);
 	PortalInfo.vNextPosition = XMVectorSet(0.f, 0.05f, -5.f, 1.f);
+
 	PortalInfo.eCurrentLevel = LEVEL_EVERMORE;
 	PortalInfo.eNextLevel = LEVEL_KINGDOMHALL;
+	PortalInfo.vEffectScale = Vec3(5.f, 0.3f, 1.f);
 
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo)))
 		return E_FAIL;
-
 
 
 	// Evermore -> IceLand
@@ -612,6 +612,8 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 	PortalInfo.eCurrentLevel = LEVEL_EVERMORE;
 	PortalInfo.eNextLevel = LEVEL_ICELAND;
+	PortalInfo.vEffectScale = Vec3(5.f, 0.3f, 1.f);
+
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo, &pPortal)))
 		return E_FAIL;
 
@@ -630,6 +632,8 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 	PortalInfo.eCurrentLevel = LEVEL_EVERMORE;
 	PortalInfo.eNextLevel = LEVEL_WITCHFOREST;
+	PortalInfo.vEffectScale = Vec3(5.f, 0.3f, 1.f);
+
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo, &pPortal)))
 		return E_FAIL;
 

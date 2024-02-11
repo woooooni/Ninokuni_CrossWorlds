@@ -285,6 +285,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	PortalInfo.vNextPosition = XMVectorSet(-20.f, 9.9f, 133.f, 1.f);
 	PortalInfo.eCurrentLevel = LEVEL_ICELAND;
 	PortalInfo.eNextLevel = LEVEL_EVERMORE;
+	PortalInfo.vEffectScale = Vec3(15.f, 0.3f, 1.f);
 
 	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo, &pPortal)))
 		return E_FAIL;
@@ -304,6 +305,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	PortalInfo.vNextPosition = XMVectorSet(-20.f, 9.9f, 133.f, 1.f);
 	PortalInfo.eCurrentLevel = LEVEL_ICELAND;
 	PortalInfo.eNextLevel = LEVEL_EVERMORE;
+	PortalInfo.vEffectScale = Vec3(15.f, 0.3f, 1.f);
 
 	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo, &pPortal)))
 		return E_FAIL;

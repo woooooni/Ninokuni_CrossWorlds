@@ -162,8 +162,6 @@ void CParticle::Tick(_float fTimeDelta)
 	if (Is_Dead() == true || !m_bIsShow)
 		return;
 
-	m_pVIBufferCom->Tick(fTimeDelta);
-
 	if (m_bParticleDelete)
 	{
 		if (m_pVIBufferCom->Get_Finished())
@@ -171,8 +169,11 @@ void CParticle::Tick(_float fTimeDelta)
 			m_bParticleDie = true;
 			if (GI->Get_CurrentLevel() != LEVEL_TOOL)
 				Set_Dead(true);
+			return;
 		}
 	}
+
+	m_pVIBufferCom->Tick(fTimeDelta);
 }
 
 void CParticle::LateTick(_float fTimeDelta)

@@ -747,7 +747,7 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 			m_pEffectTargetDecal = nullptr;
 		}
 
-		CEffect_Manager::GetInstance()->Generate_Decal_To_Position(L"Decal_Target", XMMatrixIdentity(), Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.f, 2.f), Vec3(0.f, 0.f, 0.f), m_pTarget, &m_pEffectTargetDecal, false);
+		CEffect_Manager::GetInstance()->Generate_Decal_To_Position(L"Decal_Target", XMMatrixIdentity(), Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.5f, 2.f), Vec3(0.f, 0.f, 0.f), m_pTarget, &m_pEffectTargetDecal, false);
 		Safe_AddRef(m_pEffectTargetDecal);
 	}
 	else
@@ -787,7 +787,7 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 				if (OBJ_TYPE::OBJ_CURLINGGAME_PROP == tInfo.pOther->Get_ObjectType()) // 컬링 게임 오브젝트들은 데칼 사용 X
 					return;
 
-				CEffect_Manager::GetInstance()->Generate_Decal(L"Decal_Target", pNewTargetTransform->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.f, 2.f), Vec3(0.f, 0.f, 0.f), m_pTarget, &m_pEffectTargetDecal, false);
+				CEffect_Manager::GetInstance()->Generate_Decal(L"Decal_Target", pNewTargetTransform->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.5f, 2.f), Vec3(0.f, 0.f, 0.f), m_pTarget, &m_pEffectTargetDecal, false);
 				Safe_AddRef(m_pEffectTargetDecal);
 			}
 		}
@@ -1027,14 +1027,17 @@ Vec4 CCharacter::Get_CharacterPosition()
 	return m_pTransformCom->Get_Position();
 }
 
-void CCharacter::Set_EnterLevelPosition(Vec4 vPosition)
+void CCharacter::Set_EnterLevelPosition(Vec4 vPosition, Vec3* pRotation)
 {
-	
 	m_pStateCom->Change_State(CCharacter::STATE::NEUTRAL_DOOR_ENTER);
+
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPosition, 1.f));
 	vPosition.z += 1.f;
 	m_pTransformCom->LookAt_ForLandObject(XMVectorSetW(vPosition, 1.f));
 	m_pControllerCom->Set_EnterLevel_Position(vPosition);
+
+	if (nullptr != pRotation)
+		m_pTransformCom->FixRotation((*pRotation).x, (*pRotation).y, (*pRotation).z);
 }
 
 void CCharacter::Set_InitialPosition(Vec4 vPosition)

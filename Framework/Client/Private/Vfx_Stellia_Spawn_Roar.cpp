@@ -29,6 +29,11 @@ HRESULT CVfx_Stellia_Spawn_Roar::Initialize_Prototype()
 	m_pScaleOffset    = new _float3[m_iMaxCount];
 	m_pRotationOffset = new _float3[m_iMaxCount];
 	
+	m_pFrameTriger[TYPE_ET0_D_MAGICCIRCLE] = 0;
+	m_pPositionOffset[TYPE_ET0_D_MAGICCIRCLE] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_ET0_D_MAGICCIRCLE]    = _float3(18.f, 2.f, 18.f);
+	m_pRotationOffset[TYPE_ET0_D_MAGICCIRCLE] = _float3(0.f, 0.f, 0.f);
+
 	{
 		m_pFrameTriger[TYPE_ET1_P_SMOKE] = 31;
 		m_pPositionOffset[TYPE_ET1_P_SMOKE] = _float3(0.f, 0.7f, 0.f);
@@ -62,7 +67,19 @@ void CVfx_Stellia_Spawn_Roar::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
-		if (m_iCount == TYPE_ET1_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_SMOKE])
+		if (m_iCount == TYPE_ET0_D_MAGICCIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET0_D_MAGICCIRCLE])
+		{
+			CTransform* pCTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
+			if (pCTransform != nullptr)
+				m_WorldMatrix = pCTransform->Get_WorldFloat4x4();
+
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Stellia_Spawn_MagicCircle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET0_D_MAGICCIRCLE], m_pScaleOffset[TYPE_ET0_D_MAGICCIRCLE], m_pRotationOffset[TYPE_ET0_D_MAGICCIRCLE], nullptr, &m_pMagicCircle, false);
+			Safe_AddRef(m_pMagicCircle);
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_ET1_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_SMOKE])
 		{
 			CTransform* pCTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
 			if (pCTransform != nullptr)
@@ -149,6 +166,12 @@ CGameObject* CVfx_Stellia_Spawn_Roar::Clone(void* pArg)
 void CVfx_Stellia_Spawn_Roar::Free()
 {
 	__super::Free();
+
+	if (nullptr != m_pMagicCircle)
+	{
+		m_pMagicCircle->Start_AlphaDeleate();
+		Safe_Release(m_pMagicCircle);
+	}
 
 	if (!m_isCloned)
 	{

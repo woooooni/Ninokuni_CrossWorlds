@@ -16,6 +16,9 @@ protected:
 	virtual ~CVfx_PortalPoint() = default;
 
 public:
+	void Set_LineEffectScale(Vec3 vScale) { m_vLineEffectScale = vScale; }
+
+public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta) override;
@@ -24,6 +27,9 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	Vec3 m_vLineEffectScale = {};
 
 private:
 	class CEffect* pEffectObject = nullptr;

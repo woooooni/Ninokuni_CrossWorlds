@@ -13,9 +13,15 @@ class CVfx_Stellia_Skill_Rage01Explosion final : public CVfx
 private:
 	enum TYPE {
 		TYPE_D_DECAL_00,
+		TYPE_P_CIRCLES,
 		TYPE_D_DECAL_01,
 
-		TYPE_P_EXPOLSION_READY,
+		TYPE_E_SHOCK_01,
+		TYPE_E_SPRINGUP,
+		TYPE_P_SMOKE,
+		TYPE_E_WIND_00,
+		TYPE_E_WIND_01,
+		TYPE_P_EXPOLSION_CIRCLES,
 
 		TYPE_END
 	};
@@ -38,6 +44,9 @@ protected:
 private:
 	class CEffect* m_pDecal01Effect = nullptr;
 	class CEffect* m_pDecla02Effect = nullptr;
+
+	class CParticle* m_pCircles  = nullptr;
+	class CEffect*   m_pSpringUp = nullptr;
 
 public:
 	static CVfx_Stellia_Skill_Rage01Explosion* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
