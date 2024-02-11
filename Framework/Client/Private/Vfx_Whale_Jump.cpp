@@ -74,8 +74,9 @@ void CVfx_Whale_Jump::Tick(_float fTimeDelta)
 		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Whale_Down"),
 			matWorld, m_pPositionOffset[TYPE_JUMP], m_pScaleOffset[TYPE_JUMP], m_pRotationOffset[TYPE_JUMP]);
 		m_iCount++;
-
-		GI->Play_Sound(TEXT("long-howl-whale-and-monster-37270.mp3"), CHANNELID::SOUND_VOICE_ANIMAL, 1.0f, true);
+		
+		// Temp Channel
+		GI->Play_Sound(TEXT("long-howl-whale-and-monster-37270.mp3"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.0f, true);
 	}
 	else
 	{

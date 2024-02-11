@@ -5,6 +5,7 @@ Texture2D	g_DiffuseTexture;
 Texture2D	g_DepthTexture;
 Texture2D	g_MaskTexture;
 Texture2D	g_RedTexture;
+
 Texture2D	g_DissolveTexture;
 
 float4		g_vDiffuseColor = { 0.1f, 0.1f, 0.1f, 1.f };
@@ -13,6 +14,96 @@ float		g_Time;
 
 float g_LoadingProgress;
 
+//
+Texture2D g_JitterTexture;
+Texture2D g_ScreenDepth;
+Texture2D g_PermTexture;
+Texture2D g_FireShape;
+float4 EyePos;
+matrix WorldViewProj;
+float Time;
+
+cbuffer CB_Fire
+{
+    bool bJitter = false;
+    float StepSize; // 1 / 16(MAX)
+    float NoiseScale;
+    float Roughness;
+    float FrequencyWeights[5];
+};
+
+//
+
+cbuffer Gradients
+{
+    // 3D gradients
+    
+    const float3 Grad3[] =
+    {
+        float3(-1, -1, 0), // 0
+        float3(-1, +1, 0), // 1
+        float3(+1, -1, 0), // 2
+        float3(+1, +1, 0), // 3
+
+        float3(-1, 0, -1), // 4
+        float3(-1, 0, +1), // 5
+        float3(+1, 0, -1), // 6
+        float3(+1, 0, +1), // 7
+
+        float3(0, -1, -1), // 8
+        float3(0, -1, +1), // 9
+        float3(0, +1, -1), // 10
+        float3(0, +1, +1), // 11
+
+        // padding   
+        float3(+1, +1, 0), // 12
+        float3(-1, -1, 0), // 13
+        float3(0, -1, +1), // 14
+        float3(0, -1, -1) // 15
+    };
+
+    // 4D case is more regular
+
+    const float4 Grad4[] =
+    {
+        // x, y, z
+        float4(-1, -1, -1, 0), // 0
+        float4(-1, -1, +1, 0), // 1
+        float4(-1, +1, -1, 0), // 2
+        float4(-1, +1, +1, 0), // 3
+        float4(+1, -1, -1, 0), // 4
+        float4(+1, -1, +1, 0), // 5
+        float4(+1, +1, -1, 0), // 6
+        float4(+1, +1, +1, 0), // 7
+        // w, x, y
+        float4(-1, -1, 0, -1), // 8
+        float4(-1, +1, 0, -1), // 9
+        float4(+1, -1, 0, -1), // 10
+        float4(+1, +1, 0, -1), // 11
+        float4(-1, -1, 0, +1), // 12
+        float4(-1, +1, 0, +1), // 13
+        float4(+1, -1, 0, +1), // 14
+        float4(+1, +1, 0, +1), // 15
+        // z, w, x
+        float4(-1, 0, -1, -1), // 16
+        float4(+1, 0, -1, -1), // 17
+        float4(-1, 0, -1, +1), // 18
+        float4(+1, 0, -1, +1), // 19
+        float4(-1, 0, +1, -1), // 20
+        float4(+1, 0, +1, -1), // 21
+        float4(-1, 0, +1, +1), // 22
+        float4(+1, 0, +1, +1), // 23
+        // y, z, w
+        float4(0, -1, -1, -1), // 24
+        float4(0, -1, -1, +1), // 25
+        float4(0, -1, +1, -1), // 26
+        float4(0, -1, +1, +1), // 27
+        float4(0, +1, -1, -1), // 28
+        float4(0, +1, -1, +1), // 29
+        float4(0, +1, +1, -1), // 30
+        float4(0, +1, +1, +1) // 31
+    };
+};
 
 struct VS_IN
 {
@@ -26,6 +117,19 @@ struct VS_OUT
 	float2		vTexUV : TEXCOORD0;
 };
 
+struct VolumeVertex
+{
+    float4 ClipPos : SV_Position;
+    float3 Pos : TEXCOORD0; // Vertex Position -> Local Space
+    float3 RayDir : TEXCOORD1; // Ray Direction -> Local Space
+};
+
+SamplerState ClampSampler
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Clamp;
+    AddressV = Clamp;
+};
 
 VS_OUT VS_MAIN(VS_IN In)
 {
@@ -40,6 +144,114 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vTexUV = In.vTexUV;
 
 	return Out;
+}
+
+VolumeVertex PerlinFireVS(VS_IN In)
+{
+    VolumeVertex Out = (VolumeVertex) 0;
+
+    Out.ClipPos = mul(float4(In.vPosition, 1.0f), WorldViewProj);
+	
+    Out.RayDir = In.vPosition.xyz - EyePos.xyz;
+    Out.Pos = In.vPosition.xyz; // Supposed to have range : -0.5 ~ 0.5
+
+    return Out;
+}
+
+#define F3 0.333333333333
+#define G3 0.166666666667
+
+void Simplex3D(const in float3 P, out float3 simplex[4])
+{
+    float3 T = P.xzy >= P.yxz;
+    simplex[0] = 0;
+    simplex[1] = T.xzy > T.yxz;
+    simplex[2] = T.yxz <= T.xzy;
+    simplex[3] = 1;
+}
+
+int Hash(float3 P)
+{
+    return (int) g_PermTexture.Load(int3(P.xy, 0)).r ^ (int) g_PermTexture.Load(int3(P.z, 0, 0)).r;
+}
+
+int Hash(float4 P)
+{
+    return (int) g_PermTexture.Load(int3(P.xy, 0)).r ^ (int) g_PermTexture.Load(int3(P.zw, 0)).r;
+}
+
+float Snoise3D(float3 p)
+{
+    float s = dot(p, F3);
+    float3 Pi = floor(p + s);
+    float t = dot(Pi, G3);
+	
+    float3 PO = Pi - t;
+    float3 Pf0 = p - PO;
+	
+    float3 simplex[4];
+    Simplex3D(Pf0, simplex);
+	
+    float n = 0;
+	
+	[unroll]
+    for (int i = 0; i < 4; ++i)
+    {
+        float3 Pf = Pf0 - simplex[i] + G3 * i;
+        int h = Hash(Pi + simplex[i]);
+        float d = saturate(0.6f - dot(Pf, Pf));
+        d *= d;
+        n += d * d * dot(Grad3[h & 31], Pf);
+    }
+    
+    return 32.0f * n;
+}
+
+float Turbulence3D(float3 p)
+{
+    float res = 0;
+	
+	[loop]
+    for (int i = 0; i < 5; ++i, p*=2)
+        res += FrequencyWeights[i] * Snoise3D(p);
+
+    return res;
+}
+
+float4 PerlinFire3DPS(VolumeVertex input) : SV_Target
+{
+    float3 Dir = normalize(input.RayDir) * StepSize;
+    float Offset = bJitter ? g_JitterTexture.Sample(LinearSampler, input.ClipPos.xy / 256.0f).r : 0;
+	
+	// Jitter Initial position
+    float3 Pos = input.Pos + Dir * Offset;
+	
+    float3 resultColor = 0;
+    float SceneZ = g_ScreenDepth.Load(int3(input.ClipPos.xy, 0));
+
+    while (true)
+    {
+        float4 ClipPos = mul(float4(Pos, 1.0f), WorldViewProj);
+        ClipPos.z /= ClipPos.w;
+		
+        if (ClipPos.z > SceneZ || any(abs(Pos) > 0.5))
+            break;
+		
+        float3 NoiseCoord = Pos;
+        NoiseCoord.y -= Time;
+		
+        float Turbulence = abs(Turbulence3D(NoiseCoord * NoiseScale));
+        
+        float2 tc;
+        tc.x = length(Pos.xz) * 2;
+        tc.y = 0.5f - Pos.y - Roughness * Turbulence * pow((0.5f + Pos.y), 0.5f);
+
+        resultColor += StepSize * 12.0f * g_FireShape.SampleLevel(ClampSampler, tc, 0);
+
+        Pos += Dir;
+    }
+    
+    return float4(resultColor, 1);
 }
 
 VS_OUT VS_MAIN_CLOUD(VS_IN In)
@@ -252,6 +464,25 @@ PS_OUT PS_USING_MASK(PS_IN In)
 	return Out;
 }
 
+DepthStencilState DisableDepthWrites
+{
+    DepthEnable = true;
+    DepthWriteMask = 0;
+};
+
+BlendState EnableAdditiveBlending
+{
+    SrcBlend = INV_DEST_COLOR; // to avoid oversaturation
+    DestBlend = One;
+    BlendOp = Add;
+    BlendEnable[0] = true;
+};
+
+RasterizerState MultisamplingEnabled
+{
+    MultisampleEnable = true;
+};
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass // 0
@@ -356,5 +587,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MOON_MAIN();
+    }
+
+    pass PerlinFire3D // 8
+    {
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 PerlinFireVS();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PerlinFire3DPS();
     }
 }

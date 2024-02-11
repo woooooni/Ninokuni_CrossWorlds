@@ -160,6 +160,8 @@ void CMonster::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 	
+	Compute_CamZ(m_pTransformCom->Get_Position());
+
 	if(m_pControllerCom != nullptr)
 		m_pControllerCom->LateTick_Controller(fTimeDelta);
 	if (nullptr != m_pModelCom)
@@ -176,7 +178,7 @@ void CMonster::LateTick(_float fTimeDelta)
 	m_AnimInstanceDesc.vDissolveColor = m_vDissolveColor;
 	m_AnimInstanceDesc.vRimColor = m_vRimLightColor;
 
-	Compute_CamZ(m_pTransformCom->Get_Position());
+
 	if (m_fCamDistance <= 50.f && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 10.f))
 	{
 		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);

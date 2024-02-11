@@ -7,6 +7,8 @@ BEGIN(Client)
 class CProbs final : public CStaticObject
 {
 private:
+	enum RAINBOWCOLOR { RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, PURPLE, RAINBOW_END };
+private:
 	explicit CProbs(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType);
 	explicit CProbs(const CProbs& rhs);
 	virtual ~CProbs() = default;
@@ -25,10 +27,11 @@ public:
 
 public:
 	virtual HRESULT Ready_Components() override;
-
+	
 
 private:
 	void MoveProps(_float fTimeDelta);
+	void PrepareRainbowColor();
 
 private:
 	_float m_fTime = 0.0f;
@@ -38,6 +41,9 @@ private:
 
 	class CParticle* m_pParticle = nullptr;
 	class CTexture* m_pTextureCom = nullptr;
+
+private:
+	Vec4 m_vRainbowColor;
 public:
 	static CProbs* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag,
 		const wstring& strFilePath, const wstring& strFileName, _int eObjType, _uint eModelType);

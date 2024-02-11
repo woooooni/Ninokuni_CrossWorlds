@@ -346,6 +346,7 @@
     <ClInclude Include="..\Public\NpcDMWState_Rage03Laser.h" />
     <ClInclude Include="..\Public\NpcDMWState_VulcanGun_End.h" />
     <ClInclude Include="..\Public\NpcDMWState_VulcanGun_Ready.h" />
+    <ClInclude Include="..\Public\PerlinFire.h" />
     <ClInclude Include="..\Public\Skill_Biplane_Burst.h" />
     <ClInclude Include="..\Public\State_CurlingGame_Ending.h" />
     <ClInclude Include="..\Public\State_Enemy.h" />
@@ -1450,6 +1451,7 @@
     <ClCompile Include="..\Private\NpcDMWState_Rage03Laser.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_VulcanGun_End.cpp" />
     <ClCompile Include="..\Private\NpcDMWState_VulcanGun_Ready.cpp" />
+    <ClCompile Include="..\Private\PerlinFire.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_Burst.cpp" />
     <ClCompile Include="..\Private\State_CurlingGame_Ending.cpp" />
     <ClCompile Include="..\Private\State_Enemy.cpp" />

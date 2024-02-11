@@ -33,12 +33,17 @@ void CState_CarriageMove::Enter_State(void* pArg)
 		_uint iCurLevel = GI->Get_CurrentLevel();
 		m_pRuby = static_cast<CRuby*>(GI->Find_GameObject(iCurLevel, LAYER_TYPE::LAYER_NPC, TEXT("Ruby")));
 	}
+
+	_float fCamDistance = m_pModelCom->Get_Owner()->Get_CamDistance();
+	GI->Play_Sound(TEXT("Witch_Carriage.mp3"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.0f, false, fCamDistance);
 }
 
 void CState_CarriageMove::Tick_State(_float fTimeDelta)
 {
 	// TODO
 	// 루비의 애니메이션이 바뀌고 루비를 따라다녀야한다.
+
+
 	if (nullptr != m_pRuby)
 	{
 		_bool bTake = static_cast<CRubyCarriage*>(m_pOwner)->TakeTheCarriage();
@@ -64,6 +69,7 @@ void CState_CarriageMove::Tick_State(_float fTimeDelta)
 void CState_CarriageMove::Exit_State()
 {
 	m_fTime = 0.0f;
+
 }
 
 CState_CarriageMove* CState_CarriageMove::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
