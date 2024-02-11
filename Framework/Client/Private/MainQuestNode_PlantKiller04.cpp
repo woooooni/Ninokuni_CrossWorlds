@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_Fade.h"
 
 #include "Game_Manager.h"
 
@@ -61,7 +62,7 @@ CBTNode::NODE_STATE CMainQuestNode_PlantKiller04::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (KEY_TAP(KEY::LBTN))
+	if (KEY_TAP(KEY::LBTN) && !m_bIsFadeOut)
 	{
 		Safe_Delete_Array(m_szpOwner);
 		Safe_Delete_Array(m_szpTalk);
@@ -70,7 +71,6 @@ CBTNode::NODE_STATE CMainQuestNode_PlantKiller04::Tick(const _float& fTimeDelta)
 
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
-			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 
 			/* 대화 카메라 종료 */
@@ -78,15 +78,28 @@ CBTNode::NODE_STATE CMainQuestNode_PlantKiller04::Tick(const _float& fTimeDelta)
 			if (nullptr != pActionCam)
 				pActionCam->Finish_Action_Talk();
 
-			return NODE_STATE::NODE_FAIL;
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
+			m_bIsFadeOut = true;
 		}
 
-		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+		if (m_iTalkIndex < m_vecTalkDesc.size())
+		{
+			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+			CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
 
-		TalkEvent();
+			TalkEvent();
+		}
+	}
+
+	if (m_bIsFadeOut)
+	{
+		if (CUI_Manager::GetInstance()->Is_FadeFinished())
+		{
+			m_bIsClear = true;
+			return NODE_STATE::NODE_FAIL;
+		}
 	}
 
 	return NODE_STATE::NODE_RUNNING;

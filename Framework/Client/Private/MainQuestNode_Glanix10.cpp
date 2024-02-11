@@ -104,7 +104,7 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix10::Tick(const _float& fTimeDelta)
 
 	else if (m_bIsRewarding)
 	{
-		if (CUI_Manager::GetInstance()->Is_QuestRewardWindowOff())
+		if (!CUI_Manager::GetInstance()->Is_QuestRewardWindowOff())
 		{
 			m_bIsClear = true;
 			return NODE_STATE::NODE_SUCCESS;
@@ -143,9 +143,9 @@ void CMainQuestNode_Glanix10::TalkEvent()
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
 		break;
 	case 2:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("02_KuuSay_I_No_Pet.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_02_KuuSay_Emm.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionAngry"));
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|MTG_Kuu_EmotionWorry"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
 		break;
@@ -165,9 +165,6 @@ void CMainQuestNode_Glanix10::TalkEvent()
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_Idle02"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_RIGTH);
-		break;
-	case 6:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_ImKuu.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		break;
 	}
 

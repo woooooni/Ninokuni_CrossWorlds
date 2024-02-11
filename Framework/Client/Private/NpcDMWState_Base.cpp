@@ -46,7 +46,7 @@ void CNpcDMWState_Base::Tick_State(_float fTimeDelta)
 {
 	if (m_pStellia == nullptr)
 	{
-		m_pStellia = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_MONSTER, TEXT("Stellia"));
+		m_pStellia = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, TEXT("Stellia"));
 	}
 }
 

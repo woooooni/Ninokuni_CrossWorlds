@@ -111,7 +111,7 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill10::Tick(const _float& fTimeDelta)
 				//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
-				CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
+				CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 2.f);
 
 				/* 10, 11, 12 노드는 하나의 씬으로 진행 (따라서 12에서 대화캠을 꺼준다) */
 				m_bIsFadeOut = true;

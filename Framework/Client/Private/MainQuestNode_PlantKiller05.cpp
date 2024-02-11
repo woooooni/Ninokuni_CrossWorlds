@@ -6,6 +6,8 @@
 
 #include "Game_Manager.h"
 #include "UI_Manager.h"
+#include "UI_Fade.h"
+
 #include "Quest_Manager.h"
 
 #include "GameNpc.h"
@@ -44,6 +46,8 @@ HRESULT CMainQuestNode_PlantKiller05::Initialize()
 
 void CMainQuestNode_PlantKiller05::Start()
 {
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
+
 	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::GetInstance()->QUESTEVENT_ESCORT);
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 

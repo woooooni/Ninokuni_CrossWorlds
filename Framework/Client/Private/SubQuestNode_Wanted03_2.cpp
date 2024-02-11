@@ -39,7 +39,7 @@ HRESULT CSubQuestNode_Wanted03_2::Initialize()
 		m_vecTalkDesc.push_back(sTalkDesc);
 	}
 
-	m_fSkipTime = 1.5f;
+	m_fSkipTime = 1.f;
 
 	return S_OK;
 }
@@ -83,19 +83,19 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted03_2::Tick(const _float& fTimeDelta)
 		return NODE_STATE::NODE_FAIL;
 
 	// 일반 대화
-	if (KEY_TAP(KEY::LBTN) && m_iTalkIndex < m_vecTalkDesc.size() - 2)
+	if (KEY_TAP(KEY::LBTN) && m_iTalkIndex < m_vecTalkDesc.size() - 1)
 	{
 		Safe_Delete_Array(m_szpOwner);
 		Safe_Delete_Array(m_szpTalk);
 
 		m_iTalkIndex += 1;
 
-		if (m_iTalkIndex >= m_vecTalkDesc.size() - 2)
+		if (m_iTalkIndex >= m_vecTalkDesc.size() - 1)
 		{
 			m_pCriminal->Get_Component_StateMachine()->Change_State(CCriminal_Npc::NPC_CRIMINAL_STATE::NPC_CRIMINAL_ESCAPE);
 		}
 
-		if (m_iTalkIndex < m_vecTalkDesc.size() - 2)
+		if (m_iTalkIndex < m_vecTalkDesc.size() - 1)
 		{
 			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
@@ -107,21 +107,21 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted03_2::Tick(const _float& fTimeDelta)
 	}
 
 	// 어 이 자식 튄다!
-	if (m_iTalkIndex == m_vecTalkDesc.size() - 2 && 
+	if (m_iTalkIndex == m_vecTalkDesc.size() - 1 && !m_bIsSkipEvent &&
 		m_pCriminal->Get_Component_StateMachine()->Get_CurrState() == CCriminal_Npc::NPC_CRIMINAL_STATE::NPC_CRIMINAL_ESCAPERUN)
 	{
-		m_iTalkIndex += 1;
-
 		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
 		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
 
 		TalkEvent();
+
+		m_bIsSkipEvent = true;
 	}
 
 	// 넘어가기 전 1.5초 정도 텀
-	if (m_iTalkIndex == m_vecTalkDesc.size() - 1)
+	if (m_bIsSkipEvent)
 	{
 		m_fAccSkipTime += fTimeDelta;
 		if (m_fAccSkipTime >= m_fSkipTime)
@@ -163,7 +163,7 @@ void CSubQuestNode_Wanted03_2::TalkEvent()
 	switch (m_iTalkIndex)
 	{
 	case 0:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("00_TumbaSay_Call.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Wanted_03_02_01.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pCriminal->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pCriminal->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("Stand01Idle01"));
 
@@ -173,7 +173,7 @@ void CSubQuestNode_Wanted03_2::TalkEvent()
 		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
 	case 1:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("01_KuuSay_Uh.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Wanted_03_02_02.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
 
@@ -183,7 +183,6 @@ void CSubQuestNode_Wanted03_2::TalkEvent()
 		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
 	case 2:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("02_TumbaSay_OkCallYou.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pCriminal->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pCriminal->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("Stand04Idle01"));
 
@@ -193,7 +192,7 @@ void CSubQuestNode_Wanted03_2::TalkEvent()
 		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
 	case 3:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_WhatIsBird.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Wanted_03_02_04.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
 
@@ -203,7 +202,6 @@ void CSubQuestNode_Wanted03_2::TalkEvent()
 		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
 	case 4:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("04_TumbaSay_Umm..This....ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pCriminal->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pCriminal->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("Stand01Idle01"));
 
@@ -213,7 +211,7 @@ void CSubQuestNode_Wanted03_2::TalkEvent()
 		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
 	case 5:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_WhatIsBird.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Wanted_03_02_06.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
 		break;

@@ -21,6 +21,9 @@ private:
 	CGameObject* m_pEngineer = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
+	_bool m_bIsFadeOut = false;
+	_bool m_bIsFadeIn = false;
+
 public:
 	static CSubQuestNode_Windmill08* Create();
 	virtual void Free() override;

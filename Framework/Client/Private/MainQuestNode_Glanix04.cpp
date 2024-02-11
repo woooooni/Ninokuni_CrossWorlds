@@ -77,7 +77,7 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix04::Tick(const _float& fTimeDelta)
 		if (!m_bIsRage1Talk && m_pGlanix->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CGlanix::GLANIX_RAGE2WAVE)
 			m_bIsRage1Talk = true;
 
-		if (!m_bIsRage2Talk && m_pGlanix->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CGlanix::GLANIX_RAGETURN)
+		if (!m_bIsRage2Talk && m_pGlanix->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CGlanix::GLANIX_RAGECHARGE)
 			m_bIsRage2Talk = true;
 
 		if (m_bIsTalk)
@@ -313,7 +313,7 @@ void CMainQuestNode_Glanix04::TalkEvent()
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
 		break;
 	case 6:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_04_06_KuuSay_OK!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_04_06_KuuSay_OK!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
 		break;

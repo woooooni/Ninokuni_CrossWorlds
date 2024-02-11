@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "MainQuestNode_IntroTour01.h"
 
+#include "Quest_Manager.h"
+
 #include "GameInstance.h"
 #include "Utils.h"
 
@@ -17,9 +19,13 @@ HRESULT CMainQuestNode_IntroTour01::Initialize()
 
 void CMainQuestNode_IntroTour01::Start()
 {
+	// 초반 연출 스킵용
+	//CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_CHLOE_FINDCAT, true);
+	//CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WINDMILL, true);
+	//CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WANTED, true);
+
 	Vec4 vSpotPos = { 0.f, 0.f, 5.f, 1.f };
 
-	// 임시로 monster에 
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 }
 

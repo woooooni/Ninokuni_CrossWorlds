@@ -48,7 +48,6 @@ void CMainQuestNode_Glanix01::Start()
 	{
 		Vec4 vSpotPos = Set_DestSpot(m_pAren);
 
-		// 임시로 monster에 
 		m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 	
 		CUI_PopupQuest::QUEST_INFO QuestDesc = {};
@@ -62,15 +61,6 @@ void CMainQuestNode_Glanix01::Start()
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
-
-	/* 대화 */
-	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
-	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
-
-	TalkEvent();
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Glanix01::Tick(const _float& fTimeDelta)
@@ -80,6 +70,23 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix01::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_ICELAND)
 	{
+		if (!Is_EndCameraBlender())
+			return NODE_STATE::NODE_RUNNING;
+
+		if (!m_bIsStart)
+		{
+			/* 대화 */
+			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
+			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+			TalkEvent();
+
+			m_bIsStart = true;
+		}
+
 		m_fTime += fTimeDelta;
 
 		if (m_fTime >= 3.f)

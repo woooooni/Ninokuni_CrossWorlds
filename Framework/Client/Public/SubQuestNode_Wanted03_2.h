@@ -21,6 +21,8 @@ private:
 	CGameObject* m_pCriminal = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
+	_bool m_bIsSkipEvent = false;
+
 	_float m_fAccSkipTime = 0.f;
 	_float m_fSkipTime = 0.f;
 

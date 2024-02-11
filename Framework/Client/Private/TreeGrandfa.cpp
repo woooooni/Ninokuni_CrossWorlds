@@ -57,7 +57,21 @@ void CTreeGrandfa::Tick(_float fTimeDelta)
 
 void CTreeGrandfa::LateTick(_float fTimeDelta)
 {
-	__super::LateTick(fTimeDelta);
+	// __super::LateTick(fTimeDelta);
+
+	if (nullptr == m_pRendererCom)
+		return;
+
+	if (nullptr != m_pControllerCom)
+		m_pControllerCom->LateTick_Controller(fTimeDelta);
+
+	if (nullptr != m_pModelCom)
+		m_pModelCom->LateTick(fTimeDelta);
+
+	m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
+	m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
+
+	LateUpdate_Collider(fTimeDelta);
 
 #ifdef _DEBUG
 	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
