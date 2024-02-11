@@ -1083,6 +1083,10 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		CEntireGrass::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_EntireGrass")), LAYER_TYPE::LAYER_GRASS, true))
 		return E_FAIL;
 
+	//if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_PerlinFire"),
+	//	CPerlinFire::Create(m_pDevice, m_pContext, TEXT("Common_PerlinFire"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true))
+	//	return E_FAIL;
+
 	CMonster::MONSTER_STAT statDesc;
 	statDesc.fHp = 100;
 	statDesc.fMaxHp = 100;

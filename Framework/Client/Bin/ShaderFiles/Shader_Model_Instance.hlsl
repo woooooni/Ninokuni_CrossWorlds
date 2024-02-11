@@ -3,6 +3,7 @@
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 Texture2D	g_DiffuseTexture;
 Texture2D	g_NormalTexture;
+Texture2D   g_SpecularTexture;
 float4		g_vCamPosition;
 
 Texture2D		g_DissolveTexture;
@@ -18,6 +19,7 @@ float4 g_vClipPlane;
 float fGrassAngle;
 
 float3 g_vBloomPower;
+float4 g_vRainbowColor;
 
 cbuffer InversTransposeMatBuffer
 {
@@ -338,6 +340,50 @@ PS_OUT PS_MAIN(PS_IN In)
 		discard;
 
 	return Out;	
+}
+
+PS_OUT PS_SCULPTURE_SPECULAR_MAIN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vDiffuse = (vector) 1.f;
+
+    Out.vDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+    float4 vMaskMap = g_SpecularTexture.Sample(LinearSampler, In.vTexUV);
+
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
+    Out.vBloom = Caculation_Brightness(Out.vDiffuse);
+    
+    if(vMaskMap.r >= 0.3f)
+    {
+        // Color Test
+        Out.vBloom = g_vRainbowColor;
+    }
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    if (0.3 >= Out.vDiffuse.a)
+        discard;
+
+    return Out;
+}
+
+PS_OUT PS_LANTERN_MAIN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vDiffuse = (vector) 1.f;
+
+    Out.vDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+
+
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
+    Out.vBloom = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    if (0.3 >= Out.vDiffuse.a)
+        discard;
+
+    return Out;
 }
 
 PS_OUT PS_WITCHGRASS_MAIN(PS_IN In)
@@ -979,4 +1025,32 @@ technique11 DefaultTechnique
         DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_SHADOW_DEPTH();
 	}
+
+    pass SculptureSpecularPass
+    {
+        // 11
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_SCULPTURE_SPECULAR_MAIN();
+    }
+
+    pass LanternSpecularPass
+    {
+        // 12
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_LANTERN_MAIN();
+    }
 }

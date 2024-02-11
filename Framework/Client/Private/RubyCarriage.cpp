@@ -66,7 +66,7 @@ void CRubyCarriage::Tick(_float fTimeDelta)
 		Set_Dead(true);
 		return;
 	}
-
+	Compute_CamZ(m_pTransformCom->Get_Position());
 	m_pStateMachineCom->Tick_State(fTimeDelta);
 
 	if (m_pRigidBodyCom != nullptr && m_pControllerCom != nullptr)

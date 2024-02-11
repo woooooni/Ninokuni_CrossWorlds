@@ -67,13 +67,13 @@ HRESULT CMainApp::Initialize()
 	
 	// Set Start Type
 	{
-		g_eStartLevel = LEVELID::LEVEL_LOGO;					/* 시작 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_TOOL;					/* 시작 레벨 타입 */
 
 		g_iStartQuestLevel = QUEST_LEVEL::QL_5_INVASION;		/* 시작 퀘스트 레벨 */
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH;			/* 모델 로드할 캐릭터 타입 */
 
-		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;	/* 게임 플레이 캐릭터 타입 */
+		g_ePlayCharacter = LOAD_CHARACTER_TYPE::DESTROYER_CH;	/* 게임 플레이 캐릭터 타입 */
 	}
 
 	// Open Level
@@ -532,7 +532,10 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/GrassPlane/Witch_Grass_MaskMap.dds")))))
 		return E_FAIL;
 
-
+	// FireTex
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_FireTex"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/InvasionEvermore/Firetex.dds")))))
+	//	return E_FAIL;
 
 	/* For.Prototype_Component_Sky */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Cloud"),

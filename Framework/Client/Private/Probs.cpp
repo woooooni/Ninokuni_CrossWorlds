@@ -37,7 +37,7 @@ HRESULT CProbs::Initialize(void* pArg)
 		m_iRandomCase = GI->RandomInt(0, 1);
 	}
 
-
+	PrepareRainbowColor();
 
 	return S_OK;
 }
@@ -148,6 +148,55 @@ HRESULT CProbs::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing
 		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 7)))
 			return E_FAIL;
 
+	}
+	else if (TEXT("WitchForest_Prop_01a") == m_strObjectTag)
+	{
+		_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+		if (FAILED(pInstancingShader->Bind_RawValue("g_vRainbowColor", &m_vRainbowColor, sizeof(Vec4))))
+			return E_FAIL;
+
+		for (_uint i = 0; i < iNumMeshes; ++i)
+		{
+			_uint iPassIndex = 0;
+
+			if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+			if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_SPECULAR, "g_SpecularTexture")))
+				iPassIndex = 0;
+			else
+				iPassIndex = 11;
+
+			if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
+				return E_FAIL;
+		}
+	}
+	else if (/*TEXT("WitchForest_lantern_01") == m_strObjectTag ||*/ TEXT("WitchForest_PropA_01") == m_strObjectTag)
+	{
+		_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+
+		for (_uint i = 0; i < iNumMeshes; ++i)
+		{
+			_uint iPassIndex = 0;
+			if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+			if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_SPECULAR, "g_SpecularTexture")))
+			{
+
+			}
+
+			if (i != 2)
+			{
+				if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
+					return E_FAIL;
+			}
+			else
+			{
+				if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, 12)))
+					return E_FAIL;
+			}
+		}
 	}
 	else
 	{
@@ -272,6 +321,43 @@ void CProbs::MoveProps(_float fTimeDelta)
 		if (-100 == m_iMoveTick)
 			m_iMoveTick = 101;
 
+	}
+}
+
+void CProbs::PrepareRainbowColor()
+{
+	if (TEXT("WitchForest_Prop_01a") == m_strObjectTag)
+	{
+
+		m_vRainbowColor = Vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		//_uint iRandom = GI->RandomInt(0, 6);
+
+		//switch (iRandom)
+		//{
+		//case RAINBOWCOLOR::RED:
+		//	m_vRainbowColor = Vec4(1.0f, 0.0f, 0.0f, 1.0f);
+		//	break;
+		//case RAINBOWCOLOR::ORANGE:
+		//	m_vRainbowColor = Vec4(255.0f / 255.0f, 50.0f / 255.0f, 0.0f, 1.0f);
+		//	break;
+		//case RAINBOWCOLOR::YELLOW:
+		//	m_vRainbowColor = Vec4(1.0f, 1.0f, 0.0f, 1.0f);
+		//	break;
+		//case RAINBOWCOLOR::GREEN:
+		//	m_vRainbowColor = Vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		//	break;
+		//case RAINBOWCOLOR::BLUE:
+		//	m_vRainbowColor = Vec4(0.0f, 0.0f, 1.0f, 1.0f);
+		//	break;
+		//case RAINBOWCOLOR::INDIGO:
+		//	m_vRainbowColor = Vec4(0.0f, 5.0f / 255.0f, 1.0f, 1.0f);
+		//	break;
+		//case RAINBOWCOLOR::PURPLE:
+		//	m_vRainbowColor = Vec4(100.0f / 255.0f, 0.0f, 1.0f, 1.0f);
+		//	break;
+		//default:
+		//	break;
+		//}
 	}
 }
 

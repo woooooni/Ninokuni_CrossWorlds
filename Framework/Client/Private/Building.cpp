@@ -116,15 +116,6 @@ HRESULT CBuilding::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instanc
 	if (FAILED(pInstancingShader->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
 		return E_FAIL;
 
-	// ViewSpace상의 노멀을 찾기 위한 Matrix
-	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
-	worldInvTranspose.Transpose();
-
-	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW);
-
-	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
-		return E_FAIL;
-
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 	for (_uint i = 0; i < iNumMeshes; ++i)
@@ -136,6 +127,7 @@ HRESULT CBuilding::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instanc
 		//	iPassIndex = 0;
 		//else
 		//	iPassIndex++;
+
 		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
 			return E_FAIL;
 	}

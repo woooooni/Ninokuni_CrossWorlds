@@ -24,6 +24,10 @@ HRESULT CState_CarriageIdle::Initialize(const list<wstring>& AnimationList)
 void CState_CarriageIdle::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_AnimIndices[0]);
+
+	_float fCamDistance = m_pModelCom->Get_Owner()->Get_CamDistance();
+	GI->Stop_Sound(CHANNELID::SOUND_VOICE_WITCH_QUEST);
+	//GI->Play_Sound(TEXT("Witch_Carriage.mp3"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.0f, false, fCamDistance);
 }
 
 void CState_CarriageIdle::Tick_State(_float fTimeDelta)
