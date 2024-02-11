@@ -4,6 +4,7 @@
 #include "State_Destroyer_SpecialSkill_BattleCry.h"
 
 #include "Effect_Manager.h"
+#include "Monster.h"
 
 CState_Destroyer_SpecialSkill_BattleCry::CState_Destroyer_SpecialSkill_BattleCry(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -32,10 +33,34 @@ void CState_Destroyer_SpecialSkill_BattleCry::Enter_State(void* pArg)
     if (pTransformCom == nullptr)
         return;
     GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Destroyer_Skill_BattleCry"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
+
+    m_bProvocation = false;
+    
 }
 
 void CState_Destroyer_SpecialSkill_BattleCry::Tick_State(_float fTimeDelta)
 {
+    if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_CurrAnimationFrame_WithRatio() >= 0.5f)
+    {
+        if (false == m_bProvocation)
+        {
+            m_bProvocation = true;
+
+            list<CGameObject*>& Monsters = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER);
+            for (auto& pObject : Monsters)
+            {
+                if (pObject->Is_Dead() || pObject->Is_ReserveDead() || pObject->Get_ObjectType() != OBJ_TYPE::OBJ_MONSTER)
+                    continue;
+
+                CMonster* pMonster = dynamic_cast<CMonster*>(pObject);
+
+                if (nullptr == pMonster)
+                    continue;
+
+                pMonster->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
+            }
+        }
+    }
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
@@ -44,7 +69,7 @@ void CState_Destroyer_SpecialSkill_BattleCry::Tick_State(_float fTimeDelta)
 
 void CState_Destroyer_SpecialSkill_BattleCry::Exit_State()
 {
-    
+    m_bProvocation = false;
 }
 
 CState_Destroyer_SpecialSkill_BattleCry* CState_Destroyer_SpecialSkill_BattleCry::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

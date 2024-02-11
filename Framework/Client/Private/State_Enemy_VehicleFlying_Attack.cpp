@@ -64,7 +64,7 @@ void CState_Enemy_VehicleFlying_Attack::Tick_State(_float fTimeDelta)
 
     m_pTransformCom->Rotation_Look(XMVector3Normalize(Vec3::Lerp(vMyLook, vDestLook, fTimeDelta)));
 
-    if (fDistance > 8.f)
+    if (fDistance > 30.f)
     {
         m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fFollowSpeed, fTimeDelta);
     }

@@ -97,7 +97,6 @@ HRESULT CVIBuffer_Instancing::Render(const vector<_float4x4>& WorldMatrices, CVI
 	/* 인덱스가 가르키는 정점을 활용하여 그린다. */
 	m_pContext->DrawIndexedInstanced(m_iNumPrimitives * m_iNumIndicesofPrimitive, m_iNumInstance, 0, 0, 0);
 
-
 	return S_OK;
 }
 

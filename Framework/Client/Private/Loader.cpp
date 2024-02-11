@@ -171,6 +171,7 @@
 #include "Biplane_BlackHole.h"
 #include "Enemy_Biplane_BulletBall.h"
 #include "Enemy_GuidedMissile.h"
+#include "Enemy_Biplane_Feather.h"
 
 #include "Grandprix_Engineer.h"
 #include "Grandprix_Enemy_Ghost2.h"
@@ -775,8 +776,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		if (FAILED(CPool<CCharacter_Biplane_Bullet>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &CharacterProjectileDesc, 500)))
 			return E_FAIL;
 
-
-
+		// Enemy¿ë.
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Enemy_Biplane_Bullet"),
 			CEnemy_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
 			return E_FAIL;
@@ -784,10 +784,8 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		CVehicleFlying_Projectile::GRANDPRIX_PROJECTILE_DESC EnemyProjectileDesc = {};
 		EnemyProjectileDesc.bPool = true;
 
-		if (FAILED(CPool<CEnemy_Biplane_Bullet>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_Enemy_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &EnemyProjectileDesc, 500)))
+		if (FAILED(CPool<CEnemy_Biplane_Bullet>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_Enemy_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &EnemyProjectileDesc, 2000)))
 			return E_FAIL;
-
-		// Enemy¿ë.
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Enemy_Biplane_BulletBall"),
 			CEnemy_Biplane_BulletBall::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
@@ -797,7 +795,15 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			CEnemy_GuidedMissile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
 			return E_FAIL;
 
-		if (FAILED(CPool<CEnemy_GuidedMissile>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_Enemy_Biplane_GuidedMissile", LAYER_TYPE::LAYER_CHARACTER, &CharacterProjectileDesc, 500)))
+		if (FAILED(CPool<CEnemy_GuidedMissile>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_Enemy_Biplane_GuidedMissile", LAYER_TYPE::LAYER_CHARACTER, &CharacterProjectileDesc, 50)))
+			return E_FAIL;
+
+
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Enemy_Biplane_Feather"),
+			CEnemy_Biplane_Feather::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
+			return E_FAIL;
+
+		if (FAILED(CPool<CEnemy_Biplane_Feather>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_Enemy_Biplane_Feather", LAYER_TYPE::LAYER_CHARACTER, &CharacterProjectileDesc, 500)))
 			return E_FAIL;
 		
 

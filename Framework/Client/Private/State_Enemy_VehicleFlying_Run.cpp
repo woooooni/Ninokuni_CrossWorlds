@@ -6,7 +6,7 @@
 
 #include "UIMinigame_Manager.h"
 #include "Vehicle_Flying.h"
-
+#include "Vehicle_Flying_EnemyBiplane.h"
 #include "Game_Manager.h"
 #include "Player.h"
 
@@ -45,6 +45,14 @@ void CState_Enemy_VehicleFlying_Run::Enter_State(void* pArg)
 
     m_bEngineer = (wstring::npos != m_pVehicle->Get_ObjectTag().find(L"Vehicle_Flying_EnemyBiplane"));
 
+
+    if (true == m_bEngineer)
+    {
+        CVehicle_Flying_EnemyBiplane* pBiplane = dynamic_cast<CVehicle_Flying_EnemyBiplane*>(m_pVehicle);
+
+        if (nullptr != pBiplane)        
+            pBiplane->Start_Trail();
+    }
     
 }
 
@@ -111,6 +119,14 @@ void CState_Enemy_VehicleFlying_Run::Exit_State()
 {
     m_pTarget = nullptr;
     m_bUpdate = false;
+
+    if (true == m_bEngineer)
+    {
+        CVehicle_Flying_EnemyBiplane* pBiplane = dynamic_cast<CVehicle_Flying_EnemyBiplane*>(m_pVehicle);
+
+        if (nullptr != pBiplane)
+            pBiplane->Stop_Trail();
+    }
 }
 
 void CState_Enemy_VehicleFlying_Run::Move(_float fTimeDelta)

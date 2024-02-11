@@ -529,10 +529,12 @@ void CUIMinigame_Manager::Start_Grandprix()
 	// 플레이어 비행기 태우기
 	if (CHARACTER_TYPE::SWORD_MAN != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterType())
 		return;
+
 	CStateMachine* m_pStateCom = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(L"Com_StateMachine");
 	if (nullptr == m_pStateCom)
 		return;
-	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
+
+	m_pStateCom->Change_State(CCharacter::FLYING_STAND);
 	CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, true);
 }
 
@@ -555,6 +557,15 @@ void CUIMinigame_Manager::End_Grandprix()
 		return;
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
 	CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, false);
+
+
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(true, 16.f, 0.1f);
+	GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 3.f, 0.2f, true);
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 0.2f, true);
+
+	// 퀘스트 완료 포지션으로 이동.
+	// CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterTransformCom()->Set_Position(Vec4())
+	/*CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CPhysX_Controller>(L"Com_Controller")->Set_EnterLevel_Position(Vec4())*/
 }
 
 void CUIMinigame_Manager::Use_GrandprixSkill(SKILL_TYPE eType)
@@ -1638,11 +1649,11 @@ HRESULT CUIMinigame_Manager::Ready_Curling()
 
 void CUIMinigame_Manager::Tick_Grandprix(_float fTimeDelta)
 {
-	//if (KEY_TAP(KEY::N))
-	//	Intro_Grandprix();
-	//
-	//if (KEY_TAP(KEY::M))
-	//	End_Grandprix();
+	if (KEY_TAP(KEY::N))
+		Intro_Grandprix();
+	
+	if (KEY_TAP(KEY::M))
+		End_Grandprix();
 
 	if (true == m_bError)
 	{

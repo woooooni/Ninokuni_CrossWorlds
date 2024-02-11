@@ -24,7 +24,7 @@ public:
 	virtual void Exit_State() override;
 
 private:
-	class CCharacter* m_pTarget = { nullptr };
+	class CVehicle_Flying_Biplane* m_pTarget = { nullptr };
 	class CVehicle_Flying_EnemyBiplane* m_pEngineerPlane = { nullptr };
 
 	_bool m_bUpdate = { false };

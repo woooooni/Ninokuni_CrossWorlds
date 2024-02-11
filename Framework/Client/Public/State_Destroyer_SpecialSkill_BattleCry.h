@@ -25,6 +25,9 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
+private:
+	_bool m_bProvocation = false;
+
 public:
 	static CState_Destroyer_SpecialSkill_BattleCry* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

@@ -23,6 +23,9 @@ void CState_Engineer_Battle_Attack_3::Enter_State(void* pArg)
     m_pCharacter->Look_For_Target();
     m_pCharacter->Appear_Weapon();
     m_iShootCount = 1;
+
+    wstring strVoiceNum = to_wstring(CUtils::Random_Int(1, 3));
+    CSound_Manager::GetInstance()->Play_Sound(L"Engineer_V_Atk_Long_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
 }
 
 void CState_Engineer_Battle_Attack_3::Tick_State(_float fTimeDelta)

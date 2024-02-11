@@ -33,6 +33,12 @@ HRESULT CState_EnemyBiplane_Skill_1::Initialize(const list<wstring>& AnimationLi
     m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 
     m_iShootBallCount = -2;
+
+    m_pFollowCamera = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+
+    if (nullptr == m_pFollowCamera)
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -44,6 +50,12 @@ void CState_EnemyBiplane_Skill_1::Enter_State(void* pArg)
 
 void CState_EnemyBiplane_Skill_1::Tick_State(_float fTimeDelta)
 {
+    if ((nullptr != m_pFollowCamera->Get_LookAtObj()) && (m_pFollowCamera->Get_LookAtObj()->Get_ObjectType() != OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER_PROJECTILE))
+    {
+        m_pFollowCamera->Set_TargetObj(m_pTarget);
+        m_pFollowCamera->Set_LookAtObj(m_pEngineerPlane);
+    }
+
     for (_int i = m_iShootBallCount; i <= 2; ++i)
     {
         Shoot_Bullet_Ball();
@@ -52,6 +64,8 @@ void CState_EnemyBiplane_Skill_1::Tick_State(_float fTimeDelta)
         
 
     m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND);
+
+
     return;
 }
 

@@ -382,7 +382,7 @@ HRESULT CCharacter_Engineer::Ready_States()
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_BattleRun");
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_Dash");
 	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_RUN, CState_Character_Battle_Run::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 

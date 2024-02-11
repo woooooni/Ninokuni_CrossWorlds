@@ -421,14 +421,17 @@ void CVehicle_Flying_EnemyBoto::On_Damaged(const COLLISION_INFO& tInfo)
 	if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Character_Biplane_Bullet"))
 	{
 		iDamage = iDamage * 0.3f + GI->RandomInt(-300, 300);
+		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.05f, 17.f, 0.3f);
 	}
 	else if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Biplane_Thunder_Cloud"))
 	{
 		iDamage = iDamage * 0.7f + GI->RandomInt(-300, 300);
+		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.1f, 17.f, 0.3f);
 	}
 	else if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Biplane_GuidedMissile"))
 	{
 		iDamage = iDamage * 0.5f + GI->RandomInt(-300, 300);
+		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.3f, 17.f, 0.3f);
 	}
 
 	
@@ -442,10 +445,10 @@ void CVehicle_Flying_EnemyBoto::On_Damaged(const COLLISION_INFO& tInfo)
 		Reserve_Dead(true);
 		return;
 	}
-	else
+	/*else
 	{
 		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.3f, 19.f, 0.3f);
-	}
+	}*/
 }
 
 

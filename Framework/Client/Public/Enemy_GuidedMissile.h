@@ -26,7 +26,7 @@ public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
 
 private:
-	class CGameObject* m_pTarget = nullptr;
+	class CVehicle_Flying_Biplane* m_pTarget = nullptr;
 	class CTransform* m_pTargetTransform = nullptr;
 
 private:

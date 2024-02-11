@@ -12,6 +12,7 @@ BEGIN(Client)
 class CState_EnemyBiplane_Stand : public CState_Vehicle
 {
 	enum SHOOT_STATE { NORMAL, PATTERN_0, PATTERN_1, PATTERN_2, PATTERN_3, SHOOT_STATE_END };
+
 private:
 	CState_EnemyBiplane_Stand(class CStateMachine* pMachine);
 	~CState_EnemyBiplane_Stand() = default;

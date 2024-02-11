@@ -265,6 +265,7 @@
     <ClInclude Include="..\Public\Clown_WizardNode_Blow.h" />
     <ClInclude Include="..\Public\Clown_Wizard_DarkBall.h" />
     <ClInclude Include="..\Public\Enemy_Biplane_BulletBall.h" />
+    <ClInclude Include="..\Public\Enemy_Biplane_Feather.h" />
     <ClInclude Include="..\Public\Enemy_GuidedMissile.h" />
     <ClInclude Include="..\Public\EntireGrass.h" />
     <ClInclude Include="..\Public\Grandprix_Goal.h" />
@@ -1369,6 +1370,7 @@
     <ClCompile Include="..\Private\Clown_WizardNode_Blow.cpp" />
     <ClCompile Include="..\Private\Clown_Wizard_DarkBall.cpp" />
     <ClCompile Include="..\Private\Enemy_Biplane_BulletBall.cpp" />
+    <ClCompile Include="..\Private\Enemy_Biplane_Feather.cpp" />
     <ClCompile Include="..\Private\Enemy_GuidedMissile.cpp" />
     <ClCompile Include="..\Private\EntireGrass.cpp" />
     <ClCompile Include="..\Private\Grandprix_Goal.cpp" />

@@ -8,6 +8,7 @@
 #include "Vehicle_Flying.h"
 #include "Character.h"
 #include "Pool.h"
+#include "Particle.h"
 
 CCharacter_Biplane_Bullet::CCharacter_Biplane_Bullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CVehicleFlying_Projectile(pDevice, pContext, L"Character_Biplane_Bullet", OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER_PROJECTILE)
@@ -46,6 +47,16 @@ HRESULT CCharacter_Biplane_Bullet::Initialize(void* pArg)
 
 	m_fMoveSpeed = 40.f;
 	m_vBloomPower = Vec3(1.f, 1.f, 0.f);
+
+	m_pParticle = dynamic_cast<CParticle*>(GI->Clone_GameObject(L"Prototype_Particle_Character_Bullet", LAYER_TYPE::LAYER_EFFECT));
+
+	if (nullptr == m_pParticle)
+	{
+		MSG_BOX("Clone Particle Failed. : CCharacter_Biplane_Bullet::Initialize");
+		return E_FAIL;
+	}
+
+	m_pParticle->Set_Owner(this);
 	return S_OK;
 }
 
@@ -59,12 +70,19 @@ void CCharacter_Biplane_Bullet::Tick(_float fTimeDelta)
 		CPool<CCharacter_Biplane_Bullet>::Return_Obj(this);
 		return;
 	}
-		
 }
 
 void CCharacter_Biplane_Bullet::LateTick(_float fTimeDelta)
 {
-	__super::LateTick(fTimeDelta);
+	__super::LateUpdate_Collider(fTimeDelta);
+	GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_PROJECTILE, this);
+#ifdef _DEBUG
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
+#endif
 }
 
 HRESULT CCharacter_Biplane_Bullet::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
@@ -118,8 +136,8 @@ void CCharacter_Biplane_Bullet::Collision_Enter(const COLLISION_INFO& tInfo)
 	__super::Collision_Enter(tInfo);
 	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_ENEMY) && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
-		wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
-		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
+		/*wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
+		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);*/
 
 		Set_Dead(true);
 		if (false == CPool<CCharacter_Biplane_Bullet>::Return_Obj(this))
@@ -130,10 +148,22 @@ void CCharacter_Biplane_Bullet::Collision_Enter(const COLLISION_INFO& tInfo)
 	}
 }
 
+void CCharacter_Biplane_Bullet::Enter_Scene()
+{
+	m_pParticle->Set_Dead(false);
+	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, m_pParticle)))
+	{
+		MSG_BOX("Add Particle Failed. : CCharacter_Biplane_Bullet::Enter_Scene");
+		return;
+	}
+		
+}
+
 void CCharacter_Biplane_Bullet::Return_Pool()
 {
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-
+	m_pParticle->Set_Dead(true);
+	Safe_AddRef(m_pParticle);
 }
 
 
@@ -167,4 +197,5 @@ CGameObject* CCharacter_Biplane_Bullet::Clone(void* pArg)
 void CCharacter_Biplane_Bullet::Free()
 {
 	__super::Free();
+	Safe_Release(m_pParticle);
 }

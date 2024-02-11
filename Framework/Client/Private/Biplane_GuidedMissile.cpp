@@ -87,7 +87,7 @@ void CBiplane_GuidedMissile::Tick(_float fTimeDelta)
 					Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 
 					Vec3 vAxis = XMVector3Cross(vLook, vDir);
-					vDir = XMVector3Normalize((pTargetTransform->Get_Position() + XMVectorSet(0.f, 1.5f, 0.f, 0.f)) - m_pTransformCom->Get_Position());
+					vDir = XMVector3Normalize((pTargetTransform->Get_Position() + XMVectorSet(0.f, 2.f, 0.f, 0.f)) - m_pTransformCom->Get_Position());
 
 					m_pTransformCom->Rotation_Acc(vAxis, XMConvertToRadians(180.f) * fTimeDelta);
 				}
@@ -134,7 +134,7 @@ HRESULT CBiplane_GuidedMissile::Ready_Components()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 0.2f;
+	tSphere.Radius = 0.3f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
@@ -152,18 +152,18 @@ HRESULT CBiplane_GuidedMissile::Ready_Components()
 void CBiplane_GuidedMissile::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
-	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_ENEMY) && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
-	{
-		wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
-		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
-		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
 
+	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_ENEMY) && (tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY))
+	{
 		m_bCameraTarget = false;
+
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 
-
 		Set_Dead(true);
+
+		wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
+		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
 	}
 }
 
@@ -171,7 +171,6 @@ void CBiplane_GuidedMissile::Tick_Target(_float fTimeDelta)
 {
 	if (nullptr == m_pTarget)
 		return;
-
 
 	if (m_pTarget->Is_ReserveDead() || m_pTarget->Is_Dead())
 		m_pTarget = nullptr;

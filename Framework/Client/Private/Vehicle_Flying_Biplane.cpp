@@ -709,10 +709,27 @@ void CVehicle_Flying_Biplane::On_Damaged(const COLLISION_INFO& tInfo)
 		}
 	}
 
+	else if (wstring::npos != strAttackerName.find(L"Enemy_Biplane_Feather"))
+	{
+		CTransform* pOtherTransform = tInfo.pOther->Get_Component_Transform();
+		Vec3 vDir = m_pTransformCom->Get_Position() - pOtherTransform->Get_Position();
+		vDir = XMVector3Normalize(vDir);
+
+		// 데미지 공식
+		m_tStat.fCurHP = max(0.f, m_tStat.fCurHP - 10000.f);
+		if (m_pStateCom->Get_CurrState() != CVehicle::VEHICLE_STATE::VEHICLE_BOSS_IDLE)
+		{
+			m_pRigidBodyCom->Set_FrictionScale(2.f);
+			m_pRigidBodyCom->Add_Velocity(vDir, 30.f, true);
+		}
+	}
+
 	CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.3f, 19.f, 0.3f);
 
 	if(m_pStateCom->Get_CurrState() != CVehicle::VEHICLE_STATE::VEHICLE_BOSS_IDLE)
 		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_DAMAGED);
+	else
+		Set_Infinite(true, 1.f);
 }
 
 HRESULT CVehicle_Flying_Biplane::Ready_Colliders()

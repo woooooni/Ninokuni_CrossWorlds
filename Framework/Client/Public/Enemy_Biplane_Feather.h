@@ -5,12 +5,12 @@
 
 BEGIN(Client)
 
-class CEnemy_Biplane_Bullet final : public CVehicleFlying_Projectile
+class CEnemy_Biplane_Feather final : public CVehicleFlying_Projectile
 {
 private:
-	explicit CEnemy_Biplane_Bullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	explicit CEnemy_Biplane_Bullet(const CEnemy_Biplane_Bullet& rhs);
-	virtual ~CEnemy_Biplane_Bullet() = default;
+	explicit CEnemy_Biplane_Feather(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	explicit CEnemy_Biplane_Feather(const CEnemy_Biplane_Feather& rhs);
+	virtual ~CEnemy_Biplane_Feather() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -38,7 +38,7 @@ private:
 	class CTransform* m_pTargetTransform = nullptr;
 
 public:
-	static CEnemy_Biplane_Bullet* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CEnemy_Biplane_Feather* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

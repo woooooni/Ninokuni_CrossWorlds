@@ -38,7 +38,7 @@ void CLayer::Priority_Tick(_float fTimeDelta)
 
 		else
 		{
-			(*iter)->Priority_Tick(fTimeDelta);
+			(*iter)->Priority_Tick(fTimeDelta * (*iter)->Get_ObjectTimeScale());
 			iter++;
 		}
 	}
@@ -49,7 +49,7 @@ void CLayer::Tick(_float fTimeDelta)
 	for (auto& pGameObject : m_GameObjects)
 	{
 		if (nullptr != pGameObject)
-			pGameObject->Tick(fTimeDelta);
+			pGameObject->Tick(fTimeDelta * pGameObject->Get_ObjectTimeScale());
 	}
 }
 
@@ -58,7 +58,7 @@ void CLayer::LateTick(_float fTimeDelta)
 	for (auto& pGameObject : m_GameObjects)
 	{
 		if (nullptr != pGameObject)
-			pGameObject->LateTick(fTimeDelta);
+			pGameObject->LateTick(fTimeDelta * pGameObject->Get_ObjectTimeScale());
 	}
 }
 

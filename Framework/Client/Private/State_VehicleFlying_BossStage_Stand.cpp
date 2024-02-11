@@ -238,7 +238,7 @@ void CState_VehicleFlying_BossStage_Stand::Shoot()
 
     // Right Side Bullet
 
-    CGameObject* pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+    CGameObject* pRightBullet = CPool<CCharacter_Biplane_Bullet>::Get_Obj();
 
     if (nullptr == pRightBullet)
         pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);

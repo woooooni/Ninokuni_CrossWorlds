@@ -265,7 +265,7 @@ void CState_VehicleFlying_Run::Shoot()
 
 	// Right Side Bullet
 
-	CGameObject* pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+	CGameObject* pRightBullet = CPool<CCharacter_Biplane_Bullet>::Get_Obj();
 
 	if (nullptr == pRightBullet)
 		pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
@@ -295,6 +295,8 @@ void CState_VehicleFlying_Run::Shoot()
 
 	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pRightBullet)))
 		MSG_BOX("Generate Bullet Failed.");
+
+	GI->Play_Sound(L"Pc_Rifle_Shot_Combo_Basic_1.mp3", CHANNELID::SOUND_ATTACK, 0.5f, true);
 
 	m_bShoot = false;
 }

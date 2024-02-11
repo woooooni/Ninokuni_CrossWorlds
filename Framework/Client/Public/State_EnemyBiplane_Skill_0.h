@@ -36,6 +36,9 @@ private:
 	_float m_fShootMissileTime = 0.1f;
 
 private:
+	class CCamera_Follow* m_pFollowCamera = nullptr;
+
+private:
 	_int m_iMissileCount = -20;
 
 

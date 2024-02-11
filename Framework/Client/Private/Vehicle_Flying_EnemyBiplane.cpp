@@ -59,11 +59,13 @@ HRESULT CVehicle_Flying_EnemyBiplane::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Trails()))
+		return E_FAIL;
+
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
-	if (FAILED(Ready_Trails()))
-		return E_FAIL;
+	
 	
 	m_bUseBone = false; 
 
@@ -543,22 +545,28 @@ void CVehicle_Flying_EnemyBiplane::On_Damaged(const COLLISION_INFO& tInfo)
 	if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Character_Biplane_Bullet"))
 	{
 		iDamage = iDamage * 0.1f + GI->RandomInt(-30, 30);
+		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.05f, 17.f, 0.3f);
 	}
 	else if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Biplane_Thunder_Cloud"))
 	{
 		iDamage = iDamage * 0.7f + GI->RandomInt(-30, 30);
+		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.1f, 17.f, 0.3f);
 	}
 	else if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Biplane_GuidedMissile"))
 	{
 		iDamage = iDamage * 0.3f + GI->RandomInt(-30, 30);
+		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.3f, 17.f, 0.3f);
 	}
 
 	m_tStat.fCurHP = max(0, m_tStat.fCurHP - iDamage);
 
 	if (0.f >= m_tStat.fCurHP)
 	{
-		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK);
-		return;
+		if (m_pStateCom->Get_CurrState() != CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK)
+		{
+			m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK);
+			return;
+		}
 	}
 }
 

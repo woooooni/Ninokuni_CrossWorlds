@@ -39,9 +39,9 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
-	CEffect*   m_pSmokeIn_01 = nullptr;
-	CParticle* m_pCircleInParticle = nullptr;
-	CDecal*    m_pDecal = nullptr;
+	class CEffect*   m_pSmokeIn_01 = nullptr;
+	class CParticle* m_pCircleInParticle = nullptr;
+	class CDecal*    m_pDecal = nullptr;
 
 public:
 	static CVfx_Stellia_Skill_BigBang* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
