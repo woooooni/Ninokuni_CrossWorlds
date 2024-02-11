@@ -14,7 +14,6 @@
 
 #include "Utils.h"
 
-
 CCamera_Action::CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
 {
@@ -107,6 +106,9 @@ void CCamera_Action::Tick(_float fTimeDelta)
 			break;
 		case CCamera_Action::WITCH_AWAY:
 			Tick_Witch_Away(fTimeDelta);
+			break;
+		case CCamera_Action::TOWER_DEFENSE:
+			Tick_TowerDefense(fTimeDelta);
 			break;
 		default:
 			break;
@@ -1202,6 +1204,27 @@ void CCamera_Action::Tick_Witch_Away(_float fTimeDelta)
 	}
 }
 
+HRESULT CCamera_Action::Start_Action_TowerDefense()
+{
+	Set_Fov(Cam_Fov_Free_Default);
+
+	m_bAction = true;
+
+	m_eCurActionType = CAMERA_ACTION_TYPE::TOWER_DEFENSE;
+
+	m_pTransformCom->Set_Position(m_tActionTowerDefenseDesc.vPositions[m_tActionTowerDefenseDesc.iCurViewIndex]);
+
+	m_pTransformCom->Set_LookAtByDir(m_tActionTowerDefenseDesc.vLooks[m_tActionTowerDefenseDesc.iCurViewIndex]);
+
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+	
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
+
+	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+
+	return S_OK;
+}
+
 HRESULT CCamera_Action::Start_Action_WindMill(const _bool& bNpcToWindMill)
 {
 	const _uint iLevel = GI->Get_CurrentLevel();
@@ -1443,6 +1466,35 @@ void CCamera_Action::Free()
 	__super::Free();
 
 	Safe_Release(m_pTransformCom);
+}
+
+void CCamera_Action::Tick_TowerDefense(_float fTimeDelta)
+{
+	m_tActionTowerDefenseDesc.fAcc += fTimeDelta;
+	if (m_tActionTowerDefenseDesc.fLimitPerView <= m_tActionTowerDefenseDesc.fAcc)
+	{
+		m_tActionTowerDefenseDesc.fAcc = 0.f;
+		m_tActionTowerDefenseDesc.iCurViewIndex++;
+
+		if (ACTION_TOWER_DEFENSE_DESC::VIEW_NUM::VIEW_NUM_END == m_tActionTowerDefenseDesc.iCurViewIndex)
+		{
+			CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+			if (nullptr != pFollowCam)
+			{
+				pFollowCam->Reset_WideView_To_DefaultView(true);
+				pFollowCam->Set_Default_Position();
+			}
+			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+			return;
+		}
+		else
+		{
+			m_pTransformCom->Set_Position(m_tActionTowerDefenseDesc.vPositions[m_tActionTowerDefenseDesc.iCurViewIndex]);
+			m_pTransformCom->Set_LookAtByDir(m_tActionTowerDefenseDesc.vLooks[m_tActionTowerDefenseDesc.iCurViewIndex]);
+		}
+	}
 }
 
 HRESULT CCamera_Action::Start_Action_Ending()

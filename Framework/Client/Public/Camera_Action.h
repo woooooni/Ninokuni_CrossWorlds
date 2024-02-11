@@ -19,7 +19,7 @@ public:
 	enum CAMERA_ACTION_TYPE { 
 		LOBBY, DOOR, TALK, WINDMILL, 
 		SWORDMAN_BURST, ENGINEER_BURST, DESTROYER_BURST, 
-		STADIUM, ENDING, WITCH_INVASION, WITCH_ROAR, WITCH_AWAY,
+		STADIUM, ENDING, WITCH_INVASION, WITCH_ROAR, WITCH_AWAY, TOWER_DEFENSE,
 		CAMERA_ACTION_END };
 
 public:
@@ -237,13 +237,39 @@ public:
 
 	}ACTION_WITCH_ROAR_DEAC;
 
-	typedef struct tagWitchAwatDesc
+	typedef struct tagWitchAwayDesc
 	{
 		_uint iBoneNumber = 1;
 		class CGameObject* pWitchObject = nullptr;
 
 		Vec4 vPervLookAt = {};
 	}ACTION_WITCH_AWAY_DESC;
+
+	typedef struct tagTowerDefenseGateDesc
+	{
+		enum VIEW_NUM { CENTER, LEFT, RIGHT, VIEW_NUM_END };
+
+		_uint iCurViewIndex		= CENTER;
+
+		_float fAcc = 0.f;
+		const _float fLimitPerView = 1.75f;
+
+		Vec4 vPositions[VIEW_NUM_END] =
+		{
+			Vec4{-4.29f, 1.418f, 11.02f, 1.f},
+			Vec4{98.f, 0.56f, 115.f, 1.f},
+			Vec4{-101.3f, 4.25f, 115.91f, 1.f}
+		};
+
+		Vec4 vLooks[VIEW_NUM_END] =
+		{
+			Vec4{0.333f, 0.1218f, -0.935f, 0.f}.Normalized(),
+			Vec4{0.78f, 0.2f, -0.58f, 0.f}.Normalized(),
+			Vec4{0.8f, -0.262f, -0.53914f, 0.f}.Normalized()
+		};
+
+
+	}ACTION_TOWER_DEFENSE_DESC;
 
 private:
 	CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
@@ -282,6 +308,8 @@ public:
 
 	HRESULT Start_Action_Witch_Away(CGameObject* pGameObject);
 
+	HRESULT Start_Action_TowerDefense();
+
 	// 캐릭터 버스트 스킬 액션.
 	HRESULT Start_Action_SwordManBurst(class CTransform* pSwordManTransform);
 	HRESULT Start_Action_EngineerBurst(class CTransform* pEngineerTransform);
@@ -309,6 +337,7 @@ private:
 	void Tick_Witch_Invasion(_float fTimeDelta);
 	void Tick_Witch_Roar(_float fTimeDelta);
 	void Tick_Witch_Away(_float fTimeDelta);
+	void Tick_TowerDefense(_float fTimeDelta);
 
 	void Tick_SwordManBurst(_float fTimeDelta);
 	void Tick_EngineerBurst(_float fTimeDelta);
@@ -337,6 +366,7 @@ private:
 	ACTION_WITCH_INVASION_DESC	m_tActionWitchInvasionDesc	= {};
 	ACTION_WITCH_ROAR_DEAC		m_tActionWitchRoarDesc		= {};
 	ACTION_WITCH_AWAY_DESC		m_tActionWitchAwayDesc		= {};
+	ACTION_TOWER_DEFENSE_DESC	m_tActionTowerDefenseDesc	= {};
 
 	ACTION_SWORDMAN_BURST_DESC m_tActionSwordManBurstDesc	= {};
 	ACTION_ENGINEER_BURST_DESC m_tActionEngineerBurstDesc	= {};

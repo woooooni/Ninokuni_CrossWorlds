@@ -135,7 +135,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02::Tick(const _float& fTimeDelta)
 			m_bIsStart = true;
 		}
 
-		/* 마을 침공 컷신 끝나고 바로 다이얼로그 뜨게 하기 위함 */
+		/* 마을 침공 컷신 끝나고 1번 대화 다이얼로그 바로 뜨게 하기 위함 */
 		if (m_bStartCutScene && !m_bFinishCutScene)
 		{
 			if (CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key() == CAMERA_TYPE::ACTION

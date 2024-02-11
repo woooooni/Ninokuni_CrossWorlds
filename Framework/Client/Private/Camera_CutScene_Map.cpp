@@ -295,11 +295,11 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID, const _uin
 			/* CutScene - Evermore */
 			vector<string> CutSceneNames;
 			{
-				CutSceneNames.push_back("Evermore_Invasion_00");
+				//CutSceneNames.push_back("Evermore_Invasion_00");
 				CutSceneNames.push_back("Evermore_Invasion_01");
+				CutSceneNames.push_back("Evermore_Invasion_04");
 				CutSceneNames.push_back("Evermore_Invasion_02");
 				CutSceneNames.push_back("Evermore_Invasion_03");
-				CutSceneNames.push_back("Evermore_Invasion_04");
 			}
 			Start_CutScenes(CutSceneNames, true);
 
