@@ -20,6 +20,7 @@ public:
 	HRESULT Render_ShadowDepth();
 
 public:
+	_int Get_CrystalType() { return m_iCrystalType; }
 	void Set_CrystalType(_int iType) { m_iCrystalType = iType; }
 
 private:

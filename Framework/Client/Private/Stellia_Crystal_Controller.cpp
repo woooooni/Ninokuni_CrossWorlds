@@ -6,6 +6,7 @@
 #include "Stellia.h"
 #include "Stellia_Crystal.h"
 #include "Stellia_Crystal_Destructible.h"
+#include "Effect.h"
 
 CStellia_Crystal_Controller::CStellia_Crystal_Controller()
 {
@@ -144,7 +145,36 @@ HRESULT CStellia_Crystal_Controller::Create_Crystals(CStellia* pStellia)
 	{
 		CStellia_Crystal* pOriginalCrystal = dynamic_cast<CStellia_Crystal*>(pGameObject);
 		if (nullptr != pOriginalCrystal)
+		{
 			pOriginalCrystal->Set_CrystalType(m_iOriginalType);
+
+			// 방어막 이펙트 색상 변경
+			/*
+			CGameObject* pGameObject = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_EFFECT, L"Effect_Stellia_Shield");
+			if (nullptr != pGameObject)
+			{
+				CEffect* pEffect = dynamic_cast<CEffect*>(pGameObject);
+				if (nullptr != pEffect)
+				{
+					Vec3 vColor = {};
+					switch (m_iOriginalType)
+					{
+					case 0: // CRYSTAL_AURA
+						vColor = Vec3(0.212f, 0.620f, 1.f);
+						break;
+					case 1: // CRYSTAL_SKY
+						vColor = Vec3(0.715f, 0.995f, 1.f);
+						break;
+					case 2: // CRYSTAL_GOLD
+						vColor = Vec3(1.f, 0.96f, 0.466f);
+						break;
+					}
+
+					pEffect->Set_Color(vColor);
+				}
+			}
+			*/
+		}
 	}
 
 	/* 필드 크리스탈 생성 */

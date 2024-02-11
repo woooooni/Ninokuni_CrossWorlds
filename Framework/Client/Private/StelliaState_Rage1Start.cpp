@@ -13,6 +13,7 @@
 #include "Effect_Manager.h"
 #include "Vfx.h"
 #include "Vfx_Stellia_Skill_Roar.h"
+#include "Effect.h"
 
 CStelliaState_Rage1Start::CStelliaState_Rage1Start(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
@@ -35,6 +36,11 @@ void CStelliaState_Rage1Start::Enter_State(void* pArg)
 	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Roar"), m_pTransformCom->Get_WorldMatrix(), m_pStellia, &pVfxEffect);
 	if (nullptr != pVfxEffect)
 		pVfxEffect->Set_OwnerStateIndex((_int)CStellia::STELLIA_RAGE1START);
+
+	// 기존 방어막 삭제
+	CGameObject* pGameObject = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_EFFECT, L"Stellia_Skill_Rage01Shield");
+	if (nullptr != pGameObject)
+		pGameObject->Set_Dead(true);
 }
 
 void CStelliaState_Rage1Start::Tick_State(_float fTimeDelta)
@@ -47,6 +53,8 @@ void CStelliaState_Rage1Start::Tick_State(_float fTimeDelta)
 
 void CStelliaState_Rage1Start::Exit_State()
 {
+	// 방어막 생성
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage01Shield"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 CStelliaState_Rage1Start* CStelliaState_Rage1Start::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

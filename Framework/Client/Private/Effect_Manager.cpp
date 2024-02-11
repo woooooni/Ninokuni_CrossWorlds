@@ -1013,6 +1013,10 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_Rage01SpinTail"),
 			CVfx_Stellia_Skill_Rage01SpinTail::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_Rage01SpinTail")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
+		// Prototype_Vfx_Stellia_Skill_Rage01Shield
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_Rage01Shield"),
+			CVfx_Stellia_Skill_Rage01Shield::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_Rage01Shield")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
 		
 		/* Rage02 */
 		// Prototype_Vfx_Stellia_Skill_Rage02Explosion
