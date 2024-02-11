@@ -29,37 +29,27 @@ HRESULT CVfx_Stellia_Skill_Rage03Charge::Initialize_Prototype()
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
 	{
-		m_pFrameTriger[TYPE_ET1_E_CIRCLE] = 0;
-		m_pPositionOffset[TYPE_ET1_E_CIRCLE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_E_CIRCLE]    = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_ET1_E_CIRCLE] = _float3(-90.f, 0.f, 0.f);
-
 		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE_00] = 0;
-		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE_00] = _float3(-0.005f, 0.14f, 0.f);
-		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE_00]    = _float3(30.f, 30.f, 30.f);
+		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE_00] = _float3(-0.005f, 0.14f, -0.08f);
+		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE_00]    = _float3(30.f, 30.f, 40.f);
 		m_pRotationOffset[TYPE_ET1_E_CIRCLELINE_00] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE_01] = 0;
-		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE_01] = _float3(-0.005f, 0.14f, 0.f);
-		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE_01]    = _float3(30.f, 30.f, 30.f);
+		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE_01] = _float3(-0.005f, 0.14f, -0.09f);
+		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE_01]    = _float3(30.f, 30.f, 40.f);
 		m_pRotationOffset[TYPE_ET1_E_CIRCLELINE_01] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TYPE_ET1_P_CIRCLES] = 0;
-		m_pPositionOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 1.f, 0.f);
+		m_pPositionOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 4.5f, 6.5f);
 		m_pScaleOffset[TYPE_ET1_P_CIRCLES]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_ET2_D_DECAL] = 0;
-		m_pPositionOffset[TYPE_ET2_D_DECAL] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_D_DECAL]    = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_ET2_D_DECAL] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 0;
-		m_pPositionOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_CIRCLES]    = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_ET2_E_CIRCLE] = 0;
+		m_pPositionOffset[TYPE_ET2_E_CIRCLE] = _float3(0.f, 4.f, -6.5f);
+		m_pScaleOffset[TYPE_ET2_E_CIRCLE]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET2_E_CIRCLE] = _float3(0.f, 180.f, 0.f);
 	}
 
 	return S_OK;
@@ -76,25 +66,26 @@ void CVfx_Stellia_Skill_Rage03Charge::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
-		if (m_iCount == TYPE_ET1_E_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLE])
-		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_Skill_Rage03Charge_TrailLine"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_CIRCLE], m_pScaleOffset[TYPE_ET1_E_CIRCLE], m_pRotationOffset[TYPE_ET1_E_CIRCLE], m_pOwnerObject, &m_fCircleEffect, false);
-			Safe_AddRef(m_fCircleEffect);
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET1_E_CIRCLELINE_00 && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE_00])
+		if (m_iCount == TYPE_ET1_E_CIRCLELINE_00 && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE_00])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_Skill_Rage03Charge_FrontLine_01"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_CIRCLELINE_00], m_pScaleOffset[TYPE_ET1_E_CIRCLELINE_00], m_pRotationOffset[TYPE_ET1_E_CIRCLELINE_00], m_pOwnerObject, &m_fCircleLine00Effect, false);
-			Safe_AddRef(m_fCircleLine00Effect);
+			if (nullptr != m_fCircleLine00Effect)
+			{
+				Safe_AddRef(m_fCircleLine00Effect);
+				m_fCircleLine00Effect->Set_Color(_float3(0.45f, 0.1f, 1.0f));
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET1_E_CIRCLELINE_01 && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE_01])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_Skill_Rage03Charge_FrontLine_01"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_CIRCLELINE_01], m_pScaleOffset[TYPE_ET1_E_CIRCLELINE_01], m_pRotationOffset[TYPE_ET1_E_CIRCLELINE_01], m_pOwnerObject, &m_fCircleLine01Effect, false);
-			Safe_AddRef(m_fCircleLine01Effect);
+			if (nullptr != m_fCircleLine01Effect)
+			{
+				Safe_AddRef(m_fCircleLine01Effect);
+				m_fCircleLine01Effect->Set_Color(_float3(0.760f, 0.399f, 1.0f));
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET1_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_CIRCLES])
@@ -105,22 +96,16 @@ void CVfx_Stellia_Skill_Rage03Charge::Tick(_float fTimeDelta)
 			m_iCount++;
 		}
 
-		else if (m_iCount > TYPE_ET1_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_D_DECAL])
+		else if (m_iCount == TYPE_ET2_E_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CIRCLE])
 		{
 			m_fTimeAcc += fTimeDelta;
-			if (m_fTimeAcc > 1.F)
+			if (m_fTimeAcc > 0.3F)
 			{
 				m_fTimeAcc = 0.f;
 
-				//GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT(""),
-				//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_D_DECAL], m_pScaleOffset[TYPE_ET2_D_DECAL], m_pRotationOffset[TYPE_ET2_D_DECAL]);
-
-				//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT(""),
-				//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], m_pRotationOffset[TYPE_ET2_P_CIRCLES]);
+				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_Skill_Rage03Charge_TrailLine"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_CIRCLE], m_pScaleOffset[TYPE_ET2_E_CIRCLE], m_pRotationOffset[TYPE_ET2_E_CIRCLE]);
 			}
-
-			if(m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_D_DECAL] + 20)
-				m_iCount += 2;
 		}
 	}
 }
@@ -170,11 +155,6 @@ void CVfx_Stellia_Skill_Rage03Charge::Free()
 {
 	__super::Free();
 
-	if (nullptr != m_fCircleEffect)
-	{
-		m_fCircleEffect->Set_Dead(true);
-		Safe_Release(m_fCircleEffect);
-	}
 	if (nullptr != m_fCircleLine00Effect)
 	{
 		m_fCircleLine00Effect->Set_Dead(true);

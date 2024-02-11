@@ -12,13 +12,11 @@ class CVfx_Stellia_Skill_Rage03Charge final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_ET1_E_CIRCLE,
-		TYPE_ET1_E_CIRCLELINE_00,// 가운데서 바깥으로 퍼지는 라인 하늘색 //
-		TYPE_ET1_E_CIRCLELINE_01,// 푸른색 // 
+		TYPE_ET1_E_CIRCLELINE_00,
+		TYPE_ET1_E_CIRCLELINE_01,
 		TYPE_ET1_P_CIRCLES,
 
-		TYPE_ET2_D_DECAL,// 달려온 흔적 데칼
-		TYPE_ET2_P_CIRCLES,// 달려오는 뒤에 흔적에 하얀원반짝이
+		TYPE_ET2_E_CIRCLE,
 
 		TYPE_END
 	};
@@ -39,7 +37,6 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
-	class CEffect* m_fCircleEffect = nullptr;
 	class CEffect* m_fCircleLine00Effect = nullptr;
 	class CEffect* m_fCircleLine01Effect = nullptr;
 	class CParticle* m_fCircleParticle = nullptr;
