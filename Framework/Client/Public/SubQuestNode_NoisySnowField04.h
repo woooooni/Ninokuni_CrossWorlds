@@ -21,6 +21,7 @@ private:
 	CGameObject* m_pNoisyMan = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
+	_bool       m_bIsGameReady = false;
 	_bool		m_bCameraAction = false;
 
 public:

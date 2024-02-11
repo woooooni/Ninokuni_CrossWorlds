@@ -23,7 +23,7 @@ HRESULT CNpcDMWState_Rage01QuadBlackHole::Initialize(const list<wstring>& Animat
 	m_iCount = 4;
 	m_fDist = 7.f;
 
-	m_fSpawnTime = 0.1f;
+	m_fSpawnTime = 0.3f;
 
 	return S_OK;
 }

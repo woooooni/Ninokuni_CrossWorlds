@@ -24,6 +24,8 @@ private:
 	_float m_fTalkChangeTime = 0.f;
 	_float m_fTime = 0.f;
 
+	_bool m_bIsStart = false;
+
 public:
 	static CMainQuestNode_Glanix01* Create();
 	virtual void Free() override;

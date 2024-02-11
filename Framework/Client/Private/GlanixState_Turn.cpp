@@ -29,9 +29,10 @@ void CGlanixState_Turn::Enter_State(void* pArg)
 		return;
 	}
 
-	// 레이지2 패턴
+	// 레이지2 패턴(위에게 진짜 조건문)
 	if (!m_bIsRage2Init && m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp * 0.35f &&
 		m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
+	//if (!m_bIsRage2Init && m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp * 0.95f)
 	{
 		m_bIsRage2Init = true;
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGE2START_TURN_WP);
@@ -41,7 +42,7 @@ void CGlanixState_Turn::Enter_State(void* pArg)
 	// 레이지1 패턴(위에게 진짜 조건문)
 	if (!m_bIsRageInit && m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp * 0.15f && 
 		m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
-	//if (!m_bIsRageInit && m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp * 0.95f)
+	//if (!m_bIsRageInit && m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp * 0.85f)
 	{
 		m_bIsRageInit = true;
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGESTART_TURN_OC);

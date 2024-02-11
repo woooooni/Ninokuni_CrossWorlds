@@ -63,6 +63,18 @@ const _bool CQuestNode_Base::Is_Finish_LevelEnterCameraAction()
 	return true;
 }
 
+const _bool CQuestNode_Base::Is_EndCameraBlender()
+{
+	// 현재 모든 카메라 블렌딩이 없고, 현재 카메라가 팔로우 카메라라면
+	if (!CCamera_Manager::GetInstance()->Is_Blending_Camera() &&
+		CAMERA_TYPE::FOLLOW == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+	{
+		return true;
+	}
+
+	return false;
+}
+
 void CQuestNode_Base::Free()
 {
 	__super::Free();

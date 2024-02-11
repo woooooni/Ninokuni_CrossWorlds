@@ -33,6 +33,7 @@ protected:
 	virtual void			 Delete_QuestDestSpot();
 
 	const _bool		Is_Finish_LevelEnterCameraAction();
+	const _bool		Is_EndCameraBlender();
 
 protected:
 	vector<TALK_DELS> m_vecTalkDesc;

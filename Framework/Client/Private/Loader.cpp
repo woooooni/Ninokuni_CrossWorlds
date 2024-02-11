@@ -78,6 +78,7 @@
 #include "DreamMazeWitch_Npc.h"
 #include "Witch_BlackHole.h"
 #include "Witch_VulcanBullet.h"
+#include "Witch_VulcanBullet_Slow.h"
 #include "Witch_ChargeBullet.h"
 #include "Witch_Rage01QuadBlackHole.h"
 #include "Witch_Laser.h"
@@ -1988,6 +1989,8 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_BlackHole", CWitch_BlackHole::Create(m_pDevice, m_pContext, TEXT("Witch_BlackHole")), LAYER_PROP, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_VulcanBullet", CWitch_VulcanBullet::Create(m_pDevice, m_pContext, TEXT("Witch_VulcanBullet")), LAYER_PROP, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_VulcanBullet_Slow", CWitch_VulcanBullet_Slow::Create(m_pDevice, m_pContext, TEXT("Witch_VulcanBullet_Slow")), LAYER_PROP, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_ChargeBullet", CWitch_ChargeBullet::Create(m_pDevice, m_pContext, TEXT("Witch_ChargeBullet")), LAYER_PROP, true)))
 		return E_FAIL;

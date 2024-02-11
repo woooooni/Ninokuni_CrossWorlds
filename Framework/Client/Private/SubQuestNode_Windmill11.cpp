@@ -34,7 +34,7 @@ HRESULT CSubQuestNode_Windmill11::Initialize()
 
 void CSubQuestNode_Windmill11::Start()
 {
-	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 2.f);
 }
 
 CBTNode::NODE_STATE CSubQuestNode_Windmill11::Tick(const _float& fTimeDelta)

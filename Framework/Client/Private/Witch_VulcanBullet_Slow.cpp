@@ -1,28 +1,26 @@
 #include "stdafx.h"
-#include "Clown_Wizard_DarkBall.h"
+#include "Witch_VulcanBullet_Slow.h"
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
 
-#include "Clown_Wizard.h"
+#include "DreamMazeWitch_Npc.h"
 
 #include "Particle_Manager.h"
 #include "Particle.h"
 
-CClown_Wizard_DarkBall::CClown_Wizard_DarkBall(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CWitch_VulcanBullet_Slow::CWitch_VulcanBullet_Slow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CMonsterProjectile(pDevice, pContext, strObjectTag)
 {
 }
 
-CClown_Wizard_DarkBall::CClown_Wizard_DarkBall(const CClown_Wizard_DarkBall& rhs)
+CWitch_VulcanBullet_Slow::CWitch_VulcanBullet_Slow(const CWitch_VulcanBullet_Slow& rhs)
 	: CMonsterProjectile(rhs)
-	, m_fTime(0.f)
-	, m_fDelteTime(rhs.m_fDelteTime)
 {
 
 }
 
-HRESULT CClown_Wizard_DarkBall::Initialize_Prototype()
+HRESULT CWitch_VulcanBullet_Slow::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -30,7 +28,7 @@ HRESULT CClown_Wizard_DarkBall::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CClown_Wizard_DarkBall::Initialize(void* pArg)
+HRESULT CWitch_VulcanBullet_Slow::Initialize(void* pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -44,17 +42,15 @@ HRESULT CClown_Wizard_DarkBall::Initialize(void* pArg)
 	Set_Collider_Elemental(m_pOwner->Get_Stat().eElementType);
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, true);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
-	m_fTime = 0.f;
-	m_fDelteTime = 5.f;
-	m_fSpeed = 10.f;
+	m_fDelteTime = 6.f;
+	m_fSpeed = 5.f;
 
 	return S_OK;
 }
 
-void CClown_Wizard_DarkBall::Tick(_float fTimeDelta)
+void CWitch_VulcanBullet_Slow::Tick(_float fTimeDelta)
 {
-	m_fTime += fTimeDelta;
-
+	// 이펙트 생성
 	if (!m_bCreate)
 	{
 		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall"),
@@ -62,37 +58,38 @@ void CClown_Wizard_DarkBall::Tick(_float fTimeDelta)
 
 		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall_Flame"),
 			m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this);
-		
+
 		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall_Lighting"),
-			m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.25f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this);
+			m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this);
 
 		m_bCreate = true;
 	}
 
-	m_pTransformCom->Move(XMVector3Normalize(m_vInitLook), m_fSpeed, fTimeDelta);
 
-	__super::Tick(fTimeDelta);
+	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fSpeed, fTimeDelta);
 
-	if (m_fTime > m_fDelteTime)
+	m_fAccDelteTime += fTimeDelta;
+	// 지우기
+	if (m_fAccDelteTime > m_fDelteTime)
 	{
-		m_fTime = m_fDelteTime - m_fTime;
-		// Reserve_Dead(true);
 		Set_Dead(true);
 	}
 
+
+	__super::Tick(fTimeDelta);
 }
 
-void CClown_Wizard_DarkBall::LateTick(_float fTimeDelta)
+void CWitch_VulcanBullet_Slow::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 }
 
-HRESULT CClown_Wizard_DarkBall::Render()
+HRESULT CWitch_VulcanBullet_Slow::Render()
 {
 	return S_OK;
 }
 
-HRESULT CClown_Wizard_DarkBall::Render_ShadowDepth()
+HRESULT CWitch_VulcanBullet_Slow::Render_ShadowDepth()
 {
 	//if (FAILED(__super::Render_ShadowDepth()))
 	//	return E_FAIL;
@@ -101,10 +98,10 @@ HRESULT CClown_Wizard_DarkBall::Render_ShadowDepth()
 }
 
 
-void CClown_Wizard_DarkBall::Collision_Enter(const COLLISION_INFO& tInfo)
+void CWitch_VulcanBullet_Slow::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_DEFENCE_TOWER &&
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
 		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
 		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
 	{
@@ -115,41 +112,40 @@ void CClown_Wizard_DarkBall::Collision_Enter(const COLLISION_INFO& tInfo)
 	}
 }
 
-void CClown_Wizard_DarkBall::Collision_Continue(const COLLISION_INFO& tInfo)
+void CWitch_VulcanBullet_Slow::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);
 }
 
-void CClown_Wizard_DarkBall::Collision_Exit(const COLLISION_INFO& tInfo)
+void CWitch_VulcanBullet_Slow::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Exit(tInfo);
 }
 
-HRESULT CClown_Wizard_DarkBall::Ready_Components()
+HRESULT CWitch_VulcanBullet_Slow::Ready_Components()
 {
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
+
 	if (m_pOwner != nullptr)
 	{
+		m_pWitch = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_NPC, TEXT("DreamMazeWitch"));
+
 		/* For.Com_Transform */
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 			return E_FAIL;
 
-		m_pClown_Wizard = dynamic_cast<CClown_Wizard*>(m_pOwner);
+		m_pWitch = m_pOwner;
 
-		m_pTransformCom->Set_WorldMatrix(m_pClown_Wizard->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_WorldMatrix());
-		
+		m_pTransformCom->Set_WorldMatrix(m_pWitch->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_WorldMatrix());
+
 		Vec4 vDarkBallPos = m_pTransformCom->Get_Position();
-		vDarkBallPos.y += 1.f;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vDarkBallPos);
-		// m_pTransformCom->Set_Scale(Vec3(1.f, 1.f, 1.f));
-
-		m_vInitLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 	}
 	else
 	{
-		MSG_BOX("Fail Create : Clown_Wizard DarkBall, m_pOwner == nullptr");
+		MSG_BOX("Fail Create : Witch VulcanBullet , m_pOwner == nullptr");
 		return E_FAIL;
 	}
 
@@ -183,7 +179,7 @@ HRESULT CClown_Wizard_DarkBall::Ready_Components()
 }
 
 #pragma region Ready_Colliders
-HRESULT CClown_Wizard_DarkBall::Ready_Colliders()
+HRESULT CWitch_VulcanBullet_Slow::Ready_Colliders()
 {
 	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
 	ZeroMemory(&SphereDesc, sizeof SphereDesc);
@@ -206,32 +202,32 @@ HRESULT CClown_Wizard_DarkBall::Ready_Colliders()
 
 #pragma endregion
 
-CClown_Wizard_DarkBall* CClown_Wizard_DarkBall::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CWitch_VulcanBullet_Slow* CWitch_VulcanBullet_Slow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 {
-	CClown_Wizard_DarkBall* pInstance = new CClown_Wizard_DarkBall(pDevice, pContext, strObjectTag);
+	CWitch_VulcanBullet_Slow* pInstance = new CWitch_VulcanBullet_Slow(pDevice, pContext, strObjectTag);
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Create Failed : CClown_Wizard_DarkBall");
+		MSG_BOX("Create Failed : CWitch_VulcanBullet_Slow");
 		Safe_Release(pInstance);
 		return nullptr;
 	}
 	return pInstance;
 }
 
-CGameObject* CClown_Wizard_DarkBall::Clone(void* pArg)
+CGameObject* CWitch_VulcanBullet_Slow::Clone(void* pArg)
 {
-	CClown_Wizard_DarkBall* pInstance = new CClown_Wizard_DarkBall(*this);
+	CWitch_VulcanBullet_Slow* pInstance = new CWitch_VulcanBullet_Slow(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Cloned : CClown_Wizard_DarkBall");
+		MSG_BOX("Failed to Cloned : CWitch_VulcanBullet_Slow");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CClown_Wizard_DarkBall::Free()
+void CWitch_VulcanBullet_Slow::Free()
 {
 	__super::Free();
 }

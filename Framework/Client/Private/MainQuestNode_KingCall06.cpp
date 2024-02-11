@@ -39,22 +39,29 @@ void CMainQuestNode_KingCall06::Start()
 {
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
-
-	/* 대화 */
-	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
-	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
-
-	TalkEvent();
-
 }
 
 CBTNode::NODE_STATE CMainQuestNode_KingCall06::Tick(const _float& fTimeDelta)
 {
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
+
+	if (!Is_EndCameraBlender())
+		return NODE_STATE::NODE_RUNNING;
+
+	if (!m_bIsStart)
+	{
+		/* 대화 */
+		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+		CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
+		CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+		TalkEvent();
+
+		m_bIsStart = true;
+	}
 
 	m_fTime += fTimeDelta;
 

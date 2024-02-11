@@ -264,7 +264,12 @@ HRESULT CDreamMazeWitch_Npc::Ready_States()
 	m_pStateCom->Add_State(WITCHSTATE_BATTLE_RAGE3_LASER, CNpcDMWState_Rage03Laser::Create(m_pStateCom, strAnimationName));
 
 
+	// Åø¿ë
 	//m_pStateCom->Change_State(WITCHSTATE_BATTLE_FOLLOWING);
+	//m_bIsBattle = true;
+	//
+
+
 	m_pStateCom->Change_State(WITCHSTATE_INVASION_IDLE);
 
 	return S_OK;

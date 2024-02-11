@@ -21,6 +21,8 @@ private:
 	CGameObject* m_pRuby = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
+	_bool m_bIsFadeOut = false;
+
 public:
 	static CMainQuestNode_PlantKiller04* Create();
 	virtual void Free() override;

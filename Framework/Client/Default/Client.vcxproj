@@ -1269,6 +1269,7 @@
     <ClInclude Include="..\Public\Witch_Rage01QuadBlackHole.h" />
     <ClInclude Include="..\Public\Witch_Rage02Sphere.h" />
     <ClInclude Include="..\Public\Witch_VulcanBullet.h" />
+    <ClInclude Include="..\Public\Witch_VulcanBullet_Slow.h" />
     <ClInclude Include="..\Public\Zehra.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="MainQuestNode_WitchForest04_2.h" />
@@ -2378,6 +2379,7 @@
     <ClCompile Include="..\Private\Witch_Rage01QuadBlackHole.cpp" />
     <ClCompile Include="..\Private\Witch_Rage02Sphere.cpp" />
     <ClCompile Include="..\Private\Witch_VulcanBullet.cpp" />
+    <ClCompile Include="..\Private\Witch_VulcanBullet_Slow.cpp" />
     <ClCompile Include="..\Private\Zehra.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">

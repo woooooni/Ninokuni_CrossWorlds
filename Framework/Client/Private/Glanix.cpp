@@ -323,7 +323,7 @@ HRESULT CGlanix::Ready_Components()
 	m_vOriginLook = m_pTransformCom->Get_Look();
 	//m_vOriginPos = XMVectorSet(-40.f, 1.6, 361.f, 1.f);
 	m_vOriginPos = XMVectorSet(-55.f, 1.6, 363.f, 1.f); /* 변경금지 - 컷신 포지션 영향 */
-	m_vWavePoint = { -63.f, 1.6f, 393.f, 1.f };
+	m_vWavePoint = { -56.15f, 1.6f, 392.f, 1.f };
 
 //#ifdef _DEBUG
 //	if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel())

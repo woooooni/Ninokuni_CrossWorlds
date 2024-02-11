@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_Fade.h"
 #include "UI_PopupQuest.h"
 #include "Game_Manager.h"
 
@@ -86,24 +87,44 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill08::Tick(const _float& fTimeDelta)
 			QuestDesc.strContents = m_strNextQuestContent;
 			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 
-			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 			/* 대화 카메라 종료 */
 			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
 			if (nullptr != pActionCam)
 				pActionCam->Finish_Action_Talk();
 
+			m_bIsFadeOut = true;
+		}
+
+		if (m_iTalkIndex < m_vecTalkDesc.size())
+		{
+			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+			CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+			TalkEvent();
+		}
+	}
+
+	if (!m_bIsFadeIn && m_bIsFadeOut && Is_EndCameraBlender())
+	{
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
+
+		m_bIsFadeIn = true;
+	}
+
+	if (m_bIsFadeIn)
+	{
+		if (CUI_Manager::GetInstance()->Is_FadeFinished())
+		{
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
+
+			m_bIsClear = true;
 			m_pEngineer->Set_Dead(true);
 
 			return NODE_STATE::NODE_FAIL;
 		}
-
-		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-		TalkEvent();
 	}
 
 	return NODE_STATE::NODE_RUNNING;
@@ -136,55 +157,48 @@ void CSubQuestNode_Windmill08::TalkEvent()
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;
 	case 2:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("SQ_02_08_02_KuuSay_LetsGo!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_08_02.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_CSHatchOut01"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
 		break;
 	case 3:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("SQ_02_08_03_EGSay_Happy1.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_08_03.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pEngineer->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pEngineer->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_RIGTH);
 		break;
 	case 4:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("SQ_02_08_04_KuuSay_What.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_08_04.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER_FROM_BACK_NPC);
 		break;
 	case 5:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("SQ_02_08_05_EGSay_Sing.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_08_05.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pEngineer->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pEngineer->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_Idle03"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
 		break;
 	case 6:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("SQ_02_08_06_KuuSay_EAAAA!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_08_06.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_CSEndOfDonDonKing01"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
 		break;
 	case 7:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("SQ_02_08_07_EGSay_HE~.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pEngineer->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pEngineer->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionPositive02"));
-		/* 대화 카메라 타겟 변경 */
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_LEFT);
-		break;
-	case 8:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("SQ_02_08_08_KuuSay_Ok.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_08_07.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER_FROM_BACK_NPC);
 		break;
-	case 9:
+	case 8:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("SQ_02_08_09_EGSay_Go!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pEngineer->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pEngineer->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionPositive02"));

@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_Fade.h"
 #include "UI_PopupQuest.h"
 
 #include "Game_Manager.h"
@@ -71,7 +72,7 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix02::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (KEY_TAP(KEY::LBTN))
+	if (KEY_TAP(KEY::LBTN) && !m_bIsFadeOut)
 	{
 		Safe_Delete_Array(m_szpOwner);
 		Safe_Delete_Array(m_szpTalk);
@@ -86,23 +87,45 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix02::Tick(const _float& fTimeDelta)
 			QuestDesc.strContents = m_strNextQuestContent;
 			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 
-			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
-
+			
 			/* 대화 카메라 종료 */
 			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
 			if (nullptr != pActionCam)
 				pActionCam->Finish_Action_Talk();
 
-			return NODE_STATE::NODE_FAIL;
+			m_bIsFadeOut = true;
 		}
 
-		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+		if (m_iTalkIndex < m_vecTalkDesc.size())
+		{
+			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+			CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
 
-		TalkEvent();
+			TalkEvent();
+		}
+	}
+
+	if (!m_bIsFadeIn && m_bIsFadeOut && Is_EndCameraBlender())
+	{
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
+
+		m_bIsFadeIn = true;
+	}
+
+	if (m_bIsFadeIn)
+	{
+		if (CUI_Manager::GetInstance()->Is_FadeFinished())
+		{
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
+
+			m_bIsClear = true;
+			m_pAren->Set_Dead(true);
+
+			return NODE_STATE::NODE_FAIL;
+		}
 	}
 
 	return NODE_STATE::NODE_RUNNING;
@@ -199,6 +222,14 @@ void CMainQuestNode_Glanix02::TalkEvent()
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
 		break;
+	case 11:
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Glanix_02_11.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pAren->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pAren->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Aren.ao|Aren_Talk"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_LEFT);
+		break;
+
 	}
 
 }

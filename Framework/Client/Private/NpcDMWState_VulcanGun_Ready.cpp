@@ -20,7 +20,7 @@ HRESULT CNpcDMWState_VulcanGun_Ready::Initialize(const list<wstring>& AnimationL
 	__super::Initialize(AnimationList);
 
 	m_iCurrAnimIndex = m_AnimIndices[0];
-	m_fDist = 5.f;
+	m_fDist = 15.f;
 	m_fMoveTime = 1.f;
 	m_fDownTime = 1.f;
 

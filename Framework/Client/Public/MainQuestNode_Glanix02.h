@@ -21,6 +21,9 @@ private:
 	CGameObject* m_pAren = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
+	_bool m_bIsFadeOut = false;
+	_bool m_bIsFadeIn = false;
+
 public:
 	static CMainQuestNode_Glanix02* Create();
 	virtual void Free() override;

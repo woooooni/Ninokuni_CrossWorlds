@@ -28,6 +28,8 @@ HRESULT CMainQuestNode_Glanix09::Initialize()
 
 void CMainQuestNode_Glanix09::Start()
 {
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
+
 	m_pRuslan = GI->Find_GameObject(LEVELID::LEVEL_KINGDOMHALL, LAYER_NPC, TEXT("Ruslan"));
 	Vec4 vSpotPos = Set_DestSpot(m_pRuslan);
 

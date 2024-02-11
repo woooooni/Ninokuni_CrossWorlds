@@ -37,7 +37,6 @@ void CNpcDMWState_Following::Tick_State(_float fTimeDelta)
 
 	if (m_pWitch->Get_IsBattle())
 	{
-
 		if (m_pStellia != nullptr)
 		{
 			// 스텔리아가 점프 스탬프라면
@@ -60,7 +59,7 @@ void CNpcDMWState_Following::Tick_State(_float fTimeDelta)
 			}
 
 			// Rage Following로 전환
-			if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE2START)
+			if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE2LOOP)
 			{
 				m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_FOLLOWING_RAGE02);
 			}

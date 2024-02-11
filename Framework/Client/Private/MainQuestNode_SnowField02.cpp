@@ -40,15 +40,6 @@ HRESULT CMainQuestNode_SnowField02::Initialize()
 void CMainQuestNode_SnowField02::Start()
 {
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
-
-	/* 대화 */
-	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
-	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
-
-	TalkEvent();
 }
 
 CBTNode::NODE_STATE CMainQuestNode_SnowField02::Tick(const _float& fTimeDelta)
@@ -56,34 +47,53 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField02::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	m_fTime += fTimeDelta;
-
-	if (m_fTime >= 3.f)
+	if (GI->Get_CurrentLevel() == LEVELID::LEVEL_EVERMORE)
 	{
-		if (m_iTalkIndex < m_vecTalkDesc.size())
+		if (!Is_Finish_LevelEnterCameraAction())
+			return NODE_STATE::NODE_RUNNING;
+
+		if (!m_bIsStart)
 		{
-			Safe_Delete_Array(m_szpOwner);
-			Safe_Delete_Array(m_szpTalk);
+			/* 대화 */
+			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-			m_iTalkIndex += 1;
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
+			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
-			if (m_iTalkIndex >= m_vecTalkDesc.size())
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
+			TalkEvent();
 
+			m_bIsStart = true;
+		}
+
+		m_fTime += fTimeDelta;
+
+		if (m_fTime >= 3.f)
+		{
 			if (m_iTalkIndex < m_vecTalkDesc.size())
 			{
-				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+				Safe_Delete_Array(m_szpOwner);
+				Safe_Delete_Array(m_szpTalk);
 
-				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+				m_iTalkIndex += 1;
 
-				TalkEvent();
+				if (m_iTalkIndex >= m_vecTalkDesc.size())
+					CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
+
+				if (m_iTalkIndex < m_vecTalkDesc.size())
+				{
+					m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+					m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+					CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+					TalkEvent();
+				}
+
+				m_fTime = m_fTalkChangeTime - m_fTime;
 			}
-
-			m_fTime = m_fTalkChangeTime - m_fTime;
 		}
 	}
-
 
 	if (GI->Get_CurrentLevel() == LEVEL_ICELAND)
 	{
