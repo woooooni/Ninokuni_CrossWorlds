@@ -39,10 +39,10 @@ HRESULT CVfx_Stellia_Skill_ClawRight::Initialize_Prototype()
 	m_pScaleOffset[TYPE_P_CIRCLES_01]    = _float3(1.f, 1.f, 1.f);
 	m_pRotationOffset[TYPE_P_CIRCLES_01] = _float3(0.f, 0.f, 0.f);
 
-	m_pFrameTriger[TYPE_V_E_SPEED] = 22;
-	m_pPositionOffset[TYPE_V_E_SPEED] = _float3(48.f, 0.f, 0.f); // x에 속도 저장
-	m_pScaleOffset[TYPE_V_E_SPEED] = _float3(0.f, 0.f, 0.f);  // TurnSpeed 저장
-	m_pRotationOffset[TYPE_V_E_SPEED] = _float3(0.f, 1.f, 0.f); // 회전 시킬 축 저장
+	//m_pFrameTriger[TYPE_V_E_SPEED] = 22;
+	//m_pPositionOffset[TYPE_V_E_SPEED] = _float3(48.f, 0.f, 0.f); // x에 속도 저장
+	//m_pScaleOffset[TYPE_V_E_SPEED] = _float3(0.f, 0.f, 0.f);  // TurnSpeed 저장
+	//m_pRotationOffset[TYPE_V_E_SPEED] = _float3(0.f, 1.f, 0.f); // 회전 시킬 축 저장
 
 
 	return S_OK;

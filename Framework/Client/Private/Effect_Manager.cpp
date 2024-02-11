@@ -1025,6 +1025,10 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_Rage03Claw"),
 			CVfx_Stellia_Skill_Rage03Claw::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_Rage03Claw")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
+		// Prototype_Vfx_Stellia_Skill_Rage03Charge
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_Rage03Charge"),
+			CVfx_Stellia_Skill_Rage03Charge::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_Rage03Charge")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
 	}
 
 	// Witch

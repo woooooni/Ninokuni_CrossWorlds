@@ -412,6 +412,7 @@
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_Charge.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_ChaseJumpStamp.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_Laser.h" />
+    <ClInclude Include="..\Public\Vfx_Stellia_Skill_Rage03Charge.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_Rage03Claw.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_Roar.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_TripleLaser.h" />
@@ -1517,6 +1518,7 @@
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_Charge.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_ChaseJumpStamp.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_Laser.cpp" />
+    <ClCompile Include="..\Private\Vfx_Stellia_Skill_Rage03Charge.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_Rage03Claw.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_Roar.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_TripleLaser.cpp" />

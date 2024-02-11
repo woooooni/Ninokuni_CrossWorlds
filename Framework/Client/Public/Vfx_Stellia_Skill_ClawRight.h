@@ -15,7 +15,7 @@ private:
 		TYPE_E_TRAIL_01,
 		TYPE_P_CIRCLES_01,
 
-		TYPE_V_E_SPEED,
+		//TYPE_V_E_SPEED,
 		TYPE_END
 	};
 

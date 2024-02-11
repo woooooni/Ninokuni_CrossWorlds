@@ -73,6 +73,7 @@
 #include "Vfx_Stellia_Skill_Rage02Explosion.h"
 // Rage03
 #include "Vfx_Stellia_Skill_Rage03Claw.h"
+#include "Vfx_Stellia_Skill_Rage03Charge.h"
 
 /* Witch */
 #include "Vfx_Witch_Skill_BlackHole_Drain.h"
