@@ -394,6 +394,8 @@
     <ClInclude Include="..\Public\UI_Minigame_Curling_Stones.h" />
     <ClInclude Include="..\Public\UI_Minigame_Curling_Title.h" />
     <ClInclude Include="..\Public\UI_Minigame_WorldHP.h" />
+    <ClInclude Include="..\Public\UI_Stellia_DamageBar.h" />
+    <ClInclude Include="..\Public\UI_Stellia_GaugeBar.h" />
     <ClInclude Include="..\Public\UI_Stellia_Timer.h" />
     <ClInclude Include="..\Public\UniqueNpcState_Attack.h" />
     <ClInclude Include="..\Public\Vehicle_Flying_EnemyBiplane.h" />
@@ -1498,6 +1500,8 @@
     <ClCompile Include="..\Private\UI_Minigame_Curling_Stones.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Curling_Title.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_WorldHP.cpp" />
+    <ClCompile Include="..\Private\UI_Stellia_DamageBar.cpp" />
+    <ClCompile Include="..\Private\UI_Stellia_GaugeBar.cpp" />
     <ClCompile Include="..\Private\UI_Stellia_Timer.cpp" />
     <ClCompile Include="..\Private\UniqueNpcState_Attack.cpp" />
     <ClCompile Include="..\Private\Vehicle_Flying_EnemyBiplane.cpp" />

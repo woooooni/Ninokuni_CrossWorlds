@@ -40,6 +40,10 @@ void CUI_Emoticon_SpeechBalloon::Set_Active(_bool bActive)
 			
 			m_pCharacterTrans = pTargetTransform;
 		}
+
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_MainHud_Btn_Chat_1.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 	}
 	else
 	{

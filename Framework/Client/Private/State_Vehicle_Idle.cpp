@@ -30,6 +30,9 @@ HRESULT CState_Vehicle_Idle::Initialize(const list<wstring>& AnimationList)
 
 void CState_Vehicle_Idle::Enter_State(void* pArg)
 {
+//    if (false == m_pVehicle->Is_Aboard())
+//        return;
+
     CUI_Manager::GetInstance()->Hide_MouseCursor(false);
     
     m_iCurrAnimIndex = m_AnimIndices[0];
@@ -63,12 +66,15 @@ void CState_Vehicle_Idle::Enter_State(void* pArg)
 
 void CState_Vehicle_Idle::Tick_State(_float fTimeDelta)
 {
+//    if (false == m_pVehicle->Is_Aboard())
+//        return;
+
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
     {
         m_iCurrAnimIndex = m_AnimIndices[GI->RandomInt(0, m_AnimIndices.size() - 1)];
         m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 
-        /*
+        
         _int iRandom = GI->RandomInt(0, 3);
         switch (iRandom)
         {
@@ -92,7 +98,7 @@ void CState_Vehicle_Idle::Tick_State(_float fTimeDelta)
                 GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
             break;
         }
-        */
+        
     }
 
     // 플레이어 움직임이 막혀있다면 return;

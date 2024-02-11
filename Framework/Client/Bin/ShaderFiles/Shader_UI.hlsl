@@ -609,6 +609,67 @@ PS_OUT PS_VERTICAL_PROGRESS_COLOR(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_INCREASING_PROGRESS(PS_IN In)
+{
+	PS_OUT Out = (PS_OUT) 0;
+
+	float4 vGaugeColor = g_HPGaugeTexture.Sample(LinearSampler, In.vTexUV); // 게이지 바 Texture
+	float4 vBackColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV); // Background Texture
+
+	if (vGaugeColor.a < 0.3f)
+		discard;
+	if (vBackColor.a < 0.3f)
+		discard;
+
+	if (g_LerpHP / g_MaxHP > In.vTexUV.x) // 현재 체력과 최대 체력의 비에 따라 UV좌표가 잘린다.
+	{
+		Out.vColor = vBackColor;
+		return Out;
+	}
+
+	if (g_CurrentHP / g_MaxHP <= In.vTexUV.x)
+	{
+		Out.vColor = vGaugeColor;
+	}
+
+	Out.vColor = lerp(vBackColor, vGaugeColor, vGaugeColor.a);
+
+	return Out;
+}
+
+PS_OUT PS_QUARTER_PROGRESS(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0; // 초기화
+
+	float4 vGaugeColor = g_HPGaugeTexture.Sample(LinearSampler, In.vTexUV); // 게이지 바 Texture
+	float4 vBackColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV); // Background Texture
+
+	// 여기까지 마스크를 씌운 상태
+
+	float2 vDir = In.vTexUV - float2(0.5f, 0.5f); // float2(0.5f, 0.5f)는 중점이다.
+	vDir = normalize(vDir); // 방향벡터 Normalize
+	float2 vUpDir = float2(0.0f, sign(vDir.x));
+	vUpDir = normalize(vUpDir);
+
+	float fDot = dot(vUpDir, vDir); // 두 벡터를 내적한다.
+	float fDotRatio = g_Ratio;
+
+	// 방향벡터가 음수인 경우, 비교할 기준 벡터의 방향은 위
+	if (vDir.x < 0.f)
+	{
+		fDotRatio -= 0.5f;
+	}
+
+	fDotRatio = fDotRatio * 4.f - 1.f;
+
+//	if (fDotRatio < fDot)
+//	{
+//		Out.vColor.a = 0.f;
+//	}
+
+	return Out;
+}
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass // 0
@@ -922,4 +983,30 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_VERTICAL_PROGRESS_COLOR();
     }
+
+	pass IncreasingProgress // 24
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		HullShader = NULL;
+		DomainShader = NULL;
+		PixelShader = compile ps_5_0 PS_INCREASING_PROGRESS();
+	}
+
+	pass QuarterGaugeProgress // 25
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		HullShader = NULL;
+		DomainShader = NULL;
+		PixelShader = compile ps_5_0 PS_QUARTER_PROGRESS();
+	}
 }

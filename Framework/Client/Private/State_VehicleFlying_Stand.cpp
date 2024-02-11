@@ -87,6 +87,9 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
     {
         CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_MUCKCLOUD);
         CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_MUCKCLOUD);
+        GI->Stop_Sound(CHANNELID::SOUND_UI);
+        GI->Play_Sound(TEXT("UI_Fx_Comm_Start_Skill_Imajinn_2.mp3"), CHANNELID::SOUND_UI,
+            GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
         return;
     }
 //    if (KEY_TAP(KEY::NUM_2))
@@ -95,18 +98,27 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
 //
 //        CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP2);
 //        CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP2);
+//        GI->Stop_Sound(CHANNELID::SOUND_UI);
+//        GI->Play_Sound(TEXT("UI_Fx_Comm_Start_Skill_Imajinn_2.mp3"), CHANNELID::SOUND_UI,
+//        GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 //        return;
 //    }
     if (KEY_TAP(KEY::NUM_3))
     {
         CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_GUIDED_MISSILE);
         CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_GUIDED_MISSILE);
+        GI->Stop_Sound(CHANNELID::SOUND_UI);
+        GI->Play_Sound(TEXT("UI_Fx_Comm_Start_Skill_Imajinn_2.mp3"), CHANNELID::SOUND_UI,
+            GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
         return;
     }
     if (KEY_TAP(KEY::R))
     {
         CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_BURST);
         CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_BURST);
+        GI->Stop_Sound(CHANNELID::SOUND_UI);
+        GI->Play_Sound(TEXT("UI_Fx_Comm_Start_Skill_Imajinn_2.mp3"), CHANNELID::SOUND_UI,
+            GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
         return;
     }
 

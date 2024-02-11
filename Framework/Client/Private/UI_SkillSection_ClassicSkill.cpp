@@ -91,6 +91,7 @@ void CUI_SkillSection_ClassicSkill::Tick(_float fTimeDelta)
 			//m_fCoolTime -= fTimeDelta;
 			m_fCoolTime = m_fOriginCoolTime - (m_pSkill->Get_CurrCoolTime());
 			m_iPass = 6;
+//			Is_Skill_Usable();
 
 			if (m_fCoolTime <= 0.f)
 			{
@@ -257,6 +258,34 @@ HRESULT CUI_SkillSection_ClassicSkill::Bind_ShaderResources()
 	}
 
 	return S_OK;
+}
+
+void CUI_SkillSection_ClassicSkill::Is_Skill_Usable()
+{
+	if (0 == m_iTextureIndex || 3 == m_iTextureIndex || 6 == m_iTextureIndex)
+	{
+		if (0.f < m_pSkill->Get_CurrCoolTime() && m_pSkill->Get_CurrCoolTime() < m_pSkill->Get_CoolTime())
+		{
+			if (KEY_TAP(KEY::NUM_1))
+			{
+				CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
+			}
+		}
+	}
+	else if (1 == m_iTextureIndex || 4 == m_iTextureIndex || 7 == m_iTextureIndex)
+	{
+		if (KEY_TAP(KEY::NUM_2))
+		{
+			CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
+		}
+	}
+	else if (2 == m_iTextureIndex || 5 == m_iTextureIndex || 8 == m_iTextureIndex)
+	{
+		if (KEY_TAP(KEY::NUM_3))
+		{
+			CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
+		}
+	}
 }
 
 void CUI_SkillSection_ClassicSkill::Key_Input(_float fTimeDelta)

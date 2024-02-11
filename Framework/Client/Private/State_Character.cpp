@@ -1332,16 +1332,12 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_ACANE_BARRIER);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(0);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_PERFECT_BLADE);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ClassSkillSlot(0);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			
 			break;
@@ -1351,16 +1347,12 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_FLASH_HEAL);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(0);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_BURSTCALL);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ClassSkillSlot(0);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			
 			break;
@@ -1370,16 +1362,12 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_FRENGE_CHARGE);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(0);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_WHEELWIND);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ClassSkillSlot(0);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			
 			break;
@@ -1404,16 +1392,12 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_FROZEN_STORM);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(1);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_SIPOHONINGLUNGE);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ClassSkillSlot(1);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			break;
 		case CHARACTER_TYPE::ENGINEER:
@@ -1422,16 +1406,12 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_TIMELAB);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(1);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_ELEMENTAL_BLAST);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ClassSkillSlot(1);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			break;
 		case CHARACTER_TYPE::DESTROYER:
@@ -1440,16 +1420,12 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_BATTLE_CRY);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(1);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_BRUTALSTRIKE);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ClassSkillSlot(1);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			break;
 		}
@@ -1473,16 +1449,12 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_SWORD_TEMPEST);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(2);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_SPINNING_ASSAULT);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ClassSkillSlot(2);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			
 			break;
@@ -1492,18 +1464,13 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_HEALINGTREE);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(2);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_EXPLOSIONSHOT);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ClassSkillSlot(2);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
-			
 			break;
 		case CHARACTER_TYPE::DESTROYER:
 			if (KEY_HOLD(KEY::SHIFT))
@@ -1511,16 +1478,12 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_IGNORE_PAIN);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(2);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_LEAFSLAM);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ClassSkillSlot(2);
-				else
-					CUI_Manager::GetInstance()->OnOff_SkillAnnounce(true);
 			}
 			
 			break;

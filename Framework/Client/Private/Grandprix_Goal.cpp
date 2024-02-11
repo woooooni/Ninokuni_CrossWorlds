@@ -35,9 +35,9 @@ HRESULT CGrandprix_Goal::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pTransformCom->Set_Scale(Vec3(30.f, 30.f, 30.f));
-	//m_pTransformCom->Set_Position(Vec4(-0.5f, 111.5f, 281.f, 1.f));
-	//m_pTransformCom->Set_Position(Vec4(-0.5f, 111.5f, 271.f, 1.f));
 	m_pTransformCom->Set_Position(Vec4(-0.5f, 111.5f, 288.f, 1.f));
+
+	m_vBloomPower = _float3(1.f, 1.f, 1.f);
 
 	return S_OK;
 }
@@ -220,6 +220,7 @@ void CGrandprix_Goal::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pDissoveTexture);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pTransformCom);

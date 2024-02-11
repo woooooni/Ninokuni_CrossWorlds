@@ -557,6 +557,8 @@ void CVehicle_Flying_EnemyBiplane::On_Damaged(const COLLISION_INFO& tInfo)
 
 	if (0.f >= m_tStat.fCurHP)
 	{
+		// 엔지니어가 죽으면 Grandprix Goal이 활성화된다.
+		CGrandprix_Manager::GetInstance()->Show_GoalObject();
 		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK);
 		return;
 	}

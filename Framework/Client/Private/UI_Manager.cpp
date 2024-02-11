@@ -84,6 +84,7 @@
 #include "UI_Emoticon_Button.h"
 #include "UI_BtnChangeCamera.h"
 #include "UI_Tutorial_Window.h"
+#include "UI_Stellia_GaugeBar.h"
 #include "UI_Inventory_TabBtn.h"
 #include "UI_Costume_ItemSlot.h"
 #include "UI_Loading_MainLogo.h"
@@ -100,6 +101,7 @@
 #include "UI_Setting_BtnVolume.h"
 #include "UI_Default_BackStars.h"
 #include "UI_Costume_ChangeBtn.h"
+#include "UI_Stellia_DamageBar.h"
 #include "UI_InGame_Setting_Tab.h"
 #include "UI_SkillSection_Frame.h"
 #include "UI_Default_Background.h"
@@ -8965,6 +8967,12 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Stellia_Timer"),
 		CUI_Stellia_Timer::Create(m_pDevice, m_pContext), LAYER_UI))) // 원형만 생성한다
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Stellia_DamageBar"),
+		CUI_Stellia_DamageBar::Create(m_pDevice, m_pContext), LAYER_UI))) // 원형만 생성한다
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Stellia_GaugeBar"),
+		CUI_Stellia_GaugeBar::Create(m_pDevice, m_pContext), LAYER_UI))) // 원형만 생성한다
 		return E_FAIL;
 
 	return S_OK;

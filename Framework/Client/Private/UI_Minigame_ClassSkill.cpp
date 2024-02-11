@@ -126,9 +126,6 @@ void CUI_Minigame_ClassSkill::LateTick(_float fTimeDelta)
 		if (nullptr != m_pFrame)
 			m_pFrame->LateTick(fTimeDelta);
 
-//		if (0 > m_iTextureIndex)
-//			return;
-
 		if (m_bClicked)
 		{
 			if (_int(m_fCoolTime) + 1 > 0)
@@ -143,19 +140,36 @@ void CUI_Minigame_ClassSkill::LateTick(_float fTimeDelta)
 
 				if (iTemp < 10)
 				{
-//					// Outline
-//					TextDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
-//					TextDesc.vPosition = _float2(m_vTextPosition.x + m_vOffsetX, m_vTextPosition.y);
-//					m_pRendererCom->Add_Text(TextDesc);
+					_float2 vPos = _float2(m_vTextPosition.x + m_vOffsetX, m_vTextPosition.y);
+
+					// Outline
+					TextDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+					TextDesc.vPosition = _float2(vPos.x - 1.f, vPos.y);
+					m_pRendererCom->Add_Text(TextDesc);
+					TextDesc.vPosition = _float2(vPos.x + 1.f, vPos.y);
+					m_pRendererCom->Add_Text(TextDesc);
+					TextDesc.vPosition = _float2(vPos.x, vPos.y - 1.f);
+					m_pRendererCom->Add_Text(TextDesc);
+					TextDesc.vPosition = _float2(vPos.x, vPos.y + 1.f);
+					m_pRendererCom->Add_Text(TextDesc);
 
 					// Original
 					TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-					TextDesc.vPosition = _float2(m_vTextPosition.x + m_vOffsetX, m_vTextPosition.y);
+					TextDesc.vPosition = vPos;
 					m_pRendererCom->Add_Text(TextDesc);
 				}
 				else
 				{
 					// Outline
+					TextDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+					TextDesc.vPosition = _float2(m_vTextPosition.x - 1.f, m_vTextPosition.y);
+					m_pRendererCom->Add_Text(TextDesc);
+					TextDesc.vPosition = _float2(m_vTextPosition.x + 1.f, m_vTextPosition.y);
+					m_pRendererCom->Add_Text(TextDesc);
+					TextDesc.vPosition = _float2(m_vTextPosition.x, m_vTextPosition.y - 1.f);
+					m_pRendererCom->Add_Text(TextDesc);
+					TextDesc.vPosition = _float2(m_vTextPosition.x, m_vTextPosition.y + 1.f);
+					m_pRendererCom->Add_Text(TextDesc);
 					
 					//Original
 					TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };

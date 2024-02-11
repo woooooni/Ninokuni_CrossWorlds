@@ -23,6 +23,11 @@ void CUI_Grandprix_Popup::Set_Active(_bool bActive)
 		m_fTimeAcc = 0.f;
 		m_fAlpha = 1.f;
 		m_bDisappear = false;
+
+		// Sound
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Result_Item_RandomEffect_Finish_1_St.mp3"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI)); 
 	}
 
 	m_bActive = bActive;
