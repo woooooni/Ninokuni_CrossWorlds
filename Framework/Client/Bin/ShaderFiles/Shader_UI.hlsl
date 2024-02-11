@@ -639,14 +639,20 @@ PS_OUT PS_INCREASING_PROGRESS(PS_IN In)
 
 PS_OUT PS_QUARTER_PROGRESS(PS_IN In)
 {
-	PS_OUT		Out = (PS_OUT)0; // 초기화
+	PS_OUT Out = (PS_OUT)0; // 초기화
 
 	float4 vGaugeColor = g_HPGaugeTexture.Sample(LinearSampler, In.vTexUV); // 게이지 바 Texture
 	float4 vBackColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV); // Background Texture
 
-	// 여기까지 마스크를 씌운 상태
+	// 초기에는 BackColor로 그린다.
+	Out.vColor = saturate(vGaugeColor);
+	Out.vColor.a *= g_Alpha;
 
-	float2 vDir = In.vTexUV - float2(0.5f, 0.5f); // float2(0.5f, 0.5f)는 중점이다.
+	if (Out.vColor.a < 0.1f)
+		discard;
+
+	// 픽셀좌표와 중심점의 방향벡터를 구한다.
+	float2 vDir = In.vTexUV - float2(0.5f, 0.5f);
 	vDir = normalize(vDir); // 방향벡터 Normalize
 	float2 vUpDir = float2(0.0f, sign(vDir.x));
 	vUpDir = normalize(vUpDir);
@@ -654,7 +660,7 @@ PS_OUT PS_QUARTER_PROGRESS(PS_IN In)
 	float fDot = dot(vUpDir, vDir); // 두 벡터를 내적한다.
 	float fDotRatio = g_Ratio;
 
-	// 방향벡터가 음수인 경우, 비교할 기준 벡터의 방향은 위
+	// 방향 벡터가 음수라면, 0.5를 뺀다.
 	if (vDir.x < 0.f)
 	{
 		fDotRatio -= 0.5f;
@@ -662,10 +668,11 @@ PS_OUT PS_QUARTER_PROGRESS(PS_IN In)
 
 	fDotRatio = fDotRatio * 4.f - 1.f;
 
-//	if (fDotRatio < fDot)
-//	{
-//		Out.vColor.a = 0.f;
-//	}
+	if (fDotRatio < fDot)
+	{
+		Out.vColor.rgb = vBackColor.rgb; //lerp(vBackColor.rgb, float3(0.0f, 0.0f, 0.0f), 0.5f);
+		Out.vColor.a = 1.0f;
+	}
 
 	return Out;
 }

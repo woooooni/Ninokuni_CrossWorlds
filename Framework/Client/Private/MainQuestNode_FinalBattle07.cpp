@@ -73,7 +73,7 @@ void CMainQuestNode_FinalBattle07::Start()
 		}
 	}
 
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_BOSS_KILL);
 
@@ -127,7 +127,7 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle07::Tick(const _float& fTimeDelta)
 
 				if (m_fTime >= m_fTalkChangeTime)
 				{
-					CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 2);
+					CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::BATTLE_DIALOG);
 					m_fTime = m_fTalkChangeTime - m_fTime;
 					m_iTalkIndex += 1;
 					m_bIsTalk = false;
@@ -145,7 +145,7 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle07::Tick(const _float& fTimeDelta)
 			CQuest_Manager::GetInstance()->Set_IsBossKill(false);
 
 			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 			dynamic_cast<CDreamMazeWitch_Npc*>(m_pWitch)->Set_IsFollowing(false);
 			dynamic_cast<CDreamMazeWitch_Npc*>(m_pWitch)->Set_IsBattle(false);
@@ -173,7 +173,7 @@ void CMainQuestNode_FinalBattle07::BossBattle_TalkEvent(const _float& fTimeDelta
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::BATTLE_DIALOG);
 				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
@@ -194,7 +194,7 @@ void CMainQuestNode_FinalBattle07::BossBattle_TalkEvent(const _float& fTimeDelta
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::BATTLE_DIALOG);
 				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
@@ -215,7 +215,7 @@ void CMainQuestNode_FinalBattle07::BossBattle_TalkEvent(const _float& fTimeDelta
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::BATTLE_DIALOG);
 				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
@@ -236,7 +236,7 @@ void CMainQuestNode_FinalBattle07::BossBattle_TalkEvent(const _float& fTimeDelta
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::BATTLE_DIALOG);
 				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
@@ -257,7 +257,7 @@ void CMainQuestNode_FinalBattle07::BossBattle_TalkEvent(const _float& fTimeDelta
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::BATTLE_DIALOG);
 				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
@@ -278,7 +278,7 @@ void CMainQuestNode_FinalBattle07::BossBattle_TalkEvent(const _float& fTimeDelta
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::BATTLE_DIALOG);
 				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
@@ -299,7 +299,7 @@ void CMainQuestNode_FinalBattle07::BossBattle_TalkEvent(const _float& fTimeDelta
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::BATTLE_DIALOG);
 				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
@@ -320,7 +320,7 @@ void CMainQuestNode_FinalBattle07::BossBattle_TalkEvent(const _float& fTimeDelta
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::BATTLE_DIALOG);
 				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
@@ -341,7 +341,7 @@ void CMainQuestNode_FinalBattle07::BossBattle_TalkEvent(const _float& fTimeDelta
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::BATTLE_DIALOG);
 				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
@@ -362,7 +362,7 @@ void CMainQuestNode_FinalBattle07::BossBattle_TalkEvent(const _float& fTimeDelta
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::BATTLE_DIALOG);
 				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();

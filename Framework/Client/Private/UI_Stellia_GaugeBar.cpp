@@ -29,7 +29,8 @@ HRESULT CUI_Stellia_GaugeBar::Initialize(void* pArg)
 	UIDesc.fCX = 200.f;
 	UIDesc.fCY = 200.f;
 	UIDesc.fX = 1200.f;
-	UIDesc.fY = 650.f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+//	UIDesc.fY = 650.f;
 	if (FAILED(__super::Initialize(&UIDesc)))
 		return E_FAIL;
 
@@ -152,7 +153,8 @@ HRESULT CUI_Stellia_GaugeBar::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	_float fRatio = _float(m_iCurGauge / m_iMaxGauge);
+
+	_float fRatio = _float(m_iMaxGauge - m_iCurGauge) / _float(m_iMaxGauge); // 값이 0이면 원 전체가 그려진다.
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Ratio", &fRatio, sizeof(_float))))
 		return E_FAIL;
 

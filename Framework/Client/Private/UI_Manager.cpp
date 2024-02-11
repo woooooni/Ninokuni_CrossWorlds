@@ -915,7 +915,7 @@ HRESULT CUI_Manager::Ready_Loadings()
 	//ProgressBar
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 	_float fOffset = 40.f;
-	UIDesc.fCX = 1493.f;
+	UIDesc.fCX = 1500.f;
 	UIDesc.fCY = 40.f;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
 	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY + fOffset);

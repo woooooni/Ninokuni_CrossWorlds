@@ -84,7 +84,7 @@ CBTNode::NODE_STATE CMainQuestNode_WitchForest02::Tick(const _float& fTimeDelta)
 		Safe_Delete_Array(m_szpOwner);
 		Safe_Delete_Array(m_szpTalk);
 
-		CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+		CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 		/* ÄÆ½Å ½ÃÀÛ */
 		CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));

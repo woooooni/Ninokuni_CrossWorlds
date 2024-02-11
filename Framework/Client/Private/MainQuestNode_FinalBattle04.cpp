@@ -23,7 +23,7 @@ HRESULT CMainQuestNode_FinalBattle04::Initialize()
 
 void CMainQuestNode_FinalBattle04::Start()
 {
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Stellia"), nullptr, &m_pStellia)))
 	{
