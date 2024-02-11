@@ -67,13 +67,19 @@ void CUI_Stellia_Timer::Tick(_float fTimeDelta)
 		if (0.f <= m_fCurSecond)
 		{
 			if (0.f == m_fCurSecond)
+			{
 				Set_Active(false);
+				Set_Dead(true);
+			}
 
 			m_fCurSecond -= fTimeDelta;
 			// 보스의 시간을 받아오는 방식이 더 좋음.
 		}
 		else
+		{
 			Set_Active(false);
+			Set_Dead(true);
+		}
 
 		__super::Tick(fTimeDelta);
 	}

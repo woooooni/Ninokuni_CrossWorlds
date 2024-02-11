@@ -20,8 +20,8 @@ void CUI_Announced::Set_Active(_bool bActive, _int iMagicNum)
 {
 	if (bActive)
 	{
-		if (iMagicNum == m_iTextureIndex)
-			return;
+//		if (iMagicNum == m_iTextureIndex)
+//			return;
 
 		m_iTextureIndex = iMagicNum;
 		m_fAlpha = 0.7f;

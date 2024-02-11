@@ -227,17 +227,38 @@ void CUI_BtnChangeCamera::Update_CameraMode()
 	if (nullptr == pCameraFollow)
 	{
 		/* 3 : 팔로우 카메라가 아닌 다른 카메라들 중 하나인 상태*/
-		m_iTextureIndex = 2;
+		if (m_iTextureIndex != 2)
+		{
+			m_iTextureIndex = 2;
+
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_MainHud_Btn_Camera_1.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+		}
 	}
 	else if (false == pCameraFollow->Is_WideView())
 	{
 		/* 1 : 팔로우 카메라 - 디폴트 뷰 */
-		m_iTextureIndex = 0;
+		if (m_iTextureIndex != 0)
+		{
+			m_iTextureIndex = 0;
+
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_MainHud_Btn_Camera_1.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+		}
 	}
 	else
 	{
 		/* 2 : 팔로우 카메라 - 와이드뷰 뷰 */
-		m_iTextureIndex = 1;
+		if (m_iTextureIndex != 1)
+		{
+			m_iTextureIndex = 1;
+
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_MainHud_Btn_Camera_1.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+		}
 	}
 
 }

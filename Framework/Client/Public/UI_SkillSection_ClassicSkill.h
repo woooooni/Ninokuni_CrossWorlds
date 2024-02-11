@@ -57,6 +57,7 @@ private:
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
+	void Is_Skill_Usable();
 
 private:
 	void Key_Input(_float fTimeDelta);

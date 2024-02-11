@@ -37,6 +37,7 @@ private:
 	CRenderer* m_pRendererCom = { nullptr };
 	CTransform* m_pTransformCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
+	CTexture* m_pDissoveTexture = { nullptr };
 
 private:
 	_float m_fSpeed = { 0.f };
