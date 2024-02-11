@@ -25,6 +25,8 @@ private:
 	_bool		 m_bIsStart = false;
 	_bool		 m_bBGMStart = false;
 
+	_bool		 m_bStartCutScene = false;
+	_bool		m_bFinishCutScene = false;
 public:
 	static CMainQuestNode_Invasion02* Create();
 	virtual void Free() override;
