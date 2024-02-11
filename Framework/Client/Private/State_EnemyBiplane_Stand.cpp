@@ -149,10 +149,6 @@ void CState_EnemyBiplane_Stand::Tick_State(_float fTimeDelta)
         m_pFollowCamera->Set_TargetObj(m_pTarget);
         m_pFollowCamera->Set_LookAtObj(m_pEngineerPlane);
     }
-    else
-    {
-        _int i = 0;
-    }
 }
 
 void CState_EnemyBiplane_Stand::Exit_State()
@@ -163,7 +159,7 @@ void CState_EnemyBiplane_Stand::Exit_State()
 
 void CState_EnemyBiplane_Stand::Shoot_Normal(_float fTimeDelta)
 {
-    m_fShootTime = 0.5f;
+    m_fShootTime = 0.2f;
     if (m_iShootCounts[SHOOT_STATE::NORMAL] > 10)
     {
         // m_eShootState = SHOOT_STATE(GI->RandomInt(SHOOT_STATE::PATTERN_0, SHOOT_STATE::PATTERN_2));
@@ -241,7 +237,7 @@ void CState_EnemyBiplane_Stand::Shoot_Normal(_float fTimeDelta)
 
 void CState_EnemyBiplane_Stand::Shoot_Pattern_0(_float fTimeDelta)
 {
-    m_fShootTime = 0.00001f;
+    m_fShootTime = 0.1f;
 
     if (m_iShootCounts[SHOOT_STATE::PATTERN_0] >= 360)
     {
@@ -269,7 +265,7 @@ void CState_EnemyBiplane_Stand::Shoot_Pattern_0(_float fTimeDelta)
 
         pBulletTransform->Set_Position(pBulletTransform->Get_Position() + XMVectorSet(0.f, 1.5f + i * 4.f, 0.f, 0.f));
 
-        pBulletTransform->Rotation_Acc(XMVector3Normalize(pBulletTransform->Get_Up()), XMConvertToRadians(m_iShootCounts[SHOOT_STATE::PATTERN_0]));
+        pBulletTransform->Rotation_Acc(XMVector3Normalize(pBulletTransform->Get_Up()), XMConvertToRadians(m_iShootCounts[SHOOT_STATE::PATTERN_0]) * 3.f);
         pBullet->Set_Speed(40.f);
 
         if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, pBullet)))
@@ -283,7 +279,7 @@ void CState_EnemyBiplane_Stand::Shoot_Pattern_0(_float fTimeDelta)
 
 void CState_EnemyBiplane_Stand::Shoot_Pattern_1(_float fTimeDelta)
 {
-    m_fShootTime = 0.00001f;
+    m_fShootTime = 0.1f;
 
     if (m_iShootCounts[SHOOT_STATE::PATTERN_1] >= 360)
     {
@@ -311,7 +307,7 @@ void CState_EnemyBiplane_Stand::Shoot_Pattern_1(_float fTimeDelta)
 
         pBulletTransform->Set_Position(pBulletTransform->Get_Position() + XMVectorSet(i * 4.f, 1.5f, 0.f, 0.f));
 
-        pBulletTransform->Rotation_Acc(XMVector3Normalize(pBulletTransform->Get_Right()), XMConvertToRadians(m_iShootCounts[SHOOT_STATE::PATTERN_1]));
+        pBulletTransform->Rotation_Acc(XMVector3Normalize(pBulletTransform->Get_Right()), XMConvertToRadians(m_iShootCounts[SHOOT_STATE::PATTERN_1]) * 3.f);
         pBullet->Set_Speed(40.f);
 
         if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, pBullet)))

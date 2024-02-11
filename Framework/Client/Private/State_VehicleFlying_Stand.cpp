@@ -183,7 +183,8 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
             Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
             vVelocity.y = 0.f;
 
-            if (vVelocity.Length() >= 15.f) // 20.f -> 15.f 수정
+            _float fDecisionSpeed = 15.f;
+            if (vVelocity.Length() >= fDecisionSpeed) // 20.f -> 15.f 수정
             {
                 Vec3 vVelocityDir = XMVector3Normalize(m_pTransformCom->Get_Look());
                 vVelocityDir.y = 0.8f;
@@ -194,7 +195,15 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
             {
                 Vec3 vVelocityDir = m_pTransformCom->Get_Look();
                 vVelocityDir.y = 0.f;
-                m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), 200.f * fTimeDelta, false);
+
+                _float fAddSpeed = 0.f;
+#ifdef _DEBUG
+                fAddSpeed = 200.f;
+#endif // _DEBUG
+#ifndef _DEBUG
+                fAddSpeed = 400.f;
+#endif // !_DEBUG
+                m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), fAddSpeed * fTimeDelta, false);
                 m_pRigidBodyCom->Set_Ground(false);
                 m_pRigidBodyCom->Set_Use_Gravity(true);
             }
@@ -305,7 +314,7 @@ void CState_VehicleFlying_Stand::Shoot()
 
     // Right Side Bullet
 
-    CGameObject* pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+    CGameObject* pRightBullet = CPool<CCharacter_Biplane_Bullet>::Get_Obj();
 
     if (nullptr == pRightBullet)
         pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
@@ -335,6 +344,8 @@ void CState_VehicleFlying_Stand::Shoot()
 
     if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pRightBullet)))
         MSG_BOX("Generate Bullet Failed.");
+
+    GI->Play_Sound(L"Pc_Rifle_Shot_Combo_Basic_1.mp3", CHANNELID::SOUND_ATTACK, 0.5f, true);
 
     m_bShoot = false;
 }

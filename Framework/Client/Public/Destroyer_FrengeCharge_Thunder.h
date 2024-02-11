@@ -26,7 +26,7 @@ public:
 
 private:
 	_float m_fAccOnOff = 0.f;
-	_float m_fOnOffTime = 0.1f;
+	_float m_fOnOffTime = 1.f;
 
 private:
 	_bool m_bDecal   = false;

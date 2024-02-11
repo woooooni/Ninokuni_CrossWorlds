@@ -13,6 +13,9 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Riding_Manager.h"
+#include "Vehicle_Flying_Biplane.h"
+
 CEnemy_GuidedMissile::CEnemy_GuidedMissile(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CVehicleFlying_Projectile(pDevice, pContext, L"Enemy_GuidedMissile", OBJ_TYPE::OBJ_GRANDPRIX_ENEMY_PROJECTILE)
 {
@@ -48,11 +51,7 @@ HRESULT CEnemy_GuidedMissile::Initialize(void* pArg)
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
 	m_fDeletionTime = 4.f;
-	m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-	m_pTargetTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform();
-
-	if (nullptr == m_pTarget || nullptr == m_pTargetTransform)
-		return E_FAIL;
+	
 
 
 	return S_OK;
@@ -62,11 +61,18 @@ void CEnemy_GuidedMissile::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
+	if (nullptr == m_pTarget)
+	{
+		m_pTarget = CRiding_Manager::GetInstance()->Get_Character_Biplane();
+		m_pTargetTransform = m_pTarget->Get_Component_Transform();
+	}
+
 	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Smoke"), this);	
 
 	if (m_fAccDeletionTime >= 0.5f)
 	{
-		Vec3 vDir = m_pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+		Vec3 vDir = m_pTargetTransform->Get_Position() + XMVectorSet(0.f, 1.5f, 0.f, 0.f) - m_pTransformCom->Get_Position();
+
 		if (vDir.Length() > 0.001f)
 		{
 			Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
@@ -143,10 +149,6 @@ void CEnemy_GuidedMissile::Collision_Enter(const COLLISION_INFO& tInfo)
 	__super::Collision_Enter(tInfo);
 	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER) && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
-		wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
-		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
-		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-
 		Set_Dead(true);
 
 		if (false == CPool<CEnemy_GuidedMissile>::Return_Obj(this))

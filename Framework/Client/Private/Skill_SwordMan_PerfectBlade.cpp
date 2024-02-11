@@ -3,6 +3,7 @@
 #include "..\Public\Skill_SwordMan_PerfectBlade.h"
 
 CSkill_SwordMan_PerfectBlade::CSkill_SwordMan_PerfectBlade()
+	: CSkill()
 {
 	
 }

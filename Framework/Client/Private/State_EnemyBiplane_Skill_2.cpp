@@ -12,6 +12,9 @@
 
 #include "Vehicle_Flying_EnemyBiplane.h"
 
+#include "Pool.h"
+#include "Enemy_Biplane_Feather.h"
+
 CState_EnemyBiplane_Skill_2::CState_EnemyBiplane_Skill_2(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
 {
@@ -29,6 +32,10 @@ HRESULT CState_EnemyBiplane_Skill_2::Initialize(const list<wstring>& AnimationLi
         return E_FAIL;
 
     m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+    m_pFollowCamera = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+
+    if (nullptr == m_pFollowCamera)
+        return E_FAIL;
 
     return S_OK;
 }
@@ -41,7 +48,15 @@ void CState_EnemyBiplane_Skill_2::Enter_State(void* pArg)
 
 void CState_EnemyBiplane_Skill_2::Tick_State(_float fTimeDelta)
 {
-    // m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND);
+    if ((nullptr != m_pFollowCamera->Get_LookAtObj()) && (m_pFollowCamera->Get_LookAtObj()->Get_ObjectType() != OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER_PROJECTILE))
+    {
+        m_pFollowCamera->Set_TargetObj(m_pTarget);
+        m_pFollowCamera->Set_LookAtObj(m_pEngineerPlane);
+    }
+
+    // ±êÅÐ ¶³±¸±â.
+    Shoot_Feathers();
+    m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND);
 }
 
 void CState_EnemyBiplane_Skill_2::Exit_State()
@@ -49,6 +64,37 @@ void CState_EnemyBiplane_Skill_2::Exit_State()
     
 }
 
+
+void CState_EnemyBiplane_Skill_2::Shoot_Feathers()
+{
+    for (_int i = -5; i <= 5; ++i)
+    {
+        for (_int j = -5; j <= 5; ++j)
+        {
+            CEnemy_Biplane_Feather* pFeather = CPool<CEnemy_Biplane_Feather>::Get_Obj();
+
+            CEnemy_Biplane_Feather::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
+            ProjectileDesc.pOwner = m_pEngineerPlane;
+
+            if (nullptr == pFeather)
+                pFeather = dynamic_cast<CEnemy_Biplane_Feather*>(GI->Clone_GameObject(L"Prototype_GameObject_Enemy_Biplane_Feather", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc));
+
+            CTransform* pFeatherTransform = pFeather->Get_Component<CTransform>(L"Com_Transform");
+            Vec3 vScale = pFeatherTransform->Get_Scale();
+
+            pFeatherTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+            pFeatherTransform->Set_Scale(vScale);
+
+            Vec4 vOffsetPos = pFeatherTransform->Get_RelativeOffset(
+                Vec4(i * 5.f, 10.f + GI->RandomInt(-2, 5), j * 10.f, 1.f));
+            pFeatherTransform->Set_Position(Vec4(pFeatherTransform->Get_Position()) + vOffsetPos);
+
+            if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, pFeather)))
+                MSG_BOX("Generate Feather Failed.");
+        }
+        
+    }
+}
 
 CState_EnemyBiplane_Skill_2* CState_EnemyBiplane_Skill_2::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {

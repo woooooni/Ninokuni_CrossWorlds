@@ -6,6 +6,7 @@
 #include "Particle_Manager.h"
 #include "Character.h"
 #include "Effect.h"
+#include "Camera_Group.h"
 
 CEngineer_Burst_CannonBomb::CEngineer_Burst_CannonBomb(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CCharacter_Projectile(pDevice, pContext, L"Engineer_Burst_CannonBomb")
@@ -148,10 +149,6 @@ void CEngineer_Burst_CannonBomb::Collision_Enter(const COLLISION_INFO& tInfo)
 			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Engineer_Skill_Destruction_Boom"), m_pTransformCom->Get_WorldMatrix(), tInfo.pOther);
 			m_bCollisionEffect = true;
 		}
-
-		wstring strSoundKey = L"Ele_Impact_Fire_" + to_wstring(GI->RandomInt(4, 8)) + L".mp3";
-		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
-
 		Reserve_Dead(true);
 		m_fAccDeletionTime = 0.f;
 
@@ -167,6 +164,10 @@ void CEngineer_Burst_CannonBomb::Collision_Enter(const COLLISION_INFO& tInfo)
 			Safe_Release(m_pSpiralEffect);
 			m_pSpiralEffect = nullptr;
 		}
+		
+		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.3f, 19.f, 0.3f);
+		wstring strSoundKey = L"Ele_Impact_Fire_" + to_wstring(GI->RandomInt(4, 8)) + L".mp3";
+		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
 	}
 	
 }

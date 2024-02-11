@@ -10,8 +10,11 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Vehicle_Flying_Biplane.h"
 #include "Vehicle_Flying_EnemyBiplane.h"
 #include "Grandprix_Manager.h"
+
+#include "Riding_Manager.h"
 
 CState_EnemyBiplane_Finish_Attack::CState_EnemyBiplane_Finish_Attack(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
@@ -29,13 +32,15 @@ HRESULT CState_EnemyBiplane_Finish_Attack::Initialize(const list<wstring>& Anima
     if (nullptr == m_pVehicle || nullptr == m_pEngineerPlane)
         return E_FAIL;
 
-    m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-
-    /*m_pComputeShader = CShader::Create(GI->Get_Device(), GI->Get_Context(), L"../Bin/ShaderFiles/")
     
-    GI->Get_Device()->create*/
 
+    // m_pComputeShader = CShader::Create(GI->Get_Device(), GI->Get_Context(), L"../Bin/ShaderFiles/")
     
+    /* GI->Get_Device()->create */
+    
+
+
+
 
     return S_OK;
 }
@@ -45,6 +50,11 @@ void CState_EnemyBiplane_Finish_Attack::Enter_State(void* pArg)
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
     m_bUpdate = false;
+
+    if (nullptr == m_pTarget)
+    {
+        m_pTarget = CRiding_Manager::GetInstance()->Get_Character_Biplane();
+    }
 }
 
 void CState_EnemyBiplane_Finish_Attack::Tick_State(_float fTimeDelta)

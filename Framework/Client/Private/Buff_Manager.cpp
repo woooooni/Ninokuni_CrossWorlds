@@ -128,12 +128,22 @@ void CBuff_Manager::Use_Buff(BUFF_TYPE eBuffType)
 
 			Vec4 vPosition = pCharacter->Get_CharacterTransformCom()->Get_Position();
 
-			vPosition.z += GI->RandomFloat(-5.f, 5.f);
-			vPosition.x += GI->RandomFloat(-5.f, 5.f);
+			vPosition.z += GI->RandomInt(-5, 5);
+			vPosition.x += GI->RandomInt(-5, 5);
 
 			pTransform->Set_State(CTransform::STATE_POSITION, vPosition);
 		}
 			
+	}
+
+	else if (ENGINEER_HEALINGTREE == eBuffType)
+	{
+		for (_uint i = 0; i < CHARACTER_TYPE::CHARACTER_END; ++i)
+		{
+			CCharacter* pCharacter = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE(i));
+			if (nullptr != pCharacter)
+				pCharacter->Increase_HP(100);
+		}
 	}
 
 }

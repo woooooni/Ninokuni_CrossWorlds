@@ -299,6 +299,9 @@ void CDefence_Tower::Look_For_Target(_bool bEnemy)
 
 void CDefence_Tower::On_Damaged(const COLLISION_INFO& tInfo)
 {
+	if (true == m_bReserveDead || true == m_bDead || m_pStateCom->Get_CurrState() == CDefence_Tower::DEFENCE_TOWER_STATE::TOWER_STATE_DEAD)
+		return;
+
 	CMonster* pMonster = nullptr;
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER_PROJECTILE)
 	{

@@ -32,6 +32,10 @@ HRESULT CState_EnemyBiplane_Skill_0::Initialize(const list<wstring>& AnimationLi
         return E_FAIL;
 
     m_pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+    m_pFollowCamera = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+
+    if (nullptr == m_pFollowCamera)
+        return E_FAIL;
 
     return S_OK;
 }
@@ -46,6 +50,7 @@ void CState_EnemyBiplane_Skill_0::Enter_State(void* pArg)
     
     // Ä«¸Þ¶ó..?
     m_pEngineerPlane->Set_Infinite(true, 999.f);
+    
 }
 
 void CState_EnemyBiplane_Skill_0::Tick_State(_float fTimeDelta)
@@ -66,6 +71,12 @@ void CState_EnemyBiplane_Skill_0::Tick_State(_float fTimeDelta)
             m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_STAND);
             return;
         }
+    }
+
+    if ((nullptr != m_pFollowCamera->Get_LookAtObj()) && (m_pFollowCamera->Get_LookAtObj()->Get_ObjectType() != OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER_PROJECTILE))
+    {
+        m_pFollowCamera->Set_TargetObj(m_pTarget);
+        m_pFollowCamera->Set_LookAtObj(m_pEngineerPlane);
     }
    
 }

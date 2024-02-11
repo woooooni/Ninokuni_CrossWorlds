@@ -13,10 +13,12 @@ void CS_ENGINEER_DEADSKILL(uint2 id : SV_DispatchThreadID)
     float2 coord = float2(id.x * inverseSize.x, id.y * inverseSize.y);
 
     
-    float4 vColor = g_IconTexture.Sample(PointSampler, coord);
+    float4 vColor = g_IconTexture.SampleLevel(PointSampler, coord, 0);
     
-    //if (vColor.r <= 0.f)
-    //    BufferOut[id] = 0;
+    if (vColor.r <= 0.f)
+        BufferOut[id.x * id.y / 64.f] = 0;
+    else
+        BufferOut[id.x * id.y / 64.f] = 1;
     
     
     //BufferOut[id] = vColor.r;

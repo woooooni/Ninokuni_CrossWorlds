@@ -128,6 +128,7 @@ HRESULT CBoss::Render()
 
 		if (m_bReserveDead)
 			iPassIndex = 2;
+
 		else if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 			iPassIndex = 0;
 		else

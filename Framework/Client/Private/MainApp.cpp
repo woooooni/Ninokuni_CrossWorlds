@@ -36,6 +36,7 @@
 #include "Character_Biplane_Bullet.h"
 #include "Enemy_Biplane_Bullet.h"
 #include "Enemy_GuidedMissile.h"
+#include "Enemy_Biplane_Feather.h"
 
 #ifdef _DEBUG
 // #include <vld.h>
@@ -576,7 +577,9 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		return E_FAIL;
 
 	
-
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_PixelArts"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/PixelArt/"), 0, true))))
+		return E_FAIL;
 	
 
 
@@ -1745,6 +1748,7 @@ void Client::CMainApp::Free()
 	CPool<CCharacter_Biplane_Bullet>::Free();
 	CPool<CEnemy_Biplane_Bullet>::Free();
 	CPool<CEnemy_GuidedMissile>::Free();
+	CPool<CEnemy_Biplane_Feather>::Free();
 
 	CRiding_Manager::GetInstance()->DestroyInstance();
 	CGrandprix_Manager::GetInstance()->DestroyInstance();

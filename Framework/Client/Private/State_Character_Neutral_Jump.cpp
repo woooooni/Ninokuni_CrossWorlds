@@ -39,6 +39,8 @@ void CState_Character_Neutral_Jump::Enter_State(void* pArg)
     m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vJumpDir), 10.f, true);
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 
+    wstring strSoundKey = L"Pc_Jump_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
+    GI->Play_Sound(strSoundKey, CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
 
     m_bGroundChange = false;
 }

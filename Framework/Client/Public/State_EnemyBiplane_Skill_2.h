@@ -28,6 +28,12 @@ private:
 	class CVehicle_Flying_EnemyBiplane* m_pEngineerPlane = { nullptr };
 	_float m_fMovingSpeed = { 5.f };
 
+private:
+	void Shoot_Feathers();
+
+private:
+	class CCamera_Follow* m_pFollowCamera = nullptr;
+
 
 public:
 	static CState_EnemyBiplane_Skill_2* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

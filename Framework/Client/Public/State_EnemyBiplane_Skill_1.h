@@ -34,6 +34,9 @@ private:
 private:
 	_int m_iShootBallCount = -2;
 
+private:
+	class CCamera_Follow* m_pFollowCamera = nullptr;
+
 public:
 	static CState_EnemyBiplane_Skill_1* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

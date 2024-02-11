@@ -117,7 +117,8 @@ public:
 
 	const _float& Get_CamDistance() const { return m_fCamDistance; }
 
-	
+	_float Get_ObjectTimeScale() { return m_fObjectTimeScale; }
+	void Set_ObjectTimeScale(_float fTimeScale) { m_fObjectTimeScale = fTimeScale; }
 
 
 public:
@@ -165,6 +166,7 @@ protected:
 
 	_bool				m_bEnable = false;
 	_bool				m_bIsQuestObject = false;
+
 protected:
 	_bool m_bNaviObject = false;
 
@@ -174,6 +176,9 @@ protected:
 
 protected:
 	_float3 m_vBloomPower = { 0.f, 0.f, 0.f };
+
+protected:
+	_float m_fObjectTimeScale = 1.f;
 
 
 protected:

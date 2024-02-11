@@ -3,6 +3,12 @@
 #include "GameInstance.h"
 #include "Grandprix_Manager.h"
 #include "UIMinigame_Manager.h"
+#include "UI_Manager.h"
+#include "UI_Fade.h"
+
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
 
 CGrandprix_Goal::CGrandprix_Goal(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext, L"Grandprix_Goal", LAYER_TYPE::LAYER_PROP)
@@ -140,8 +146,10 @@ void CGrandprix_Goal::Collision_Enter(const COLLISION_INFO& tInfo)
 	{
 		// 여기서 다시 퀘스트로 돌아간다.
 		
+		
 		// UI 복구, 남은 관련 클래스 Set Dead
 		CUIMinigame_Manager::GetInstance()->End_Grandprix();
+		Set_Dead(true);
 	}
 }
 

@@ -138,6 +138,11 @@ HRESULT CVehicleFlying_Projectile::Render_Instance(CShader* pInstancingShader, C
 
 void CVehicleFlying_Projectile::Set_Owner(CVehicle_Flying* pOwner)
 {
+	if (nullptr != m_pOwner)
+	{
+		Safe_Release(m_pOwner);
+		m_pOwner = nullptr;
+	}	
 	m_pOwner = pOwner;
 	Safe_AddRef(m_pOwner);
 }

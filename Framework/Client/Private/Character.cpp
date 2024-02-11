@@ -1223,8 +1223,8 @@ HRESULT CCharacter::Tag_In(Vec4 vInitializePosition)
 
 	if (LEVEL_TOOL != GI->Get_CurrentLevel())
 	{
-		CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(m_eCharacterType);
-		CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(m_eElemental);
+		CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(Get_CharacterType());
+		CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(Get_ElementalType());
 	}
 
 	return S_OK;
