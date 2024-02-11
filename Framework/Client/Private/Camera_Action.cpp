@@ -14,7 +14,6 @@
 
 #include "Utils.h"
 
-
 CCamera_Action::CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
 {
@@ -107,6 +106,9 @@ void CCamera_Action::Tick(_float fTimeDelta)
 			break;
 		case CCamera_Action::WITCH_AWAY:
 			Tick_Witch_Away(fTimeDelta);
+			break;
+		case CCamera_Action::TOWER_DEFENSE:
+			Tick_TowerDefense(fTimeDelta);
 			break;
 		default:
 			break;
@@ -256,10 +258,16 @@ Vec4 CCamera_Action::Get_LookAt()
 	{
 		return m_pTransformCom->Get_LookAt();
 	}
+	break;
+	case CAMERA_ACTION_TYPE::WITCH_AWAY:
+	{
+		return m_tActionWitchAwayDesc.vPervLookAt;
+	}
+	break;
 	default:
 		break;
 	}
-	return Vec4();
+	return m_pTransformCom->Get_LookAt();
 }
 
 HRESULT CCamera_Action::Start_Action_Lobby()
@@ -664,14 +672,16 @@ void CCamera_Action::Tick_Talk(_float fTimeDelta)
 
 HRESULT CCamera_Action::Start_Action_Witch_Away(CGameObject* pGameObject)
 {
+	m_bAction = true;
+
 	m_eCurActionType = CAMERA_ACTION_TYPE::WITCH_AWAY;
 
 	m_tActionWitchAwayDesc.pWitchObject = pGameObject;
-
-	m_tTargetOffset.vCurVec = { 0.f, 0.f, 0.f, 1.f };
-
-	m_tLookAtOffset.vCurVec = { 0.f, 0.f, 0.f, 1.f };
-
+	
+	m_tTargetOffset.vCurVec = { 0.f, 1.75f, 4.f, 1.f };
+	
+	m_tLookAtOffset.vCurVec = { -0.25f, 0.f, 0.f, 1.f };
+	
 	return S_OK;
 }
 
@@ -1162,11 +1172,17 @@ HRESULT CCamera_Action::Ready_Components()
 
 void CCamera_Action::Tick_Witch_Away(_float fTimeDelta)
 {
-	CModel* pWitchModel = m_tActionWitchRoarDesc.pWitchObject->Get_Component_Model();
-	CTransform* pWitchTransform = m_tActionWitchRoarDesc.pWitchObject->Get_Component_Transform();
+	CModel* pWitchModel = m_tActionWitchAwayDesc.pWitchObject->Get_Component_Model();
+	CTransform* pWitchTransform = m_tActionWitchAwayDesc.pWitchObject->Get_Component_Transform();
 
 	if (nullptr == pWitchModel || nullptr == pWitchTransform)
 		return;
+
+	if (m_tTargetOffset.bActive)
+		m_tTargetOffset.Update_Lerp(fTimeDelta);
+
+	if (m_tLookAtOffset.bActive)
+		m_tLookAtOffset.Update_Lerp(fTimeDelta);
 
 	/* Position */
 	{
@@ -1174,15 +1190,39 @@ void CCamera_Action::Tick_Witch_Away(_float fTimeDelta)
 		m_pTransformCom->Set_Position(vPos.OneW());
 	}
 
+
 	/* LookAt */
 	{
 		Vec4 vLookAt = {};
-		const Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(m_tActionWitchRoarDesc.iBoneNumber) * pWitchTransform->Get_WorldMatrix();
+		const Matrix matLookWorld = pWitchModel->Get_SocketLocalMatrix(m_tActionWitchAwayDesc.iBoneNumber) * pWitchTransform->Get_WorldMatrix();
 		memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
 		vLookAt += m_pTransformCom->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW();
 
-		m_pTransformCom->LookAt(vLookAt.OneW());
+		m_tActionWitchAwayDesc.vPervLookAt = vLookAt.OneW();
+
+		m_pTransformCom->LookAt(m_tActionWitchAwayDesc.vPervLookAt);
 	}
+}
+
+HRESULT CCamera_Action::Start_Action_TowerDefense()
+{
+	Set_Fov(Cam_Fov_Free_Default);
+
+	m_bAction = true;
+
+	m_eCurActionType = CAMERA_ACTION_TYPE::TOWER_DEFENSE;
+
+	m_pTransformCom->Set_Position(m_tActionTowerDefenseDesc.vPositions[m_tActionTowerDefenseDesc.iCurViewIndex]);
+
+	m_pTransformCom->Set_LookAtByDir(m_tActionTowerDefenseDesc.vLooks[m_tActionTowerDefenseDesc.iCurViewIndex]);
+
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+	
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
+
+	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+
+	return S_OK;
 }
 
 HRESULT CCamera_Action::Start_Action_WindMill(const _bool& bNpcToWindMill)
@@ -1291,7 +1331,7 @@ HRESULT CCamera_Action::Start_Action_Witch_Roar()
 
 		// Zoom Out 1
 		m_tActionWitchRoarDesc.tTargetOffset.Start(
-			{ 0.f, 2.f, 1.75f, 1.f }, 0.25f, LERP_MODE::SMOOTHER_STEP);
+			{ 0.f, 2.f, 1.75f, 1.f }, 0.25f, LERP_MODE::EASE_IN);
 
 		break;
 	}
@@ -1299,7 +1339,7 @@ HRESULT CCamera_Action::Start_Action_Witch_Roar()
 	{
 		// Zoom Out 2
 		m_tActionWitchRoarDesc.tTargetOffset.Start(
-			{ 0.f, 2.f, 2.75f, 1.f }, 2.f, LERP_MODE::SMOOTHER_STEP);
+			{ 0.f, 2.f, 3.f, 1.f }, 3.f, LERP_MODE::DEFAULT);
 		break;
 	}
 	default:
@@ -1426,6 +1466,35 @@ void CCamera_Action::Free()
 	__super::Free();
 
 	Safe_Release(m_pTransformCom);
+}
+
+void CCamera_Action::Tick_TowerDefense(_float fTimeDelta)
+{
+	m_tActionTowerDefenseDesc.fAcc += fTimeDelta;
+	if (m_tActionTowerDefenseDesc.fLimitPerView <= m_tActionTowerDefenseDesc.fAcc)
+	{
+		m_tActionTowerDefenseDesc.fAcc = 0.f;
+		m_tActionTowerDefenseDesc.iCurViewIndex++;
+
+		if (ACTION_TOWER_DEFENSE_DESC::VIEW_NUM::VIEW_NUM_END == m_tActionTowerDefenseDesc.iCurViewIndex)
+		{
+			CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+			if (nullptr != pFollowCam)
+			{
+				pFollowCam->Reset_WideView_To_DefaultView(true);
+				pFollowCam->Set_Default_Position();
+			}
+			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+			return;
+		}
+		else
+		{
+			m_pTransformCom->Set_Position(m_tActionTowerDefenseDesc.vPositions[m_tActionTowerDefenseDesc.iCurViewIndex]);
+			m_pTransformCom->Set_LookAtByDir(m_tActionTowerDefenseDesc.vLooks[m_tActionTowerDefenseDesc.iCurViewIndex]);
+		}
+	}
 }
 
 HRESULT CCamera_Action::Start_Action_Ending()

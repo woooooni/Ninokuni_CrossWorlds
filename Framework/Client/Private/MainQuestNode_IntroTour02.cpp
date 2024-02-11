@@ -79,7 +79,7 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour02::Tick(const _float& fTimeDelta)
 			CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
 			if (nullptr != pCutSceneMap)
 			{
-				pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE);
+				pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE, 0);
 				pCutSceneMap->Reserve_NextCameraType(CAMERA_TYPE::FOLLOW);
 			}
 			return NODE_STATE::NODE_FAIL;

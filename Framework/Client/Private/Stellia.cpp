@@ -354,15 +354,14 @@ HRESULT CStellia::Ready_Components()
 		return E_FAIL;
 
 	/* 카메라 컷신과 연동된 상태, 수정 금지 */
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(161.5f, 2.311f, 147.5f, 1.f));
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(161.5f, 2.311f, 147.5f, 1.f));
+		m_pTransformCom->FixRotation(0.f, 195.f, 0.f);
+		m_vOriginPos = m_pTransformCom->Get_Position();
+		m_vOriginLook = m_pTransformCom->Get_Look();
+	}
 	
-	m_pTransformCom->FixRotation(0.f, 195.f, 0.f);
-
-	m_vOriginPos = m_pTransformCom->Get_Position();
-	m_vOriginLook = m_pTransformCom->Get_Look();
 	m_vRage3StartPos = Vec4(165.f, 2.311f, 177.f, 1.f);
-
-
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))

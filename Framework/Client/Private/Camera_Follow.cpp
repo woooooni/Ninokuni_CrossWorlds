@@ -771,15 +771,15 @@ void CCamera_Follow::Test(_float fTimeDelta)
 	}
 
 	/* CutScene */
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::DEL))
-	{
-		CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
-		if (nullptr != pCutSceneMap)
-		{
-			pCutSceneMap->Start_CutScene(LEVELID::LEVEL_WITCHFOREST);
-			pCutSceneMap->Reserve_NextCameraType(CAMERA_TYPE::FOLLOW);
-		}
-	}	
+	//if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::DEL))
+	//{
+	//	CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
+	//	if (nullptr != pCutSceneMap)
+	//	{
+	//		pCutSceneMap->Start_CutScene(LEVELID::LEVEL_WITCHFOREST);
+	//		pCutSceneMap->Reserve_NextCameraType(CAMERA_TYPE::FOLLOW);
+	//	}
+	//}	
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

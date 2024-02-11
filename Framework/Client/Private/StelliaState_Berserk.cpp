@@ -24,6 +24,9 @@ void CStelliaState_Berserk::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkillRage"));
 
+	/* 연출 위해 포지션 중앙으로 세팅 */
+	m_pTransformCom->Set_Position(m_pStellia->Get_OriginPos());
+
 	// Effect Create
 	CVfx* pVfxEffect = nullptr;
 	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Roar"), m_pTransformCom->Get_WorldMatrix(), m_pStellia, &pVfxEffect);

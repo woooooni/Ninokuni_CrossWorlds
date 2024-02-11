@@ -12,8 +12,7 @@
 #include "Crystal_Ball.h"
 #include "Shadow_Ball.h"
 
-
-#include "Camera_Manager.h"
+#include "Camera_Group.h"
 
 #include "Picking_Manager.h"
 #include "Mesh.h"
@@ -199,10 +198,12 @@ void CTowerDefence_Manager::Start_Defence()
 		pPortal->Start_Invasion();
 	}
 		
-
-
-	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
-	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+	/* 게이트 3곳을 비춰주는 카메라 액션 호출 */
+	{
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		if (nullptr != pActionCam)
+			pActionCam->Start_Action_TowerDefense();
+	}
 }
 
 void CTowerDefence_Manager::Finish_Defence()

@@ -250,7 +250,7 @@ HRESULT CCamera_CutScene_Map::Stop_CutScene(const _bool& bClearReservedCutScene)
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID, const _bool bSecondCutScene)
+HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID, const _uint& iType)
 {
 	/* Exception */
 	const _uint iCurLevel = GI->Get_CurrentLevel();
@@ -263,7 +263,7 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID, const _boo
 	{
 	case LEVELID::LEVEL_EVERMORE:
 	{
-		if (!bSecondCutScene)
+		if (0 == iType)
 		{
 			/* Reserve Fade */
 			Reserve_Fade(1.f, true, 1.f, true);
@@ -287,7 +287,28 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID, const _boo
 				GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume * 0.6f);
 			}
 		}
-		else
+		else if (1 == iType)
+		{
+			/* Reserve Fade */
+			Reserve_Fade(1.f, false, 1.f, false);
+
+			/* CutScene - Evermore */
+			vector<string> CutSceneNames;
+			{
+				//CutSceneNames.push_back("Evermore_Invasion_00");
+				CutSceneNames.push_back("Evermore_Invasion_01");
+				CutSceneNames.push_back("Evermore_Invasion_04");
+				CutSceneNames.push_back("Evermore_Invasion_02");
+				CutSceneNames.push_back("Evermore_Invasion_03");
+			}
+			Start_CutScenes(CutSceneNames, true);
+
+			/* Sound */
+			{
+
+			}
+		}
+		else if (2 == iType)
 		{
 			/* Reserve Fade */
 			//Reserve_Fade(0.7f, true, 0.7f, true);
@@ -299,7 +320,7 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID, const _boo
 				CutSceneNames.push_back("Evermore_Ending_From_Back_01");
 				CutSceneNames.push_back("Evermore_Ending_From_Front_00");
 				CutSceneNames.push_back("Evermore_Ending_From_Front_01");
-				
+
 			}
 			Start_CutScenes(CutSceneNames, true);
 
@@ -326,7 +347,7 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID, const _boo
 		{
 			CutSceneNames.push_back("Witchforest_Short_Shrub");		
 			CutSceneNames.push_back("Witchforest_Short_Campfire");	
-			CutSceneNames.push_back("Witchforest_short_Town_In");			
+			CutSceneNames.push_back("Witchforest_Short_Town_In");			
 			CutSceneNames.push_back("Witchforest_Short_Town_Ghosts");			
 			CutSceneNames.push_back("Witchforest_Short_Town_Middle");		
 			CutSceneNames.push_back("Witchforest_Short_Town_Out");			

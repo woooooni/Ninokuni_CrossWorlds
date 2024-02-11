@@ -406,7 +406,7 @@ HRESULT CLevel_Evermore::Ready_Layer_Monster(const wstring& strMonsterFileName)
 		}
 	}
 
-	MSG_BOX("Monster_Loaded.");
+	//MSG_BOX("Monster_Loaded.");
 	return S_OK;
 }
 

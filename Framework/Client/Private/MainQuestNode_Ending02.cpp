@@ -57,7 +57,7 @@ void CMainQuestNode_Ending02::Start()
 	CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
 	if (nullptr != pCutSceneMap)
 	{
-		pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE, true);
+		pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE, 2);
 		pCutSceneMap->Reserve_NextCameraType(CAMERA_TYPE::ACTION);
 	}
 }

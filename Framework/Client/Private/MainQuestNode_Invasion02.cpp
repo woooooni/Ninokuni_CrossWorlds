@@ -135,8 +135,52 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02::Tick(const _float& fTimeDelta)
 			m_bIsStart = true;
 		}
 
+		/* 마을 침공 컷신 끝나고 1번 대화 다이얼로그 바로 뜨게 하기 위함 */
+		if (m_bStartCutScene && !m_bFinishCutScene)
+		{
+			if (CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key() == CAMERA_TYPE::ACTION
+				&& CUI_Manager::GetInstance()->Is_FadeFinished())
+			{
+				m_bFinishCutScene = true;
+
+				Safe_Delete_Array(m_szpOwner);
+				Safe_Delete_Array(m_szpTalk);
+
+				m_iTalkIndex += 1;
+
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+				return NODE_STATE::NODE_RUNNING;
+			}
+			else
+			{
+				return NODE_STATE::NODE_RUNNING;
+			}
+		}
+
 		if (KEY_TAP(KEY::LBTN))
 		{
+			/* 마을 침공 컷신 연출 (0번, 1번 대화 사이 진행)*/
+			if (0 == m_iTalkIndex)
+			{
+				if (!m_bStartCutScene)
+				{
+					m_bStartCutScene = true;
+					CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
+					if (nullptr != pCutSceneMap)
+					{
+						pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE, 1);
+						pCutSceneMap->Reserve_NextCameraType(CAMERA_TYPE::ACTION);
+						CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
+						return NODE_STATE::NODE_RUNNING;
+					}
+				}
+			}
+
 			Safe_Delete_Array(m_szpOwner);
 			Safe_Delete_Array(m_szpTalk);
 

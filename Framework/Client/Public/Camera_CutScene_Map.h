@@ -92,7 +92,7 @@ public:
 	virtual void Tick_Blending(const _float fDeltaTime) override;
 
 public:
-	HRESULT Start_CutScene(const LEVELID& eLevelID, const _bool bSecondCutScene = false);
+	HRESULT Start_CutScene(const LEVELID& eLevelID, const _uint& iType = 0);
 	HRESULT Start_CutScene(const string& strCutSceneName, const _bool& bWillRetruePrevCam = false); /* 단일 컷신 실행 */
 	HRESULT Start_CutScenes(vector<string> strCutSceneNames, const _bool& bWillRetruePrevCam = false); /* 복수 컷신 실행 */
 	HRESULT Stop_CutScene(const _bool& bClearReservedCutScene = false);
