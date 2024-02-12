@@ -20,7 +20,7 @@ public:
 
 private:
 	_float			m_fAcc = 0.f;
-	const _float	m_fWaitDuration = 2.25f;
+	const _float	m_fWaitDuration = 2.f;
 	_bool			m_bFinishWait = false;
 
 public:

@@ -103,6 +103,8 @@ public:
 
 	Vec4 Get_OriginPos() const { return m_vOriginPos; }
 	Vec4 Get_OriginLook() const { return m_vOriginLook; }
+
+	void Set_DissolveDuration(const _float fDuration) { m_fDissolveDuration = fDuration; }
 private:
 	// ∑π¿Ã¡ˆ 1
 	_int m_iAccDamage = 0;

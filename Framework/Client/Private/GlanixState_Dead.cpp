@@ -44,8 +44,9 @@ void CGlanixState_Dead::Tick_State(_float fTimeDelta)
 		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 		if (nullptr != pFollowCam && pFollowCam->Is_LockOn())
 		{
-			pFollowCam->Set_Default_Position();
 			pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			pFollowCam->Reset_WideView_To_DefaultView(true);
+			pFollowCam->Set_Default_Position();
 
 			m_pGlanix->Reserve_Dead(true);
 			GI->Play_BGM(TEXT("BGM_Field_Village_Winter_Po_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, 0.5f);

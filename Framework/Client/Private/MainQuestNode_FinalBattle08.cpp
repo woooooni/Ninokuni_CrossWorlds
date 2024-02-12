@@ -44,15 +44,6 @@ void CMainQuestNode_FinalBattle08::Start()
 		// 스텔리아 죽고 나서, 마녀 도망가는 애니메이션 
 		m_pWitch->Get_Component_Model()->Set_Animation(TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Death"));
 
-		/* 카메라 락온 해제 */
-		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-		if (nullptr != pFollowCam && pFollowCam->Is_LockOn() && !pFollowCam->Is_Lock_LookHeight())
-		{
-			pFollowCam->Reset_WideView_To_DefaultView(true);
-			pFollowCam->Set_Default_Position();
-			pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-		}
-		
 		/* 마녀 도망가는 카메라 액션 실행 */
 		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
 		if (nullptr != pActionCam)
@@ -116,6 +107,10 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle08::Tick(const _float& fTimeDelta)
 					CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 					if (nullptr != pFollowCam)
 					{
+						/* 락온이었다면 해제 */
+						if(pFollowCam->Is_LockOn())
+							pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+
 						pFollowCam->Reset_WideView_To_DefaultView(true);
 						pFollowCam->Set_Default_Position();
 						CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);

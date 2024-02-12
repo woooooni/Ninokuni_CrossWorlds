@@ -113,6 +113,9 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		case CCamera_Action::STELLIA_ROAR:
 			Tick_Stellia_Roar(fTimeDelta);
 			break;
+		case CCamera_Action::STELLIA_DEAD:
+			Tick_Stellia_Dead(fTimeDelta);
+			break;
 		default:
 			break;
 		}
@@ -1213,6 +1216,37 @@ void CCamera_Action::Tick_Stellia_Roar(_float fTimeDelta)
 	}
 }
 
+void CCamera_Action::Tick_Stellia_Dead(_float fTimeDelta)
+{
+	if (nullptr == m_tActionStelliaDeadDesc.pStellia)
+		return;
+
+	CModel* pModelStellia = m_tActionStelliaDeadDesc.pStellia->Get_Component_Model();
+	CTransform* pTransformStellia = m_tActionStelliaDeadDesc.pStellia->Get_Component_Transform();
+
+	if (nullptr == pModelStellia || nullptr == pTransformStellia)
+		return;
+
+	/* Position */
+	{
+		Vec4 vPos = Vec4(pTransformStellia->Get_Position()) + pTransformStellia->Get_RelativeOffset(m_tTargetOffset.vCurVec);
+		m_pTransformCom->Set_Position(vPos.OneW());
+	}
+
+	/* LookAt */
+	{
+		Matrix matLookWorld =
+			pModelStellia->Get_SocketLocalMatrix(m_tActionStelliaDeadDesc.iBoneNum) * pTransformStellia->Get_WorldMatrix();
+
+		Vec4 vLookAt;
+		memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+
+		vLookAt += m_pTransformCom->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW();
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
+}
+
+
 HRESULT CCamera_Action::Ready_Components()
 {
 	return S_OK;
@@ -1537,6 +1571,28 @@ HRESULT CCamera_Action::Start_Action_Stellia_Roar(CGameObject* pGameObject)
 
 	return S_OK;
 }
+
+HRESULT CCamera_Action::Start_Action_Stellia_Dead(CGameObject* pGameObject)
+{
+	if (nullptr == pGameObject)
+		return E_FAIL;
+
+	m_tActionStelliaDeadDesc.pStellia = pGameObject;
+
+	Set_Fov(XMConvertToRadians(65.f));
+
+	m_tTargetOffset.vCurVec = Vec4{ 0.f, 3.f, 9.f, 1.f };
+	m_tLookAtOffset.vCurVec = Vec4{ 0.f, 3.f, 0.f, 1.f };
+
+	m_bAction = true;
+
+	m_eCurActionType = CAMERA_ACTION_TYPE::STELLIA_DEAD;
+
+	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+}
+
 
 void CCamera_Action::Tick_TowerDefense(_float fTimeDelta)
 {

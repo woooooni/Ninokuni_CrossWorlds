@@ -54,7 +54,6 @@ void CStelliaState_Spawn::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 		{
 			m_pStateMachineCom->Change_State(CStellia::STELLIA_SPAWNIDLE);
-			//Enter_State();
 		}
 	}
 

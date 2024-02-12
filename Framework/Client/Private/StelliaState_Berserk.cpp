@@ -24,9 +24,14 @@ void CStelliaState_Berserk::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkillRage"));
 
-	/* 연출 위해 포지션 중앙으로 세팅 */
-	m_pTransformCom->Set_Position(m_pStellia->Get_OriginPos());
-	m_pTransformCom->Set_LookAtByDir(m_pStellia->Get_OriginLook().ZeroY().ZeroW().Normalized());
+	///* 연출 위해 포지션 중앙으로 세팅 */
+	//{
+	//	/* 공중에서 떨어지지 않도록 높이를 최대한 낮춤 */
+	//	Vec4 vOriginPos = m_pStellia->Get_OriginPos();
+	//	vOriginPos.y -= 2.5f;
+	//	m_pTransformCom->Set_Position(vOriginPos);
+	//	m_pTransformCom->Set_LookAtByDir(m_pStellia->Get_OriginLook().ZeroY().ZeroW().Normalized());
+	//}
 
 	// Effect Create
 	CVfx* pVfxEffect = nullptr;
@@ -39,7 +44,8 @@ void CStelliaState_Berserk::Tick_State(_float fTimeDelta)
 {
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_TURN);
+		Enter_State();
+		//m_pStateMachineCom->Change_State(CStellia::STELLIA_TURN); 
 	}
 }
 
