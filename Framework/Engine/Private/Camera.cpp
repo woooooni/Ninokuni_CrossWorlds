@@ -163,6 +163,11 @@ void CCamera::Start_Shake(const _float& fAmplitude, const _float& fFrequency, co
 	m_tShakeDesc.tLerpShakeUnitPos.Start(Vec3::Zero, vTargetPos, m_tShakeDesc.fFreqDelta, LERP_MODE::SMOOTHER_STEP);
 }
 
+void CCamera::Stop_Shake()
+{
+	m_tShakeDesc.Clear();
+}
+
 void CCamera::Tick_Lerp(const _float fDeltaTime)
 {
 	if (m_tProjDesc.tLerpFov.bActive)

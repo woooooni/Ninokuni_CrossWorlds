@@ -673,7 +673,12 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 
 void CCamera_Action::Tick_Talk(_float fTimeDelta)
 {
-	
+	if (Is_Shake())
+	{
+		m_tActionTalkDesc.vPrevLookAt += Vec4(Get_ShakeLocalPos());
+
+		m_pTransformCom->LookAt(m_tActionTalkDesc.vPrevLookAt);
+	}
 }
 
 HRESULT CCamera_Action::Start_Action_Witch_Away(CGameObject* pGameObject)
