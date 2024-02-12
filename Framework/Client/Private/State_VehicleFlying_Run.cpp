@@ -266,7 +266,7 @@ void CState_VehicleFlying_Run::Shoot()
 		CTransform* pTargetTransform = m_pVehicle_Flying_Biplane->Get_Target()->Get_Component_Transform();
 		if (nullptr != pTargetTransform)
 		{
-			Vec3 vDir = XMVector3Normalize((pTargetTransform->Get_Position() + XMVectorSet(0.f, 0.5f, 0.f, 0.f)) - pLeftTransform->Get_Position());
+			Vec3 vDir = XMVector3Normalize((pTargetTransform->Get_Position() + XMVectorSet(0.f, 1.5f, 0.f, 0.f)) - pLeftTransform->Get_Position());
 			pLeftTransform->Rotation_Look(vDir);
 		}
 	}
@@ -300,7 +300,7 @@ void CState_VehicleFlying_Run::Shoot()
 		CTransform* pTargetTransform = m_pVehicle_Flying_Biplane->Get_Target()->Get_Component_Transform();
 		if (nullptr != pTargetTransform)
 		{
-			Vec3 vDir = XMVector3Normalize((pTargetTransform->Get_Position() + XMVectorSet(0.f, 0.5f, 0.f, 0.f)) - pRightTransform->Get_Position());
+			Vec3 vDir = XMVector3Normalize((pTargetTransform->Get_Position() + XMVectorSet(0.f, 1.5f, 0.f, 0.f)) - pRightTransform->Get_Position());
 			pRightTransform->Rotation_Look(vDir);
 		}
 	}

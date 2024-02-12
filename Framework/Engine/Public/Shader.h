@@ -12,6 +12,7 @@ public:
 		ID3DX11EffectPass* pPass = nullptr;
 		ID3D11InputLayout* pInputLayout = nullptr;
 	}PASSDESC;
+
 private:
 	CShader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CShader(const CShader& rhs);

@@ -201,7 +201,7 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
                 fAddSpeed = 200.f;
 #endif // _DEBUG
 #ifndef _DEBUG
-                fAddSpeed = 400.f;
+                fAddSpeed = 600.f;
 #endif // !_DEBUG
                 m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), fAddSpeed * fTimeDelta, false);
                 m_pRigidBodyCom->Set_Ground(false);
@@ -303,7 +303,7 @@ void CState_VehicleFlying_Stand::Shoot()
         CTransform* pTargetTransform = m_pVehicle_Flying_Biplane->Get_Target()->Get_Component_Transform();
         if (nullptr != pTargetTransform)
         {
-            Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() + XMVectorSet(0.f, 1.f, 0.f, 0.f) - pLeftTransform->Get_Position());
+            Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() + XMVectorSet(0.f, 1.5f, 0.f, 0.f) - pLeftTransform->Get_Position());
             pLeftTransform->Rotation_Look(vDir);
         }
     }
@@ -337,7 +337,7 @@ void CState_VehicleFlying_Stand::Shoot()
         CTransform* pTargetTransform = m_pVehicle_Flying_Biplane->Get_Target()->Get_Component_Transform();
         if (nullptr != pTargetTransform)
         {
-            Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() + XMVectorSet(0.f, 1.f, 0.f, 0.f) - pRightTransform->Get_Position());
+            Vec3 vDir = XMVector3Normalize(pTargetTransform->Get_Position() + XMVectorSet(0.f, 1.5f, 0.f, 0.f) - pRightTransform->Get_Position());
             pRightTransform->Rotation_Look(vDir);
         }
     }

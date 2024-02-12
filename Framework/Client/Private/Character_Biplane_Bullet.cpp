@@ -45,7 +45,7 @@ HRESULT CCharacter_Biplane_Bullet::Initialize(void* pArg)
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 	m_fDeletionTime = 1.5f;
 
-	m_fMoveSpeed = 40.f;
+	m_fMoveSpeed = 60.f;
 	m_vBloomPower = Vec3(1.f, 1.f, 0.f);
 
 	m_pParticle = dynamic_cast<CParticle*>(GI->Clone_GameObject(L"Prototype_Particle_Character_Bullet", LAYER_TYPE::LAYER_EFFECT));
@@ -63,6 +63,7 @@ HRESULT CCharacter_Biplane_Bullet::Initialize(void* pArg)
 void CCharacter_Biplane_Bullet::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+	
 	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
 
 	if (true == m_bDead)

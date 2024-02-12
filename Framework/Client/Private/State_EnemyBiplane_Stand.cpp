@@ -137,7 +137,9 @@ void CState_EnemyBiplane_Stand::Tick_State(_float fTimeDelta)
             case Client::CState_EnemyBiplane_Stand::PATTERN_2:
                 Shoot_Pattern_2(fTimeDelta);
                 break;
-
+            case Client::CState_EnemyBiplane_Stand::PATTERN_3:
+                Shoot_Pattern_3(fTimeDelta);
+                break;
             default:
                 break;
             }

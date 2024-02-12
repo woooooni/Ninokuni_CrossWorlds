@@ -66,6 +66,16 @@ void CGrandprix_Engineer::Tick(_float fTimeDelta)
 		}
 	}
 
+	if (true == m_bReserveDead)
+	{
+		m_fDissolveWeight += m_fDissolveSpeed * fTimeDelta;
+		if (m_fDissolveWeight >= m_fDissolveTotal)
+		{
+			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
+			Set_Dead(true);
+		}
+	}
+
 }
 
 void CGrandprix_Engineer::LateTick(_float fTimeDelta)
@@ -89,18 +99,36 @@ HRESULT CGrandprix_Engineer::Render()
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
 		return E_FAIL;
+
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;
+
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
+
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
 	_float4 vRimColor = true == m_bInfinite ? Vec4(0.f, 0.f, 1.f, 1.f) : Vec4(0.f, 0.f, 0.f, 0.f);
-
-
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
 		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
+		return E_FAIL;
+
+	// Dissolve -----------------
+	if (FAILED(m_pDissolveTexture->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture", 51)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_DissolveDuration", &m_fDissolveDuration, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fDissolveWeight, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vDissolveColor", &m_vDissolveColor, sizeof(_float4))))
+		return E_FAIL;
+	// ----------------- Dissolve
 
 	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
 		return E_FAIL;
@@ -162,6 +190,10 @@ HRESULT CGrandprix_Engineer::Ready_Components()
 	m_pCharacterPartModels[PART_TYPE::BODY] = CCharacter_Manager::GetInstance()->Get_PartModel(CHARACTER_TYPE::ENGINEER, PART_TYPE::BODY, L"Adventure");
 
 	//m_pModelCom->Set_Animation(0);
+
+	m_pDissolveTexture = static_cast<CTexture*>(GI->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise")));
+	if (m_pDissolveTexture == nullptr)
+		return E_FAIL;
 
 	return S_OK;
 }
