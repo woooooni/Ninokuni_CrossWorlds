@@ -1189,6 +1189,9 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Witch_Barricade", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/Witch_Barricade/", L"Witch_Barricade")))
 		return E_FAIL;
 
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Bullet", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Bullet/", L"Engineer_Bullet")))
+		return E_FAIL;
+
 	switch (g_eLoadCharacter)
 	{
 	case Client::SWORDMAN_CH:

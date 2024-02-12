@@ -20,12 +20,12 @@ CVfx_Destroyer_Skill_IgnorePain::CVfx_Destroyer_Skill_IgnorePain(const CVfx_Dest
 
 HRESULT CVfx_Destroyer_Skill_IgnorePain::Initialize_Prototype()
 {
-	m_bOwnerStateIndex = CCharacter::SKILL_SPECIAL_2;
+	//m_bOwnerStateIndex = CCharacter::SKILL_SPECIAL_2;
 
 	m_iMaxCount = TYPE_END;
-	m_pFrameTriger = new _int[m_iMaxCount];
+	m_pFrameTriger    = new _int[m_iMaxCount];
 	m_pPositionOffset = new _float3[m_iMaxCount];
-	m_pScaleOffset = new _float3[m_iMaxCount];
+	m_pScaleOffset    = new _float3[m_iMaxCount];
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
 	{
@@ -57,7 +57,41 @@ HRESULT CVfx_Destroyer_Skill_IgnorePain::Initialize(void* pArg)
 
 void CVfx_Destroyer_Skill_IgnorePain::Tick(_float fTimeDelta)
 {
-	__super::Tick(fTimeDelta);
+	//__super::Tick(fTimeDelta);
+	if (m_bFinish || m_pOwnerObject == nullptr || m_pOwnerObject->Is_ReserveDead() || m_pOwnerObject->Is_Dead())
+	{
+		Set_Dead(true);
+		return;
+	}
+
+	CModel* pModel = m_pOwnerObject->Get_Component<CModel>(L"Com_Model");
+	if (pModel == nullptr)
+	{
+		Set_Dead(true);
+		return;
+	}
+
+	if (m_bOwnerTween) // false == TweenFinish
+		m_bOwnerTween = pModel->Is_Tween();
+	else
+		m_iOwnerFrame = pModel->Get_CurrAnimationFrame();
+
+	if (nullptr != m_pEt1_Barrier)
+	{
+		if (true == m_pEt1_Barrier->Get_DieEffect() || true == m_pEt1_Barrier->Is_Dead())
+		{
+			Set_Dead(true);
+			return;
+		}
+
+		CCharacter* pPlayer = dynamic_cast<CCharacter*>(m_pOwnerObject);
+		if (nullptr == pPlayer || false == pPlayer->Is_PlayingCharacter())
+		{
+			m_pEt1_Barrier->Set_Dead(true);
+			Set_Dead(true);
+			return;
+		}
+	}
 
 	if (!m_bOwnerTween) // ³ëÀÌÁî 125
 	{
@@ -91,6 +125,10 @@ void CVfx_Destroyer_Skill_IgnorePain::Tick(_float fTimeDelta)
 			{
 				Safe_AddRef(m_pEt1_Barrier);
 				m_pEt1_Barrier->Set_Color(m_fMainColor);
+				m_pEt1_Barrier->Reserve_Dissolve(m_pFrameTriger[TYPE_EV_DISSOLVE], // Index
+					_float4(max(m_fMainColor.x - 0.35f, 0.f), max(m_fMainColor.y - 0.35f, 0.f), max(m_fMainColor.z - 0.35f, 0.f), 1.f), // Color
+					m_pScaleOffset[TYPE_EV_DISSOLVE].x,   // Speed
+					10.f); // Total
 				//m_pEt1_Barrier->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
 			}
 
@@ -160,13 +198,7 @@ void CVfx_Destroyer_Skill_IgnorePain::Free()
 	__super::Free();
 
 	if (nullptr != m_pEt1_Barrier)
-	{
-		m_pEt1_Barrier->Reserve_Dissolve(m_pFrameTriger[TYPE_EV_DISSOLVE], // Index
-			_float4(max(m_fMainColor.x - 0.35f, 0.f), max(m_fMainColor.y - 0.35f, 0.f), max(m_fMainColor.z - 0.35f, 0.f), 1.f), // Color
-			m_pScaleOffset[TYPE_EV_DISSOLVE].x,   // Speed
-			10.f); // Total
 		Safe_Release(m_pEt1_Barrier);
-	}
 
 	if (!m_isCloned)
 	{

@@ -98,6 +98,13 @@ void CVfx_Engineer_Skill_HealingTree::Tick(_float fTimeDelta)
 		if (m_iCount >= TYPE_END)
 			m_bFinish = true;
 
+		CCharacter* pPlayer = dynamic_cast<CCharacter*>(m_pOwnerObject);
+		if (nullptr == pPlayer || false == pPlayer->Is_PlayingCharacter())
+		{
+			Set_Dead(true);
+			return;
+		}
+
 		if (-1 == m_iType)
 		{
 			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
