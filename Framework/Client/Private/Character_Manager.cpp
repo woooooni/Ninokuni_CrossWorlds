@@ -115,8 +115,6 @@ vector<class CModel*>* CCharacter_Manager::Get_PartModels(const CHARACTER_TYPE& 
 
 HRESULT CCharacter_Manager::Ready_Characters()
 {
-	
-
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_MotionTrail", CMotion_Trail::Create(m_pDevice, m_pContext), LAYER_EFFECT)))
 		return E_FAIL;
 	

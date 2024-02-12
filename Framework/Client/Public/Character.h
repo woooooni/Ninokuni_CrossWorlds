@@ -235,6 +235,9 @@ public:
 	void Set_Useable(_bool bUseable) { m_bUseable = bUseable; }
 	_bool Is_Useable() { return m_bUseable; }
 
+	void Set_PlayingCharacter(_bool bPlay) { m_bControllCharacter = bPlay; }
+	_bool Is_PlayingCharacter() { return m_bControllCharacter; }
+
 public:
 	class CTransform* Get_CharacterTransformCom() { return m_pTransformCom; }
 	class CStateMachine* Get_CharacterStateCom() { return m_pStateCom; }
