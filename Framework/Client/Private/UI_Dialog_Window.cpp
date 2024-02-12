@@ -212,13 +212,12 @@ void CUI_Dialog_Window::Add_Text()
 		}
 
 		sTempText[iDestIndex++] = m_szInfoText[i];
+//		GI->Stop_Sound(CHANNELID::SOUND_UI2);
+//		GI->Play_Sound(TEXT("UI_Fx_Comm_Dialog_Text_1.mp3"), CHANNELID::SOUND_UI2,
+//			GI->Get_ChannelVolume(CHANNELID::SOUND_UI2));
 
 		if ((i + 1) % iMaxLength == 0)
 		{
-			GI->Stop_Sound(CHANNELID::SOUND_UI);
-			GI->Play_Sound(TEXT("UI_Fx_Comm_Dialog_Text_1.mp3"), CHANNELID::SOUND_UI,
-				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
-
 			sTempText[iDestIndex++] = '\n';
 		}
 	}

@@ -75,6 +75,9 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted05::Tick(const _float& fTimeDelta)
 		Safe_Delete_Array(m_szpTalk);
 
 		m_iTalkIndex += 1;
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_Dialogue_Page_1.mp3"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
@@ -84,7 +87,6 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted05::Tick(const _float& fTimeDelta)
 			QuestDesc.strTitle = m_strNextQuestName;
 			QuestDesc.strContents = m_strNextQuestContent;
 			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 			/* 대화 카메라 종료 */

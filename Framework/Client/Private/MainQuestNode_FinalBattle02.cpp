@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_PopupQuest.h"
 
 CMainQuestNode_FinalBattle02::CMainQuestNode_FinalBattle02()
 {
@@ -37,6 +38,14 @@ void CMainQuestNode_FinalBattle02::Start()
 		Vec4 vSpotPos = { 157.7f, 0.f, 134.3f, 1.f };
 
 		m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
+	
+		CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+		QuestDesc.strType = m_strQuestTag;
+		QuestDesc.strTitle = m_strQuestName;
+		QuestDesc.strContents = m_strQuestContent;
+		QuestDesc.bCreateSpot = true;
+		QuestDesc.vDestPosition = vSpotPos;
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 	}
 
 }

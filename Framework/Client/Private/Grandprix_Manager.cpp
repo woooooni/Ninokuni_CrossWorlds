@@ -40,6 +40,8 @@ HRESULT CGrandprix_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceC
 void CGrandprix_Manager::Tick(_float fTimeDelta)
 {
 	// 그랑프리가 시작되었는지 확인한다. false면 return;
+	if (KEY_TAP(KEY::P))
+		Show_GoalObject();
 
 	if (true == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP])
 	{

@@ -507,7 +507,16 @@ void CUI_Manager::Set_QuestDestSpot(_int iWindow)
 	QuestDesc = m_QuestPopUp[0]->Get_QuestContents(iWindow);
 	// 퀘스트 목적지가 설정되어있다면
 	if (true == QuestDesc.bCreateSpot)
+	{
 		Set_QuestDestSpotPosition(QuestDesc.vDestPosition);
+	}
+	else
+	{
+		for (auto& iter : m_Milepost)
+		{
+			iter->Set_Active(false);
+		}
+	}
 }
 
 void CUI_Manager::Set_QuestDestSpotPosition(_float4 vDestPos)
@@ -915,7 +924,7 @@ HRESULT CUI_Manager::Ready_Loadings()
 	//ProgressBar
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 	_float fOffset = 40.f;
-	UIDesc.fCX = 1493.f;
+	UIDesc.fCX = 1500.f;
 	UIDesc.fCY = 40.f;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
 	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY + fOffset);

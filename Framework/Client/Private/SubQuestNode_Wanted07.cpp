@@ -64,6 +64,9 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted07::Tick(const _float& fTimeDelta)
 				Safe_Delete_Array(m_szpTalk);
 
 				m_iTalkIndex += 1;
+				GI->Stop_Sound(CHANNELID::SOUND_UI);
+				GI->Play_Sound(TEXT("UI_Fx_Comm_Dialog_Text_1.mp3"), CHANNELID::SOUND_UI,
+					GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 
 				if (m_iTalkIndex >= m_vecTalkDesc.size())
 				{

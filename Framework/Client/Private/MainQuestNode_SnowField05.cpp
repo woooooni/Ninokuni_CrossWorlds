@@ -82,6 +82,9 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 			TalkEvent();
 
 			m_iTalkIndex += 1;
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_Comm_Dialog_Text_1.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 		}
 		break;
 
@@ -102,6 +105,9 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 			TalkEvent();
 
 			m_iTalkIndex += 1;
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_Comm_Dialog_Text_1.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 		}
 		break;
 
@@ -122,6 +128,9 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 			TalkEvent();
 
 			m_iTalkIndex += 1;
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_Comm_Dialog_Text_1.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 		}
 		break;
 	}

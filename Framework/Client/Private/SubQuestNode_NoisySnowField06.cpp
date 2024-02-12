@@ -66,7 +66,7 @@ void CSubQuestNode_NoisySnowField06::Start()
 	}
 
 	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
@@ -97,10 +97,13 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField06::Tick(const _float& fTimeDelt
 			Safe_Delete_Array(m_szpTalk);
 
 			m_iTalkIndex += 1;
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_Dialogue_Page_1.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 
 			if (m_iTalkIndex >= m_vecTalkDesc.size())
 			{
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 				/* 대화 카메라 종료 */
 				CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));

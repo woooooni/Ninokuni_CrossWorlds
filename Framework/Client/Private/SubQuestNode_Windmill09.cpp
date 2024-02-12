@@ -65,7 +65,6 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill09::Tick(const _float& fTimeDelta)
 					QuestDesc.strTitle = m_strNextQuestName;
 					QuestDesc.strContents = m_strNextQuestContent;
 					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);

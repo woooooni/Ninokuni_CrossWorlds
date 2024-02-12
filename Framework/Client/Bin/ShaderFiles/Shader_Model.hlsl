@@ -11,6 +11,8 @@ Texture2D   g_DissolveTexture;
 
 float4		g_vCamPosition;
 float		g_fDissolveWeight;
+float       g_DissolveDuration;
+float4		g_vDissolveColor = { 0.6f, 0.039f, 0.039f, 1.f };
 
 float4 g_vLightDir = float4(1.0f, -1.0f, 1.0f, 0.0f);
 float4 g_vLightDiffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -535,6 +537,58 @@ PS_OUT_PICKING PS_PICKING(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_DISSOLVE_PROP(PS_IN In)
+{
+    PS_OUT		Out = (PS_OUT)0;
+
+    vector vDissolve = g_DissolveTexture.Sample(ModelSampler, In.vTexUV);
+    float  fDissolveAlpha = saturate(1.0 - g_fDissolveWeight / g_DissolveDuration + vDissolve.r);
+
+    if (fDissolveAlpha < 0.3)
+        discard;
+    else if (fDissolveAlpha < 0.5)
+    {
+        Out.vDiffuse = g_vDissolveColor;
+        Out.vNormal = float4(1.f, 1.f, 1.f, 0.f);
+        Out.vBloom = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
+    }
+    else
+    {
+        Out.vDiffuse = g_DiffuseTexture.Sample(PointSampler, In.vTexUV);
+        Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+        Out.vBloom = Caculation_Brightness(Out.vDiffuse);
+    }
+
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+
+
+    if (0.f == Out.vDiffuse.a)
+        discard;
+
+    return Out;
+
+//    if (vDissolve.r <= g_fDissolveWeight)
+//        discard;
+//
+//    if ((vDissolve.r - g_fDissolveWeight) < 0.1f)
+//        Out.vDiffuse = g_vDissolveColor;
+//    else if ((vDissolve.r - g_fDissolveWeight) < 0.115f)
+//        Out.vDiffuse = g_vDissolveColor - 0.1f;
+//    else if ((vDissolve.r - g_fDissolveWeight) < 0.125f)
+//        Out.vDiffuse = g_vDissolveColor - 0.1f;
+//    else
+//        Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
+//
+//    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+//    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
+//    Out.vBloom = Caculation_Brightness(Out.vDiffuse);
+//    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+//    if (0 == Out.vDiffuse.a)
+//        discard;
+//
+//    return Out;
+}
 
 
 RasterizerState CullClockWiseRS
@@ -686,7 +740,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_REFLECT();
     }
 
-	pass Temp8
+	pass Dissolve
 	{
 		// 8
 		SetRasterizerState(RS_Default);
@@ -697,7 +751,7 @@ technique11 DefaultTechnique
 		GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
+		PixelShader = compile ps_5_0 PS_DISSOLVE_PROP();
 	}
 
 	pass UI_Minimap

@@ -10,7 +10,7 @@ private:
 	virtual ~CGrandprix_Goal() = default;
 
 public:
-	void Set_Active(_bool bActive) { m_bActive = bActive; }
+	void Set_Active(_bool bActive);
 	_bool Is_Active() { return m_bActive; }
 
 public:
@@ -18,10 +18,8 @@ public:
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
-
-public:
-	virtual HRESULT Render_Instance(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
-	virtual HRESULT Render_Instance_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
+	virtual HRESULT Render() override;
+	HRESULT Render_ShadowDepth();
 
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
@@ -42,6 +40,13 @@ private:
 private:
 	_float m_fSpeed = { 0.f };
 	_bool m_bActive = { false };
+
+	_bool m_bStartDissolve = false;
+	_float4 m_vDissolveColor = _float4(0.715f, 0.995f, 1.f, 1.f);
+	_float  m_fDissolveTotal = 10.f;
+	_float  m_fDissolveDuration = 5.f;
+	_float  m_fDissolveWeight = 0.f;
+	_float  m_fDissolveSpeed = 3.f;
 
 public:
 	static CGrandprix_Goal* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

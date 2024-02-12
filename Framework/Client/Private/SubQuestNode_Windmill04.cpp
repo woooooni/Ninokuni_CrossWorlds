@@ -78,15 +78,17 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill04::Tick(const _float& fTimeDelta)
 		Safe_Delete_Array(m_szpTalk);
 
 		m_iTalkIndex += 1;
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_Dialogue_Page_1.mp3"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
-			// Windmill05로 옮겨서 해보자.
-			//CUI_PopupQuest::QUEST_INFO QuestDesc = {};
-			//QuestDesc.strType = m_strNextQuestTag;
-			//QuestDesc.strTitle = m_strNextQuestName;
-			//QuestDesc.strContents = m_strNextQuestContent;
-			//CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+			CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+			QuestDesc.strType = m_strNextQuestTag;
+			QuestDesc.strTitle = m_strNextQuestName;
+			QuestDesc.strContents = m_strNextQuestContent;
+			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
