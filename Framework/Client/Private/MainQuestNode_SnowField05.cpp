@@ -166,6 +166,30 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 		}
 	}
 
+	// 안 넘어가지는 경우 대비
+	if (CQuest_Manager::GetInstance()->Get_MonsterKillCount() >= 7)
+	{
+		if (KEY_TAP(KEY::X))
+		{
+			Safe_Delete_Array(m_szpOwner);
+			Safe_Delete_Array(m_szpTalk);
+
+			CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+			QuestDesc.strType = m_strNextQuestTag;
+			QuestDesc.strTitle = m_strNextQuestName;
+			QuestDesc.strContents = m_strNextQuestContent;
+			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+
+			CQuest_Manager::GetInstance()->Clear_MonsterKillCount();
+			CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
+
+			m_bIsClear = true;
+
+			return NODE_STATE::NODE_FAIL;
+		}
+	}
+
 	return NODE_STATE::NODE_RUNNING;
 }
 

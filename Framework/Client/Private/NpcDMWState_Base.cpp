@@ -76,15 +76,16 @@ void CNpcDMWState_Base::Following_Stellia(_float fTimeDelta)
 		if (Vec4::Zero == m_vCurPos || m_fDampingLimitDistance < Vec4::Distance(vDestPos, m_vCurPos))
 		{
 			m_vCurPos = vDestPos;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(m_vCurPos, 1.f));
 		}
 		else
 		{
 			const Vec4 vDist = (vDestPos.ZeroW() - m_vCurPos.ZeroW()) * m_fDampingCoefficient;
 			m_vCurPos += vDist;
 			m_vCurPos.y = vDestPos.y;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(m_vCurPos, 1.f));
 		}
 
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(m_vCurPos, 1.f));
 	}
 }
 
