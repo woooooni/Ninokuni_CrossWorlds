@@ -239,6 +239,7 @@ public:
 	class CTransform* Get_CharacterTransformCom() { return m_pTransformCom; }
 	class CStateMachine* Get_CharacterStateCom() { return m_pStateCom; }
 	class CRenderer* Get_RendererCom() { return m_pRendererCom; }
+	class CPhysX_Controller* Get_ControllerCom() { return m_pControllerCom; }
 	
 
 public:

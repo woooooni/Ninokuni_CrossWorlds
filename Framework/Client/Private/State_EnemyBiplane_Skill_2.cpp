@@ -67,9 +67,9 @@ void CState_EnemyBiplane_Skill_2::Exit_State()
 
 void CState_EnemyBiplane_Skill_2::Shoot_Feathers()
 {
-    for (_int i = -5; i <= 5; ++i)
+    for (_int i = -10; i <= 10; ++i)
     {
-        for (_int j = -5; j <= 5; ++j)
+        for (_int j = -10; j <= 10; ++j)
         {
             CEnemy_Biplane_Feather* pFeather = CPool<CEnemy_Biplane_Feather>::Get_Obj();
 

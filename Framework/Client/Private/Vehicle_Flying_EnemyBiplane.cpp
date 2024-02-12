@@ -110,7 +110,6 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 {
 	if (true == m_bOnBoard)
 	{
-		
 		if (false == m_bInfinite && KEY_TAP(KEY::Z))
 		{
 			m_tStat.fCurHP -= 10000;
@@ -144,6 +143,16 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 			{
 				m_bInfinite = false;
 				m_fAccInfinite = 0.f;
+			}
+		}
+
+		if (true == m_bReserveDead)
+		{
+			m_fDissolveWeight += m_fDissolveSpeed * fTimeDelta;
+			if (m_fDissolveWeight >= m_fDissolveTotal)
+			{
+				Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
+				Set_Dead(true);
 			}
 		}
 
@@ -234,17 +243,35 @@ HRESULT CVehicle_Flying_EnemyBiplane::Render()
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
 			return E_FAIL;
 
+		// Dissolve -----------------
+		if (FAILED(m_pDissolveTexture->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture", 51)))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_DissolveDuration", &m_fDissolveDuration, sizeof(_float))))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fDissolveWeight, sizeof(_float))))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vDissolveColor", &m_vDissolveColor, sizeof(_float4))))
+			return E_FAIL;
+		// ----------------- Dissolve
+
 		if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
 			return E_FAIL;
 
 		const _uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+		_uint iPassIndex = 0;
 		for (_uint i = 0; i < iNumMeshes; ++i)
 		{
 			if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 				return E_FAIL;
 
-			if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+			if (m_bReserveDead)
+				iPassIndex = 2;
+
+			if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
 				return E_FAIL;
 		}
 
@@ -376,6 +403,11 @@ HRESULT CVehicle_Flying_EnemyBiplane::Ready_Components()
 
 	// For Model Component
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Biplane"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		return E_FAIL;
+
+	m_pDissolveTexture = static_cast<CTexture*>(GI->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise")));
+
+	if (m_pDissolveTexture == nullptr)
 		return E_FAIL;
 
 	return S_OK;
@@ -562,9 +594,9 @@ void CVehicle_Flying_EnemyBiplane::On_Damaged(const COLLISION_INFO& tInfo)
 
 	if (0.f >= m_tStat.fCurHP)
 	{
-		if (m_pStateCom->Get_CurrState() != CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK)
+		if (m_pStateCom->Get_CurrState() != CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_DEAD)
 		{
-			m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK);
+			m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_DEAD);
 			return;
 		}
 	}
@@ -629,4 +661,5 @@ void CVehicle_Flying_EnemyBiplane::Free()
 	for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)	
 		Safe_Release(m_pTrails[i]);
 
+	Safe_Release(m_pDissolveTexture);
 }

@@ -272,6 +272,8 @@ HRESULT CCharacter_Manager::Ready_Characters()
 			m_pCharacters[CHARACTER_TYPE::ENGINEER] = dynamic_cast<CCharacter*>(pCharacterEngineer->Clone(&StatDesc));
 			if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
 				return E_FAIL;
+
+			// m_pCharacters[CHARACTER_TYPE::ENGINEER]->Set_Useable(false);
 		}
 
 		// Destroyer
@@ -295,10 +297,11 @@ HRESULT CCharacter_Manager::Ready_Characters()
 			if (nullptr == pCharacterDestroyer)
 				return E_FAIL;
 
-
 			m_pCharacters[CHARACTER_TYPE::DESTROYER] = dynamic_cast<CCharacter*>(pCharacterDestroyer->Clone(&StatDesc));
 			if (nullptr == m_pCharacters[CHARACTER_TYPE::DESTROYER])
 				return E_FAIL;
+
+			// m_pCharacters[CHARACTER_TYPE::DESTROYER]->Set_Useable(false);
 		}
 	}
 		break;

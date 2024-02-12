@@ -34,11 +34,27 @@ HRESULT CState_EnemyBiplane_Finish_Attack::Initialize(const list<wstring>& Anima
 
     
 
-    // m_pComputeShader = CShader::Create(GI->Get_Device(), GI->Get_Context(), L"../Bin/ShaderFiles/")
-    
-    /* GI->Get_Device()->create */
-    
-
+//    ID3DBlob* pComputeShaderBlob = nullptr;
+//    ID3DBlob* pErrBlob = nullptr;
+//    _int iFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+//#ifdef _DEBUG
+//    iFlags |= D3DCOMPILE_DEBUG;
+//#endif // _DEBUG
+//
+//    if (FAILED(D3DCompileFromFile(L"../Bin/ShaderFiles/Shader_Compute.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "CS_MAIN_COMPUTE_ENGINEER_FINISH", "cs_5_0", iFlags, 0, &pComputeShaderBlob, &pErrBlob)))
+//    {
+//        MSG_BOX("Compile ComputeShader Failed. : CState_EnemyBiplane_Finish_Attack::Initialize.");
+//        return E_FAIL;
+//    }
+//    
+//    if (FAILED(GI->Get_Device()->CreateComputeShader(pComputeShaderBlob->GetBufferPointer(), pComputeShaderBlob->GetBufferSize(), nullptr, &m_pComputeShader)))
+//    {
+//        MSG_BOX("Create ComputeShader Failed. : CState_EnemyBiplane_Finish_Attack::Initialize.");
+//        return E_FAIL;
+//    }
+//
+//    GI->Get_Context()->CSSetShader(m_pComputeShader, nullptr, 0);
+//    GI->Get_Context()->Dispatch(1, 64, 1);
 
 
 
@@ -94,4 +110,5 @@ CState_EnemyBiplane_Finish_Attack* CState_EnemyBiplane_Finish_Attack::Create(CSt
 void CState_EnemyBiplane_Finish_Attack::Free()
 {
     __super::Free();
+    Safe_Release(m_pComputeShader);
 }

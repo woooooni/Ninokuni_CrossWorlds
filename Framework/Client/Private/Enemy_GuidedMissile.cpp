@@ -73,7 +73,7 @@ void CEnemy_GuidedMissile::Tick(_float fTimeDelta)
 	{
 		Vec3 vDir = m_pTargetTransform->Get_Position() + XMVectorSet(0.f, 1.5f, 0.f, 0.f) - m_pTransformCom->Get_Position();
 
-		if (vDir.Length() > 0.001f)
+		if (vDir.Length() > 8.f)
 		{
 			Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 

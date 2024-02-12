@@ -11,6 +11,8 @@ BEGIN(Client)
 
 class CState_EnemyBiplane_Finish_Attack : public CState_Vehicle
 {
+public:
+	enum FINISH_ATTACK_TYPE { HOME, BURGER, TYPE_END };
 private:
 	CState_EnemyBiplane_Finish_Attack(class CStateMachine* pMachine);
 	~CState_EnemyBiplane_Finish_Attack() = default;
@@ -36,13 +38,11 @@ private:
 	_float m_fGenMissileTime = 0.05f;
 
 private:
-	vector<_int> m_HamburgerColors;
-	vector<_int> m_HomeColors;
-	vector<_int> m_NyahColors;
+	vector<_int> m_ComputedAttacks[FINISH_ATTACK_TYPE::TYPE_END];
 	
 
 private:
-	class CShader* m_pComputeShader = nullptr;
+	ID3D11ComputeShader* m_pComputeShader = nullptr;
 
 
 public:

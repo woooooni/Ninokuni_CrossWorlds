@@ -54,6 +54,10 @@ private:
 	_float m_fTimeAcc[4];
 
 private:
+	_bool m_bGrandPrixEnd = false;
+	_bool m_bReset = false;
+
+private:
 	void Ready_Riders();
 
 private:

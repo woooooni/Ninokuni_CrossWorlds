@@ -511,6 +511,12 @@ void CUIMinigame_Manager::Intro_Grandprix()
 	m_bIntroFinished = false;
 
 	m_pIntroBackground->Set_Active(true);
+
+	CCharacter* pCharacter = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+
+	pCharacter->Get_CharacterTransformCom()->Set_Position(Vec4(0.f, 1.f, 0.f, 1.f));
+	pCharacter->Get_CharacterTransformCom()->LookAt_ForLandObject(Vec4(0.f, 0.f, 1.f, 1.f));
+	pCharacter->Get_ControllerCom()->Set_EnterLevel_Position(Vec4(0.f, 1.f, 0.f, 1.f));
 }
 
 void CUIMinigame_Manager::Start_Grandprix()
@@ -558,14 +564,31 @@ void CUIMinigame_Manager::End_Grandprix()
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
 	CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, false);
 
-
-	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(true, 16.f, 0.1f);
-	GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 3.f, 0.2f, true);
-	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 0.2f, true);
-
 	// 퀘스트 완료 포지션으로 이동.
-	// CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterTransformCom()->Set_Position(Vec4())
-	/*CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CPhysX_Controller>(L"Com_Controller")->Set_EnterLevel_Position(Vec4())*/
+	CCharacter* pCharacter = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+	CTransform* pCharacterTransform = pCharacter->Get_CharacterTransformCom();
+	pCharacterTransform->Set_Position(
+		Vec4(-78.6f, -7.4f, -45.8f, 1.f));
+	pCharacter->Get_ControllerCom()->Set_EnterLevel_Position(Vec4(-78.6f, -7.4f, -45.8f, 1.f));
+
+	CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(pCharacter);
+	CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(pCharacter);
+	dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW))->Finish_LockOn(pCharacter);
+
+	Vec3 vScale = pCharacterTransform->Get_Scale();
+	pCharacterTransform->Set_Right(XMVectorSet(1.f, 0.f, 0.f, 0.f));
+	pCharacterTransform->Set_Up(XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	pCharacterTransform->Set_Look(XMVectorSet(0.f, 0.f, 1.f, 0.f));
+
+	CGameObject* pEngineerNpc = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Engineer_Dummy");
+	if (nullptr != pEngineerNpc)
+	{
+		CTransform* pNpcTransform = pEngineerNpc->Get_Component_Transform();
+		if (nullptr != pNpcTransform)
+		{
+			pCharacterTransform->LookAt_ForLandObject(pNpcTransform->Get_Position());
+		}
+	}
 }
 
 void CUIMinigame_Manager::Use_GrandprixSkill(SKILL_TYPE eType)

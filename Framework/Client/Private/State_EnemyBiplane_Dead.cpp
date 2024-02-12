@@ -10,6 +10,8 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Grandprix_Manager.h"
+
 #include "Vehicle_Flying_EnemyBiplane.h"
 
 CState_EnemyBiplane_Dead::CState_EnemyBiplane_Dead(CStateMachine* pMachine)
@@ -24,6 +26,7 @@ HRESULT CState_EnemyBiplane_Dead::Initialize(const list<wstring>& AnimationList)
     
     m_pVehicle = dynamic_cast<CVehicle*>(m_pStateMachineCom->Get_Owner());
     m_pEngineerPlane = dynamic_cast<CVehicle_Flying_EnemyBiplane*>(m_pStateMachineCom->Get_Owner());
+
     if (nullptr == m_pVehicle || nullptr == m_pEngineerPlane)
         return E_FAIL;
 
@@ -35,33 +38,15 @@ HRESULT CState_EnemyBiplane_Dead::Initialize(const list<wstring>& AnimationList)
 
 void CState_EnemyBiplane_Dead::Enter_State(void* pArg)
 {
-    CTransform* pTargetTransform = m_pTarget->Get_CharacterTransformCom(); //플레이어의 트랜스폼
-    if (nullptr == pTargetTransform)
-        return;
-
-
-    Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
-
-    _float fDistance = vDir.Length();
-    if (fDistance <= m_pEngineerPlane->Get_Attack_StartEnd_Distance().x)
-    {
-        // Attack 스테이트로 변경.
-        return;
-    }
-
-    if (fDistance <= m_pEngineerPlane->Get_Trace_StartEnd_Distance().x)
-    {
-        // Trace 스테이트로 변경.
-        return;
-    }
+    m_pEngineerPlane->Reserve_Dead(true);
+    m_pEngineerPlane->Get_Rider()->Reserve_Dead(true);
+    CGrandprix_Manager::GetInstance()->Show_GoalObject();
 
 }
 
 void CState_EnemyBiplane_Dead::Tick_State(_float fTimeDelta)
 {
-    if (nullptr == m_pTarget)
-        return;
-    
+       
 }
 
 void CState_EnemyBiplane_Dead::Exit_State()

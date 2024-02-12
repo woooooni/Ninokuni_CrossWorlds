@@ -1,12 +1,11 @@
 #include "Engine_Shader_Defines.hpp"
 
 Texture2D g_IconTexture;
-StructuredBuffer<int> Buffer0 : register(t0);
-RWStructuredBuffer<int> BufferOut : register(u0);
+RWStructuredBuffer<int> g_BufferOut : register(u0);
 
 
 [numthreads(64, 1, 1)]
-void CS_ENGINEER_DEADSKILL(uint2 id : SV_DispatchThreadID)
+void CS_MAIN_COMPUTE_ENGINEER_FINISH(uint2 id : SV_DispatchThreadID)
 {
     uint4 dtl = uint4(id, 0, 0);
     float2 inverseSize = float2(1.0f / 63.f, 1.0f / 63.f);
@@ -16,9 +15,9 @@ void CS_ENGINEER_DEADSKILL(uint2 id : SV_DispatchThreadID)
     float4 vColor = g_IconTexture.SampleLevel(PointSampler, coord, 0);
     
     if (vColor.r <= 0.f)
-        BufferOut[id.x * id.y / 64.f] = 0;
+        g_BufferOut[id.x * id.y / 64.f] = 0;
     else
-        BufferOut[id.x * id.y / 64.f] = 1;
+        g_BufferOut[id.x * id.y / 64.f] = 1;
     
     
     //BufferOut[id] = vColor.r;
@@ -35,7 +34,7 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = NULL;
-        ComputeShader = compile cs_5_0 CS_ENGINEER_DEADSKILL();
+        ComputeShader = compile cs_5_0 CS_MAIN_COMPUTE_ENGINEER_FINISH();
     }
 
 

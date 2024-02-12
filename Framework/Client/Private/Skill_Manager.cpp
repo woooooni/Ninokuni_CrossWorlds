@@ -194,7 +194,6 @@ void CSkill_Manager::Free()
 		}
 		m_Skills[i].clear();
 	}
-	
 }
 
 

@@ -16,6 +16,10 @@
 #include "UI_Manager.h"
 #include "UI_Fade.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
+
 IMPLEMENT_SINGLETON(CGrandprix_Manager)
 
 CGrandprix_Manager::CGrandprix_Manager()
@@ -42,6 +46,17 @@ void CGrandprix_Manager::Tick(_float fTimeDelta)
 	// 그랑프리가 시작되었는지 확인한다. false면 return;
 	if (KEY_TAP(KEY::P))
 		Show_GoalObject();
+
+	// 그랑프리가 정상적으로 끝났는지 확인한다.
+	if (false == m_bReset && true == m_bGrandPrixEnd)
+	{
+		if (true == CUI_Manager::GetInstance()->Is_FadeFinished())
+		{
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(false, 16.f, 0.1f);
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f, true);
+			m_bReset = true;
+		}
+	}
 
 	if (true == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP])
 	{
@@ -435,6 +450,11 @@ void CGrandprix_Manager::End_Grandprix()
 		m_pGoal->Set_Dead(true);
 		Safe_Release(m_pGoal);
 	}
+
+	m_bGrandPrixEnd = true;
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(true, 16.f, 0.1f);
+	GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 3.f, 0.2f, true);
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 0.2f, true);
 }
 
 void CGrandprix_Manager::Add_ItemBox(_uint iType)

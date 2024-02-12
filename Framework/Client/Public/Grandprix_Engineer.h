@@ -37,6 +37,18 @@ private:
 
 
 private:
+	_float4 m_vDissolveColor = _float4(0.427f, 0.894f, 1.f, 1.f);
+	_float  m_fDissolveTotal = 10.f;
+	_float  m_fDissolveDuration = 5.f;
+	_float  m_fDissolveWeight = 0.f;
+	_float  m_fDissolveSpeed = 5.f;
+
+	class CTexture* m_pDissolveTexture = nullptr;
+
+	_float3 m_vBloomPower = _float3(0.f, 0.f, 0.f);
+
+
+private:
 	HRESULT Ready_Sockets();
 	HRESULT Ready_Parts();
 
