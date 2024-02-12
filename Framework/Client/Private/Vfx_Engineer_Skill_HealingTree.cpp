@@ -9,6 +9,9 @@
 #include "Effect.h"
 #include "Utils.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+
 CVfx_Engineer_Skill_HealingTree::CVfx_Engineer_Skill_HealingTree(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
 {
@@ -182,6 +185,7 @@ void CVfx_Engineer_Skill_HealingTree::Tick(_float fTimeDelta)
 			{
 				m_fTimeAcc = 0.f;
 
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Increase_HP(100);
 				CTransform* pOwnerTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
 				if (nullptr != pOwnerTransform)
 					m_WorldMatrix = pOwnerTransform->Get_WorldFloat4x4();

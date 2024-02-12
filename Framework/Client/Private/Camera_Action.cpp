@@ -1591,6 +1591,8 @@ HRESULT CCamera_Action::Start_Action_Stellia_Dead(CGameObject* pGameObject)
 	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
 
 	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+
+	return S_OK;
 }
 
 
