@@ -4,6 +4,8 @@
 #include "BehaviorTree.h"
 #include "Model.h"
 
+#include "Sound_Manager.h"
+
 CCriminal_MonsterNode_Skill1::CCriminal_MonsterNode_Skill1()
 {
 }

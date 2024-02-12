@@ -19,10 +19,6 @@ HRESULT CMainQuestNode_Glanix10::Initialize()
 {
 	__super::Initialize();
 
-	m_strQuestTag = TEXT("[메인]");
-	m_strQuestName = TEXT("국왕 루슬란");
-	m_strQuestContent = TEXT("루슬란과 대화하기");
-
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/04.MainQuest_Glanix/MainQuest_Glanix10.json");
 
 	for (const auto& talkDesc : Load) {

@@ -104,14 +104,13 @@ void CSubQuestNode_Wanted07::TalkEvent()
 	switch (m_iTalkIndex)
 	{
 	case 0:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("Wanted_07_01.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionTalk"));
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Wanted_07_00.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		break;
 	case 1:
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Wanted_07_01.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		break;
+	case 2:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Wanted_07_02.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
 		break;
 	}
 }

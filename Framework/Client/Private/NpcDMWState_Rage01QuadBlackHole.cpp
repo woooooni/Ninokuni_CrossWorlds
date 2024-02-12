@@ -31,6 +31,8 @@ HRESULT CNpcDMWState_Rage01QuadBlackHole::Initialize(const list<wstring>& Animat
 void CNpcDMWState_Rage01QuadBlackHole::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("DreamersMazeWitch_V_Skill_4.ogg"), CHANNELID::SOUND_VOICE_NPC, 1.f, true);
+
 	// m_pWitch->Set_IsFollowing(true);
 
 	m_bIsAttack = false;

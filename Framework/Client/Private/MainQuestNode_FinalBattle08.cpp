@@ -143,7 +143,7 @@ void CMainQuestNode_FinalBattle08::TalkEvent()
 	switch (m_iTalkIndex)
 	{
 	case 0:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_05_00_KuuSay_Happy1.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("FinalBattle_08_00.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pWitch->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pWitch->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
 		break;

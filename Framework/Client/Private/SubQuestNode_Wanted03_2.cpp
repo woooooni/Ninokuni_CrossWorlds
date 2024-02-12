@@ -167,8 +167,8 @@ void CSubQuestNode_Wanted03_2::TalkEvent()
 	{
 	case 0:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Wanted_03_02_01.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pCriminal->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pCriminal->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("Stand01Idle01"));
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
 
 		// 아래 카메라 액션 변경시 카메라 담당 상의 필요
 		m_pCriminal->Get_Component_Transform()->LookAt_ForLandObject((m_vCirminalOriginLookAt * -1.f).OneW());

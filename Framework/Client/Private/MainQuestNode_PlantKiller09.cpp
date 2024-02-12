@@ -24,8 +24,6 @@ HRESULT CMainQuestNode_PlantKiller09::Initialize()
 
 void CMainQuestNode_PlantKiller09::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
 	m_pCyan = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_NPC, TEXT("Cyan"));
 	Vec4 vSpotPos = Set_DestSpot(m_pCyan);
 

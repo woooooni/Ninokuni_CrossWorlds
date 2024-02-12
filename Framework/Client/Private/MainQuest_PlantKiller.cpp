@@ -13,6 +13,7 @@
 #include "MainQuestNode_PlantKiller08.h"
 #include "MainQuestNode_PlantKiller09.h"
 #include "MainQuestNode_PlantKiller10.h"
+#include "MainQuestNode_PlantKiller11.h"
 
 CMainQuest_PlantKiller::CMainQuest_PlantKiller()
 {
@@ -34,6 +35,7 @@ HRESULT CMainQuest_PlantKiller::Initialize()
 	CMainQuestNode_PlantKiller08* pMainQuestPlantKiller08 = CMainQuestNode_PlantKiller08::Create();
 	CMainQuestNode_PlantKiller09* pMainQuestPlantKiller09 = CMainQuestNode_PlantKiller09::Create();
 	CMainQuestNode_PlantKiller10* pMainQuestPlantKiller10 = CMainQuestNode_PlantKiller10::Create();
+	CMainQuestNode_PlantKiller11* pMainQuestPlantKiller11 = CMainQuestNode_PlantKiller11::Create();
 
 	m_pRootNode->Add_ChildNode(pMainQuestPlantKiller01);
 	m_pRootNode->Add_ChildNode(pMainQuestPlantKiller02);
@@ -45,6 +47,7 @@ HRESULT CMainQuest_PlantKiller::Initialize()
 	m_pRootNode->Add_ChildNode(pMainQuestPlantKiller08);
 	m_pRootNode->Add_ChildNode(pMainQuestPlantKiller09);
 	m_pRootNode->Add_ChildNode(pMainQuestPlantKiller10);
+	m_pRootNode->Add_ChildNode(pMainQuestPlantKiller11);
 
 	return S_OK;
 }

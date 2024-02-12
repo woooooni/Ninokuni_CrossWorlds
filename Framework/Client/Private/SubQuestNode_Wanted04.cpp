@@ -152,7 +152,7 @@ void CSubQuestNode_Wanted04::TalkEvent()
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("Stand01Idle01"));
 		break;
 	case 1:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("Wanted_04_02.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("Wanted_04_02.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
 		break;

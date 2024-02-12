@@ -30,6 +30,8 @@ HRESULT CNpcDMWState_Charge::Initialize(const list<wstring>& AnimationList)
 void CNpcDMWState_Charge::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("DreamersMazeWitch_V_Skill_3.ogg"), CHANNELID::SOUND_VOICE_NPC, 1.f, true);
+
 }
 
 void CNpcDMWState_Charge::Tick_State(_float fTimeDelta)

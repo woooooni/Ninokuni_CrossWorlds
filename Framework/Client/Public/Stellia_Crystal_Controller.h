@@ -33,6 +33,8 @@ public:
 	void	Clear_Progress();
 	void	Set_CrystalTurnData();
 
+	_int Get_CrystalBingoType() { return m_iOriginalType; }
+
 private:
 	Vec4 m_vOriginPos;
 	CStellia* m_pStellia = nullptr;

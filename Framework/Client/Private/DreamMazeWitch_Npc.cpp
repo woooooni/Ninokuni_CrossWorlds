@@ -6,6 +6,9 @@
 #include "UI_World_NPCTag.h"
 #include "UI_World_NPCSpeechBalloon.h"
 
+#include "NpcState_Idle.h"
+#include "UniqueNpcState_Talk.h"
+
 #include "NpcDMWState_Idle.h"
 #include "NpcDMWState_InvasionAppear.h"
 #include "NpcDMWState_InvasionDisappearTurn.h"
@@ -188,6 +191,14 @@ HRESULT CDreamMazeWitch_Npc::Ready_States()
 	m_tStat.fSpeed = 6.f;
 
 	list<wstring> strAnimationName;
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Stand");
+	m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Stand");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_TALK, CUniqueNpcState_Talk::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Stand");

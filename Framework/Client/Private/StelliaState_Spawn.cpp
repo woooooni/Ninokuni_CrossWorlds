@@ -29,6 +29,9 @@ void CStelliaState_Spawn::Enter_State(void* pArg)
 
 	// 마법진 이펙트 생성 
 	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Spawn_Roar"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
+
+	/* Change Bgm */
+	GI->Play_BGM(L"BGM_Int_Boss_Halloween_1_Part1.ogg", GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, 0.75f);
 }
 
 void CStelliaState_Spawn::Tick_State(_float fTimeDelta)

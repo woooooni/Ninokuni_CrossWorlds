@@ -381,39 +381,29 @@ void CMainQuestNode_FinalBattle07::TalkEvent()
 	switch (m_iTalkIndex)
 	{
 	case 0:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_04_00_KuuSay_Akk!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionTalk"));
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("FinalBattle_07_00.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		break;
 	case 1:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_04_01_KuuSay_Battle!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("FinalBattle_07_01.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		break;
 	case 2:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_04_02_KuuSay_EEEE....ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("FinalBattle_07_02.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		break;
 	case 3:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_04_03_04_KuuSay_AhHa!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
 		break;
 	case 4:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_04_03_04_KuuSay_AhHa!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
 		break;
 	case 5:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_04_05_KuuSay_WatchOut!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("FinalBattle_07_05.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		break;
 	case 6:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_04_06_KuuSay_OK!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
+		break;
+	case 7:
+		break;
+	case 8:
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("FinalBattle_07_07.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		break;
+	case 9:
 		break;
 	}
 

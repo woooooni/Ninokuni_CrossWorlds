@@ -166,7 +166,7 @@ void CSubQuestNode_NoisySnowField06::TalkEvent()
 	case 0:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("NoisyField_06_00.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pDestroyer->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pDestroyer->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Destroyer_Merge.ao|Destroyer_ClassBoostingSendComplete"));
+		m_pDestroyer->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Destroyer_Merge.ao|Destroyer_Win"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_LEFT);
 		break;
@@ -175,13 +175,13 @@ void CSubQuestNode_NoisySnowField06::TalkEvent()
 		{
 			CSound_Manager::GetInstance()->Play_Sound(TEXT("NoisyField_06_01_Win.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 			m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-			m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
+			m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_CSHatchOut01"));
 		}
 		else
 		{
 			CSound_Manager::GetInstance()->Play_Sound(TEXT("NoisyField_06_01_Lose.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 			m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-			m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
+			m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
 		}
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
@@ -202,8 +202,6 @@ void CSubQuestNode_NoisySnowField06::TalkEvent()
 		break;
 	case 4:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("NoisyField_06_04.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pDestroyer->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pDestroyer->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Destroyer_Merge.ao|Destroyer_NeutralIdle03"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
 		break;
@@ -217,7 +215,7 @@ void CSubQuestNode_NoisySnowField06::TalkEvent()
 	case 6:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("NoisyField_06_06.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pDestroyer->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pDestroyer->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Destroyer_Merge.ao|Destroyer_ControlMonsterSton"));
+		m_pDestroyer->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Destroyer_Merge.ao|Destroyer_NeutralIdle01"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_RIGTH);
 		break;

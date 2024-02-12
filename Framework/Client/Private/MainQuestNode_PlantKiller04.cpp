@@ -121,42 +121,34 @@ void CMainQuestNode_PlantKiller04::TalkEvent()
 	switch (m_iTalkIndex)
 	{
 	case 0:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("01_KuuSay_Hey.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("PlantKiller_04_00.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pRuby->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pRuby->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Ruby.ao|Ruby_Talk"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;
 	case 1:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("02_VerdeSay_Hello.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("PlantKiller_04_01.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
 		break;
 	case 2:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_WeIntroduce.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("PlantKiller_04_02.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pRuby->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		// m_pRuby->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Ruby.ao|Ruby_Talk"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
 		break;
 	case 3:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("04_VerdeSay_AhHa.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("PlantKiller_04_03.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_CSHatchOut01"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER_FROM_BACK_NPC);
 		break;
-	case 4:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("04_VerdeSay_AhHa.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pRuby->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pRuby->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Ruby.ao|Ruby_Talk"));
-		/* 대화 카메라 타겟 변경 */
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
-		break;
 	}
-
 }
 
 CMainQuestNode_PlantKiller04* CMainQuestNode_PlantKiller04::Create()
