@@ -6,6 +6,9 @@
 #include "Glanix.h"
 #include "Effect.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+
 CVfx_Glanix_Skill_Spawn::CVfx_Glanix_Skill_Spawn(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
 {
@@ -87,6 +90,13 @@ void CVfx_Glanix_Skill_Spawn::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_ET2_E_ROAR && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_ROAR])
 		{
+			if (false == m_bRadialBlur)
+			{
+				// 레디얼 블러 활성화
+				CGame_Manager::GetInstance()->Set_RadialBlur(true, 16.f, 0.1f);
+				m_bRadialBlur = true;
+			}
+
 			GET_INSTANCE(CEffect_Manager)->Tick_Generate_Effect(&m_fTimeAcc, 0.225f, fTimeDelta, TEXT("Effect_Glanix_Roar_TrailLine"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_ROAR], m_pScaleOffset[TYPE_ET2_E_ROAR], m_pRotationOffset[TYPE_ET2_E_ROAR]);
 
@@ -150,5 +160,9 @@ void CVfx_Glanix_Skill_Spawn::Free()
 		Safe_Delete_Array(m_pPositionOffset);
 		Safe_Delete_Array(m_pScaleOffset);
 		Safe_Delete_Array(m_pRotationOffset);
+	}
+	else
+	{
+		CGame_Manager::GetInstance()->Set_RadialBlur(false);
 	}
 }

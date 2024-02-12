@@ -41,6 +41,7 @@ protected:
 
 private:
 	class CDecal* m_pMagicCircle = nullptr;
+	_bool m_bRadialBlur = false;
 
 public:
 	static CVfx_Stellia_Spawn_Roar* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

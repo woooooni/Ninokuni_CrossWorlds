@@ -53,6 +53,8 @@ private:
 	class CDecal* m_pWarningDecal = nullptr;
 	class CEffect* m_SpringUpEffect = nullptr;
 
+	_bool m_bRadialBlur = false;
+
 public:
 	static CVfx_Glanix_Skill_HandDown* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 		const wstring& strObjectTag);

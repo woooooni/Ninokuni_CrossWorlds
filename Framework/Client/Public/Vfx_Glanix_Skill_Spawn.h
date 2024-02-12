@@ -40,6 +40,7 @@ protected:
 
 private:
 	_float m_fTimeAcc = 0.f;
+	_bool m_bRadialBlur = false;
 
 public:
 	static CVfx_Glanix_Skill_Spawn* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

@@ -69,6 +69,22 @@ void CGame_Manager::LateTick(_float fTimeDelta)
 	}
 }
 
+void CGame_Manager::Set_RadialBlur(_bool bSet, _float fQuality, _float fRadialBlurPower)
+{
+	if (nullptr == m_pPlayer)
+		return;
+
+	CCharacter* pCharacter = m_pPlayer->Get_Character();
+	if (nullptr == pCharacter)
+		return;
+
+	CRenderer* pRenderer = pCharacter->Get_RendererCom();
+	if (nullptr == pRenderer)
+		return;
+
+	pRenderer->Set_RadialBlur(bSet, fQuality, fRadialBlurPower);
+}
+
 void CGame_Manager::Set_KuuTarget_Player()
 {
 	m_pKuu->Set_KuuTarget_Player();

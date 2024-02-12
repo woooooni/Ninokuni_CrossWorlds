@@ -39,7 +39,7 @@ void CStelliaState_SpawnStand::Exit_State()
 		if (nullptr != pDecal)
 		{
 			pDecal->Start_AlphaDeleate();
-			Safe_Release(pDecal);
+			//Safe_Release(pDecal);
 		}
 	}
 }

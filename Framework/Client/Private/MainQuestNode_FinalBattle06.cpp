@@ -10,6 +10,9 @@
 #include "UI_Manager.h"
 #include "UI_Fade.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+
 CMainQuestNode_FinalBattle06::CMainQuestNode_FinalBattle06()
 {
 }
@@ -55,12 +58,18 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle06::Tick(const _float& fTimeDelta)
 					CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
 					if(nullptr != pActionCam)
 						pActionCam->Start_Action_Witch_Roar();
+
+					// 레디얼 블러 활성화
+					CGame_Manager::GetInstance()->Set_RadialBlur(true, 16.f, 0.05f);
 				}
 
 				if(m_pWitch->Get_Component_Model()->Get_CurrAnimationFrame() == 100)
 				{
 					if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 					{
+						// 레디얼 블러 비활성화
+						CGame_Manager::GetInstance()->Set_RadialBlur(false);
+
 						m_bIsFadeOut = true;
 						CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
 					}
