@@ -72,7 +72,7 @@ HRESULT CMainApp::Initialize()
 
 		g_iStartQuestLevel = QUEST_LEVEL::QL_5_INVASION;		/* 시작 퀘스트 레벨 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH;			/* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::DESTROYER_CH;			/* 모델 로드할 캐릭터 타입 */
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::DESTROYER_CH;	/* 게임 플레이 캐릭터 타입 */
 	}
@@ -537,6 +537,16 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_FireTex"),
 	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/InvasionEvermore/Firetex.dds")))))
 	//	return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_FireDiffuse"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/Fire/FireDiffuse.dds")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_FireNoise"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/Fire/FireNoise.dds")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_FireAlpha"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/Fire/FireAlpha.dds")))))
+		return E_FAIL;
 
 	/* For.Prototype_Component_Sky */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Cloud"),

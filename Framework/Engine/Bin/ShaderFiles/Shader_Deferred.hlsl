@@ -139,7 +139,6 @@ struct PS_OUT_LIGHT
 {
 	float4	vShade : SV_TARGET0;	
 	float4	vSpecular : SV_TARGET1;
-
 };
 
 void CaclDirectional(float3 position, float3 normal, float3 ambientColor, inout PS_OUT_LIGHT output)
