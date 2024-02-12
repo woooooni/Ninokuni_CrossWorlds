@@ -1672,8 +1672,8 @@ HRESULT CUIMinigame_Manager::Ready_Curling()
 
 void CUIMinigame_Manager::Tick_Grandprix(_float fTimeDelta)
 {
-	//if (KEY_TAP(KEY::N))
-	//	Intro_Grandprix();
+	if (KEY_TAP(KEY::N))
+		Intro_Grandprix();
 	//
 	//if (KEY_TAP(KEY::M))
 	//	End_Grandprix();

@@ -39,6 +39,9 @@ public:
 	void Add_ItemBox(_uint iType);
 	void Show_GoalObject();
 
+public:
+	_bool Is_GrandPrixEnd() { return (true == m_bGrandPrixEnd && true == m_bReset); }
+
 private:
 	GRANDPRIX_PHASE m_eCurPhase = { GRANDPRIX_PHASE::GRANDPRIX_NO_RUN };
 
