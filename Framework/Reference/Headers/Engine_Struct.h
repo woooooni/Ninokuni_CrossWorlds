@@ -56,6 +56,10 @@ namespace Engine
 
 		TYPE			eType;
 		_bool			bNonCull = false;
+
+		_float fSpecExp = 0.0f;
+		_float fSpecIntensity = 0.0f;
+
 #pragma region Point
 		_float fTempRange = 0.0f;
 #pragma endregion

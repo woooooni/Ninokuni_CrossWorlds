@@ -182,7 +182,7 @@
 #include "Respawn_Box.h"
 #include "CurlingGame_Manager.h"
 
-
+#include "Quest_Manager.h"
 
 _bool CLoader::g_bFirstLoading = false;
 _bool CLoader::g_bLevelFirst[LEVELID::LEVEL_WITCHFOREST + 1] = {};
@@ -828,10 +828,16 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		if (GI->Add_Prototype(TEXT("Prorotype_GameObject_Grandprix_Goal"),
 			CGrandprix_Goal::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_ETC, true))
 			return E_FAIL;
+
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_PerlinFire"),
+			CPerlinFire::Create(m_pDevice, m_pContext, TEXT("Common_PerlinFire"), OBJ_TYPE::OBJ_PROP), LAYER_TYPE::LAYER_PROP, true))
+			return E_FAIL;
 		
 		g_bLevelFirst[LEVEL_EVERMORE] = true;
 
 	}
+
+
 
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
 	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Npc_Data, this, L"Evermore");
@@ -1089,9 +1095,9 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		CEntireGrass::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_EntireGrass")), LAYER_TYPE::LAYER_GRASS, true))
 		return E_FAIL;
 
-	//if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_PerlinFire"),
-	//	CPerlinFire::Create(m_pDevice, m_pContext, TEXT("Common_PerlinFire"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true))
-	//	return E_FAIL;
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_PerlinFire"),
+		CPerlinFire::Create(m_pDevice, m_pContext, TEXT("Common_PerlinFire"), OBJ_TYPE::OBJ_PROP), LAYER_TYPE::LAYER_PROP, true))
+		return E_FAIL;
 
 	CMonster::MONSTER_STAT statDesc;
 	statDesc.fHp = 100;
@@ -1254,6 +1260,11 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 {
 	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L".map";
 
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
+	{
+		strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L"_Invasion" + L".map";
+	}
+
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMapFilePath, FileMode::Read);
 
@@ -1306,7 +1317,8 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 				Init_Data.vStartPosition = vPos;
 
 				CGameObject* pObj = nullptr;
-				if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, &Init_Data, &pObj, true)))
+
+				if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, &Init_Data, &pObj)))
 				{
 					MSG_BOX("Load_Map_Objects_Failed.");
 					return E_FAIL;
@@ -1326,9 +1338,6 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 					return E_FAIL;
 				}
 
-				vPos.w = 1.f;
-	
-
 				pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
 				pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
 				pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
@@ -1342,8 +1351,6 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 					pStadium->push_back(pObj);
 			}
 		}
-
-
 	}
 
 

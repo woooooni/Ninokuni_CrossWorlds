@@ -131,6 +131,41 @@ SamplerState ClampSampler
     AddressV = Clamp;
 };
 
+cbuffer NoiseBuffer
+{
+    float frameTime;
+    float3 scrollSpeeds;
+    float3 scales;
+};
+
+struct FlameInput
+{
+    float4 vPosition : SV_POSITION;
+    float2 vTexcoord : TEXCOORD0;
+    float2 vTexcoord1 : TEXCOORD1;
+    float2 vTexcoord2 : TEXCOORD2;
+    float2 vTexcoord3 : TEXCOORD3;
+};
+
+FlameInput FireVertexShader(VS_IN input)
+{
+    FlameInput output = (FlameInput) 0;
+
+    output.vPosition = mul(float4(input.vPosition, 1.0f), WorldViewProj);
+    output.vTexcoord = input.vTexUV;
+    
+    output.vTexcoord1 = input.vTexUV * scales.x;
+    output.vTexcoord1.y = output.vTexcoord1.y + (frameTime * scrollSpeeds.x);
+    
+    output.vTexcoord2 = input.vTexUV * scales.y;
+    output.vTexcoord2.y = output.vTexcoord2.y + (frameTime * scrollSpeeds.y);
+    
+    output.vTexcoord3 = input.vTexUV * scales.z;
+    output.vTexcoord3.y = output.vTexcoord3.y + (frameTime * scrollSpeeds.z);
+    
+    return output;
+}
+
 VS_OUT VS_MAIN(VS_IN In)
 {
 	VS_OUT		Out = (VS_OUT)0;
@@ -295,6 +330,61 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;	
 }
 
+Texture2D fireTexture;
+Texture2D noiseTexture;
+Texture2D alphaTexture;
+
+cbuffer DistortionBuffer
+{
+    float2 distortion1;
+    float2 distortion2;
+    float2 distortion3;
+    float distortionScale;
+    float distortionBias;
+};
+
+PS_OUT FirePixelShader(FlameInput input) : SV_TARGET
+{
+    PS_OUT output = (PS_OUT) 0;
+    
+    float4 noise1;
+    float4 noise2;
+    float4 noise3;
+    float4 finalNoise;
+    float perturb;
+    float2 noiseCoords;
+    float4 fireColor;
+    float4 alphaColor;
+    
+    noise1 = noiseTexture.Sample(LinearSampler, input.vTexcoord1);
+    noise2 = noiseTexture.Sample(LinearSampler, input.vTexcoord2);
+    noise3 = noiseTexture.Sample(LinearSampler, input.vTexcoord3);
+    
+    noise1 = (noise1 - 0.5f) * 2.0f;
+    noise2 = (noise2 - 0.5f) * 2.0f;
+    noise3 = (noise3 - 0.5f) * 2.0f;
+
+    noise1.xy = noise1.xy * distortion1.xy;
+    noise2.xy = noise2.xy * distortion2.xy;
+    noise3.xy = noise3.xy * distortion3.xy;
+    
+    finalNoise = noise1 + noise2 + noise3;
+    
+    perturb = ((1.0f - input.vTexcoord.y) * distortionScale) + distortionBias;
+    
+    noiseCoords.xy = (finalNoise.xy * perturb) + input.vTexcoord.xy;
+    
+    fireColor = fireTexture.Sample(ClampSampler, noiseCoords.xy);
+
+    alphaColor = alphaTexture.Sample(ClampSampler, noiseCoords.xy);
+    
+    fireColor.a = alphaColor;
+    
+    output.vColor = fireColor;
+    output.vBloom = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    
+    return output;
+}
 
 cbuffer CB_Moon
 {
@@ -593,12 +683,12 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_NoneCull);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 PerlinFireVS();
+        VertexShader = compile vs_5_0 FireVertexShader();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PerlinFire3DPS();
+        PixelShader = compile ps_5_0 FirePixelShader();
     }
 }
