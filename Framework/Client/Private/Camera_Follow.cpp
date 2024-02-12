@@ -364,12 +364,12 @@ void CCamera_Follow::Set_Active(const _bool bActive)
 			if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 				CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
 
-			/* Input On */
-			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
-
 			/* Default Setting (블렌딩에서의 Set_Active라면 블렌딩 전에 이미 이 함수를 실행 해주므로 굳이 2번 해 줄 필요 없다)*/
 			if (!Is_Blending())
 			{
+				/* Input On */
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+
 				Reset_WideView_To_DefaultView(true);
 				Set_Default_Position();
 			}

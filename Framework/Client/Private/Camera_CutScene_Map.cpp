@@ -318,8 +318,8 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID, const _uin
 			{
 				CutSceneNames.push_back("Evermore_Ending_From_Back_00");
 				CutSceneNames.push_back("Evermore_Ending_From_Back_01");
-				CutSceneNames.push_back("Evermore_Ending_From_Front_00");
 				CutSceneNames.push_back("Evermore_Ending_From_Front_01");
+				CutSceneNames.push_back("Evermore_Ending_From_Front_00");
 
 			}
 			Start_CutScenes(CutSceneNames, true);
