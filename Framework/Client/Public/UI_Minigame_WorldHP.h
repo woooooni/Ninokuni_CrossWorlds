@@ -13,6 +13,7 @@ protected:
 
 public:
 	void Set_VehicleInformation(class CVehicle_Flying* pOwner);
+	void Update_Offset(_float fOffset) { m_fOffset = fOffset; }
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -33,6 +34,8 @@ private:
 	_float m_fCurHP = { 0.f };
 
 	_uint m_iPass = { 14 };
+
+	_float m_fOffset = { 2.4f };
 
 	ELEMENTAL_TYPE m_eElementalType = { ELEMENTAL_TYPE::LIGHT };
 

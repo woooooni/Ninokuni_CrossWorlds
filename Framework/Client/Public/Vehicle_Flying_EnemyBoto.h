@@ -16,6 +16,7 @@ public:
 		if (5 < iIndex)
 			return;
 		m_iTextureIndex = iIndex; }
+	void Set_BiggerSize(_bool bSize);
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -58,6 +59,7 @@ private:
 	_uint m_iTextureIndex = { 0 };
 
 	_float m_fDistance = { 0.f }; // 플레이어와 Boto의 사이거리 -> UI목적
+	_bool m_bSize = { false }; // 아이템으로 인한 사이즈 조절 상태인가
 
 private:
 	_float4 m_vDissolveColor = _float4(0.427f, 0.894f, 1.f, 1.f);

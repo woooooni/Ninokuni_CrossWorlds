@@ -51,48 +51,9 @@ void CUI_Stellia_GaugeBar::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-//		if (m_iMaxDamage <= m_iCurDamage)
-//		{
-//			m_iCurDamage = m_iMaxDamage;
-//
-//			m_fTimeAcc += fTimeDelta; // 데미지가 다 차면 시간을 누적한다 -> 바로 사라지는 것은 어색함.
-//			if (1.f < m_fTimeAcc)
-//			{
-//				m_fTimeAcc = 0.f;
-//				Set_Active(false);
-//				Set_Dead(true);
-//			}
-//		}
-//
-//		if (m_iCurDamage > m_iPreDamage)
-//			m_bLerp = false;
-//
-//		if ((false == m_bLerp) && (m_iPreDamage < m_iCurDamage))
-//		{
-//			m_iPreDamage += fTimeDelta * (m_iMaxDamage / 9.f);
-//
-//			if (m_iPreDamage >= m_iCurDamage)
-//			{
-//				m_iPreDamage = m_iCurDamage;
-//				m_bLerp = true;
-//			}
-//		}
-//
-//		m_fTextureAcc += fTimeDelta;
-//
-//		if (0.01f < m_fTextureAcc)
-//		{
-//			m_fTextureAcc = 0.f;
-//
-//			if (7 == m_iTextureIndex)
-//				m_iTextureIndex = 0;
-//			else
-//				m_iTextureIndex++;
-//		}
-
 		//TestCode
-		if (KEY_TAP(KEY::O))
-			m_iCurGauge += 10;
+//		if (KEY_TAP(KEY::O))
+//			m_iCurGauge += 10;
 
 		__super::Tick(fTimeDelta);
 	}

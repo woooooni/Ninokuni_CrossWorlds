@@ -45,6 +45,8 @@ HRESULT CUI_WeaponSection_Recommend::Initialize(void* pArg)
 
 void CUI_WeaponSection_Recommend::Tick(_float fTimeDelta)
 {
+	Decide_WeaponElemental();
+
 	if (m_bActive)
 	{
 		if (false == m_bUp)
@@ -78,95 +80,6 @@ void CUI_WeaponSection_Recommend::Tick(_float fTimeDelta)
 
 		__super::Tick(fTimeDelta);
 	}
-
-	CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
-	CGameObject* pTarget = nullptr;
-	pTarget = pCharacter->Get_Target();
-
-	if (nullptr == pTarget)
-	{
-		if (true == Get_Active())
-			Set_Active(false);
-
-		return;
-	}
-
-	if (true == pTarget->Is_ReserveDead() || pTarget->Is_Dead())
-		return;
-
-	if (OBJ_TYPE::OBJ_MONSTER == pTarget->Get_ObjectType())
-	{
-		ELEMENTAL_TYPE eMonsterElemental = dynamic_cast<CMonster*>(pTarget)->Get_Stat().eElementType;
-		ELEMENTAL_TYPE ePlayerElemental = pCharacter->Get_ElementalType();
-		
-		switch (eMonsterElemental)
-		{
-		case ELEMENTAL_TYPE::FIRE:
-			if (ELEMENTAL_TYPE::FIRE == ePlayerElemental || ELEMENTAL_TYPE::WOOD == ePlayerElemental)
-			{
-				if (m_iCurIndex != 1)
-				{
-					// 2번째로 옮긴다. WATER가 이기는 속성
-					Update_Position(1);
-				}
-
-				if (false == Get_Active())
-					Set_Active(true);
-			}
-			else
-			{
-				if (ELEMENTAL_TYPE::WATER == ePlayerElemental)
-				{
-					if (true == Get_Active())
-						Set_Active(false);
-				}
-			}
-			break;
-
-		case ELEMENTAL_TYPE::WATER:
-			if (ELEMENTAL_TYPE::FIRE == ePlayerElemental || ELEMENTAL_TYPE::WATER == ePlayerElemental)
-			{
-				if (m_iCurIndex != 2)
-				{
-					// 3번째로 옮긴다. WOOD가 이기는 속성
-					Update_Position(2);
-				}
-
-				if (false == Get_Active())
-					Set_Active(true);
-			}
-			else
-			{
-				if (ELEMENTAL_TYPE::WOOD == ePlayerElemental)
-				{
-					if (true == Get_Active())
-						Set_Active(false);
-				}
-			}
-			break;
-
-		case ELEMENTAL_TYPE::WOOD:
-			if (ELEMENTAL_TYPE::WATER == ePlayerElemental || ELEMENTAL_TYPE::WOOD == ePlayerElemental)
-			{
-				if (m_iCurIndex != 0)
-				{
-					// 0번째로 옮긴다. FIRE가 이기는 속성
-					Update_Position(0);
-				}
-
-				if (false == Get_Active())
-					Set_Active(true);
-			}
-			else
-			{
-				if (ELEMENTAL_TYPE::FIRE == ePlayerElemental)
-				{
-					if (true == Get_Active())
-						Set_Active(false);
-				}
-			}
-			break;
-		}
 
 //		switch (ePlayerElemental)
 //		{
@@ -230,7 +143,6 @@ void CUI_WeaponSection_Recommend::Tick(_float fTimeDelta)
 //			}
 //			break;
 //		}
-	}
 }
 
 void CUI_WeaponSection_Recommend::LateTick(_float fTimeDelta)
@@ -303,10 +215,9 @@ HRESULT CUI_WeaponSection_Recommend::Ready_Components()
 
 HRESULT CUI_WeaponSection_Recommend::Ready_State()
 {
-	_float fSize = 64.f * 0.3f;
+	_float fSize = 64.f * 0.6f;
 
-	//_float2 vDefaultOffset = _float2(17.f, -170.f);
-	_float2 vDefaultOffset = _float2(17.f, -240.f);
+	_float2 vDefaultOffset = _float2(17.f, -260.f);
 	_float fOffset = 85.f;
 
 	// WeaponSection의 정보를 그대로 가져다가 사용함.
@@ -355,6 +266,117 @@ HRESULT CUI_WeaponSection_Recommend::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CUI_WeaponSection_Recommend::Decide_WeaponElemental()
+{
+	CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
+	CGameObject* pTarget = nullptr;
+	pTarget = pCharacter->Get_Target();
+
+	// 타겟이 없으면 끄고 return;
+	if (nullptr == pTarget)
+	{
+		if (true == Get_Active())
+			Set_Active(false);
+		return;
+	}
+
+	if (true == pTarget->Is_ReserveDead() || pTarget->Is_Dead())
+		return;
+
+	if (OBJ_TYPE::OBJ_MONSTER == pTarget->Get_ObjectType())
+	{
+		ELEMENTAL_TYPE eMonsterElemental = dynamic_cast<CMonster*>(pTarget)->Get_Stat().eElementType;
+		ELEMENTAL_TYPE ePlayerElemental = pCharacter->Get_ElementalType();
+
+		switch (eMonsterElemental)
+		{
+		case ELEMENTAL_TYPE::FIRE:
+			if (ELEMENTAL_TYPE::FIRE == ePlayerElemental || ELEMENTAL_TYPE::WOOD == ePlayerElemental)
+			{
+				if (m_iCurIndex != 1)
+				{
+					// 2번째로 옮긴다. WATER가 이기는 속성
+					Update_Position(1);
+				}
+
+				if (false == Get_Active())
+					Set_Active(true);
+			}
+			else
+			{
+				if (ELEMENTAL_TYPE::WATER == ePlayerElemental)
+				{
+					if (1 == m_iCurIndex)
+					{
+						if (true == Get_Active())
+							Set_Active(false);
+					}
+
+					if (true == Get_Active())
+						Set_Active(false);
+				}
+			}
+			break;
+
+		case ELEMENTAL_TYPE::WATER:
+			if (ELEMENTAL_TYPE::FIRE == ePlayerElemental || ELEMENTAL_TYPE::WATER == ePlayerElemental)
+			{
+				if (m_iCurIndex != 2)
+				{
+					// 3번째로 옮긴다. WOOD가 이기는 속성
+					Update_Position(2);
+				}
+
+				if (false == Get_Active())
+					Set_Active(true);
+			}
+			else
+			{
+				if (ELEMENTAL_TYPE::WOOD == ePlayerElemental)
+				{
+					if (2 == m_iCurIndex)
+					{
+						if (true == Get_Active())
+							Set_Active(false);
+					}
+
+					if (true == Get_Active())
+						Set_Active(false);
+				}
+			}
+			break;
+
+		case ELEMENTAL_TYPE::WOOD:
+			if (ELEMENTAL_TYPE::WATER == ePlayerElemental || ELEMENTAL_TYPE::WOOD == ePlayerElemental)
+			{
+				if (m_iCurIndex != 0)
+				{
+					// 0번째로 옮긴다. FIRE가 이기는 속성
+					Update_Position(0);
+				}
+
+				if (false == Get_Active())
+					Set_Active(true);
+			}
+			else
+			{
+				if (ELEMENTAL_TYPE::FIRE == ePlayerElemental)
+				{
+					if (0 == m_iCurIndex)
+					{
+						if (true == Get_Active())
+							Set_Active(false);
+					}
+
+					if (true == Get_Active())
+						Set_Active(false);
+				}
+			}
+			break;
+		}
+	}
 }
 
 CUI_WeaponSection_Recommend* CUI_WeaponSection_Recommend::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

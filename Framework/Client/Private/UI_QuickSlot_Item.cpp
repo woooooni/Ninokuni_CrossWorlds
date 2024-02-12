@@ -2,6 +2,7 @@
 #include "UI_QuickSlot_Item.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Inventory_Manager.h"
 
 CUI_QuickSlot_Item::CUI_QuickSlot_Item(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_QUICKSLOT_ITEM eType)
 	: CUI(pDevice, pContext, L"UI_QuickSlot_Item")
@@ -69,6 +70,31 @@ void CUI_QuickSlot_Item::Tick(_float fTimeDelta)
 		if (QUICKITEM_END == m_eType)
 			return;
 
+		// 첫번째 퀵슬롯
+		if (QUICKITEM_FIRST == m_eType)
+		{
+			// GARA
+			// 포션의 개수를 파악해서 갱신한다.
+			// 인벤에서 아이템 개수를 받아와서 0개면 m_bUsable = false, 1개이상이면 true
+			
+			_uint iCount = CInventory_Manager::GetInstance()->Get_InvenCount(ITEM_CODE::CONSUMPSION_HP);
+
+			if (0 < iCount)
+			{
+				m_bUsable = true;
+				m_iTextureIndex = 1;
+
+				m_eCode = ITEM_CODE::CONSUMPSION_HP;
+			}
+			else
+			{
+				m_bUsable = false;
+
+				m_eCode = ITEM_CODE::CODE_END;
+			}
+		}
+
+		Use_Item(); // Key Event
 		Movement_BasedOnHiding(fTimeDelta);
 
 		__super::Tick(fTimeDelta);
@@ -81,6 +107,38 @@ void CUI_QuickSlot_Item::LateTick(_float fTimeDelta)
 	{
 		if (QUICKITEM_END == m_eType)
 			return;
+
+		if (true == m_bUsable)
+		{
+			_uint iCount = CInventory_Manager::GetInstance()->Get_InvenCount(ITEM_CODE::CONSUMPSION_HP);
+
+			// 1보다 큰 경우에만 Text로 개수를 보여준다.
+			if (1 < iCount)
+			{
+				_float2 vDefault = _float2(m_tInfo.fX - 5.5f, m_tInfo.fY + 2.f);
+				_float fOffset = (to_wstring(iCount).length() - 1) * 4.f;
+
+				CRenderer::TEXT_DESC  CountDesc;
+				CountDesc.strText = to_wstring(iCount);
+				CountDesc.strFontTag = L"Default_Bold";
+				CountDesc.vScale = { 0.3f, 0.3f };
+				// Outline
+				CountDesc.vColor = { 0.3f, 0.3f, 0.3f, 1.f };
+				CountDesc.vPosition = _float2(vDefault.x - fOffset + 1.f, vDefault.y);
+				m_pRendererCom->Add_Text(CountDesc);
+				CountDesc.vPosition = _float2(vDefault.x - fOffset - 1.f, vDefault.y);
+				m_pRendererCom->Add_Text(CountDesc);
+				CountDesc.vPosition = _float2(vDefault.x - fOffset, vDefault.y + 1.f);
+				m_pRendererCom->Add_Text(CountDesc);
+				CountDesc.vPosition = _float2(vDefault.x - fOffset, vDefault.y - 1.f);
+				m_pRendererCom->Add_Text(CountDesc);
+
+				// Text
+				CountDesc.vPosition = _float2(vDefault.x - fOffset, vDefault.y);
+				CountDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+				m_pRendererCom->Add_Text(CountDesc);
+			}
+		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
@@ -132,6 +190,10 @@ HRESULT CUI_QuickSlot_Item::Ready_Components()
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_QuickSlot_Item"),
+		TEXT("Com_Texture_01"), (CComponent**)&m_pItemTextureCom)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -158,8 +220,16 @@ HRESULT CUI_QuickSlot_Item::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
-		return E_FAIL;
+	if (true == m_bUsable)
+	{
+		if (FAILED(m_pItemTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
+			return E_FAIL;
+	}
+	else
+	{
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -215,6 +285,21 @@ void CUI_QuickSlot_Item::Movement_BasedOnHiding(_float fTimeDelta)
 	}
 }
 
+void CUI_QuickSlot_Item::Use_Item()
+{
+	if (false == m_bUsable)
+		return;
+
+	// 첫번째 퀵슬롯만 사용한다는 전제하에
+	if (KEY_TAP(KEY::P))
+	{
+		if (QUICKITEM_FIRST == m_eType)
+		{
+			CInventory_Manager::GetInstance()->Use_Item(m_eCode);
+		}
+	}
+}
+
 CUI_QuickSlot_Item* CUI_QuickSlot_Item::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_QUICKSLOT_ITEM eType)
 {
 	CUI_QuickSlot_Item* pInstance = new CUI_QuickSlot_Item(pDevice, pContext, eType);
@@ -245,5 +330,6 @@ void CUI_QuickSlot_Item::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pItemTextureCom);
 	Safe_Release(m_pTextureCom);
 }

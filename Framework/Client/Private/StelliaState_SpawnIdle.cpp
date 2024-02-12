@@ -2,6 +2,7 @@
 #include "StelliaState_SpawnIdle.h"
 
 #include "Stellia.h"
+#include "UI_Manager.h"
 
 CStelliaState_SpawnIdle::CStelliaState_SpawnIdle(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
@@ -27,6 +28,11 @@ void CStelliaState_SpawnIdle::Tick_State(_float fTimeDelta)
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_SPAWNSTAND);
+	}
+
+	if (5 == m_pModelCom->Get_CurrAnimationFrame())
+	{
+		CUI_Manager::GetInstance()->OnOff_BossNameTag(true, CUI_Manager::UI_BOSS::BOSS_STELLIA);
 	}
 }
 

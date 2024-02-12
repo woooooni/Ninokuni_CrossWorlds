@@ -52,6 +52,12 @@ HRESULT CInventory_Manager::Ready_Items()
 
 	m_Inventory[ITEM_TYPE::CONSUMPSION].push_back(CGameItem_Consumpsion::Create(&ItemDesc));
 
+	// 포션 5개를 기본으로 세팅한다.
+	for (_int i = 0; i < 5; i++)
+	{
+		Add_Item(ITEM_TYPE::CONSUMPSION, ITEM_CODE::CONSUMPSION_HP);
+	}
+
 	return S_OK;
 }
 
@@ -102,9 +108,58 @@ void CInventory_Manager::Add_Gold(_uint iGold)
 	CUI_Manager::GetInstance()->Show_AddItem(ITEM_TYPE::COIN, ITEM_CODE::CONSUMPSION_GOLD, iGold);
 }
 
+HRESULT CInventory_Manager::Use_Item(ITEM_CODE eCode)
+{
+	// 포션에 해당하는 정보만 담는다.
+	for (auto& iter : m_Inventory[ITEM_TYPE::CONSUMPSION])
+	{
+		if (nullptr != iter)
+		{
+			if (eCode == iter->Get_ItemCode())
+			{
+				iter->Add_InvenCount(false, 1);
+
+				CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+				CCharacter* pCharacter = pPlayer->Get_Character();
+				if (nullptr == pCharacter)
+					return E_FAIL;
+
+				pCharacter->Increase_HP(100);
+				return S_OK;
+			}
+		}
+	}
+
+	return S_OK;
+}
+
 _bool CInventory_Manager::Is_InInventory(ITEM_CODE eType)
 {
 	return _bool();
+}
+
+_uint CInventory_Manager::Get_InvenCount(ITEM_CODE eCode)
+{
+	// 포션의 개수만 파악할 수 있도록 우선 코드를 짠다.
+	_uint iCount = 0;
+
+	if (CONSUMPSION_HP == eCode)
+	{
+		for (auto& iter : m_Inventory[ITEM_TYPE::CONSUMPSION])
+		{
+			if (nullptr != iter)
+			{
+				if (eCode == iter->Get_ItemCode())
+				{
+					iCount = iter->Get_InvenCount();
+
+					return iCount;
+				}
+			}
+		}
+	}
+
+	return 0;
 }
 
 void CInventory_Manager::Free()

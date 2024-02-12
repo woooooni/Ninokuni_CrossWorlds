@@ -145,12 +145,10 @@ void CUI_Minigame_WorldHP::LateTick(_float fTimeDelta)
 			m_BarWorldMatrix.r[CTransform::STATE_UP] = XMVectorScale(vUp, vTemp.y);
 			m_BarWorldMatrix.r[CTransform::STATE_LOOK] = XMVectorScale(vLook, vTemp.z);
 
-			vTargetTemp.y += 2.4f;
+			vTargetTemp.y += m_fOffset;
 			m_BarWorldMatrix.r[CTransform::STATE_POSITION] = XMLoadFloat4(&vTargetTemp);
 
 			m_pTransformCom->Set_WorldMatrix(m_BarWorldMatrix);
-			//m_pTransformCom->LookAt_ForLandObject(XMLoadFloat4(&GI->Get_CamPosition()));
-
 			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 		}
 	}

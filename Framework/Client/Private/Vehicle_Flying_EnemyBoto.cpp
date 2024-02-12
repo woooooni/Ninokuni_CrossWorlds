@@ -28,6 +28,35 @@ CVehicle_Flying_EnemyBoto::CVehicle_Flying_EnemyBoto(const CVehicle_Flying_Enemy
 {
 }
 
+void CVehicle_Flying_EnemyBoto::Set_BiggerSize(_bool bSize)
+{
+	if (true == bSize)
+	{
+		if (nullptr != m_pHP)
+		{
+			m_pHP->Update_Offset(10.5f);
+
+			_float fCX = 3.75f;
+			_float fCY = 1.f;
+			m_pHP->Get_Component<CTransform>(L"Com_Transform")->Set_Scale(XMVectorSet(fCX, fCY, 1.f, 0.f));
+		}
+	}
+	else
+	{
+		if (nullptr != m_pHP)
+		{
+			m_pHP->Update_Offset(2.4f);
+
+			_float fCX = 0.75f;
+			_float fCY = 0.2f;
+			m_pHP->Get_Component<CTransform>(L"Com_Transform")->Set_Scale(XMVectorSet(fCX, fCY, 1.f, 0.f));
+			
+		}
+	}
+
+	m_bSize = bSize;
+}
+
 HRESULT CVehicle_Flying_EnemyBoto::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
