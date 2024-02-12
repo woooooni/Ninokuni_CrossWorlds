@@ -34,6 +34,7 @@ _bool CSkill_Engineer_TimeLab::Use_Skill()
 {
 	if (true == __super::Use_Skill())
 	{
+		// TODO :: 스킬매니저에 등록.
 		m_pCharacterStateMachine->Change_State(CCharacter::SKILL_SPECIAL_1);
 		return true;
 	}

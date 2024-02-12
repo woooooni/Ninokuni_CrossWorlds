@@ -34,6 +34,7 @@ _bool CSkill_Engineer_FlashHeal::Use_Skill()
 {
 	if (true == __super::Use_Skill())
 	{
+		m_pCharacter->Increase_HP(100);
 		m_pCharacterStateMachine->Change_State(CCharacter::SKILL_SPECIAL_0);
 		return true;
 	}

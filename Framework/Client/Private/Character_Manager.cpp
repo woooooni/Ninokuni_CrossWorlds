@@ -56,8 +56,7 @@ HRESULT CCharacter_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceC
 	if (FAILED(CSkill_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
-	m_bReserved = true;
-
+	m_bReserved = true;	
 
 	return S_OK;
 }
