@@ -410,20 +410,33 @@ HRESULT CCamera_Follow::Finish_LockOn(CGameObject* pTargetObject, const _float& 
 	if (nullptr == pTargetObject || LOCK_PROGRESS::OFF == m_eLockProgress)
 		return E_FAIL;
 
-	Change_LookAtObj(pTargetObject, fLockOnBlendingTime);
-
-	if (CAMERA_VIEW_TYPE::SHOLDER == m_eViewType)
+	if (fLockOnBlendingTime <= 0.1f)
 	{
-		Change_LookAtOffSet(Cam_LookAtOffset_Follow_SholderView_Default, fLockOnBlendingTime);
-		Change_TargetOffSet(Cam_TargetOffset_Follow_SholderView_Default, fLockOnBlendingTime);
+		m_pLookAtObj = pTargetObject;
+
+		memcpy(&m_tTargetOffset.vCurVec, &Cam_TargetOffset_Follow_SholderView_Default, sizeof(Vec4));
+		memcpy(&m_tLookAtOffset.vCurVec, &Cam_LookAtOffset_Follow_SholderView_Default, sizeof(Vec4));
+
+		m_eLockProgress = LOCK_PROGRESS::OFF;
 	}
-	else if (CAMERA_VIEW_TYPE::BACK == m_eViewType)
+	else
 	{
-		Change_LookAtOffSet(Cam_LookAtOffset_Follow_BackView_Default, fLockOnBlendingTime);
-		Change_TargetOffSet(Cam_TargetOffset_Follow_BackView_Default, fLockOnBlendingTime);
+		Change_LookAtObj(pTargetObject, fLockOnBlendingTime);
+
+		if (CAMERA_VIEW_TYPE::SHOLDER == m_eViewType)
+		{
+			Change_LookAtOffSet(Cam_LookAtOffset_Follow_SholderView_Default, fLockOnBlendingTime);
+			Change_TargetOffSet(Cam_TargetOffset_Follow_SholderView_Default, fLockOnBlendingTime);
+		}
+		else if (CAMERA_VIEW_TYPE::BACK == m_eViewType)
+		{
+			Change_LookAtOffSet(Cam_LookAtOffset_Follow_BackView_Default, fLockOnBlendingTime);
+			Change_TargetOffSet(Cam_TargetOffset_Follow_BackView_Default, fLockOnBlendingTime);
+		}
+		
+		m_eLockProgress = LOCK_PROGRESS::FINISH_BLEIDING;
 	}
 
-	m_eLockProgress = LOCK_PROGRESS::FINISH_BLEIDING;
 
 	m_bLockLookHeight = false;
 

@@ -74,11 +74,6 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle03::Tick(const _float& fTimeDelta)
 		{
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 
-			/* 대화 카메라 종료 */
-			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			if (nullptr != pActionCam)
-				pActionCam->Finish_Action_Talk();
-
 			m_bIsClear = true;
 			return NODE_STATE::NODE_FAIL;
 		}

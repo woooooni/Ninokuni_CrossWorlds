@@ -110,6 +110,12 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		case CCamera_Action::TOWER_DEFENSE:
 			Tick_TowerDefense(fTimeDelta);
 			break;
+		case CCamera_Action::STELLIA_ROAR:
+			Tick_Stellia_Roar(fTimeDelta);
+			break;
+		case CCamera_Action::STELLIA_DEAD:
+			Tick_Stellia_Dead(fTimeDelta);
+			break;
 		default:
 			break;
 		}
@@ -1165,6 +1171,82 @@ void CCamera_Action::Tick_Witch_Invasion(_float fTimeDelta)
 	m_pTransformCom->LookAt(vLookAt.OneW());
 }
 
+void CCamera_Action::Tick_Stellia_Roar(_float fTimeDelta)
+{
+	if (nullptr == m_tActionStelliaRoarDesc.pStellia)
+		return;
+
+	CModel* pModelStellia = m_tActionStelliaRoarDesc.pStellia->Get_Component_Model();
+	CTransform* pTransformStellia = m_tActionStelliaRoarDesc.pStellia->Get_Component_Transform();
+
+	if (nullptr == pModelStellia || nullptr == pTransformStellia)
+		return;
+
+	/* Position */
+	m_pTransformCom->Set_Position(m_tActionStelliaRoarDesc.vPosition);
+
+	/* LookAt */
+	{
+		Matrix matLookWorld = 
+			pModelStellia->Get_SocketLocalMatrix(m_tActionStelliaRoarDesc.iBoneNum) * pTransformStellia->Get_WorldMatrix();
+		
+		Vec4 vLookAt;
+		memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+
+		vLookAt += m_pTransformCom->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW();
+
+		if (Is_Shake())
+			vLookAt += Vec4(Get_ShakeLocalPos());
+
+		if (!m_tActionStelliaRoarDesc.bSet)
+		{
+			m_tActionStelliaRoarDesc.bSet = true;
+			m_tActionStelliaRoarDesc.fOriginLookAtHeight = vLookAt.y + m_tActionStelliaRoarDesc.fDeltaLookAtHeight;
+		}
+
+		if (m_tActionStelliaRoarDesc.bLower)
+		{
+			if (vLookAt.y < m_tActionStelliaRoarDesc.fOriginLookAtHeight)
+				vLookAt.y = m_tActionStelliaRoarDesc.fOriginLookAtHeight;
+			else
+				m_tActionStelliaRoarDesc.bLower = false;
+		}
+
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
+}
+
+void CCamera_Action::Tick_Stellia_Dead(_float fTimeDelta)
+{
+	if (nullptr == m_tActionStelliaDeadDesc.pStellia)
+		return;
+
+	CModel* pModelStellia = m_tActionStelliaDeadDesc.pStellia->Get_Component_Model();
+	CTransform* pTransformStellia = m_tActionStelliaDeadDesc.pStellia->Get_Component_Transform();
+
+	if (nullptr == pModelStellia || nullptr == pTransformStellia)
+		return;
+
+	/* Position */
+	{
+		Vec4 vPos = Vec4(pTransformStellia->Get_Position()) + pTransformStellia->Get_RelativeOffset(m_tTargetOffset.vCurVec);
+		m_pTransformCom->Set_Position(vPos.OneW());
+	}
+
+	/* LookAt */
+	{
+		Matrix matLookWorld =
+			pModelStellia->Get_SocketLocalMatrix(m_tActionStelliaDeadDesc.iBoneNum) * pTransformStellia->Get_WorldMatrix();
+
+		Vec4 vLookAt;
+		memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+
+		vLookAt += m_pTransformCom->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW();
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
+}
+
+
 HRESULT CCamera_Action::Ready_Components()
 {
 	return S_OK;
@@ -1467,6 +1549,50 @@ void CCamera_Action::Free()
 
 	Safe_Release(m_pTransformCom);
 }
+
+HRESULT CCamera_Action::Start_Action_Stellia_Roar(CGameObject* pGameObject)
+{
+	if (nullptr == pGameObject)
+		return E_FAIL;
+
+	m_tActionStelliaRoarDesc.pStellia = pGameObject;
+
+	Set_Fov(Cam_Fov_Free_Default);
+
+	memcpy(&m_tLookAtOffset.vCurVec, &m_tActionStelliaRoarDesc.vLookAtOffset, sizeof(Vec4));
+
+	m_bAction = true;
+
+	m_eCurActionType = CAMERA_ACTION_TYPE::STELLIA_ROAR;
+
+	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Start_Action_Stellia_Dead(CGameObject* pGameObject)
+{
+	if (nullptr == pGameObject)
+		return E_FAIL;
+
+	m_tActionStelliaDeadDesc.pStellia = pGameObject;
+
+	Set_Fov(XMConvertToRadians(65.f));
+
+	m_tTargetOffset.vCurVec = Vec4{ 0.f, 3.f, 9.f, 1.f };
+	m_tLookAtOffset.vCurVec = Vec4{ 0.f, 3.f, 0.f, 1.f };
+
+	m_bAction = true;
+
+	m_eCurActionType = CAMERA_ACTION_TYPE::STELLIA_DEAD;
+
+	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+}
+
 
 void CCamera_Action::Tick_TowerDefense(_float fTimeDelta)
 {

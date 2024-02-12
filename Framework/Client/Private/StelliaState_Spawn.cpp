@@ -4,6 +4,10 @@
 #include "Stellia.h"
 #include "Effect_Manager.h"
 
+#include "Animation.h"
+
+#include "Camera_Group.h"
+
 CStelliaState_Spawn::CStelliaState_Spawn(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -15,29 +19,48 @@ HRESULT CStelliaState_Spawn::Initialize(const list<wstring>& AnimationList)
 
 	return S_OK;
 }
-
+ 
 void CStelliaState_Spawn::Enter_State(void* pArg)
 {
+	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Spawn"), MIN_TWEEN_DURATION);
 
-	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(1.f, 0.f, 10.f, 1.f));
-	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Spawn"));
+	/* 마법진 나오는 동안 대기하기 위해 애니메이션 스탑 */
+	m_pModelCom->Set_Stop_Animation(true);
 
-	//if (m_pPlayer != nullptr)
-	//	m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
-
-	// Effect Create
+	// 마법진 이펙트 생성 
 	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Spawn_Roar"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Spawn::Tick_State(_float fTimeDelta)
 {
-	// player가 없으면 그냥 굳어버리게.
+	if (L"SKM_Stellia.ao|Stellia_Spawn" != m_pModelCom->Get_CurrAnimation()->Get_AnimationName())
+		return;
+
+	/* 마법진 나오는 동안 대기시간 카운트 */
+	if (!m_bFinishWait)
+	{
+		m_fAcc += fTimeDelta;
+		if (m_fWaitDuration <= m_fAcc)
+		{
+			m_bFinishWait = true;
+			m_pModelCom->Set_Stop_Animation(false);
+		}
+		else
+			return;
+	}
+
 	if (m_pPlayer != nullptr)
 	{
-		if (m_pModelCom->Is_Finish())
+		if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 		{
 			m_pStateMachineCom->Change_State(CStellia::STELLIA_SPAWNIDLE);
 		}
+	}
+
+	/* 스텔리아가 땅에 착지할 때 카메라 쉐이킹 추가 */
+	if (30 == m_pModelCom->Get_CurrAnimationFrame())
+	{
+		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.2f, 17.f, 0.3f);
 	}
 }
 
