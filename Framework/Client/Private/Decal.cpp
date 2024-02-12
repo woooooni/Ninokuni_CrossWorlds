@@ -63,6 +63,7 @@ void CDecal::Tick(_float fTimeDelta)
 
 	Tick_Alpha(fTimeDelta);
 	Tick_Scale(fTimeDelta);
+	Tick_UVFlow(fTimeDelta);
 }
 
 void CDecal::LateTick(_float fTimeDelta)
@@ -144,6 +145,14 @@ HRESULT CDecal::Bind_ShaderResource()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fBloom_Power", &m_tDecalDesc.fBloomPower, sizeof(_float3))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fBlur_Power", &m_tDecalDesc.fBlurPower, sizeof(_float))))
+		return E_FAIL;
+
+	// UV FLOW
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_bBasicColorAdd", &m_bBasicColorAdd, sizeof(_bool))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_iUVLoop", &m_iUVFlowLoop, sizeof(_int))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fUVFlow", &m_fAccUVFlow, sizeof(_float2))))
 		return E_FAIL;
 
 	return S_OK;
@@ -383,6 +392,24 @@ void CDecal::Tick_Scale(_float fTimeDelta)
 					m_tDecalScaleDesc.bScaleChange = false;
 				}
 				m_pTransformCom->Set_Scale(fScale);
+			}
+		}
+	}
+}
+
+void CDecal::Tick_UVFlow(_float fTimeDelta)
+{
+	if (m_bUVFlowChange)
+	{
+		m_fAccUVFlow.x += m_fUVFlowDir.x * m_fUVFlowSpeed * fTimeDelta;
+		m_fAccUVFlow.y += m_fUVFlowDir.y * m_fUVFlowSpeed * fTimeDelta;
+
+		if (0 < m_iUVFlowLoop)
+		{
+			if (m_fAccUVFlow.x > 1.f || m_fAccUVFlow.y > 1.f || m_fAccUVFlow.x < -1.f || m_fAccUVFlow.y < -1.f)
+			{
+				m_bDecalDelete = true;
+				m_bDecalDie    = true;
 			}
 		}
 	}

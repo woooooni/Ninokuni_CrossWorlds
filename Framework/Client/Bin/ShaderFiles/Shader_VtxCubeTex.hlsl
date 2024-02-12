@@ -6,8 +6,8 @@ matrix      g_WorldMatrixInv, g_ViewMatrixInv, g_ProjMatrixInv;
 
 TextureCube g_DiffuseTexture;
 
-texture2D   g_DepthTarget;
-texture2D   g_Diffuse2DTexture, g_Alpha2DTexture;
+Texture2D   g_DepthTarget;
+Texture2D   g_Diffuse2DTexture, g_Alpha2DTexture;
 
 float       g_fAlpha_Discard;
 float3      g_fBlack_Discard;
@@ -20,6 +20,10 @@ float       g_fColor_Alpha;
 
 float3      g_fBloom_Power;
 float       g_fBlur_Power;
+
+bool        g_bBasicColorAdd;
+int         g_iUVLoop;
+float2      g_fUVFlow;
 
 struct VS_IN
 {
@@ -123,10 +127,35 @@ PS_OUT_DECAL PS_MAIN_DECAL(PS_IN In)
 
 	// 데칼박스 버퍼가 -0.5 ~0.5 사이므로, 0.5를 더해줘서 UV좌표로 만들어줌.
     float2 fDecalUV      = vLocalPos.xz + 0.5f;
-    vector vDiffuseColor = g_Diffuse2DTexture.Sample(LinearSampler, fDecalUV);
-    vDiffuseColor.a -= g_fColor_Alpha;
-    if (vDiffuseColor.a <= g_fAlpha_Discard ||
+    vector vDiffuseColor = 0.f;
+    
+    // UV Flow
+    float2 fFlowUV = float2(fDecalUV.x + g_fUVFlow.x, fDecalUV.y + g_fUVFlow.y);
+    if (0 < g_iUVLoop)
+    {
+        if ((fFlowUV.x > 1.f) || (fFlowUV.y > 1.f) || (fFlowUV.x < 0.f) || (fFlowUV.y < 0.f))
+            discard;
+    }
+    
+    if (g_bBasicColorAdd)
+    {
+        vDiffuseColor = g_Diffuse2DTexture.Sample(LinearSampler, fDecalUV);
+        if (vDiffuseColor.a <= g_fAlpha_Discard ||
 		vDiffuseColor.r <= g_fBlack_Discard.r && vDiffuseColor.g <= g_fBlack_Discard.g && vDiffuseColor.b <= g_fBlack_Discard.b)
+            discard;
+        
+        vDiffuseColor += g_Diffuse2DTexture.Sample(LinearSampler, fFlowUV);
+    }
+    else
+    {
+        vDiffuseColor = g_Diffuse2DTexture.Sample(LinearSampler, fFlowUV);
+        if (vDiffuseColor.a <= g_fAlpha_Discard ||
+		vDiffuseColor.r <= g_fBlack_Discard.r && vDiffuseColor.g <= g_fBlack_Discard.g && vDiffuseColor.b <= g_fBlack_Discard.b)
+            discard;
+    }
+    
+    vDiffuseColor.a -= g_fColor_Alpha;
+    if (vDiffuseColor.a <= g_fAlpha_Discard)
         discard;
         
     Out.vDiffuse = float4(0.f, 0.f, 0.f, 0.f);

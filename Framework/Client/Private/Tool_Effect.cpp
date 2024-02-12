@@ -817,6 +817,34 @@ _bool CTool_Effect::Tick_DecalTool()
 				ImGui::NewLine();
 			}
 		}
+
+		// Å©±â
+		if (ImGui::CollapsingHeader("UVFlow"))
+		{
+			ImGui::NewLine();
+			ImGui::Text("----------------- No_SaveInfo -----------------");
+			ImGui::NewLine();
+
+			if (ImGui::Checkbox("UVFlowChange", &m_bUVFlowChange))
+				bDecalSystemUse = true;
+			ImGui::NewLine();
+
+			if (ImGui::Checkbox("BasicColorAdd", &m_bBasicColorAdd))
+				bDecalSystemUse = true;
+			ImGui::NewLine();
+
+			if (ImGui::InputInt("UVFlowLoop", &m_iUVFlowLoop))
+				bDecalSystemUse = true;
+			ImGui::NewLine();
+
+			if (ImGui::InputFloat2("UVFlowDir", &m_fUVFlowDir.x))
+				bDecalSystemUse = true;
+			ImGui::NewLine();
+
+			if (ImGui::InputFloat("UVFlowSpeed", &m_fUVFlowSpeed))
+				bDecalSystemUse = true;
+			ImGui::NewLine();
+		}
 	}
 #pragma endregion
 
@@ -1101,6 +1129,7 @@ void CTool_Effect::Store_ObjectInfo(TYPE eType)
 
 		static_cast<CDecal*>(m_pDecal)->Set_DecalDesc(m_tDecalInfo);
 		static_cast<CDecal*>(m_pDecal)->Set_DecalScaleDesc(m_tDecalScaleInfo);
+		static_cast<CDecal*>(m_pDecal)->Set_UVFlow(m_bUVFlowChange, m_bBasicColorAdd, m_iUVFlowLoop, m_fUVFlowDir, m_fUVFlowSpeed);
 		Set_Transform(eType);
 	}
 }

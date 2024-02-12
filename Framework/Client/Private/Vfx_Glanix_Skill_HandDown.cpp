@@ -101,7 +101,11 @@ void CVfx_Glanix_Skill_HandDown::Tick(_float fTimeDelta)
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_FourHandSwing_Warning"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_START_WARNING], m_pScaleOffset[TYPE_D_START_WARNING], m_pRotationOffset[TYPE_D_START_WARNING], nullptr, &m_pWarningDecal, false);
-			Safe_AddRef(m_pWarningDecal);
+			if (nullptr != m_pWarningDecal)
+			{
+				Safe_AddRef(m_pWarningDecal);
+				m_pWarningDecal->Set_UVFlow(true, true, 0, _float2(0.f, -1.f), 1.f);
+			}
 			m_iCount++;
 		}
 

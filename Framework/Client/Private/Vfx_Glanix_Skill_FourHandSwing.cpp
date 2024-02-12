@@ -6,6 +6,7 @@
 #include "Glanix.h"
 #include "Effect.h"
 #include "Utils.h"
+#include "Decal.h"
 
 CVfx_Glanix_Skill_FourHandSwing::CVfx_Glanix_Skill_FourHandSwing(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -166,8 +167,11 @@ void CVfx_Glanix_Skill_FourHandSwing::Tick(_float fTimeDelta)
 	{
 		if (m_iCount == TYPE_D_DECAL_00 && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_DECAL_00])
 		{
+			CDecal* pDecal = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_FourHandSwing_Warning"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_DECAL_00], m_pScaleOffset[TYPE_D_DECAL_00], m_pRotationOffset[TYPE_D_DECAL_00]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_DECAL_00], m_pScaleOffset[TYPE_D_DECAL_00], m_pRotationOffset[TYPE_D_DECAL_00], nullptr, &pDecal);
+			if (nullptr != pDecal)
+				pDecal->Set_UVFlow(true, true, 0, _float2(0.f, -1.f), 1.f);
 			m_iCount++;
 		}
 
