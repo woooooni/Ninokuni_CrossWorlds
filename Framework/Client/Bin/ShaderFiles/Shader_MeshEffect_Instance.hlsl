@@ -367,13 +367,14 @@ PS_OUT PS_BOTH(PS_IN In)
         if ((vDiffuseColor.r <= g_fBlack_Discard.x) && (vDiffuseColor.g <= g_fBlack_Discard.y) && (vDiffuseColor.b <= g_fBlack_Discard.z))
             discard;
 
+        vector vTextureAlpha = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
+        if (vTextureAlpha.a < g_fAlpha_Discard ||
+            (vTextureAlpha.r <= g_fBlack_Discard.x) && (vTextureAlpha.g <= g_fBlack_Discard.y) && (vTextureAlpha.b <= g_fBlack_Discard.z))
+            discard;
+        
         vDiffuseColor.rgb = saturate((vDiffuseColor.rgb + g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb));
         vDiffuseColor.a = g_EffectDesc[In.iInstanceID].g_fAlpha;
         if (vDiffuseColor.a <= g_fAlpha_Discard)
-            discard;
-
-        vector vTextureAlpha = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
-        if ((vTextureAlpha.r <= g_fBlack_Discard.x) && (vTextureAlpha.g <= g_fBlack_Discard.y) && (vTextureAlpha.b <= g_fBlack_Discard.z))
             discard;
         
         Out.vDiffuse_None   = float4(0.f, 0.f, 0.f, 0.f);

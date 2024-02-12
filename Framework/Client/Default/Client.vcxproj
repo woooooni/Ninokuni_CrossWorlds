@@ -442,6 +442,7 @@
     <ClInclude Include="..\Public\Vfx_Witch_Skill_BlackHole_Bomb.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_BlackHole_Drain.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_Laser_Warning.h" />
+    <ClInclude Include="..\Public\Vfx_Witch_Marble.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_Rage02Sphere_Ready.h" />
     <ClInclude Include="..\Public\Winter_CurlingFloor.h" />
     <ClInclude Include="..\Public\StelliaState_AfterSpinTail.h" />
@@ -1554,6 +1555,7 @@
     <ClCompile Include="..\Private\Vfx_Witch_Skill_BlackHole_Bomb.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_BlackHole_Drain.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_Laser_Warning.cpp" />
+    <ClCompile Include="..\Private\Vfx_Witch_Marble.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_Rage02Sphere_Ready.cpp" />
     <ClCompile Include="..\Private\Winter_CurlingFloor.cpp" />
     <ClCompile Include="..\Private\StelliaState_AfterSpinTail.cpp" />
