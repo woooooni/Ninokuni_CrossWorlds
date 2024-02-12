@@ -11,6 +11,7 @@
 #include "Particle_Manager.h"
 
 #include "Vfx.h"
+#include "Effect.h"
 
 CWitch_Laser::CWitch_Laser(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CMonsterProjectile(pDevice, pContext, strObjectTag)
@@ -56,7 +57,7 @@ HRESULT CWitch_Laser::Initialize(void* pArg)
 void CWitch_Laser::Tick(_float fTimeDelta)
 {
 	// 레이저 경고 생성
-	if (m_pLaserWarning == nullptr && !m_bIsLaserWarningCreate)
+	if (!m_bIsLaserWarningCreate && m_pLaserWarning == nullptr)
 	{
 		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_Laser_Warning"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pLaserWarning);
 
@@ -64,30 +65,43 @@ void CWitch_Laser::Tick(_float fTimeDelta)
 	}
 	else // 다시 살리기
 	{
-		if (m_pLaserWarning->Is_Dead() && !m_bIsLaserCreate)
+		if (!m_bIsLaserCreate && m_pLaserWarning->Is_Dead() && m_pLaser == nullptr)
 		{
-			// 레이저 생성
-			//GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_BlackHole_Bomb"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pLaser);
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
+
+			// 공격 레이저 생성
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_Rage3_LaserLine"), m_pTransformCom->Get_WorldMatrix(), 
+				_float3(0.f, 0.045, -0.055f), _float3(40.f, 50.f, 875.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pLaser);
+			if (nullptr != m_pLaser)
+			{
+				m_pLaser->Reserve_Dissolve(73,  // Index
+					_float4(1.f, 1.f, 1.f, 1.f),// Color
+					5.f,   // Speed
+					10.f); // Total
+			}
+
 			m_bIsLaserCreate = true;
 		}
 	}
 
 	// 레이저 이펙트
-	//if (m_pLaser != nullptr)
 	if (m_bIsLaserCreate)
 	{
-		m_fAccTime += fTimeDelta;
-		if (m_fAccTime > m_fActiveTime)
+		if (m_pLaser != nullptr)
 		{
-			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
-			Set_Dead(true);
-		}
+			m_fAccTime += fTimeDelta;
+			if (m_fAccTime > m_fActiveTime)
+			{
+				Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
+				Set_Dead(true);
+			}
 
-		//if (m_pLaser->Is_Dead()) // 이펙트 구현되면 다시 살리기
-		//{
-		//	Set_Dead(true);
-		//}
+			//if (m_pLaser->Get_IsDissolve() || m_pLaser->Get_DieEffect() || m_pLaser->Is_ReserveDead() || m_pLaser->Is_Dead())
+			//{
+			//	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
+			//	Set_Dead(true);
+			//}
+		}
 	}
 
 	__super::Tick(fTimeDelta);

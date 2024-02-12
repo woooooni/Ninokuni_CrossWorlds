@@ -34,7 +34,8 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
-	class CDecal* m_pWarningDecal = nullptr;
+	class CDecal*  m_pWarningDecal = nullptr;
+	class CEffect* m_pWarningLine  = nullptr;
 
 	_bool m_bIsCreate = false;
 

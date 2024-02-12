@@ -347,6 +347,8 @@ public:
 	_bool Get_IsEffectShow()              { return m_bIsShow; }
 	void  Set_IsEffectShow(_bool bIsShow) { m_bIsShow = bIsShow; };
 
+	_bool Get_IsDissolve() { return m_bDissolve; }
+
 private:
 	EFFECT_DESC m_tEffectDesc = {};
 	_bool m_bEffectDelete = true;
