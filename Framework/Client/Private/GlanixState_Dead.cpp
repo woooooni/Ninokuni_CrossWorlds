@@ -6,8 +6,7 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
-#include "Camera_Manager.h"
-#include "Camera_Follow.h"
+#include "Camera_Group.h"
 
 #include "Quest_Manager.h"
 #include "UI_Manager.h"
@@ -30,64 +29,67 @@ HRESULT CGlanixState_Dead::Initialize(const list<wstring>& AnimationList)
 void CGlanixState_Dead::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Death"));
+
+	/* 그라닉스 포지션 및 룩 초기화 */
+	{
+		m_pGlanix->Get_Component_Transform()->Set_Position(m_pGlanix->Get_OriginPos());
+		m_pGlanix->Get_Component_Transform()->Set_LookAtByDir(m_pGlanix->Get_OriginLook());
+	}
+
+	/* 그라닉스 죽는 컷신 실행 */
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr != pActionCam)
+	{
+		pActionCam->Start_Action_Glanix_Dead(m_pGlanix);
+		CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
+	}
+
+	/* 플레이어는 다른 포지션으로 옮겨둔다. */
+	{
+		CTransform* pPlayerTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform();
+		if (nullptr != pPlayerTransform)
+		{
+			pPlayerTransform->Set_Position({ -44.f, 2.f, 330.f, 1.f }); /* 포탈 위치*/
+			pPlayerTransform->LookAt_ForLandObject(m_pGlanix->Get_OriginPos()); /* 그라닉스 생성 위치 */
+
+			/* 포탈 위치에서 그라닉스 생성 위치 방향으로 n만큼 떨어진 위치 */
+			Vec4 vFinalPos = Vec4(pPlayerTransform->Get_Position()) + Vec4(pPlayerTransform->Get_Look()).ZeroY().Normalized() * 20.f; 
+
+			pPlayerTransform->Set_Position(vFinalPos.OneW());
+		}
+	}
 }
 
 void CGlanixState_Dead::Tick_State(_float fTimeDelta)
 {
+	if (!m_bStartFadeOut && 0.85 <= m_pModelCom->Get_Progress() && !m_pModelCom->Is_Tween())
+	{
+		m_bStartFadeOut = true;
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.5f);
+	}
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		if(CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::QUESTEVENT_BOSS_KILL)
-			CQuest_Manager::GetInstance()->Set_IsBossKill(true);
+		m_pModelCom->Set_Stop_Animation(true);
 
-		m_pGlanix->Reserve_Dead(true);
-
-		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-		if (nullptr != pFollowCam && pFollowCam->Is_LockOn())
+		if (CUI_Manager::GetInstance()->Is_FadeFinished())
 		{
-			pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-			pFollowCam->Reset_WideView_To_DefaultView(true);
-			pFollowCam->Set_Default_Position();
+			if(CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::QUESTEVENT_BOSS_KILL)
+				CQuest_Manager::GetInstance()->Set_IsBossKill(true);
 
 			m_pGlanix->Reserve_Dead(true);
+
+			/* 죽는 컷신 처리로 디졸브 없이 진행 */
+			m_pGlanix->Set_DissolveDuration(0.1f);
+
 			GI->Play_BGM(TEXT("BGM_Field_Village_Winter_Po_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, 0.5f);
 		}
 	}
-
-	//if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
-	//{
-	//	/* Start Fade Out */
-	//	if (!m_bStartFadeOut)
-	//	{
-	//		m_bStartFadeOut = true;
-	//		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, m_fFadeInOutTime, false);
-	//	}
-	//}
-
-	//if (m_bStartFadeOut && CUI_Manager::GetInstance()->Is_FadeFinished())
-	//{
-	//	/* Reset Camera */
-	//	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-	//	if (nullptr != pFollowCam && pFollowCam->Is_LockOn())
-	//	{
-	//		pFollowCam->Set_Default_Position();
-	//		pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-	//	}
-
-	//	m_fAcc += fTimeDelta;
-	//		
-	//	/* Start Fade In */
-	//	if (!m_bStartFadeIn && m_fFadeInOutTime <= m_fAcc)
-	//	{
-	//		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_fFadeInOutTime, false);
-	//		m_bStartFadeIn = true;
-
-	//		m_pGlanix->Reserve_Dead(true);
-	//	}
-	//}
 }
 
 void CGlanixState_Dead::Exit_State()
 {
+
 }
 
 CGlanixState_Dead* CGlanixState_Dead::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

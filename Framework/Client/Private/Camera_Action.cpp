@@ -116,6 +116,9 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		case CCamera_Action::STELLIA_DEAD:
 			Tick_Stellia_Dead(fTimeDelta);
 			break;
+		case CCamera_Action::GLANIX_DEAD:
+			Tick_Glanix_Dead(fTimeDelta);
+			break;
 		default:
 			break;
 		}
@@ -1262,6 +1265,42 @@ void CCamera_Action::Tick_Stellia_Dead(_float fTimeDelta)
 	}
 }
 
+void CCamera_Action::Tick_Glanix_Dead(_float fTimeDelta)
+{
+	if (nullptr == m_tActionGlanixDeadDesc.pGlanix)
+		return;
+
+	if (m_tActionGlanixDeadDesc.pGlanix->Is_ReserveDead())
+	{
+		m_tActionGlanixDeadDesc.pGlanix = nullptr;
+		return;
+	}
+
+	CModel* pModelGlanix = m_tActionGlanixDeadDesc.pGlanix->Get_Component_Model();
+	CTransform* pTransformGlanix = m_tActionGlanixDeadDesc.pGlanix->Get_Component_Transform();
+
+	if (nullptr == pModelGlanix || nullptr == pTransformGlanix)
+		return;
+
+	/* Position */
+	{
+		Vec4 vPos = Vec4(pTransformGlanix->Get_Position()) + pTransformGlanix->Get_RelativeOffset(m_tTargetOffset.vCurVec);
+		m_pTransformCom->Set_Position(vPos.OneW());
+	}
+
+	/* LookAt */
+	{
+		Matrix matLookWorld =
+			pModelGlanix->Get_SocketLocalMatrix(m_tActionGlanixDeadDesc.iBoneNum) * pTransformGlanix->Get_WorldMatrix();
+
+		Vec4 vLookAt;
+		memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+
+		vLookAt += m_pTransformCom->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW();
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
+}
+
 HRESULT CCamera_Action::Ready_Components()
 {
 	return S_OK;
@@ -1602,6 +1641,27 @@ HRESULT CCamera_Action::Start_Action_Stellia_Dead(CGameObject* pGameObject)
 	m_bAction = true;
 
 	m_eCurActionType = CAMERA_ACTION_TYPE::STELLIA_DEAD;
+
+	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+}
+
+HRESULT CCamera_Action::Start_Action_Glanix_Dead(CGameObject* pGameObject)
+{
+	if (nullptr == pGameObject)
+		return E_FAIL;
+
+	m_tActionGlanixDeadDesc.pGlanix = pGameObject;
+
+	Set_Fov(XMConvertToRadians(65.f));
+
+	m_tTargetOffset.vCurVec = Vec4{ 2.f, 3.f, 5.f, 1.f };
+	m_tLookAtOffset.vCurVec = Vec4{ 0.f, 0.f, 0.f, 1.f };
+
+	m_bAction = true;
+
+	m_eCurActionType = CAMERA_ACTION_TYPE::GLANIX_DEAD;
 
 	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
 

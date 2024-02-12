@@ -7,6 +7,11 @@
 #include "UI_Manager.h"
 #include "UI_PopupQuest.h"
 #include "Game_Manager.h"
+#include "UI_Fade.h"
+
+#include "Camera_Group.h"
+#include "Character.h"
+#include "Player.h"
 
 CMainQuestNode_Glanix05::CMainQuestNode_Glanix05()
 {
@@ -61,6 +66,25 @@ void CMainQuestNode_Glanix05::Start()
 	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 	TalkEvent();
+
+	/* 락온 해제 */
+	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	if (nullptr != pFollowCam && pFollowCam->Is_LockOn())
+	{
+		pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		pFollowCam->Reset_WideView_To_DefaultView(true);
+		pFollowCam->Set_Default_Position();
+		CCamera_Manager::GetInstance()->Set_CurCamera(pFollowCam->Get_Key());
+	}
+
+	/* Ui, Input On */
+	{
+		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+	}
+
+	/* 페이드 인 */
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Glanix05::Tick(const _float& fTimeDelta)
