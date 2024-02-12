@@ -8,6 +8,8 @@
 
 #include "Effect_Manager.h"
 
+#include "Particle_Manager.h"
+
 CWitch_VulcanBullet::CWitch_VulcanBullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CMonsterProjectile(pDevice, pContext, strObjectTag)
 {

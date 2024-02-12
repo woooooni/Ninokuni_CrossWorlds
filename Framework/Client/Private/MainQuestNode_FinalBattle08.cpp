@@ -96,29 +96,34 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle08::Tick(const _float& fTimeDelta)
 		if (m_bIsWitchEscape)
 		{
 			/* 블렌딩 시작 조건 */
-			if (m_pWitch->Get_Component_Model()->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Death") &&
+			if (!m_bStartBlend && m_pWitch->Get_Component_Model()->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Death") &&
 				0.9f <= m_pWitch->Get_Component_Model()->Get_Progress() && !m_pWitch->Get_Component_Model()->Is_Tween())
 			{
-				if (!m_bStartBlend)
+				m_bStartBlend = true;
+
+				// 카메라 블렌딩 시작 
+				CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+				if (nullptr != pFollowCam)
 				{
-					m_bStartBlend = true;
+					/* 락온이었다면 해제 */
+					if (pFollowCam->Is_LockOn())
+						pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 
-					// 카메라 블렌딩 시작 
-					CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-					if (nullptr != pFollowCam)
-					{
-						/* 락온이었다면 해제 */
-						if(pFollowCam->Is_LockOn())
-							pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-
-						pFollowCam->Reset_WideView_To_DefaultView(true);
-						pFollowCam->Set_Default_Position();
-						CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
-					}
+					pFollowCam->Reset_WideView_To_DefaultView(true);
+					pFollowCam->Set_Default_Position();
+					CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
 				}
 			}
 
-			/* 블렌딩 완료시 다음 노드로 */
+			/* 마녀 애니메이션 스탑 설정 */
+			if (!m_pWitch->Get_Component_Model()->Is_Stop() &&
+				L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Death" == m_pWitch->Get_Component_Model()->Get_CurrAnimation()->Get_AnimationName() &&
+				0.975f <= m_pWitch->Get_Component_Model()->Get_Progress())
+			{
+				m_pWitch->Get_Component_Model()->Set_Stop_Animation(true);
+			}
+
+			/* 카메라 블렌딩 완료시 다음 노드로 */
 			if (m_bStartBlend && !CCamera_Manager::GetInstance()->Is_Blending_Camera())
 			{
 				m_bIsClear = true;
@@ -126,6 +131,11 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle08::Tick(const _float& fTimeDelta)
 				/* Ui, Input */
 				CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
 				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+
+				// 마녀 사라지게 처리
+				m_pWitch->Set_Dead(true);
+				m_pWitch = nullptr;
+
 				return NODE_STATE::NODE_FAIL;
 			}
 		}
