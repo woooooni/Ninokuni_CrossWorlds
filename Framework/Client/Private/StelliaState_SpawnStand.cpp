@@ -3,6 +3,10 @@
 
 #include "Stellia.h"
 
+#include "GameInstance.h"
+#include "Vfx.h"
+#include "Decal.h"
+
 CStelliaState_SpawnStand::CStelliaState_SpawnStand(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -27,6 +31,17 @@ void CStelliaState_SpawnStand::Tick_State(_float fTimeDelta)
 
 void CStelliaState_SpawnStand::Exit_State()
 {
+	/* 마법진 데칼 지우기 */
+	CGameObject* pGameObject = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_EFFECT, L"Decal_Stellia_Spawn_MagicCircle");
+	if (nullptr != pGameObject)
+	{
+		CDecal* pDecal = dynamic_cast<CDecal*>(pGameObject);
+		if (nullptr != pDecal)
+		{
+			pDecal->Start_AlphaDeleate();
+			Safe_Release(pDecal);
+		}
+	}
 }
 
 CStelliaState_SpawnStand* CStelliaState_SpawnStand::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

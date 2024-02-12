@@ -20,6 +20,7 @@ public:
 		LOBBY, DOOR, TALK, WINDMILL, 
 		SWORDMAN_BURST, ENGINEER_BURST, DESTROYER_BURST, 
 		STADIUM, ENDING, WITCH_INVASION, WITCH_ROAR, WITCH_AWAY, TOWER_DEFENSE,
+		STELLIA_ROAR,
 		CAMERA_ACTION_END };
 
 public:
@@ -271,6 +272,24 @@ public:
 
 	}ACTION_TOWER_DEFENSE_DESC;
 
+	typedef struct tagStelliaRoarDesc
+	{
+		const _uint iBoneNum = 3;
+
+		const Vec4 vPosition = { 160.f, 3.87f, 132.8f, 1.f };
+
+		CGameObject* pStellia = nullptr;
+
+		const Vec4 vLookAtOffset = { 0.f, 3.4f, 4.f, 1.f };
+
+		const _float fDeltaLookAtHeight = 2.f;
+		_float	fOriginLookAtHeight = 0.f;
+
+		_bool bLower = true;
+		_bool bSet = false;
+
+	}ACTION_STELLIA_ROAR_DESC;
+
 private:
 	CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_Action(const CCamera_Action& rhs);
@@ -310,6 +329,8 @@ public:
 
 	HRESULT Start_Action_TowerDefense();
 
+	HRESULT Start_Action_Stellia_Roar(CGameObject* pGameObject);
+
 	// 캐릭터 버스트 스킬 액션.
 	HRESULT Start_Action_SwordManBurst(class CTransform* pSwordManTransform);
 	HRESULT Start_Action_EngineerBurst(class CTransform* pEngineerTransform);
@@ -338,6 +359,7 @@ private:
 	void Tick_Witch_Roar(_float fTimeDelta);
 	void Tick_Witch_Away(_float fTimeDelta);
 	void Tick_TowerDefense(_float fTimeDelta);
+	void Tick_Stellia_Roar(_float fTimeDelta);
 
 	void Tick_SwordManBurst(_float fTimeDelta);
 	void Tick_EngineerBurst(_float fTimeDelta);
@@ -367,6 +389,7 @@ private:
 	ACTION_WITCH_ROAR_DEAC		m_tActionWitchRoarDesc		= {};
 	ACTION_WITCH_AWAY_DESC		m_tActionWitchAwayDesc		= {};
 	ACTION_TOWER_DEFENSE_DESC	m_tActionTowerDefenseDesc	= {};
+	ACTION_STELLIA_ROAR_DESC	m_tActionStelliaRoarDesc	= {};
 
 	ACTION_SWORDMAN_BURST_DESC m_tActionSwordManBurstDesc	= {};
 	ACTION_ENGINEER_BURST_DESC m_tActionEngineerBurstDesc	= {};

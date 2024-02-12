@@ -26,6 +26,7 @@ void CStelliaState_Berserk::Enter_State(void* pArg)
 
 	/* 연출 위해 포지션 중앙으로 세팅 */
 	m_pTransformCom->Set_Position(m_pStellia->Get_OriginPos());
+	m_pTransformCom->Set_LookAtByDir(m_pStellia->Get_OriginLook().ZeroY().ZeroW().Normalized());
 
 	// Effect Create
 	CVfx* pVfxEffect = nullptr;

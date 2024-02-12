@@ -10,6 +10,8 @@
 
 #include "Stellia.h"
 
+#include "Camera_Group.h"
+
 CMainQuestNode_FinalBattle04::CMainQuestNode_FinalBattle04()
 {
 }
@@ -28,6 +30,15 @@ void CMainQuestNode_FinalBattle04::Start()
 	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Stellia"), nullptr, &m_pStellia)))
 	{
 		MSG_BOX("Fail AddGameObj : Quest Stellia");
+	}
+
+	/* 스텔리아 등장 컷신 호출 */
+	{
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		if (nullptr != pActionCam)
+			pActionCam->Start_Action_Stellia_Roar(m_pStellia);
+
+		CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
 	}
 
 	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_BOSS_KILL);

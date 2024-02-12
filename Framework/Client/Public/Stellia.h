@@ -102,7 +102,7 @@ public:
 	void  Set_StelliaHit(_bool bIsStelliaHit) { m_bIsStelliaHit = bIsStelliaHit; }
 
 	Vec4 Get_OriginPos() const { return m_vOriginPos; }
-
+	Vec4 Get_OriginLook() const { return m_vOriginLook; }
 private:
 	// ∑π¿Ã¡ˆ 1
 	_int m_iAccDamage = 0;

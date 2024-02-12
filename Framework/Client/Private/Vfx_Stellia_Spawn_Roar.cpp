@@ -31,7 +31,7 @@ HRESULT CVfx_Stellia_Spawn_Roar::Initialize_Prototype()
 	
 	m_pFrameTriger[TYPE_ET0_D_MAGICCIRCLE] = 0;
 	m_pPositionOffset[TYPE_ET0_D_MAGICCIRCLE] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_ET0_D_MAGICCIRCLE]    = _float3(18.f, 2.f, 18.f);
+	m_pScaleOffset[TYPE_ET0_D_MAGICCIRCLE]    = _float3(18.f, 5.f, 18.f);
 	m_pRotationOffset[TYPE_ET0_D_MAGICCIRCLE] = _float3(0.f, 0.f, 0.f);
 
 	{
@@ -167,11 +167,11 @@ void CVfx_Stellia_Spawn_Roar::Free()
 {
 	__super::Free();
 
-	if (nullptr != m_pMagicCircle)
-	{
-		m_pMagicCircle->Start_AlphaDeleate();
-		Safe_Release(m_pMagicCircle);
-	}
+	//if (nullptr != m_pMagicCircle)
+	//{
+	//	m_pMagicCircle->Start_AlphaDeleate();
+	//	Safe_Release(m_pMagicCircle);
+	//}
 
 	if (!m_isCloned)
 	{
