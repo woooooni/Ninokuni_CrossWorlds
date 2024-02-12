@@ -642,6 +642,10 @@ void CUI_PopupQuest::Key_Input(_float fTimeDelta)
 				return;
 
 			CUI_Manager::GetInstance()->Set_QuestDestSpot(iWindow);
+			// + Sound
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_1.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 		}
 	}
 }

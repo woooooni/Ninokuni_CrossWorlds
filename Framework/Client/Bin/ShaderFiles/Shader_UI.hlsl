@@ -674,6 +674,8 @@ PS_OUT PS_QUARTER_PROGRESS(PS_IN In)
 		Out.vColor.a = 1.0f;
 	}
 
+	Out.vColor.a *= g_Alpha;
+
 	return Out;
 }
 

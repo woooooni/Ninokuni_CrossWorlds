@@ -78,7 +78,7 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 	{
 		if (nullptr != CUI_Manager::GetInstance()->Get_Character())
 		{
-			if (true == m_bGoal)
+			if (true == m_bGoal) // 목표가 설정되어 있다면
 			{
 				// 카메라 범위
 				_float4 vCamPos = GI->Get_CamPosition();
@@ -96,9 +96,9 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 				_vector vCamLook = XMVector3Normalize(pCameraTrans->Get_State(CTransform::STATE_LOOK));
 				_float fAngle = XMVectorGetX(XMVector3Dot(vTargetToCamera, vCamLook));
 
-				if (3.f < fDistance)
+				if (3.f < fDistance) // 거리가 3보다 크다면
 				{
-					if (fAngle >= XMConvertToRadians(40.f) && fAngle <= XMConvertToRadians(140.f)) // Degree는 -180 ~ 180
+					if (fAngle >= XMConvertToRadians(0.f) && fAngle <= XMConvertToRadians(180.f))
 					{
 						_matrix matTemp = XMMatrixIdentity();
 						matTemp.r[3] = XMLoadFloat4(&m_vTargetPos);
@@ -128,40 +128,42 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 						if (m_vCurrentPos.y >= 700)
 							m_vCurrentPos.y = 700.f;
 
-						m_tInfo.fX = m_vCurrentPos.x;
-						m_tInfo.fY = m_vCurrentPos.y;
+						if (m_vCurrentPos.x <= 320.f)
+							m_vCurrentPos.x = 320.f;
 
-						// Test Code
-						m_tInfo.fX = g_iWinSizeX * 0.5f;
-						m_tInfo.fY = g_iWinSizeY * 0.5f;
-
-						m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-							XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
-					}
-					else
-					{
-						if (m_vCurrentPos.x > g_iWinSizeX)
-							m_vCurrentPos.x = (g_iWinSizeX - m_tInfo.fCX);
-
-						if (m_vCurrentPos.x < 0)
-							m_vCurrentPos.x = (m_tInfo.fCX);
-
-						if (m_vCurrentPos.y > g_iWinSizeY)
-							m_vCurrentPos.y = (g_iWinSizeY - m_tInfo.fCY);
-						
-						if (m_vCurrentPos.y < 0)
-							m_vCurrentPos.y = (m_tInfo.fCY);
+						if (m_vCurrentPos.x >= 1280.f)
+							m_vCurrentPos.x = 1280.f;
 
 						m_tInfo.fX = m_vCurrentPos.x;
 						m_tInfo.fY = m_vCurrentPos.y;
 
-						// Test Code
-						m_tInfo.fX = g_iWinSizeX * 0.5f;
-						m_tInfo.fY = g_iWinSizeY * 0.5f;
-
 						m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 							XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 					}
+					//else
+					//{
+					//	if (m_vCurrentPos.x > g_iWinSizeX)
+					//		m_vCurrentPos.x = (g_iWinSizeX - m_tInfo.fCX);
+					//
+					//	if (m_vCurrentPos.x < 0)
+					//		m_vCurrentPos.x = (m_tInfo.fCX);
+					//
+					//	if (m_vCurrentPos.y > g_iWinSizeY)
+					//		m_vCurrentPos.y = (g_iWinSizeY - m_tInfo.fCY);
+					//	
+					//	if (m_vCurrentPos.y < 0)
+					//		m_vCurrentPos.y = (m_tInfo.fCY);
+					//
+					//	m_tInfo.fX = m_vCurrentPos.x;
+					//	m_tInfo.fY = m_vCurrentPos.y;
+					//
+					//	// Test Code
+					//	//m_tInfo.fX = g_iWinSizeX * 0.5f;
+					//	//m_tInfo.fY = g_iWinSizeY * 0.5f;
+					//
+					//	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+					//		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+					//}
 
 					// 깃발에 미터 텍스트를 추가한다.
 					if (m_eType == UI_MILEPOST::MILEPOST_FLAG)
@@ -198,7 +200,7 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 						m_pRendererCom->Add_Text(TextDesc);
 					}
 				}
-				else
+				else // 거리가 3보다 작다면
 				{
 					CUI_Manager::GetInstance()->Off_Milepost();
 					//m_bGoal = false;
@@ -271,6 +273,9 @@ HRESULT CUI_Milepost::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
+		return E_FAIL;
+
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
 		return E_FAIL;
 
@@ -294,27 +299,65 @@ void CUI_Milepost::Rotation_Arrow()
 	if (nullptr == pPlayerTransform)
 		return;
 
-	Vec3 vScale = m_pTransformCom->Get_Scale();							// 1. MilePost의 스케일을 저장해놓는다.
+//	Vec3 vScale = m_pTransformCom->Get_Scale();							// 1. MilePost의 스케일을 저장해놓는다.
+//	Vec2 vProjTargetPos = Get_ProjectionPosition(m_vTargetPos);			// 2. 타겟포지션의 윈도우 좌표를 구한다.
+//	Vec2 vProjPlayerPos = Get_ProjectionPosition(pPlayerTransform);		// 3. 플레이어포지션의 윈도우 좌표를 구한다.
+//
+//	if ((0.f <= vProjTargetPos.x && _float(g_iWinSizeX) >= vProjTargetPos.y)
+//		&& (0.f <= vProjTargetPos.y && _float(g_iWinSizeY) >= vProjTargetPos.y))
+//	{
+//		// 화면 안에 TargetPosition이 있다면, 화살표를 노출하지 않는다.
+//		m_fAlpha = 0.f;
+//	}
+//	else
+//	{
+//		m_fAlpha = 1.f;
+//
+//		// 5. 윈도우 상의 좌표에서 플레이어 포지션에서 타겟포지션으로 향하는 방향을 구한다.
+//		Vec2 vDir = XMVector2Normalize(vProjTargetPos - vProjPlayerPos);
+//		Vec4 vDirVector = XMVector3Normalize(XMLoadFloat4(&m_vTargetPos) - pPlayerTransform->Get_Position());
+//
+//		// 6.	(1)월드상의 플레이어 포지션에서 타겟포지션으로 향하는 방향벡터와,
+//		//		(2) 카메라의 룩벡터를 내적한다. 만약 -값이 나오면, vDir의 Y값을 역으로 만든다.
+//		_float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(XMLoadFloat4(&m_vTargetPos) - pPlayerTransform->Get_Position()), XMVector3Normalize(pCameraTrans->Get_Look())));
+//
+//		Vec3 vRight, vUp, vLook;
+//		vUp = XMVector3Normalize(XMVectorSet(vDir.x, vDir.y, 0.f, 0.f));
+//		if (fDot < 0.f)
+//			vUp.y *= -1.f;
+//		vLook = XMVector3Normalize(XMVectorSet(0.f, 0.f, 1.f, 0.f));
+//		vRight = XMVector3Normalize(XMVector3Cross(vUp, vLook));
+//
+//		m_pTransformCom->Set_State(CTransform::STATE_RIGHT, vRight * vScale.x);
+//		m_pTransformCom->Set_State(CTransform::STATE_UP, vUp * vScale.y);
+//		m_pTransformCom->Set_State(CTransform::STATE_LOOK, vLook * vScale.z);
+//	}
 
-	Vec2 vProjTargetPos = Get_ProjectionPosition(m_vTargetPos);			// 2. 타겟포지션의 윈도우 좌표를 구한다.
-	Vec2 vProjPlayerPos = Get_ProjectionPosition(pPlayerTransform);		// 3. 플레이어포지션의 윈도우 좌표를 구한다.
-	Vec2 vProjCameraPos = Get_ProjectionPosition(pCameraTrans);			// 4. 카메라 포지션의 윈도우 좌표를 구한다.
+	// - - - - - - - - - - - - - - - - - - - 
 
-	Vec2 vDir = XMVector2Normalize(vProjTargetPos - vProjPlayerPos);	// 5. 윈도우 상의 좌표에서 플레이어 포지션에서 타겟포지션으로 향하는 방향을 구한다.
+//	_vector vStandard = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+//	Vec4 vDirVector = XMVector3Normalize(XMLoadFloat4(&m_vTargetPos) - pPlayerTransform->Get_Position());
+//
+//	// 두 벡터 사이의 각도 계산
+//	_float fDot = XMVectorGetX(XMVector3Dot(vStandard, vDirVector));
+//	_float fDegree = XMConvertToDegrees(acos(fDot));
+//
+//	// 두 벡터의 외적을 통해 회전 방향 결정
+//	if (XMVectorGetY(XMVector3Cross(vStandard, vDirVector)) > 0.f)
+//		fDegree *= -1.f;
+//
+//	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(fDegree));
 
-	// 6. (1)월드상의 플레이어 포지션에서 타겟포지션으로 향하는 방향벡터와, (2) 카메라의 룩벡터를 내적한다. 만약 -값이 나오면, vDir의 Y값을 역으로 만든다.
-	_float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(XMLoadFloat4(&m_vTargetPos) - pPlayerTransform->Get_Position()), XMVector3Normalize(pCameraTrans->Get_Look())));
 
-	Vec3 vRight, vUp, vLook;
-	vUp = XMVector3Normalize(XMVectorSet(vDir.x, vDir.y, 0.f, 0.f));
-	if (fDot < 0.f)
-		vUp.y *= -1.f;
-	vLook = XMVector3Normalize(XMVectorSet(0.f, 0.f, 1.f, 0.f));
-	vRight = XMVector3Normalize(XMVector3Cross(vUp, vLook));
+	Vec3 vTargetDir = XMVector3Normalize(XMLoadFloat4(&m_vTargetPos) - pPlayerTransform->Get_Position());
+	Vec3 vPlayerLook = XMVector3Normalize(pPlayerTransform->Get_Look());
+	_float fAngle = XMConvertToDegrees(acos(XMVectorGetX(XMVector3Dot(vPlayerLook, vTargetDir))));
 
-	m_pTransformCom->Set_State(CTransform::STATE_RIGHT, vRight * vScale.x);
-	m_pTransformCom->Set_State(CTransform::STATE_UP, vUp * vScale.y);
-	m_pTransformCom->Set_State(CTransform::STATE_LOOK, vLook * vScale.z);
+	Vec3 vCross = XMVector3Cross(vPlayerLook, vTargetDir);
+	if (XMVectorGetY(vCross) > 0.f)
+		fAngle *= -1.f;
+
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(fAngle));
 }
 
 CUI_Milepost* CUI_Milepost::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MILEPOST eType)

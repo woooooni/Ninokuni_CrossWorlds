@@ -29,8 +29,8 @@ HRESULT CUI_Stellia_GaugeBar::Initialize(void* pArg)
 	UIDesc.fCX = 200.f;
 	UIDesc.fCY = 200.f;
 	UIDesc.fX = 1200.f;
-	UIDesc.fY = g_iWinSizeY * 0.5f;
-//	UIDesc.fY = 650.f;
+//	UIDesc.fY = g_iWinSizeY * 0.5f;
+	UIDesc.fY = 650.f;
 	if (FAILED(__super::Initialize(&UIDesc)))
 		return E_FAIL;
 
@@ -41,6 +41,8 @@ HRESULT CUI_Stellia_GaugeBar::Initialize(void* pArg)
 	m_iCurGauge = 0;
 
 	m_bActive = true;
+
+	m_fAlpha = 0.8f;
 
 	return S_OK;
 }

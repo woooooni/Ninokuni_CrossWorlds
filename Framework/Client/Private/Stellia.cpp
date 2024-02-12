@@ -158,9 +158,9 @@ HRESULT CStellia::Initialize(void* pArg)
 	// Damage가 다 자면 1초 후에 삭제되는 옵션을 넣어두었습니다.
 	// Max Damage와 관계 없이 원하는 때에 삭제하고 싶다면 Clone GameObject하여 사용하세요.
 
-	// WH : Gauge가 필요한 State의 Start에 넣어줌. (클릭 이벤트) -> 미완성
-	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Stellia_GaugeBar"))))
-		return E_FAIL;
+	// WH : Gauge가 필요한 State의 Start에 넣어줌. (클릭 이벤트)
+//	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Stellia_GaugeBar"))))
+//		return E_FAIL;
 
 	return S_OK;
 }
