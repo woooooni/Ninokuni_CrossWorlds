@@ -156,8 +156,7 @@ HRESULT CCamera_Action::Start_Action_Stadium(const _float& fDuration)
 
 	/* Shake */
 	{
-		// Start_Shake(0.1f, 150.f, fDuration);
-		// 쉐이킹 페이드 인아웃 예약
+		Start_Shake(0.1f, 100.f, m_tActionStadiumDesc.fDurationPerView);
 	}
 
 	return S_OK;
@@ -718,6 +717,13 @@ void CCamera_Action::Tick_Stadium(_float fTimeDelta)
 		m_tActionStadiumDesc.iCurViewNum++;
 
 		/* Increase View Type */
+
+		if (ACTION_STADIUM_DESC::VIEW_NUM::V4_FINAL == m_tActionStadiumDesc.iCurViewNum)
+		{
+			m_tActionStadiumDesc.fDurationPerView *= 1.75f;
+			Stop_Shake();
+		}
+
 		if (ACTION_STADIUM_DESC::VIEW_NUM::VIEW_NUM_END == m_tActionStadiumDesc.iCurViewNum)
 		{
 			Finish_Action_Stadium();
@@ -729,21 +735,26 @@ void CCamera_Action::Tick_Stadium(_float fTimeDelta)
 			m_pTransformCom->Set_Position(m_tActionStadiumDesc.ViewPositions[m_tActionStadiumDesc.iCurViewNum]);
 			m_pTransformCom->Set_LookAtByDir(m_tActionStadiumDesc.ViewLooks[m_tActionStadiumDesc.iCurViewNum]);
 		}
+
+		if (ACTION_STADIUM_DESC::VIEW_NUM::V4_FINAL != m_tActionStadiumDesc.iCurViewNum)
+			Start_Shake(0.1f, 100.f, m_tActionStadiumDesc.fDurationPerView);
 	}
 
 	if (Is_Shake())
 	{
 		m_pTransformCom->Set_LookAtByDir(m_tActionStadiumDesc.ViewLooks[m_tActionStadiumDesc.iCurViewNum]);
 
-		Vec4 vLookAt = m_pTransformCom->Get_LookAt() + Vec4(Get_ShakeLocalPos());
+		const _float fShakeMag = (ACTION_STADIUM_DESC::VIEW_NUM::V4_FINAL - m_tActionStadiumDesc.iCurViewNum) / (_float)ACTION_STADIUM_DESC::VIEW_NUM::V4_FINAL;
+
+		Vec4 vLookAt = m_pTransformCom->Get_LookAt() + Vec4(Get_ShakeLocalPos() * 750.f * fShakeMag);
 		
 		m_pTransformCom->LookAt(vLookAt.OneW());
 	}
 
-	//if (ACTION_STADIUM_DESC::VIEW_NUM::V4_FINAL == m_tActionStadiumDesc.iCurViewNum)
-	//{
-	//	m_pTransformCom->Translate(Vec3(m_pTransformCom->Get_Look()).Normalized() * -1.f * fTimeDelta);
-	//}
+	if (ACTION_STADIUM_DESC::VIEW_NUM::V4_FINAL == m_tActionStadiumDesc.iCurViewNum)
+	{
+		m_pTransformCom->Translate(Vec3(m_pTransformCom->Get_Look()).Normalized() * -0.5f * fTimeDelta);
+	}
 }
 
 void CCamera_Action::Tick_WindMill(_float fTimeDelta)
@@ -1251,7 +1262,6 @@ void CCamera_Action::Tick_Stellia_Dead(_float fTimeDelta)
 	}
 }
 
-
 HRESULT CCamera_Action::Ready_Components()
 {
 	return S_OK;
@@ -1597,7 +1607,6 @@ HRESULT CCamera_Action::Start_Action_Stellia_Dead(CGameObject* pGameObject)
 
 	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 }
-
 
 void CCamera_Action::Tick_TowerDefense(_float fTimeDelta)
 {
