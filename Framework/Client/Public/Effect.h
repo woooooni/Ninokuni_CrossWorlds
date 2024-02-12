@@ -307,7 +307,8 @@ public:
 	void Set_UVSpeed(_float fSpeed);
 	void Set_UVFlow(_int iLoop, _float2 fDir, _float2 fSpeed);
 
-	void Start_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float  fDissolveTotal);
+	void Create_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float  fDissolveTotal);
+	void Start_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float  fDissolveTotal, _bool bDissolvdDelete = true);
 	void Reserve_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float  fDissolveTotal);
 
 	void Start_RigidbodyJump(Vec3 vDir, _float fForce, _bool bClear);
@@ -343,6 +344,11 @@ public:
 	_bool  Get_DieEffect() { return m_bEffectDie; }
 	_float Get_EffectLifeTime() { return m_fLifeTime; }
 
+	_bool Get_IsEffectShow()              { return m_bIsShow; }
+	void  Set_IsEffectShow(_bool bIsShow) { m_bIsShow = bIsShow; };
+
+	_bool Get_IsDissolve() { return m_bDissolve; }
+
 private:
 	EFFECT_DESC m_tEffectDesc = {};
 	_bool m_bEffectDelete = true;
@@ -354,6 +360,8 @@ private:
 	_float3 m_vLocalRotation = _float3(0.f, 0.f, 0.f);
 
 private:
+	_bool m_bIsShow = true;
+
 	_bool   m_bEffectDie = false;
 	_bool   m_bOwnerTransformOnly = false;
 
@@ -422,8 +430,10 @@ private:
 	_float  m_fBlurPower = 0.f;
 
 	// Dissolve
+	_bool   m_bStartDissolve    = false;
 	_bool   m_bReserve_Dissolve = false;
-	_bool   m_bDissolve = false;
+	_bool   m_bDissolve         = false;
+	_bool   m_bDissolvdDelete   = true;
 	_uint   m_iDissolveTexIndex = 0;
 	_float4 m_vDissolveColor  = _float4(0.427f, 0.894f, 1.f, 1.f);
 	_float  m_fDissolveTotal  = 10.f;

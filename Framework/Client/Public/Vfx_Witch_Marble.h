@@ -8,20 +8,21 @@ END
 
 BEGIN(Client)
 
-class CVfx_Witch_Skill_Laser_Warning final : public CVfx
+class CVfx_Witch_Marble final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_D_WARNING,
-		TYPE_E_LASERLINE,
+		TYPE_ET1_E_MARBLE,
+
+		TYPE_ET1_E_,
 
 		TYPE_END
 	};
 
 protected:
-	CVfx_Witch_Skill_Laser_Warning(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CVfx_Witch_Skill_Laser_Warning(const CVfx_Witch_Skill_Laser_Warning& rhs);
-	virtual ~CVfx_Witch_Skill_Laser_Warning() = default;
+	CVfx_Witch_Marble(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVfx_Witch_Marble(const CVfx_Witch_Marble& rhs);
+	virtual ~CVfx_Witch_Marble() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -34,13 +35,12 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
-	class CDecal*  m_pWarningDecal = nullptr;
-	class CEffect* m_pWarningLine  = nullptr;
+	_bool m_bCreate = false;
 
-	_bool m_bIsCreate = false;
+	CEffect* m_pMarble = nullptr;
 
 public:
-	static CVfx_Witch_Skill_Laser_Warning* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
+	static CVfx_Witch_Marble* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 		const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;

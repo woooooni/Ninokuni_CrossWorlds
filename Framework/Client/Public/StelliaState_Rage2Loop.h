@@ -22,6 +22,10 @@ private:
 	_float m_fTime = 0.f;
 	_float m_fRespawnTime = 0.5f;
 
+private:
+	class CEffect* m_pShieldEffect = nullptr;
+	Vec3 m_vDeleteColor = {};
+
 public:
 	static CStelliaState_Rage2Loop* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

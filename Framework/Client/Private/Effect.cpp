@@ -79,7 +79,18 @@ void CEffect::Set_UVFlow(_int iLoop, _float2 fDir, _float2 fSpeed)
 	Reset_UV();
 }
 
-void CEffect::Start_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed,	_float fDissolveTotal)
+void CEffect::Create_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float fDissolveTotal)
+{
+	m_iDissolveTexIndex = iDissolveTexIndex;
+	m_vDissolveColor = vDissolveColor;
+	m_fDissolveSpeed = fDissolveSpeed;
+	m_fDissolveTotal = fDissolveTotal;
+
+	m_bStartDissolve = true;
+	m_fDissolveWeight = 10.f;
+}
+
+void CEffect::Start_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float fDissolveTotal, _bool bDissolvdDelete)
 {
 	m_iDissolveTexIndex = iDissolveTexIndex;
 	m_vDissolveColor = vDissolveColor;
@@ -88,6 +99,8 @@ void CEffect::Start_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _f
 
 	m_fDissolveWeight = 0.f;
 	m_bDissolve = true;
+
+	m_bDissolvdDelete = bDissolvdDelete;
 }
 
 void CEffect::Reserve_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float  fDissolveTotal)
@@ -329,10 +342,22 @@ HRESULT CEffect::Initialize(void* pArg)
 
 void CEffect::Tick(_float fTimeDelta)
 {
+	if (!m_bIsShow)
+		return;
+
 	// Dissolve
-	if (m_bDissolve)
+	if (true == m_bStartDissolve)
 	{
-		if (m_fDissolveWeight >= m_fDissolveTotal)
+		m_fDissolveWeight -= m_fDissolveSpeed * fTimeDelta;
+		if (m_fDissolveWeight < 0.f)
+		{
+			m_fDissolveWeight = 0.f;
+			m_bStartDissolve = false;
+		}
+	}
+	else if (true == m_bDissolve)
+	{
+		if (m_bDissolvdDelete && m_fDissolveWeight >= m_fDissolveTotal)
 		{
 			m_bEffectDie = true;
 			if (GI->Get_CurrentLevel() != LEVEL_TOOL)
@@ -400,6 +425,9 @@ void CEffect::Tick(_float fTimeDelta)
 
 void CEffect::LateTick(_float fTimeDelta)
 {
+	if (!m_bIsShow)
+		return;
+
 	if (m_bDead || m_bEffectDie)
 		return;
 
@@ -498,13 +526,13 @@ void CEffect::LateTick(_float fTimeDelta)
 	EffectInstanceDesc.g_fBlurPower = m_fBlurPower;
 
 	// ÄÃ¸µ
-	if (true == GI->Intersect_Frustum_World(XMLoadFloat4x4(&WorldMatrix).r[CTransform::STATE_POSITION], 10.f))
-	{
+	//if (true == GI->Intersect_Frustum_World(XMLoadFloat4x4(&WorldMatrix).r[CTransform::STATE_POSITION], 100.f))
+	//{
 		if (m_tEffectDesc.eType == EFFECT_TYPE::EFFECT_MESH)
 			m_pRendererCom->Add_RenderGroup_Instancing_Effect(CRenderer::RENDER_EFFECT, CRenderer::INSTANCING_SHADER_TYPE::EFFECT_MODEL, this, WorldMatrix, EffectInstanceDesc);
 		else
 			m_pRendererCom->Add_RenderGroup_Instancing_Effect(CRenderer::RENDER_EFFECT, CRenderer::INSTANCING_SHADER_TYPE::EFFECT_TEXTURE, this, WorldMatrix, EffectInstanceDesc);
-	}
+	//}
 }
 
 HRESULT CEffect::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)

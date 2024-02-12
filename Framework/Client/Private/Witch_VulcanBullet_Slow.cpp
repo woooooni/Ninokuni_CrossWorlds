@@ -6,8 +6,7 @@
 
 #include "DreamMazeWitch_Npc.h"
 
-#include "Particle_Manager.h"
-#include "Particle.h"
+#include "Effect_Manager.h"
 
 CWitch_VulcanBullet_Slow::CWitch_VulcanBullet_Slow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CMonsterProjectile(pDevice, pContext, strObjectTag)
@@ -45,27 +44,14 @@ HRESULT CWitch_VulcanBullet_Slow::Initialize(void* pArg)
 	m_fDelteTime = 6.f;
 	m_fSpeed = 5.f;
 
+	// 捞棋飘 积己
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Marble"), m_pTransformCom->Get_WorldMatrix(), this);
+
 	return S_OK;
 }
 
 void CWitch_VulcanBullet_Slow::Tick(_float fTimeDelta)
 {
-	// 捞棋飘 积己
-	if (!m_bCreate)
-	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall"),
-			m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this);
-
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall_Flame"),
-			m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this);
-
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall_Lighting"),
-			m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this);
-
-		m_bCreate = true;
-	}
-
-
 	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fSpeed, fTimeDelta);
 
 	m_fAccDelteTime += fTimeDelta;

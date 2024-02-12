@@ -27,7 +27,7 @@ private:
 
 private:
 	class CVfx* m_pLaserWarning = nullptr;
-	class CVfx* m_pLaser = nullptr;
+	class CEffect* m_pLaser = nullptr;
 
 	_bool m_bIsLaserWarningCreate = false;
 	_bool m_bIsLaserCreate = false;

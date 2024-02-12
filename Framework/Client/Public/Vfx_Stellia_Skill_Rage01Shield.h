@@ -8,20 +8,19 @@ END
 
 BEGIN(Client)
 
-class CVfx_Witch_Skill_Laser_Warning final : public CVfx
+class CVfx_Stellia_Skill_Rage01Shield final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_D_WARNING,
-		TYPE_E_LASERLINE,
+		TYPE_ET1_E_SHIELD,
 
 		TYPE_END
 	};
 
 protected:
-	CVfx_Witch_Skill_Laser_Warning(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CVfx_Witch_Skill_Laser_Warning(const CVfx_Witch_Skill_Laser_Warning& rhs);
-	virtual ~CVfx_Witch_Skill_Laser_Warning() = default;
+	CVfx_Stellia_Skill_Rage01Shield(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVfx_Stellia_Skill_Rage01Shield(const CVfx_Stellia_Skill_Rage01Shield& rhs);
+	virtual ~CVfx_Stellia_Skill_Rage01Shield() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -34,13 +33,10 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
-	class CDecal*  m_pWarningDecal = nullptr;
-	class CEffect* m_pWarningLine  = nullptr;
-
-	_bool m_bIsCreate = false;
+	class CEffect* m_pShield = nullptr;
 
 public:
-	static CVfx_Witch_Skill_Laser_Warning* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
+	static CVfx_Stellia_Skill_Rage01Shield* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 		const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;

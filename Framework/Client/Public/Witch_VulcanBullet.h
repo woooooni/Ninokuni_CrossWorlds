@@ -42,8 +42,6 @@ private:
 
 	Matrix m_RotationMatrix = Matrix::Identity;
 
-	_bool m_bCreate = false;
-
 public:
 	static CWitch_VulcanBullet* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;

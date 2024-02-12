@@ -147,37 +147,35 @@ PS_OUT PS_DEFAULT(PS_IN In)
         discard;
     else
     {
+        vector vDiffuseColor = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
+        if (vDiffuseColor.a < g_fAlpha_Discard)
+            discard;
+        
         Out.vDiffuse_None   = float4(0.f, 0.f, 0.f, 0.f);
         Out.vDiffuse_Low    = float4(0.f, 0.f, 0.f, 0.f);
         Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
         Out.vDiffuse_High   = float4(0.f, 0.f, 0.f, 0.f);
-		
+        
 		// ÇÈ¼¿ »ö»ó ÁöÁ¤ : ¸í¾Ï ¿¬»ê X
         if (fDissolveAlpha < 0.5)
         {
-            vector vDiffuseColor = g_vDissolveColor;
-			
-            Out.vDiffuse_All = vDiffuseColor;
+            Out.vDiffuse_All = g_vDissolveColor;
             if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
-                Out.vDiffuse_None = vDiffuseColor;
+                Out.vDiffuse_None = g_vDissolveColor;
             else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
-                Out.vDiffuse_Low = vDiffuseColor;
+                Out.vDiffuse_Low = g_vDissolveColor;
             else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
-                Out.vDiffuse_Middle = vDiffuseColor;
+                Out.vDiffuse_Middle = g_vDissolveColor;
             else
-                Out.vDiffuse_High = vDiffuseColor;
+                Out.vDiffuse_High = g_vDissolveColor;
 			
 			// Bloom
-            Out.vBloom = float4(vDiffuseColor.r, vDiffuseColor.g, vDiffuseColor.b, 0.5f);
+            Out.vBloom = float4(g_vDissolveColor.r, g_vDissolveColor.g, g_vDissolveColor.b, 0.5f);
         }
 	
 	    // ±âº» ÇÈ¼¿ ·»´õ¸µ
         else
         {
-            vector vDiffuseColor = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
-            if (vDiffuseColor.a < g_fAlpha_Discard)
-                discard;
-
             Out.vDiffuse_All = vDiffuseColor;
             if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
                 Out.vDiffuse_None = vDiffuseColor;
@@ -218,6 +216,16 @@ PS_OUT PS_NO_ALPHA_WITH_DIFFUSE(PS_IN In)
 	
     else
     {
+        vector vDiffuseColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+        if (vDiffuseColor.a < g_fAlpha_Discard ||
+				vDiffuseColor.r < g_fBlack_Discard.r && vDiffuseColor.g < g_fBlack_Discard.g && vDiffuseColor.b < g_fBlack_Discard.b)
+            discard;
+
+        vDiffuseColor.rgb = saturate((vDiffuseColor.rgb + g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb));
+        vDiffuseColor.a = g_EffectDesc[In.iInstanceID].g_fAlpha;
+        if (Out.vDiffuse_All.a <= g_fAlpha_Discard)
+            discard;
+        
         Out.vDiffuse_None   = float4(0.f, 0.f, 0.f, 0.f);
         Out.vDiffuse_Low    = float4(0.f, 0.f, 0.f, 0.f);
         Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
@@ -226,37 +234,24 @@ PS_OUT PS_NO_ALPHA_WITH_DIFFUSE(PS_IN In)
 		// ÇÈ¼¿ »ö»ó ÁöÁ¤ : ¸í¾Ï ¿¬»ê X
         if (fDissolveAlpha < 0.5)
         {
-            vector vDiffuseColor = g_vDissolveColor;
-			
-            Out.vDiffuse_All = vDiffuseColor;
+            Out.vDiffuse_All = g_vDissolveColor;
             if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
-                Out.vDiffuse_None = vDiffuseColor;
+                Out.vDiffuse_None = g_vDissolveColor;
             else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
-                Out.vDiffuse_Low = vDiffuseColor;
+                Out.vDiffuse_Low = g_vDissolveColor;
             else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
-                Out.vDiffuse_Middle = vDiffuseColor;
+                Out.vDiffuse_Middle = g_vDissolveColor;
             else
-                Out.vDiffuse_High = vDiffuseColor;
+                Out.vDiffuse_High = g_vDissolveColor;
 			
 			// Bloom
-            Out.vBloom = float4(vDiffuseColor.r, vDiffuseColor.g, vDiffuseColor.b, 0.5f);
+            Out.vBloom = float4(g_vDissolveColor.r, g_vDissolveColor.g, g_vDissolveColor.b, 0.5f);
         }
 		
 	    // ±âº» ÇÈ¼¿ ·»´õ¸µ
         else
         {
-            vector vDiffuseColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
-            if (vDiffuseColor.a < g_fAlpha_Discard ||
-				vDiffuseColor.r < g_fBlack_Discard.r && vDiffuseColor.g < g_fBlack_Discard.g && vDiffuseColor.b < g_fBlack_Discard.b)
-                discard;
-
-            vDiffuseColor.rgb = saturate((vDiffuseColor.rgb + g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb));
-            vDiffuseColor.a = g_EffectDesc[In.iInstanceID].g_fAlpha;
-            if (Out.vDiffuse_All.a <= g_fAlpha_Discard)
-                discard;
-
             Out.vDiffuse_All = vDiffuseColor;
-
 
             if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
                 Out.vDiffuse_None = vDiffuseColor;
@@ -297,6 +292,14 @@ PS_OUT PS_NO_DIFFUSE_WITH_ALPHA(PS_IN In)
     
 	else
     {
+        vector vTextureAlpha = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
+        if ((vTextureAlpha.r <= g_fBlack_Discard.x) && (vTextureAlpha.g <= g_fBlack_Discard.y) && (vTextureAlpha.b <= g_fBlack_Discard.z))
+            discard;
+
+        vector vDiffuseColor = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
+        if (vDiffuseColor.a <= g_fAlpha_Discard)
+            discard;
+        
         Out.vDiffuse_None = float4(0.f, 0.f, 0.f, 0.f);
         Out.vDiffuse_Low = float4(0.f, 0.f, 0.f, 0.f);
         Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
@@ -305,33 +308,23 @@ PS_OUT PS_NO_DIFFUSE_WITH_ALPHA(PS_IN In)
 	    // ÇÈ¼¿ »ö»ó ÁöÁ¤ : ¸í¾Ï ¿¬»ê X
         if (fDissolveAlpha < 0.5)
         {
-            vector vDiffuseColor = g_vDissolveColor;
-			
-            Out.vDiffuse_All = vDiffuseColor;
+            Out.vDiffuse_All = g_vDissolveColor;
             if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
-                Out.vDiffuse_None = vDiffuseColor;
+                Out.vDiffuse_None = g_vDissolveColor;
             else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
-                Out.vDiffuse_Low = vDiffuseColor;
+                Out.vDiffuse_Low = g_vDissolveColor;
             else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
-                Out.vDiffuse_Middle = vDiffuseColor;
+                Out.vDiffuse_Middle = g_vDissolveColor;
             else
-                Out.vDiffuse_High = vDiffuseColor;
+                Out.vDiffuse_High = g_vDissolveColor;
 			
 			// Bloom
-            Out.vBloom = float4(vDiffuseColor.r, vDiffuseColor.g, vDiffuseColor.b, 0.5f);
+            Out.vBloom = float4(g_vDissolveColor.r, g_vDissolveColor.g, g_vDissolveColor.b, 0.5f);
         }
 		
 	    // ±âº» ÇÈ¼¿ ·»´õ¸µ
         else
         {
-            vector vTextureAlpha = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
-            if ((vTextureAlpha.r <= g_fBlack_Discard.x) && (vTextureAlpha.g <= g_fBlack_Discard.y) && (vTextureAlpha.b <= g_fBlack_Discard.z))
-                discard;
-
-            vector vDiffuseColor = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
-            if (vDiffuseColor.a <= g_fAlpha_Discard)
-                discard;
-
             Out.vDiffuse_All = vDiffuseColor;
             if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
                 Out.vDiffuse_None = vDiffuseColor;
@@ -370,6 +363,20 @@ PS_OUT PS_BOTH(PS_IN In)
         discard;
     else
     {
+        vector vDiffuseColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+        if ((vDiffuseColor.r <= g_fBlack_Discard.x) && (vDiffuseColor.g <= g_fBlack_Discard.y) && (vDiffuseColor.b <= g_fBlack_Discard.z))
+            discard;
+
+        vector vTextureAlpha = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
+        if (vTextureAlpha.a < g_fAlpha_Discard ||
+            (vTextureAlpha.r <= g_fBlack_Discard.x) && (vTextureAlpha.g <= g_fBlack_Discard.y) && (vTextureAlpha.b <= g_fBlack_Discard.z))
+            discard;
+        
+        vDiffuseColor.rgb = saturate((vDiffuseColor.rgb + g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb));
+        vDiffuseColor.a = g_EffectDesc[In.iInstanceID].g_fAlpha;
+        if (vDiffuseColor.a <= g_fAlpha_Discard)
+            discard;
+        
         Out.vDiffuse_None   = float4(0.f, 0.f, 0.f, 0.f);
         Out.vDiffuse_Low    = float4(0.f, 0.f, 0.f, 0.f);
         Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
@@ -378,38 +385,23 @@ PS_OUT PS_BOTH(PS_IN In)
 		// ÇÈ¼¿ »ö»ó ÁöÁ¤ : ¸í¾Ï ¿¬»ê X
         if (fDissolveAlpha < 0.5)
         {
-            vector vDiffuseColor = g_vDissolveColor;
-			
-            Out.vDiffuse_All = vDiffuseColor;
+            Out.vDiffuse_All = g_vDissolveColor;
             if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
-                Out.vDiffuse_None = vDiffuseColor;
+                Out.vDiffuse_None = g_vDissolveColor;
             else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
-                Out.vDiffuse_Low = vDiffuseColor;
+                Out.vDiffuse_Low = g_vDissolveColor;
             else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
-                Out.vDiffuse_Middle = vDiffuseColor;
+                Out.vDiffuse_Middle = g_vDissolveColor;
             else
-                Out.vDiffuse_High = vDiffuseColor;
+                Out.vDiffuse_High = g_vDissolveColor;
 			
 			// Bloom
-            Out.vBloom = float4(vDiffuseColor.r, vDiffuseColor.g, vDiffuseColor.b, 0.5f);
+            Out.vBloom = float4(g_vDissolveColor.r, g_vDissolveColor.g, g_vDissolveColor.b, 0.5f);
         }
 		
 		// ±âº» ÇÈ¼¿ ·»´õ¸µ
         else
         {
-            vector vDiffuseColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
-            if ((vDiffuseColor.r <= g_fBlack_Discard.x) && (vDiffuseColor.g <= g_fBlack_Discard.y) && (vDiffuseColor.b <= g_fBlack_Discard.z))
-                discard;
-
-            vDiffuseColor.rgb = saturate((vDiffuseColor.rgb + g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb));
-            vDiffuseColor.a = g_EffectDesc[In.iInstanceID].g_fAlpha;
-            if (vDiffuseColor.a <= g_fAlpha_Discard)
-                discard;
-
-            vector vTextureAlpha = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
-            if ((vTextureAlpha.r <= g_fBlack_Discard.x) && (vTextureAlpha.g <= g_fBlack_Discard.y) && (vTextureAlpha.b <= g_fBlack_Discard.z))
-                discard;
-
             Out.vDiffuse_All = vDiffuseColor;
             if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
                 Out.vDiffuse_None = vDiffuseColor;
@@ -456,20 +448,18 @@ PS_OUT PS_RIM(PS_IN In)
 		// ÇÈ¼¿ »ö»ó ÁöÁ¤ : ¸í¾Ï ¿¬»ê X
         if (fDissolveAlpha < 0.5)
         {
-            vector vDiffuseColor = g_vDissolveColor;
-			
-            Out.vDiffuse_All = vDiffuseColor;
+            Out.vDiffuse_All = g_vDissolveColor;
             if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
-                Out.vDiffuse_None = vDiffuseColor;
+                Out.vDiffuse_None = g_vDissolveColor;
             else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
-                Out.vDiffuse_Low = vDiffuseColor;
+                Out.vDiffuse_Low = g_vDissolveColor;
             else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
-                Out.vDiffuse_Middle = vDiffuseColor;
+                Out.vDiffuse_Middle = g_vDissolveColor;
             else
-                Out.vDiffuse_High = vDiffuseColor;
+                Out.vDiffuse_High = g_vDissolveColor;
 			
 			// Bloom
-            Out.vBloom = float4(vDiffuseColor.r, vDiffuseColor.g, vDiffuseColor.b, 0.5f);
+            Out.vBloom = float4(g_vDissolveColor.r, g_vDissolveColor.g, g_vDissolveColor.b, 0.5f);
         }
 		
 		// ±âº» ÇÈ¼¿ ·»´õ¸µ
@@ -501,11 +491,13 @@ PS_OUT PS_RIM(PS_IN In)
     }
 
     Out.vDistortion.xy = g_DistortionTexture.Sample(LinearSampler, In.vTexUV).xy * g_vDistortion.xy;
+    
     return Out;
 };
 
 technique11 DefaultTechnique
 {
+// 0
 	pass DefaultPass
 	{
 		SetRasterizerState(RS_NoneCull);
@@ -519,7 +511,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_DEFAULT();
 	}
 
-
+//1
 	pass NoAlphaPass
 	{
 		SetRasterizerState(RS_NoneCull);
@@ -533,6 +525,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_NO_ALPHA_WITH_DIFFUSE();
 	}
 
+//2
 	pass NoDiffusePass
 	{
 		SetRasterizerState(RS_NoneCull);
@@ -546,7 +539,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_NO_DIFFUSE_WITH_ALPHA();
 	}
 
-
+//3
 	pass BothPass
 	{
 		SetRasterizerState(RS_NoneCull);
@@ -560,6 +553,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_BOTH();
 	}
 
+//4
     pass RimPass
     {
         SetRasterizerState(RS_NoneCull);
@@ -571,5 +565,61 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_RIM();
+    }
+
+//5
+    pass DefaultPass_NoDepth
+    {
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_DEFAULT();
+    }
+
+//6
+    pass NoAlphaPass_NoDepth
+    {
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_NO_ALPHA_WITH_DIFFUSE();
+    }
+
+//7
+    pass NoDiffusePass_NoDepth
+    {
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_NO_DIFFUSE_WITH_ALPHA();
+    }
+
+//8
+    pass BothPass_NoDepth
+    {
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_BOTH();
     }
 }

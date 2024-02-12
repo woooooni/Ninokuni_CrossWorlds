@@ -31,13 +31,13 @@ HRESULT CVfx_Witch_Skill_Laser_Warning::Initialize_Prototype()
 	// 0
 	m_pFrameTriger[TYPE_D_WARNING] = 0;
 	m_pPositionOffset[TYPE_D_WARNING] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_D_WARNING] = _float3(3.f, 0.5f, 100.f);
+	m_pScaleOffset[TYPE_D_WARNING]    = _float3(3.f, 0.5f, 100.f);
 	m_pRotationOffset[TYPE_D_WARNING] = _float3(0.f, 0.f, 0.f);
 
 	// 1
 	m_pFrameTriger[TYPE_E_LASERLINE] = 0;
-	m_pPositionOffset[TYPE_E_LASERLINE] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_E_LASERLINE] = _float3(3.f, 5.f, 100.f);
+	m_pPositionOffset[TYPE_E_LASERLINE] = _float3(0.f, 0.35f, -0.055f);
+	m_pScaleOffset[TYPE_E_LASERLINE]    = _float3(3.f, 5.f, 875.f);
 	m_pRotationOffset[TYPE_E_LASERLINE] = _float3(0.f, 0.f, 0.f);
 
 	return S_OK;
@@ -56,8 +56,9 @@ void CVfx_Witch_Skill_Laser_Warning::Tick(_float fTimeDelta)
 		GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Stellia_Rage03LaserDecal"),
 			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_WARNING], m_pScaleOffset[TYPE_D_WARNING], m_pRotationOffset[TYPE_D_WARNING], nullptr, &m_pWarningDecal);
 
-		//GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_BalckHole_Drain"),
-		//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_LASERLINE], m_pScaleOffset[TYPE_E_LASERLINE], m_pRotationOffset[TYPE_E_LASERLINE]);
+		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_Rage3_LaserLine_Warning"),
+			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_LASERLINE], m_pScaleOffset[TYPE_E_LASERLINE], m_pRotationOffset[TYPE_E_LASERLINE], nullptr, &m_pWarningLine, false);
+		Safe_AddRef(m_pWarningLine);
 
 		m_bIsCreate = true;
 	}
@@ -116,6 +117,12 @@ CGameObject* CVfx_Witch_Skill_Laser_Warning::Clone(void* pArg)
 void CVfx_Witch_Skill_Laser_Warning::Free()
 {
 	__super::Free();
+
+	if (nullptr != m_pWarningLine)
+	{
+		m_pWarningLine->Set_Dead(true);
+		Safe_Release(m_pWarningLine);
+	}
 
 	if (!m_isCloned)
 	{

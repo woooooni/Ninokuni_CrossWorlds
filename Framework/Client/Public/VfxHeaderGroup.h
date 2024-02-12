@@ -69,6 +69,7 @@
 #include "Vfx_Stellia_Skill_Rage01Explosion.h"
 #include "Vfx_Stellia_Skill_Rage01JumpStamp.h"
 #include "Vfx_Stellia_Skill_Rage01SpinTail.h"
+#include "Vfx_Stellia_Skill_Rage01Shield.h"
 // Rage02
 #include "Vfx_Stellia_Skill_Rage02Explosion.h"
 // Rage03
@@ -76,6 +77,8 @@
 #include "Vfx_Stellia_Skill_Rage03Charge.h"
 
 /* Witch */
+#include "Vfx_Witch_Marble.h"
+
 #include "Vfx_Witch_Skill_BlackHole_Drain.h"
 #include "Vfx_Witch_Skill_BlackHole_Bomb.h"
 

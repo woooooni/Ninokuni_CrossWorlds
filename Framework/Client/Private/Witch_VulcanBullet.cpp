@@ -6,8 +6,7 @@
 
 #include "DreamMazeWitch_Npc.h"
 
-#include "Particle_Manager.h"
-#include "Particle.h"
+#include "Effect_Manager.h"
 
 CWitch_VulcanBullet::CWitch_VulcanBullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CMonsterProjectile(pDevice, pContext, strObjectTag)
@@ -46,27 +45,14 @@ HRESULT CWitch_VulcanBullet::Initialize(void* pArg)
 	m_fDelteTime = 6.f;
 	m_fSpeed = 10.f;
 
+	// 이펙트 생성
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Marble"), m_pTransformCom->Get_WorldMatrix(), this);
+
 	return S_OK;
 }
 
 void CWitch_VulcanBullet::Tick(_float fTimeDelta)
 {
-	// 이펙트 생성
-	if (!m_bCreate)
-	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall"),
-			m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this);
-
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall_Flame"),
-			m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this);
-
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall_Lighting"),
-			m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this);
-
-		m_bCreate = true;
-	}
-
-	
 	m_fAccReturnTime += fTimeDelta;
 	// 다시 반대로 돌아오기
 	if (!m_bIsReturn && m_fAccReturnTime > m_fReturnTime)
