@@ -198,10 +198,10 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
 
                 _float fAddSpeed = 0.f;
 #ifdef _DEBUG
-                fAddSpeed = 200.f;
+                fAddSpeed = 95.f;
 #endif // _DEBUG
 #ifndef _DEBUG
-                fAddSpeed = 600.f;
+                fAddSpeed = 95.f;
 #endif // !_DEBUG
                 m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), fAddSpeed * fTimeDelta, false);
                 m_pRigidBodyCom->Set_Ground(false);

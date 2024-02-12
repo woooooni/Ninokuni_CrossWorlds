@@ -44,8 +44,8 @@ void CStelliaState_Berserk::Tick_State(_float fTimeDelta)
 {
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		Enter_State();
-		//m_pStateMachineCom->Change_State(CStellia::STELLIA_TURN); 
+		//Enter_State();
+		m_pStateMachineCom->Change_State(CStellia::STELLIA_TURN); 
 	}
 }
 

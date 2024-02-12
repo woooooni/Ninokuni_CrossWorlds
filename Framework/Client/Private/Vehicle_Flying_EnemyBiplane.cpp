@@ -573,7 +573,7 @@ void CVehicle_Flying_EnemyBiplane::On_Damaged(const COLLISION_INFO& tInfo)
 
 	wstring strAttackerName = tInfo.pOther->Get_ObjectTag();
 
-	_int iDamage = 300;
+	_int iDamage = 2000;
 	if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Character_Biplane_Bullet"))
 	{
 		iDamage = iDamage * 0.1f + GI->RandomInt(-30, 30);

@@ -13,6 +13,9 @@
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
 
+#include "Character_Manager.h"
+#include "Player.h"
+
 CSubQuestNode_NoisySnowField06::CSubQuestNode_NoisySnowField06()
 {
 }
@@ -138,6 +141,8 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField06::Tick(const _float& fTimeDelt
 				CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
 
 				m_pDestroyer->Set_Dead(true);
+				CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER)->Set_Useable(true);
+				
 				m_bIsClear = true;
 
 				return NODE_STATE::NODE_FAIL;

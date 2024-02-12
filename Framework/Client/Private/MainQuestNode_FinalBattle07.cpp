@@ -65,11 +65,11 @@ void CMainQuestNode_FinalBattle07::Start()
 
 		/* 락온 설정 */
 		{
-			//pFollowCam->Set_LockBoneNumber(3);
-			//
-			//CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Stellia");
-			//if (nullptr != pTarget)
-			//	pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Stellia, Cam_LookAt_Offset_LockOn_Stellia);
+			pFollowCam->Set_LockBoneNumber(3);
+			
+			CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Stellia");
+			if (nullptr != pTarget)
+				pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Stellia, Cam_LookAt_Offset_LockOn_Stellia);
 		}
 	}
 

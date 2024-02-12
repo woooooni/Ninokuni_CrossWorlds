@@ -12,6 +12,9 @@
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
 
+#include "Character_Manager.h"
+#include "Player.h"
+
 CSubQuestNode_Windmill08::CSubQuestNode_Windmill08()
 {
 }
@@ -71,7 +74,7 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill08::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (KEY_TAP(KEY::LBTN))
+	if (KEY_TAP(KEY::LBTN) && !m_bIsFadeOut)
 	{
 		Safe_Delete_Array(m_szpOwner);
 		Safe_Delete_Array(m_szpTalk);
@@ -125,6 +128,8 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill08::Tick(const _float& fTimeDelta)
 
 			m_bIsClear = true;
 			m_pEngineer->Set_Dead(true);
+
+			CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER)->Set_Useable(true);
 
 			return NODE_STATE::NODE_FAIL;
 		}
