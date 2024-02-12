@@ -29,6 +29,15 @@ HRESULT CVfx_Witch_Marble::Initialize_Prototype()
 	m_pScaleOffset[TYPE_ET1_E_MARBLE]    = _float3(1.f, 1.f, 1.f);
 	m_pRotationOffset[TYPE_ET1_E_MARBLE] = _float3(0.f, 0.f, 0.f);
 
+	m_pPositionOffset[TYPE_ET1_E_MARBLE_OUTLINE] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_ET1_E_MARBLE_OUTLINE]    = _float3(1.3f, 1.3f, 1.3f);
+	m_pRotationOffset[TYPE_ET1_E_MARBLE_OUTLINE] = _float3(0.f, 0.f, 0.f);
+
+
+	m_pPositionOffset[TYPE_ET1_P_BACK] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_ET1_P_BACK]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_ET1_P_BACK] = _float3(0.f, 0.f, 0.f);
+
  	return S_OK;
 }
 
@@ -47,16 +56,16 @@ void CVfx_Witch_Marble::Tick(_float fTimeDelta)
 
 	if (false == m_bCreate)
 	{
-		//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall"),
-		//	XMLoadFloat4x4(&m_WorldMatrix), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), m_pOwnerObject, &m_pMarble);
-		//Safe_AddRef(m_pMarble);
+		/*GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall"),
+			XMLoadFloat4x4(&m_WorldMatrix), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), m_pOwnerObject, &m_pMarble);
+		Safe_AddRef(m_pMarble);
 
-		//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall_Flame"),
-		//	XMLoadFloat4x4(&m_WorldMatrix), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), m_pOwnerObject);
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall_Flame"),
+			XMLoadFloat4x4(&m_WorldMatrix), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), m_pOwnerObject);
 
-		//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall_Lighting"),
-		//	XMLoadFloat4x4(&m_WorldMatrix), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), m_pOwnerObject);
-
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall_Lighting"),
+			XMLoadFloat4x4(&m_WorldMatrix), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), m_pOwnerObject);
+		*/
 		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_Marble"),
 			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_MARBLE], m_pScaleOffset[TYPE_ET1_E_MARBLE], m_pRotationOffset[TYPE_ET1_E_MARBLE], m_pOwnerObject, &m_pMarble);
 		if (nullptr != m_pMarble)
@@ -67,6 +76,9 @@ void CVfx_Witch_Marble::Tick(_float fTimeDelta)
 
 		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_Marble"),
 			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_MARBLE], m_pScaleOffset[TYPE_ET1_E_MARBLE], m_pRotationOffset[TYPE_ET1_E_MARBLE], m_pOwnerObject);
+
+		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_Marble_OutLine"),
+			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_MARBLE_OUTLINE], m_pScaleOffset[TYPE_ET1_E_MARBLE_OUTLINE], m_pRotationOffset[TYPE_ET1_E_MARBLE_OUTLINE], m_pOwnerObject);
 
 		m_bCreate = true;
 	}
@@ -81,15 +93,19 @@ void CVfx_Witch_Marble::Tick(_float fTimeDelta)
 		}
 
 		m_fTimeAcc += fTimeDelta;
-		if (m_fTimeAcc >= 0.3f)
+		if (m_fTimeAcc >= 0.35f)
 		{
 			CTransform* pMarbleTransform = m_pMarble->Get_Component<CTransform>(L"Com_Transform");
 			if (pMarbleTransform != nullptr)
 			{
 				m_fTimeAcc = 0.f;
 
-				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Smoke"),
-					pMarbleTransform->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f));
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Witch_Marble_Back"),
+					pMarbleTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET1_P_BACK], m_pScaleOffset[TYPE_ET1_P_BACK], m_pRotationOffset[TYPE_ET1_P_BACK]);
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Witch_Marble_Back_Circle"),
+					pMarbleTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET1_P_BACK], m_pScaleOffset[TYPE_ET1_P_BACK], m_pRotationOffset[TYPE_ET1_P_BACK]);
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Witch_Marble_Back_Circle_02"),
+					pMarbleTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET1_P_BACK], m_pScaleOffset[TYPE_ET1_P_BACK], m_pRotationOffset[TYPE_ET1_P_BACK]);
 			}
 		}
 	}

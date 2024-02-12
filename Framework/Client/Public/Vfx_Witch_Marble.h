@@ -13,8 +13,9 @@ class CVfx_Witch_Marble final : public CVfx
 private:
 	enum TYPE {
 		TYPE_ET1_E_MARBLE,
+		TYPE_ET1_E_MARBLE_OUTLINE,
 
-		TYPE_ET1_E_,
+		TYPE_ET1_P_BACK,
 
 		TYPE_END
 	};
