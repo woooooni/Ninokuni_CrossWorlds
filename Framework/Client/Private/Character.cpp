@@ -1183,6 +1183,7 @@ HRESULT CCharacter::Enter_Character()
 		m_pTarget = nullptr;
 	}
 
+	m_bControllCharacter = true;
 	return S_OK;
 }
 
@@ -1196,7 +1197,8 @@ HRESULT CCharacter::Exit_Character()
 		Safe_Release(m_pTarget);
 		m_pTarget = nullptr;
 	}
-		
+	
+	m_bControllCharacter = false;
 
 	return S_OK;
 }
@@ -1227,6 +1229,8 @@ HRESULT CCharacter::Tag_In(Vec4 vInitializePosition)
 		CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(Get_ElementalType());
 	}
 
+	m_bControllCharacter = true;
+
 	return S_OK;
 }
 
@@ -1238,6 +1242,7 @@ HRESULT CCharacter::Tag_Out()
 		Safe_Release(m_pTarget);
 		m_pTarget = nullptr;
 	}
+	m_bControllCharacter = false;
 
 	return S_OK;
 }

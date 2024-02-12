@@ -34,7 +34,6 @@ void CPlayer::LateTick(_float fTimeDelta)
 
 HRESULT CPlayer::Set_Character(CHARACTER_TYPE eType, Vec4 vEnterPosition, _bool  bEnterScene)
 {
-
 	if (nullptr != m_pCharacter)
 	{
 		if (FAILED(m_pCharacter->Exit_Character()))
@@ -55,8 +54,6 @@ HRESULT CPlayer::Set_Character(CHARACTER_TYPE eType, Vec4 vEnterPosition, _bool 
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(m_pCharacter);
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(m_pCharacter);
 	}
-
-	
 
 	if (true == bEnterScene)
 		m_pCharacter->Set_EnterLevelPosition(XMVectorSetW(vEnterPosition, 1.f));
