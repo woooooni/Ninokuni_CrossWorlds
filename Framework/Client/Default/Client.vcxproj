@@ -295,6 +295,7 @@
     <ClInclude Include="..\Public\MainQuestNode_PlantKiller07.h" />
     <ClInclude Include="..\Public\MainQuestNode_PlantKiller08.h" />
     <ClInclude Include="..\Public\MainQuestNode_PlantKiller10.h" />
+    <ClInclude Include="..\Public\MainQuestNode_PlantKiller11.h" />
     <ClInclude Include="..\Public\MainQuestNode_WitchForest03.h" />
     <ClInclude Include="..\Public\MainQuestNode_WitchForest04.h" />
     <ClInclude Include="..\Public\MainQuestNode_WitchForest05.h" />
@@ -1406,6 +1407,7 @@
     <ClCompile Include="..\Private\MainQuestNode_PlantKiller07.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_PlantKiller08.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_PlantKiller10.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_PlantKiller11.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_WitchForest03.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_WitchForest04.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_WitchForest04_2.cpp" />

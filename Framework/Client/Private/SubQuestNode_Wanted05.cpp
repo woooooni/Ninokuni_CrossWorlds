@@ -144,8 +144,6 @@ void CSubQuestNode_Wanted05::TalkEvent()
 		break;
 	case 3:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Wanted_05_04.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pCriminal->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pCriminal->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_BlackCircleAgent.ao|Fun"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
 		break;

@@ -28,6 +28,7 @@ HRESULT CStelliaState_Rage1Loop_JumpStamp::Initialize(const list<wstring>& Anima
 void CStelliaState_Rage1Loop_JumpStamp::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill02"));
+	m_pStellia->Set_StelliaHit(false);
 
 	// Effect Create
 	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage01JumpStamp"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);

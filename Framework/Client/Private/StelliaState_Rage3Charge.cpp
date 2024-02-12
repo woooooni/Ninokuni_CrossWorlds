@@ -134,6 +134,7 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		// 버튼 클릭
 		if (KEY_TAP(KEY::LBTN))
 		{
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Impact_Metal_Bell_1_1.ogg"), CHANNELID::SOUND_UI2, 1.f, true);
 			m_iClickPower += 1;
 		}
 	}

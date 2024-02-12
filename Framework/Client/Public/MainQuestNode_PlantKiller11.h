@@ -2,11 +2,11 @@
 
 #include "QuestNode_Base.h"
 
-class CMainQuestNode_PlantKiller10 final : public CQuestNode_Base
+class CMainQuestNode_PlantKiller11 final : public CQuestNode_Base
 {
 private:
-	CMainQuestNode_PlantKiller10();
-	virtual ~CMainQuestNode_PlantKiller10() = default;
+	CMainQuestNode_PlantKiller11();
+	virtual ~CMainQuestNode_PlantKiller11() = default;
 
 public:
 	virtual HRESULT Initialize();
@@ -21,11 +21,10 @@ private:
 	CGameObject* m_pCyan = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
-	_bool m_bIsFadeOut = false;
-	_bool m_bIsFadeIn = false;
+	_bool m_bIsStart = false;
 
 public:
-	static CMainQuestNode_PlantKiller10* Create();
+	static CMainQuestNode_PlantKiller11* Create();
 	virtual void Free() override;
 };
 

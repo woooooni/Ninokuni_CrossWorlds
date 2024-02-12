@@ -144,7 +144,7 @@ void CSubQuestNode_Windmill06::TalkEvent()
 	case 3:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_06_03.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pGeekGirl->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pGeekGirl->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
+		m_pGeekGirl->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Engineer_SoulDiver.ao|Engineer_NeutralIdle01"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
 		break;
@@ -158,42 +158,42 @@ void CSubQuestNode_Windmill06::TalkEvent()
 	case 5:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_06_05.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pGeekGirl->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pGeekGirl->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_Idle03"));
+		m_pGeekGirl->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Engineer_SoulDiver.ao|Engineer_CostumeMotion02"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_LEFT);
 		break;
 	case 6:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_06_06.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_CSEndOfDonDonKing01"));
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER_FROM_BACK_NPC);
 		break;
 	case 7:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_06_07.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pGeekGirl->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pGeekGirl->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionPositive02"));
+		m_pGeekGirl->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Engineer_SoulDiver.ao|Engineer_NeutralIdle02"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;
 	case 8:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_06_08.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionAngry"));
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
 		break;
 	case 9:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_06_09.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionAngry"));
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_LEFT);
 		break;
 	case 10:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_06_10.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pGeekGirl->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pGeekGirl->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionPositive02"));
+		m_pGeekGirl->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Engineer_SoulDiver.ao|Engineer_ClassAction01"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;

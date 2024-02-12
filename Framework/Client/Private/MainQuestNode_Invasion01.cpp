@@ -41,6 +41,9 @@ void CMainQuestNode_Invasion01::Start()
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pRuslan = GI->Find_GameObject(LEVELID::LEVEL_KINGDOMHALL, LAYER_NPC, TEXT("Ruslan"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
+
+	m_vecTalker.push_back(m_pKuu);
+	m_vecTalker.push_back(m_pRuslan);
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)

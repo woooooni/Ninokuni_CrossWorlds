@@ -30,6 +30,7 @@ HRESULT CNpcDMWState_VulcanGun_End::Initialize(const list<wstring>& AnimationLis
 void CNpcDMWState_VulcanGun_End::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("DreamersMazeWitch_V_Skill_6_2.ogg"), CHANNELID::SOUND_VOICE_NPC, 1.f, true);
 
 	m_bIsMove = false;
 	m_bIsUp = false;

@@ -8,6 +8,8 @@
 #include "NpcState_OneWay.h"
 #include "NpcState_TwoWay.h"
 
+#include "UniqueNpcState_Talk.h"
+
 #include "UI_World_NPCTag.h"
 
 CCyan::CCyan(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
@@ -113,6 +115,10 @@ HRESULT CCyan::Ready_States()
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Cyan.ao|NpcFat_Walk02");
 	m_pStateCom->Add_State(NPC_MOVE_TWOWAY, CNpcState_TwoWay::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Cyan.ao|NpcFat_Stand01");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_TALK, CUniqueNpcState_Talk::Create(m_pStateCom, strAnimationName));
 
 	m_pStateCom->Change_State(NPC_IDLE);
 

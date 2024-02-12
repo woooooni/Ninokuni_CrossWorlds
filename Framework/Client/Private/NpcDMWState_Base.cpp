@@ -64,11 +64,11 @@ void CNpcDMWState_Base::Following_Stellia(_float fTimeDelta)
 
 		if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_RAGE1LOOP_EXPLOSION)
 		{
-			vReleativePos = m_pStellia->Get_Component_Transform()->Get_RelativeOffset({ 0.f , vStelliaPos.y + 8.f, 0.f, 1.f });
+			vReleativePos = m_pStellia->Get_Component_Transform()->Get_RelativeOffset({ 0.f , 8.f, 0.f, 1.f });
 		}
 		else
 		{
-			vReleativePos = m_pStellia->Get_Component_Transform()->Get_RelativeOffset({ -5.f , vStelliaPos.y + 8.f, -5.f, 1.f });
+			vReleativePos = m_pStellia->Get_Component_Transform()->Get_RelativeOffset({ -5.f , 8.f, -5.f, 1.f });
 		}
 
 		Vec4 vDestPos = Vec4(vReleativePos + vStelliaPos).OneW();

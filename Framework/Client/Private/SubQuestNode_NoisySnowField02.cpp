@@ -71,7 +71,7 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField02::Tick(const _float& fTimeDelt
 			m_iTalkIndex += 1;
 
 			// 노이즈맨 한 번만 생성.
-			if (m_iTalkIndex == 10)
+			if (m_iTalkIndex == 11)
 			{
 				if (m_pNoisyMan == nullptr)
 				{
