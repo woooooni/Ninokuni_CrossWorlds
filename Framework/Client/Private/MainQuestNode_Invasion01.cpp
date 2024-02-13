@@ -61,8 +61,8 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)
 			if(!Is_Finish_LevelEnterCameraAction())
 				return NODE_STATE::NODE_RUNNING;
 		
-			GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR, 0.f);
-			GI->Play_Sound(L"Impact_Metal_Stone_1.mp3", CHANNELID::SOUND_CUTSCENE, 1.f, true);
+			//GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR, 0.f);
+			GI->Play_Sound(L"Obj_CannonTower_Medium_Break_1.ogg", CHANNELID::SOUND_CUTSCENE, 0.6f, true);
 
 			/* ¥Î»≠ */
 			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
