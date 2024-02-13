@@ -38,6 +38,8 @@ protected:
 
 	void Generate_Explosion(_uint iCount);
 
+	void Reset_Transform(); // 스텔리아의 현재 트랜스폼을 초기 생성 포지션과 룩으로 되돌림
+
 protected:
 	CCharacter* m_pPlayer = nullptr; // 후에 플레이어로 교체.
 	CTransform* m_pPlayerTransform = nullptr;
