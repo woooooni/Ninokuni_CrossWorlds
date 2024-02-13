@@ -94,11 +94,6 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill08::Tick(const _float& fTimeDelta)
 			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
-			/* 대화 카메라 종료 */
-			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			if (nullptr != pActionCam)
-				pActionCam->Finish_Action_Talk();
-
 			m_bIsFadeOut = true;
 		}
 
@@ -113,7 +108,7 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill08::Tick(const _float& fTimeDelta)
 		}
 	}
 
-	if (!m_bIsFadeIn && m_bIsFadeOut && Is_EndCameraBlender())
+	if (!m_bIsFadeIn && m_bIsFadeOut)
 	{
 		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
 
@@ -124,7 +119,21 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill08::Tick(const _float& fTimeDelta)
 	{
 		if (CUI_Manager::GetInstance()->Is_FadeFinished())
 		{
+			//
 			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
+			CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+			if (nullptr != pFollowCam)
+			{
+				pFollowCam->Reset_WideView_To_DefaultView(true);
+				pFollowCam->Set_Default_Position();
+				CCamera_Manager::GetInstance()->Set_CurCamera(pFollowCam->Get_Key());
+
+			}
+
+			/* Ui와 플레이어 인풋을 열어준다. */
+			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+			//
 
 			m_bIsClear = true;
 			m_pEngineer->Set_Dead(true);
