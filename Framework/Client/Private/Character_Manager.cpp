@@ -270,7 +270,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 			if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
 				return E_FAIL;
 
-			// m_pCharacters[CHARACTER_TYPE::ENGINEER]->Set_Useable(false);
+			m_pCharacters[CHARACTER_TYPE::ENGINEER]->Set_Useable(false);
 		}
 
 		// Destroyer
@@ -298,7 +298,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 			if (nullptr == m_pCharacters[CHARACTER_TYPE::DESTROYER])
 				return E_FAIL;
 
-			// m_pCharacters[CHARACTER_TYPE::DESTROYER]->Set_Useable(false);
+			m_pCharacters[CHARACTER_TYPE::DESTROYER]->Set_Useable(false);
 		}
 	}
 		break;

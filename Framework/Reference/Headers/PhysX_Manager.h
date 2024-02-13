@@ -46,6 +46,8 @@ public:
 	HRESULT Remove_Controller(PxController* pController);
 	HRESULT Remove_Actor(class CGameObject* pGameObject);
 	
+public:
+	_bool Is_Valid_Scene() { return m_bSimulating == false; }
 
 	
 
@@ -103,8 +105,8 @@ private:
 	ID3D11InputLayout* m_pInputLayout = nullptr;
 #endif
 
-//private:
-//	_bool m_bSimulating = false;
+private:
+	_bool m_bSimulating = false;
 
 private:
 	PxDefaultAllocator			m_Allocator;			// 메모리 관리용..?

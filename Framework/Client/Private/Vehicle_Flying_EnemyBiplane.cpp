@@ -573,7 +573,7 @@ void CVehicle_Flying_EnemyBiplane::On_Damaged(const COLLISION_INFO& tInfo)
 
 	wstring strAttackerName = tInfo.pOther->Get_ObjectTag();
 
-	_int iDamage = 2000;
+	_int iDamage = 2500;
 	if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Character_Biplane_Bullet"))
 	{
 		iDamage = iDamage * 0.1f + GI->RandomInt(-30, 30);
@@ -586,7 +586,7 @@ void CVehicle_Flying_EnemyBiplane::On_Damaged(const COLLISION_INFO& tInfo)
 	}
 	else if (wstring::npos != tInfo.pOther->Get_ObjectTag().find(L"Biplane_GuidedMissile"))
 	{
-		iDamage = iDamage * 0.3f + GI->RandomInt(-30, 30);
+		iDamage = iDamage * 0.7f + GI->RandomInt(-30, 30);
 		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.3f, 17.f, 0.3f);
 	}
 

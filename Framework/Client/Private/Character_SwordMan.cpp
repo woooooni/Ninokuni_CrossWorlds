@@ -144,7 +144,7 @@ void CCharacter_SwordMan::Tick(_float fTimeDelta)
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
-
+	
 	if (m_pWeapon != nullptr)
 	{
 		Matrix matSocketLocal = m_pModelCom->Get_SocketLocalMatrix(0);

@@ -146,6 +146,8 @@ public:
 	HRESULT Add_Ground(class CGameObject* pGameObject, CModel* pModel, _matrix WorldMatrix, const wstring& strCollisionTag = L"");
 	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float3 vOffsetPos, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack = nullptr);
 	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 vExtents, _float3 vOffsetPos, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack = nullptr);
+
+	_bool Wait_PhysX_Scene();
 	HRESULT Remove_Actor(class CGameObject* pGameObject);
 	HRESULT Remove_Controller(PxController* pController);
 	HRESULT Clear_PhysX_Ground();
