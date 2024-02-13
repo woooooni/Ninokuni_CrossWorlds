@@ -41,7 +41,7 @@ void CState_Destroyer_SpecialSkill_IgnorePain::Tick_State(_float fTimeDelta)
 
 void CState_Destroyer_SpecialSkill_IgnorePain::Exit_State()
 {
-    
+    m_pCharacter->Set_SuperArmor(10.f, true);
 }
 
 CState_Destroyer_SpecialSkill_IgnorePain* CState_Destroyer_SpecialSkill_IgnorePain::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

@@ -78,6 +78,7 @@ private:
     _bool   m_bSleep = true;
     const _float m_fSleepThreshold = 0.05f;
 
+
 public:
     static CRigidBody* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CComponent* Clone(void* pArg);

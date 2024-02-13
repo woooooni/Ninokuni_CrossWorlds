@@ -98,7 +98,7 @@ void CRigidBody::Add_Velocity(_vector vDir, _float fForce, _bool bClear)
 	if (true == bClear)
 		m_vVelocity = { 0.f, 0.f, 0.f };
 
-	XMStoreFloat3(&m_vVelocity, XMLoadFloat3(&m_vVelocity) + XMVector3Normalize(vDir) * fForce);
+	m_vVelocity += XMVector3Normalize(vDir) * fForce;
 }
 
 const _bool& CRigidBody::Check_Sleep()

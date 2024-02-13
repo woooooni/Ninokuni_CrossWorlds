@@ -806,6 +806,14 @@ void CCamera_Action::Tick_SwordManBurst(_float fTimeDelta)
 	{
 		m_pTransformCom->RevolutionRotation(m_tActionSwordManBurstDesc.pSwordManTransform->Get_Position(), Vec3(-0.2f, 0.9f, 0.f), 2.3f * fRadian * fTimeDelta);
 	}
+	m_tActionSwordManBurstDesc.fCurFov = XMConvertToRadians(80.f);
+	m_tActionSwordManBurstDesc.fDestFov = XMConvertToRadians(40.f);
+
+	Vec2 vSourFov = Vec2(m_tActionSwordManBurstDesc.fCurFov, m_tActionSwordManBurstDesc.fCurFov);
+	Vec2 vDestFov = Vec2(m_tActionSwordManBurstDesc.fDestFov, m_tActionSwordManBurstDesc.fDestFov);
+	Vec2 vLerpFov = Vec2::Lerp(vSourFov, vDestFov, min(1.f, m_tActionSwordManBurstDesc.fAcc));
+
+	Set_Fov(vLerpFov.x);
 	
 }
 
@@ -1512,6 +1520,9 @@ HRESULT CCamera_Action::Start_Action_SwordManBurst(CTransform* pSwordManTransfor
 	m_tActionSwordManBurstDesc.pSwordManTransform = pSwordManTransform;
 	m_tActionSwordManBurstDesc.fAcc = 0.f;
 
+	m_tActionSwordManBurstDesc.fCurFov = Get_Fov();
+	m_tActionSwordManBurstDesc.fDestFov = 40.f;
+
 	m_bAction = true;
 
 	return S_OK;
@@ -1552,6 +1563,8 @@ HRESULT CCamera_Action::Stop_ActionSwordMan_Burst()
 	m_eCurActionType = CAMERA_ACTION_TYPE::SWORDMAN_BURST;
 	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
 	CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Set_State(CTransform::STATE_POSITION, m_tActionSwordManBurstDesc.vCamStartPosition);
+
+	CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Default);
 
 	m_bAction = false;
 	return S_OK;

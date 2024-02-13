@@ -17,15 +17,15 @@ HRESULT CState::Initialize(const list<wstring>& AnimationList)
 	if (nullptr == m_pOwner)
 		return E_FAIL;
 
-	m_pModelCom = m_pStateMachineCom->Get_Owner()->Get_Component<CModel>(L"Com_Model");
+	m_pModelCom = m_pStateMachineCom->Get_Owner()->Get_Component_Model();
 	if (nullptr == m_pModelCom)
 		return E_FAIL;
 
-	m_pRigidBodyCom = m_pStateMachineCom->Get_Owner()->Get_Component<CRigidBody>(L"Com_RigidBody");
+	m_pRigidBodyCom = m_pStateMachineCom->Get_Owner()->Get_Component_Rigidbody();
 	if (nullptr == m_pRigidBodyCom)
 		return E_FAIL;
 
-	m_pTransformCom = m_pStateMachineCom->Get_Owner()->Get_Component<CTransform>(L"Com_Transform");
+	m_pTransformCom = m_pStateMachineCom->Get_Owner()->Get_Component_Transform();
 	if (nullptr == m_pTransformCom)
 		return E_FAIL;
 

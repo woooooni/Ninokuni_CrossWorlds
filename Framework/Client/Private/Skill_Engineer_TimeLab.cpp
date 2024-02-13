@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "GameInstance.h"
+#include "Skill_Manager.h"
 #include "..\Public\Skill_Engineer_TimeLab.h"
 
 CSkill_Engineer_TimeLab::CSkill_Engineer_TimeLab()
@@ -34,7 +35,6 @@ _bool CSkill_Engineer_TimeLab::Use_Skill()
 {
 	if (true == __super::Use_Skill())
 	{
-		// TODO :: 스킬매니저에 등록.
 		m_pCharacterStateMachine->Change_State(CCharacter::SKILL_SPECIAL_1);
 		return true;
 	}

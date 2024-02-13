@@ -180,8 +180,6 @@ HRESULT CCharacter_Manager::Ready_Characters()
 		StatDesc.iHp = 500;
 		StatDesc.iMaxHp = 500;
 
-
-
 		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 			return E_FAIL;
 
@@ -206,6 +204,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 			return E_FAIL;
 
 		m_pCharacters[CHARACTER_TYPE::ENGINEER] = dynamic_cast<CCharacter*>(pCharacterEngineer->Clone(&StatDesc));
+
 		if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
 			return E_FAIL;
 	}
@@ -259,6 +258,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Burst_DestructionCannon", CEngineer_Burst_DestructionCannon::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 				return E_FAIL;
 
+
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, L"Engineer"), LAYER_CHARACTER, true)))
 				return E_FAIL;
 
@@ -267,10 +267,11 @@ HRESULT CCharacter_Manager::Ready_Characters()
 				return E_FAIL;
 
 			m_pCharacters[CHARACTER_TYPE::ENGINEER] = dynamic_cast<CCharacter*>(pCharacterEngineer->Clone(&StatDesc));
+
 			if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
 				return E_FAIL;
 
-			m_pCharacters[CHARACTER_TYPE::ENGINEER]->Set_Useable(false);
+			// m_pCharacters[CHARACTER_TYPE::ENGINEER]->Set_Useable(false);
 		}
 
 		// Destroyer
@@ -298,7 +299,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 			if (nullptr == m_pCharacters[CHARACTER_TYPE::DESTROYER])
 				return E_FAIL;
 
-			m_pCharacters[CHARACTER_TYPE::DESTROYER]->Set_Useable(false);
+			// m_pCharacters[CHARACTER_TYPE::DESTROYER]->Set_Useable(false);
 		}
 	}
 		break;

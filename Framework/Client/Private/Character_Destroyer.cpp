@@ -68,6 +68,9 @@
 #include "State_Character_Dead.h"
 #include "State_Character_Revive.h"
 
+#include "State_Destroyer_TagIn.h"
+#include "State_Destroyer_TagOut.h"
+
 #include "State_Character_Vehicle_RunStart.h"
 #include "State_Character_Vehicle_Stand.h"
 #include "State_Character_Vehicle_Run.h"
@@ -583,6 +586,16 @@ HRESULT CCharacter_Destroyer::Ready_States()
 //	m_pStateCom->Add_State(CCharacter::STATE::VEHICLE_RUN, CState_Character_Vehicle_Run::Create(m_pStateCom, strAnimationNames));
 	
 	//	strAnimationNames.clear();
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_BattleStand");
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::TAG_IN, CState_Destroyer_TagIn::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_BattleStand");
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::TAG_OUT, CState_Destroyer_TagOut::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
 	return S_OK;

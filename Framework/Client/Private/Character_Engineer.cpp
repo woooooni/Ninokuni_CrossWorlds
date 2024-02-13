@@ -62,6 +62,9 @@
 #include "State_Character_Damaged_Strong.h"
 #include "State_Character_Damaged_Weak.h"
 
+#include "State_Engineer_TagIn.h"
+#include "State_Engineer_TagOut.h"
+
 
 #include "State_Character_Dead.h"
 #include "State_Character_Revive.h"
@@ -69,6 +72,7 @@
 #include "State_Character_Vehicle_RunStart.h"
 #include "State_Character_Vehicle_Stand.h"
 #include "State_Character_Vehicle_Run.h"
+
 
 
 
@@ -514,6 +518,15 @@ HRESULT CCharacter_Engineer::Ready_States()
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_SitRun_Udadak");
 	m_pStateCom->Add_State(CCharacter::STATE::VEHICLE_RUN, CState_Character_Vehicle_Run::Create(m_pStateCom, strAnimationNames));
+
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_CSBattleStand");
+	m_pStateCom->Add_State(CCharacter::STATE::TAG_IN, CState_Engineer_TagIn::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_CSBattleStand");
+	m_pStateCom->Add_State(CCharacter::STATE::TAG_OUT, CState_Engineer_TagOut::Create(m_pStateCom, strAnimationNames));
 
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
 	return S_OK;

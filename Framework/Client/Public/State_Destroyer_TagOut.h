@@ -8,12 +8,12 @@ END
 
 BEGIN(Client)
 
-class CState_Engineer_SpecialSkill_TimeLab : public CState_Character
+class CState_Destroyer_TagOut : public CState_Character
 {
 
 private:
-	CState_Engineer_SpecialSkill_TimeLab(class CStateMachine* pMachine);
-	~CState_Engineer_SpecialSkill_TimeLab() = default;
+	CState_Destroyer_TagOut(class CStateMachine* pMachine);
+	~CState_Destroyer_TagOut() = default;
 
 
 public:
@@ -25,11 +25,8 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
-private:
-	_bool  m_bUseSkill = false;
-
 public:
-	static CState_Engineer_SpecialSkill_TimeLab* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CState_Destroyer_TagOut* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 
 };

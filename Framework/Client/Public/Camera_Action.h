@@ -112,6 +112,11 @@ public:
 		_float			fAcc = 0.f;
 		_float			fFinishTime = 1.f;
 
+		_float			fCurFov = 0.f;
+		_float			fDestFov = 40.f;
+
+		LERP_FLOAT_DESC tLerpDesc = {};
+
 		Vec4			vCamStartPosition = {};
 		class CTransform* pSwordManTransform = nullptr;
 	} ACTION_SWORDMAN_BURST_DESC;

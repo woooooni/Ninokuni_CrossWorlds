@@ -49,10 +49,8 @@ void CState_VehicleFlying_Damaged::Enter_State(void* pArg)
 
 
     CGameObject* pRider = m_pFlying_Vehicle->Get_Rider();
-    if (nullptr != pRider)
-    {
+    if (nullptr != pRider)    
         pRider->Get_Component_StateMachine()->Change_State(CCharacter::STATE::FLYING_STAND);
-    }
 }
 
 void CState_VehicleFlying_Damaged::Tick_State(_float fTimeDelta)

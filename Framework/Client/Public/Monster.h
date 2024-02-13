@@ -76,6 +76,8 @@ public:
 		_int   iAtk = 0;
 		_int   iDef = 0;
 
+		_int	iExp = 50;
+
 		_float fAirVelocity = 0.f;
 		_float fAirDeadVelocity = 0.f;
 	} MONSTER_STAT;

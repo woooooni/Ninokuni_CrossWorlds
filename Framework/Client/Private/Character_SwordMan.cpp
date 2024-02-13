@@ -74,6 +74,9 @@
 #include "State_Character_Flying_Stand.h"
 #include "State_Character_Flying_Run.h"
 
+#include "State_SwordMan_TagIn.h"
+#include "State_SwordMan_TagOut.h"
+
 #include "Animation.h"
 
 
@@ -609,6 +612,15 @@ HRESULT CCharacter_SwordMan::Ready_States()
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SitRun_Biplane");
 	m_pStateCom->Add_State(CCharacter::STATE::FLYING_RUN, CState_Character_Flying_Run::Create(m_pStateCom, strAnimationNames));
+
+	// Tag
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_BattleStand");;
+	m_pStateCom->Add_State(CCharacter::STATE::TAG_IN, CState_SwordMan_TagIn::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_BattleStand");
+	m_pStateCom->Add_State(CCharacter::STATE::TAG_OUT, CState_SwordMan_TagOut::Create(m_pStateCom, strAnimationNames));
 
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
 	return S_OK;
