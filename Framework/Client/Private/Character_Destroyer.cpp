@@ -168,7 +168,7 @@ void CCharacter_Destroyer::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
 
-	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
+	if (((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER) || (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS))
 		&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
 	{
 		switch (m_pStateCom->Get_CurrState())
@@ -178,14 +178,14 @@ void CCharacter_Destroyer::Collision_Enter(const COLLISION_INFO& tInfo)
 			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.1f, 0.3f, false);
 			break;
 		case CCharacter::STATE::BATTLE_ATTACK_0:
-			CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+			CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(XMConvertToRadians(50.f));
+			CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(Cam_Fov_Default, 0.5f);
 			break;
 		case CCharacter::STATE::BATTLE_ATTACK_1:
-			CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.01f, true);
+			CCamera_Manager::GetInstance()->Start_Action_Shake(0.05f, 17.f, 0.3f);
 			break;
 		case CCharacter::STATE::BATTLE_ATTACK_2:		
-			CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+			CCamera_Manager::GetInstance()->Start_Action_Shake(0.05f, 17.f, 0.3f);
 			break;
 		case CCharacter::STATE::BATTLE_ATTACK_3:
 			CCamera_Manager::GetInstance()->Start_Action_Shake(0.3f, 17.f, 0.3f);
@@ -194,8 +194,10 @@ void CCharacter_Destroyer::Collision_Enter(const COLLISION_INFO& tInfo)
 				m_fAccRadial = 0.f;
 				m_fRadialTime = 0.5f;
 				m_bScreenEffect = true;
+				CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(XMConvertToRadians(45.f));
+				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(Cam_Fov_Default, 0.5f);
 				m_pRendererCom->Set_RadialBlur(true, 16.f);
-				GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.01f, true);
+				GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.1f, 0.001f, true);
 			}
 			break;
 		}

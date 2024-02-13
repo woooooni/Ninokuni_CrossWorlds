@@ -4,7 +4,7 @@
 
 CSkill_Engineer_Burst_Destruction::CSkill_Engineer_Burst_Destruction()
 {
-	
+	m_fCoolTime = 30.f;
 }
 
 
@@ -14,7 +14,6 @@ HRESULT CSkill_Engineer_Burst_Destruction::Initialize(ID3D11Device* pDevice, ID3
 	if (FAILED(__super::Initialize(pDevice, pContext, pOwner)))
 		return E_FAIL;
 
-	m_fCoolTime = 30.f;
 
 	return S_OK;
 }

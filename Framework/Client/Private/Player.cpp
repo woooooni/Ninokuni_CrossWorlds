@@ -80,12 +80,15 @@ HRESULT CPlayer::Tag_Character(CHARACTER_TYPE eType)
 		if (false == pNextCharacter->Is_Useable())
 			return E_FAIL;
 
+		CTransform* pNextCharacter_Transform = pNextCharacter->Get_CharacterTransformCom();
 		CTransform* pCurrentCharacter_Transform = pCurrentCharacter->Get_CharacterTransformCom();
-		if (nullptr == pCurrentCharacter_Transform)
+		if (nullptr == pCurrentCharacter_Transform || nullptr == pNextCharacter_Transform)
 			return E_FAIL;
 
 		pCurrentCharacter->Tag_Out();
 		pNextCharacter->Tag_In(pCurrentCharacter_Transform->Get_Position());
+
+		pNextCharacter_Transform->Set_WorldMatrix(pCurrentCharacter_Transform->Get_WorldMatrix());
 
 		m_pNextCharacter = pNextCharacter;
 	}

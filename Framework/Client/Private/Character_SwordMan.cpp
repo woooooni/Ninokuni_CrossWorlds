@@ -258,7 +258,7 @@ HRESULT CCharacter_SwordMan::Render_Minimap()
 void CCharacter_SwordMan::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
-	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
+	if (((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER) || (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS))
 		&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
 	{
 		switch (m_pStateCom->Get_CurrState())
@@ -266,8 +266,15 @@ void CCharacter_SwordMan::Collision_Enter(const COLLISION_INFO& tInfo)
 		case CCharacter::STATE::CLASS_SKILL_0:
 			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.0f, false);
 			break;
+
+		case CCharacter::STATE::CLASS_SKILL_2:
+			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.1f, 0.5f, false);
+			break;
+
 		case CCharacter::STATE::BATTLE_ATTACK_0:
 			CCamera_Manager::GetInstance()->Start_Action_Shake_Default_Attack();
+			CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(XMConvertToRadians(50.f));
+			CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(Cam_Fov_Default, 0.5f);
 			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.05f, false);
 			break;
 		case CCharacter::STATE::BATTLE_ATTACK_1:
@@ -276,6 +283,8 @@ void CCharacter_SwordMan::Collision_Enter(const COLLISION_INFO& tInfo)
 			break;
 		case CCharacter::STATE::BATTLE_ATTACK_2:
 			CCamera_Manager::GetInstance()->Start_Action_Shake_Default_Attack();
+			CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(XMConvertToRadians(50.f));
+			CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(Cam_Fov_Default, 0.5f);
 			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.05f, false);
 			break;
 		case CCharacter::STATE::BATTLE_ATTACK_3:

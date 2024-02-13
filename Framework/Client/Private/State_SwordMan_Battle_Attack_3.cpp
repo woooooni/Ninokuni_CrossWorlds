@@ -28,7 +28,6 @@ void CState_SwordMan_Battle_Attack_3::Enter_State(void* pArg)
     m_pCharacter->Look_For_Target();
     m_pModelCom->Set_Animation(m_AnimIndices[0], MIN_TWEEN_DURATION);
 
-
 }
 
 void CState_SwordMan_Battle_Attack_3::Tick_State(_float fTimeDelta)
@@ -69,10 +68,6 @@ void CState_SwordMan_Battle_Attack_3::Tick_State(_float fTimeDelta)
         
         
     }    
-        
-    if (true == CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Lerp_Fov())
-        m_pCharacter->Get_RendererCom()->Set_RadialBlur(true);
-    
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);

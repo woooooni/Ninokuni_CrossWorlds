@@ -25,6 +25,12 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
+private:
+	void Start_Action();
+	void Stop_Action();
+private:
+	_bool m_bStopAction = false;
+
 
 public:
 	static CState_Destroyer_BurstSkill_HyperStrike* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

@@ -862,7 +862,22 @@ void CCamera_Action::Tick_Witch_Roar(_float fTimeDelta)
 
 void CCamera_Action::Tick_DestroyerBurst(_float fTimeDelta)
 {
+	m_tActionDestroyerBurstDesc.fAcc += 1.2f * fTimeDelta;
 
+	Vec3 vCharacterLook = XMVector3Normalize(m_tActionDestroyerBurstDesc.pDestroyerTransform->Get_Look());
+
+	Vec4 vStartPosition = (m_tActionDestroyerBurstDesc.pDestroyerModel->Get_SocketLocalMatrix(0) * m_tActionDestroyerBurstDesc.pDestroyerTransform->Get_WorldMatrix()).Translation();
+
+	vStartPosition += Vec4(5.f * vCharacterLook);
+	vStartPosition += XMVectorSet(0.f, m_tActionDestroyerBurstDesc.fAcc, 0.f, 0.f);
+
+	vStartPosition.OneW();
+
+	m_pTransformCom->Set_Position(vStartPosition);
+
+	Vec4 vLookAtPos = m_tActionDestroyerBurstDesc.pDestroyerTransform->Get_Position() + XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+	m_pTransformCom->LookAt(vLookAtPos.OneW());
 }
 
 void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType)
@@ -1555,16 +1570,34 @@ HRESULT CCamera_Action::Start_Action_EngineerBurst(CTransform* pEngineerTransfor
 
 HRESULT CCamera_Action::Start_Action_DestroyerBurst(CTransform* pDestroyerTransform)
 {
+	
+	m_tActionDestroyerBurstDesc.pDestroyerModel = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Model();
+	m_tActionDestroyerBurstDesc.pDestroyerTransform = pDestroyerTransform;
+	m_tActionDestroyerBurstDesc.fAcc = 0.f;
+
+	if (nullptr == m_tActionDestroyerBurstDesc.pDestroyerTransform
+		|| nullptr == m_tActionDestroyerBurstDesc.pDestroyerModel)
+		return E_FAIL;
+
+	Vec3 vCharacterLook = XMVector3Normalize(pDestroyerTransform->Get_Look());
+
+	Vec4 vStartPosition = (m_tActionDestroyerBurstDesc.pDestroyerModel->Get_SocketLocalMatrix(0) * pDestroyerTransform->Get_WorldMatrix()).Translation();  
+
+	vStartPosition += Vec4(-1.f * vCharacterLook);
+	vStartPosition.OneW();
+
+
+	m_pTransformCom->Set_Position(vStartPosition);
+
 	m_eCurActionType = CAMERA_ACTION_TYPE::DESTROYER_BURST;
 	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
 
 	Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 	Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 
-	m_tActionDestroyerBurstDesc.pDestroyerTransform = pDestroyerTransform;
-	m_tActionDestroyerBurstDesc.fAcc = 0.f;
-
 	m_bAction = true;
+
+
 	
 	return S_OK;
 }
@@ -1590,8 +1623,15 @@ HRESULT CCamera_Action::Stop_ActionEngineer_Burst()
 
 HRESULT CCamera_Action::Stop_ActionDestroyer_Burst()
 {
+	m_eCurActionType = CAMERA_ACTION_TYPE::DESTROYER_BURST;
+
+	Vec4 vPosition = m_tActionDestroyerBurstDesc.pDestroyerTransform->Get_Position() + (-1.f * XMVector3Normalize(m_tActionDestroyerBurstDesc.pDestroyerTransform->Get_Look()));
+
 	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+	CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Set_Position(vPosition);
+
 	m_bAction = false;
+
 	return S_OK;
 }
 

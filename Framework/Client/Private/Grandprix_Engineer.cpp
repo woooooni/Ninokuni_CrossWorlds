@@ -294,5 +294,6 @@ CGameObject* CGrandprix_Engineer::Clone(void* pArg)
 void CGrandprix_Engineer::Free()
 {
 	__super::Free();
+	Safe_Release(m_pDissolveTexture);
 }
 

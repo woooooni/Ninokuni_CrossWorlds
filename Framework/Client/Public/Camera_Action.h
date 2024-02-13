@@ -127,6 +127,7 @@ public:
 		_float			fFinishTime = 1.f;
 
 		class CTransform* pDestroyerTransform = nullptr;
+		class CModel* pDestroyerModel = nullptr;
 	} ACTION_DESTROYER_BURST_DESC;
 
 	typedef struct tagEngineerBurstDesc
