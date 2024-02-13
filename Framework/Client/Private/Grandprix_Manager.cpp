@@ -43,11 +43,6 @@ HRESULT CGrandprix_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceC
 
 void CGrandprix_Manager::Tick(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::P))
-	{
-		Add_ItemBox(CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP);
-	}
-
 	// 그랑프리가 정상적으로 끝났는지 확인한다.
 	if (false == m_bReset && true == m_bGrandPrixEnd)
 	{

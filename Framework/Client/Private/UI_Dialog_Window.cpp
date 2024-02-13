@@ -198,10 +198,12 @@ void CUI_Dialog_Window::Add_Text()
 
 	//Contents
 	_int iTotalLength = m_iTextCount + 4;
-	_int iMaxLength = 47; // 44 -> 48
+	_int iMaxLength = 49;
 	_uint iDestIndex = 0;
 
-	_int iEnter = 0; // Enter하는 곳을 판별하기 위한 수단
+	_int iWords = 0; // Enter하는 곳을 판별하기 위한 수단
+	_int iMarks = 0;
+	_int iTemp = 0;
 	_bool bIsMark = false;
 
 	TCHAR sTempText[MAX_PATH];
@@ -216,14 +218,20 @@ void CUI_Dialog_Window::Add_Text()
 
 		sTempText[iDestIndex++] = m_szInfoText[i];
 
-		// 20240213 수정중
 		wstring strTemp(&m_szInfoText[i]);
 		bIsMark = CUI_Manager::GetInstance()->Is_PunctuationMarks(strTemp);
 		if (false == bIsMark) // 
-			iEnter++;
-		//
+			iWords++;
+		else
+			iTemp++;
 
-		if ((iEnter + 1) % iMaxLength == 0) 		//if ((i + 1) % iMaxLength == 0)
+		if (iTemp == 2) // 부호 2개당 글자 1개로 친다
+		{
+			iTemp = 0;
+			iMarks++;
+		}
+
+		if ((iWords + iMarks + 1) % iMaxLength == 0) 		//if ((i + 1) % iMaxLength == 0)
 		{
 			sTempText[iDestIndex++] = '\n';
 		}

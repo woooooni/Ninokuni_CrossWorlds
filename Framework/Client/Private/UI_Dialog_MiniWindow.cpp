@@ -91,8 +91,14 @@ void CUI_Dialog_MiniWindow::LateTick(_float fTimeDelta)
 
 		//Contents
 		_int iTotalLength = m_strContents.length() + 4;
-		_int iMaxLength = 23;
+		_int iMaxLength = 26;
 		_uint iDestIndex = 0;
+
+		_int iWords = 0; // Enter하는 곳을 판별하기 위한 수단
+		_int iMarks = 0;
+		_int iTemp = 0;
+		_bool bIsMark = false;
+
 		_int iOffsetY = 0;
 
 		TCHAR sTempText[MAX_PATH];
@@ -107,7 +113,20 @@ void CUI_Dialog_MiniWindow::LateTick(_float fTimeDelta)
 
 			sTempText[iDestIndex++] = m_strContents[i];
 
-			if ((i + 1) % iMaxLength == 0)
+			wstring strTemp(&m_strContents[i]);
+			bIsMark = CUI_Manager::GetInstance()->Is_PunctuationMarks(strTemp);
+			if (false == bIsMark)
+				iWords++;
+			else
+				iTemp++;
+
+			if (iTemp == 2) // 부호 2개당 글자 1개로 친다
+			{
+				iTemp = 0;
+				iMarks++;
+			}
+
+			if ((iWords + iMarks + 1) % iMaxLength == 0)
 			{
 				sTempText[iDestIndex++] = L'\n';
 				iOffsetY++;

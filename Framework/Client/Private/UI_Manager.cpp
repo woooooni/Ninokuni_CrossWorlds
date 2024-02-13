@@ -5750,17 +5750,6 @@ void CUI_Manager::TakeOff_CostumeModel()
 	m_pCostumeChange->Set_TextureIndex(0);
 }
 
-void CUI_Manager::Update_PlayerSlot(CHARACTER_TYPE eType)
-{
-	if (nullptr == m_pPlayerSelected)
-		return;
-
-	m_pPlayerSelected->Update_Position(eType);
-
-	ELEMENTAL_TYPE eElementalType = Get_Character()->Get_ElementalType();
-	m_pSkillBG->Update_SelectionIcon(eElementalType);
-}
-
 void CUI_Manager::Set_MouseCursor(_uint iIndex)
 {
 	if (nullptr == m_pUICursor)

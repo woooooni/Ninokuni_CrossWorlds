@@ -145,7 +145,6 @@ public:
 	void	Update_SettingButton(_uint iGroupType);
 	void	Update_SettingGraphicRadio(_uint iGroupType, _uint iBtnType);
 	void	Reset_SettingCamera();
-	void	Update_PlayerSlot(CHARACTER_TYPE eType);
 
 	void	Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag);
 	void	Update_CostumeWeaponModel(const CHARACTER_TYPE& eCharacterType, const wstring& strPartTag);
