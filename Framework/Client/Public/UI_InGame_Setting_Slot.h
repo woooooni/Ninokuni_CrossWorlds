@@ -30,6 +30,7 @@ public:
 
 	void Set_DefaultGraphicSetting();
 	void Set_DefaultCameraSetting();
+	void Set_DefaultSoundSetting();
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -49,7 +50,7 @@ private:
 	
 	// m_pTextureCom은 Graphic이 사용한다.
 	CTexture* m_pTextureCamera = { nullptr };
-	CTexture* m_pTextureAudio = { nullptr };
+	CTexture* m_pTextureSound = { nullptr };
 
 	_bool m_bArrived = { false };
 	_bool m_bIsFirst = { true };

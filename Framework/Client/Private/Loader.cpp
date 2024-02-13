@@ -173,6 +173,7 @@
 #include "Enemy_Biplane_BulletBall.h"
 #include "Enemy_GuidedMissile.h"
 #include "Enemy_Biplane_Feather.h"
+#include "Vehicle_Object_Biplane.h"
 
 #include "Grandprix_Engineer.h"
 #include "Grandprix_Enemy_Ghost2.h"
@@ -769,6 +770,10 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Character_Biplane_Bullet"),
 			CCharacter_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER, true))
+			return E_FAIL;
+
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Biplane_Object"),
+			CVehicle_Object_Biplane::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_ETC, true))
 			return E_FAIL;
 
 		CVehicleFlying_Projectile::GRANDPRIX_PROJECTILE_DESC CharacterProjectileDesc = {};

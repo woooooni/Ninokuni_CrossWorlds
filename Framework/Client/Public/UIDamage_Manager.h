@@ -36,7 +36,7 @@ public:
 	HRESULT Create_MonsterDamageNumber(class CTransform* pTransformCom, _bool bIsBoss, UI_DAMAGETYPE eType, _int iDamage);
 
 private:
-	_float2 Designate_RandomPosition(_float2 vTargetPosition, _bool bIsBoss);
+	_float2 Designate_RandomPosition(_float2 vTargetPosition, _bool bIsBoss, _float fCamDistance);
 	HRESULT Create_Miss(class CTransform* pTransformCom, _bool bIsBoss);
 	HRESULT Create_Critical(UI_DAMAGETYPE eType, _float2 vPosition);
 

@@ -28,6 +28,8 @@ public:
 		UI_QUESTREWARD_ITEM eFourthItem = UI_QUESTREWARD_ITEM::QUESTITEM_END;
 		_int iFourthAmount = 0;
 
+		_bool bIsEnding = false; // 엔딩의 경우 클래스 안에서 자체적으로 reward를 띄운다.
+
 	} REWARDS_DESC;
 
 protected:
@@ -42,6 +44,7 @@ public:
 	void Set_Usable(_bool bUsable) { m_bUsable = bUsable; }
 	void Set_Amount(_int iAmount) { m_iAmount = iAmount; }
 	void Set_Position(_int iTotal, _int iOrder);
+	void Set_EndingReward() { m_bIsEnding = true; }
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -65,6 +68,7 @@ private:
 
 	_int m_iAmount = { 0 };
 	_bool m_bUsable = { false };
+	_bool m_bIsEnding = { false };
 
 private:
 	virtual HRESULT	Ready_Components() override;

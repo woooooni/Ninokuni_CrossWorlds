@@ -28,6 +28,9 @@ public:
 private:
 	UI_INGAMEETC m_eType = { INGAMEETC_END };
 
+	_float2 m_vOriginSize = _float2(0.f, 0.f);
+	_float2 m_vMaxSize = _float2(0.f, 0.f);
+
 private:
 	virtual HRESULT	Ready_Components() override;
 

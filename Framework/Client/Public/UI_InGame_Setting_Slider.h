@@ -20,7 +20,8 @@ public:
 	virtual void Set_Active(_bool bActive);
 	void Set_IsArrived(_bool bArrived) { m_bIsArrived = bArrived; }
 
-	void Set_DefaultSetting();
+	void Set_CameraDefaultSetting();
+	void Set_AudioDefaultSetting();
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -49,6 +50,7 @@ private:
 	_float2 m_vTextPos = _float2(0.f, 0.f);
 
 	UI_SETTING_SLIDERTYPE m_eType = { SLIDERTYPE_END };
+	_bool m_bIsCamera = { false }; // 카메라 section slider인가
 
 private:
 	virtual HRESULT	Ready_Components() override;

@@ -139,8 +139,9 @@ void CUI_PopupQuest::Update_QuestContents(const wstring& strPreTitle, const QUES
 	{
 		if (strPreTitle == iter->strTitle)
 		{
-			if (iter->strContents == QuestDesc.strContents)
-				return;
+			// 콘텐츠가 같아도 업데이트 되어야한다
+			//if (iter->strContents == QuestDesc.strContents)
+			//	return;
 
 			iter->strType = QuestDesc.strType;
 			iter->strTitle = QuestDesc.strTitle;

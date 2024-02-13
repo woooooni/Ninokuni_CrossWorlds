@@ -125,9 +125,14 @@ HRESULT CUIDamage_Manager::Create_MonsterDamageNumber(CTransform* pTransformCom,
 	CUI_Damage_Number::DAMAGE_DESC DamageDesc = {};
 	ZeroMemory(&DamageDesc, sizeof(CUI_Damage_Number::DAMAGE_DESC));
 
+	// 타겟과 카메라간의 거리를 구한다.
+	_float4 vCamPos = GI->Get_CamPosition();
+	_vector vTempForDistance = pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos);
+	_float fDistance = XMVectorGetX(XMVector3Length(vTempForDistance));
+
 	DamageDesc.pTargetTransform = pTransformCom;
 	DamageDesc.iDamage = iDamage;
-	_float2 vRandomPosition = Designate_RandomPosition(CUI_Manager::GetInstance()->Get_ProjectionPosition(pTransformCom), bIsBoss);
+	_float2 vRandomPosition = Designate_RandomPosition(CUI_Manager::GetInstance()->Get_ProjectionPosition(pTransformCom), bIsBoss, fDistance);
 	if (vRandomPosition.x == -9999.f)
 		return E_FAIL;
 	DamageDesc.vTargetPosition = vRandomPosition;
@@ -224,7 +229,7 @@ HRESULT CUIDamage_Manager::Create_Critical(UI_DAMAGETYPE eType, _float2 vPositio
 	return S_OK;
 }
 
-_float2 CUIDamage_Manager::Designate_RandomPosition(_float2 vTargetPosition, _bool bIsBoss)
+_float2 CUIDamage_Manager::Designate_RandomPosition(_float2 vTargetPosition, _bool bIsBoss, _float fCamDistance)
 {
 	if (0.f > vTargetPosition.x || 1600.f < vTargetPosition.x ||
 		0.f > vTargetPosition.y || 900.f < vTargetPosition.y)
@@ -234,11 +239,25 @@ _float2 CUIDamage_Manager::Designate_RandomPosition(_float2 vTargetPosition, _bo
 	_float2 fRandomOffset = _float2(0.f, 0.f);
 	if (bIsBoss)
 	{
-		fRandomOffset = _float2(GI->RandomFloat(-150.f, 150.f), GI->RandomFloat(-400.f, 0.f));
+		if (15.f < fCamDistance)
+		{
+			fRandomOffset = _float2(GI->RandomFloat(-110.f, 110.f), GI->RandomFloat(-320.f, 0.f));
+		}
+		else
+		{
+			fRandomOffset = _float2(GI->RandomFloat(-150.f, 150.f), GI->RandomFloat(-400.f, 0.f));
+		}
 	}
 	else
 	{
-		fRandomOffset = _float2(GI->RandomFloat(-100.f, 100.f), GI->RandomFloat(-200.f, 0.f));
+		if (15.f < fCamDistance)
+		{
+			fRandomOffset = _float2(GI->RandomFloat(-80.f, 80.f), GI->RandomFloat(-170.f, 0.f));
+		}
+		else
+		{
+			fRandomOffset = _float2(GI->RandomFloat(-100.f, 100.f), GI->RandomFloat(-200.f, 0.f));
+		}
 	}
 
 	vTargetPosition.x += fRandomOffset.x;
@@ -257,7 +276,12 @@ HRESULT CUIDamage_Manager::Create_Miss(CTransform* pTransformCom, _bool bIsBoss)
 	CUI_Damage_General::GENERAL_DESC MissDesc = {};
 	ZeroMemory(&MissDesc, sizeof(CUI_Damage_General::GENERAL_DESC));
 
-	_float2 vRandomPosition = Designate_RandomPosition(CUI_Manager::GetInstance()->Get_ProjectionPosition(pTransformCom), bIsBoss);
+	// 타겟과 카메라간의 거리를 구한다.
+	_float4 vCamPos = GI->Get_CamPosition();
+	_vector vTempForDistance = pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos);
+	_float fDistance = XMVectorGetX(XMVector3Length(vTempForDistance));
+
+	_float2 vRandomPosition = Designate_RandomPosition(CUI_Manager::GetInstance()->Get_ProjectionPosition(pTransformCom), bIsBoss, fDistance);
 	if (vRandomPosition.x == -9999.f)
 		return E_FAIL;
 	MissDesc.vPosition = vRandomPosition;

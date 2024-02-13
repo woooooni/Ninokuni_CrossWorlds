@@ -33,15 +33,6 @@ void CUI_InGame_Setting_Window::Set_Active(_bool bActive)
 			if (nullptr != pChildUI)
 				pChildUI->Set_Active(true);
 		}
-
-		CCharacter* pCharacter = nullptr;
-		pCharacter = CUI_Manager::GetInstance()->Get_Character();
-		if (nullptr == pCharacter)
-			return;
-
-		pCharacter->Set_Skill_Input(false);
-		pCharacter->Set_Attack_Input(false);
-		pCharacter->Set_Move_Input(false);
 	}
 	else
 	{
@@ -58,7 +49,6 @@ void CUI_InGame_Setting_Window::Set_Active(_bool bActive)
 
 		pCharacter->Set_Skill_Input(true);
 		pCharacter->Set_Attack_Input(true);
-		pCharacter->Set_Move_Input(true);
 	}
 
 	m_bActive = bActive;
@@ -117,6 +107,14 @@ void CUI_InGame_Setting_Window::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		CCharacter* pCharacter = nullptr;
+		pCharacter = CUI_Manager::GetInstance()->Get_Character();
+		if (nullptr == pCharacter)
+			return;
+
+		pCharacter->Set_Skill_Input(false);
+		pCharacter->Set_Attack_Input(false);
+
 		Update_SettingTab();
 
 		if (!m_bShowInfo)

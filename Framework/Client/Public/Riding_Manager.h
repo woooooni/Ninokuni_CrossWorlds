@@ -38,6 +38,7 @@ public:
 private:
 	class CVehicle_Udadak* m_pUdadak = { nullptr };
 	class CVehicle_Flying_Biplane* m_pBiplane = { nullptr };
+	class CVehicle_Object_Biplane* m_pObjectPlane = { nullptr };
 
 	_bool m_bIsRiding = { false }; // 우다닥을 탈때만 제어한다.
 

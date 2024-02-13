@@ -24,36 +24,62 @@ void CUI_InGame_Setting_Slider::Set_Active(_bool bActive)
 		if (m_fMaxX == 0 || m_fMinX == 0)
 			return;
 
-		m_fLength = fabs(m_fMaxX - m_fMinX);
-		_float fValue = 0.f;
-		_float fX = 0.f;
-		_float fY = 0.f;
-
-		CCamera_Follow* pFollowCamera =
-			dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-
-		switch (m_eType)
+		if (true == m_bIsCamera)
 		{
-		case FIRST_SLIDER: // 쉐이킹
-			fValue = pFollowCamera->Get_ShakeAmplitudeMag();
-			m_tInfo.fX = m_fMinX + (m_fLength * fValue);
-			m_iPercent = _int(fValue * 100.f);
-			break;
+			_float fValue = 0.f;
+			_float fX = 0.f;
+			_float fY = 0.f;
 
-		case SECOND_SLIDER: // 민감도
-			fX = pFollowCamera->Get_MouseSensitivity().x;
-			fY = pFollowCamera->Get_MouseSensitivity().y;
+			CCamera_Follow* pFollowCamera =
+				dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 
-			m_tInfo.fX = m_fMinX + (m_fLength * fX); // 일단 X적용
-			m_iPercent = _int(fX * 100.f);
-			break;
+			switch (m_eType)
+			{
+			case FIRST_SLIDER: // 쉐이킹
+				fValue = pFollowCamera->Get_ShakeAmplitudeMag();
+				m_tInfo.fX = m_fMinX + (m_fLength * fValue);
+				m_iPercent = _int(fValue * 100.f);
+				break;
 
-		case THIRD_SLIDER: // 댐핑
-			fValue = pFollowCamera->Get_DampingCoefficient();
+			case SECOND_SLIDER: // 민감도
+				fX = pFollowCamera->Get_MouseSensitivity().x;
+				fY = pFollowCamera->Get_MouseSensitivity().y;
 
-			m_tInfo.fX = m_fMinX + (m_fLength * fValue);
-			m_iPercent = _int(fValue * 100.f);
-			break;
+				m_tInfo.fX = m_fMinX + (m_fLength * fX); // 일단 X적용
+				m_iPercent = _int(fX * 100.f);
+				break;
+
+			case THIRD_SLIDER: // 댐핑
+				fValue = pFollowCamera->Get_DampingCoefficient();
+
+				m_tInfo.fX = m_fMinX + (m_fLength * fValue);
+				m_iPercent = _int(fValue * 100.f);
+				break;
+			}
+		}
+		else
+		{
+			_int iVolume = 0;
+
+			switch (m_eType)
+			{
+			case FIRST_SLIDER: // 전체 볼륨
+				iVolume = GI->Get_AllChannelVolume(); // -의 값이 들어있음.
+				m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
+				m_iPercent = iVolume * 100.f;
+				break;
+
+			case SECOND_SLIDER: // 배경음
+				iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
+				m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
+				m_iPercent = iVolume * 100.f;
+				break;
+
+			case THIRD_SLIDER: // 효과음
+				iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_UI);
+				m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
+				m_iPercent = iVolume * 100.f;
+			}
 		}
 
 		m_bDrag = false;
@@ -65,7 +91,7 @@ void CUI_InGame_Setting_Slider::Set_Active(_bool bActive)
 	m_bActive = bActive;
 }
 
-void CUI_InGame_Setting_Slider::Set_DefaultSetting()
+void CUI_InGame_Setting_Slider::Set_CameraDefaultSetting()
 {
 	if (m_eType == SLIDERTYPE_END)
 		return;
@@ -105,6 +131,37 @@ void CUI_InGame_Setting_Slider::Set_DefaultSetting()
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 }
 
+void CUI_InGame_Setting_Slider::Set_AudioDefaultSetting()
+{
+	if (m_eType == SLIDERTYPE_END)
+		return;
+
+	_int iVolume = 0;
+
+	switch (m_eType)
+	{
+	case FIRST_SLIDER: // 전체 볼륨
+		iVolume = GI->Get_AllChannelVolume();
+		m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
+		m_iPercent = iVolume * 100.f;
+		break;
+
+	case SECOND_SLIDER: // 배경음
+		iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
+		m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
+		m_iPercent = iVolume * 100.f;
+		break;
+
+	case THIRD_SLIDER: // 효과음
+		iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_UI);
+		m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
+		m_iPercent = iVolume * 100.f;
+	}
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+}
+
 HRESULT CUI_InGame_Setting_Slider::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -124,6 +181,17 @@ HRESULT CUI_InGame_Setting_Slider::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
+	// TestCode
+	wstring strTag = Get_PrototypeTag();
+
+	// SliderRange를 세팅하기 전에 slider의 소속을 구분한다.
+	if (TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_First") == Get_PrototypeTag() ||
+		TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_Second") == Get_PrototypeTag() ||
+		TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_Third") == Get_PrototypeTag())
+		m_bIsCamera = false;
+	else
+		m_bIsCamera = true;
+
 	Set_SliderRange();
 
 	m_bActive = true;
@@ -142,31 +210,56 @@ void CUI_InGame_Setting_Slider::Tick(_float fTimeDelta)
 		// 타입별로 Slider BG의 총Width를 1로두고,
 		// 슬라이더 ratio로 percent를 계산한다
 
-		m_fLength = fabs(m_fMaxX - m_fMinX);
-
+		m_fLength = fabs(m_fMaxX - m_fMinX); // 지워도 무방함
 		_float fCurPosX = m_fLength - fabs(m_fMaxX - m_tInfo.fX); // 슬라이더 시작 기준 현재 내가 있는 상대적 위치
 		m_iPercent = _int((fCurPosX / m_fLength) * 100.f);
 
-		CCamera_Follow* pFollowCamera =
-			dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-
-		switch (m_eType)
+		if (true == m_bIsCamera)
 		{
-		case UI_SETTING_SLIDERTYPE::FIRST_SLIDER: // 쉐이킹
-			pFollowCamera->Set_ShakeAmplitudeMag(fCurPosX / m_fLength);
-			break;
+			CCamera_Follow* pFollowCamera =
+				dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 
-		case UI_SETTING_SLIDERTYPE::SECOND_SLIDER: // 민감도
-			pFollowCamera->Set_MouseSensitivity_X(fCurPosX / m_fLength);
-			//pFollowCamera->Set_MouseSensitivity_Y(fCurPosX / m_fLength);
-			break;
+			switch (m_eType)
+			{
+			case UI_SETTING_SLIDERTYPE::FIRST_SLIDER: // 쉐이킹
+				pFollowCamera->Set_ShakeAmplitudeMag(fCurPosX / m_fLength);
+				break;
 
-		case UI_SETTING_SLIDERTYPE::THIRD_SLIDER: // 댐핑
-			pFollowCamera->Set_DampingCoefficient(fCurPosX / m_fLength);
-			break;
+			case UI_SETTING_SLIDERTYPE::SECOND_SLIDER: // 민감도
+				pFollowCamera->Set_MouseSensitivity_X(fCurPosX / m_fLength);
+				//pFollowCamera->Set_MouseSensitivity_Y(fCurPosX / m_fLength);
+				break;
 
-		default:
-			break;
+			case UI_SETTING_SLIDERTYPE::THIRD_SLIDER: // 댐핑
+				pFollowCamera->Set_DampingCoefficient(fCurPosX / m_fLength);
+				break;
+
+			default:
+				break;
+			}
+		}
+		else
+		{
+			switch (m_eType)
+			{
+			case UI_SETTING_SLIDERTYPE::FIRST_SLIDER:
+				GI->Set_AllChannelVolume(fCurPosX / m_fLength);
+				break;
+
+			case UI_SETTING_SLIDERTYPE::SECOND_SLIDER:
+				GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, fCurPosX / m_fLength);
+				break;
+
+			case UI_SETTING_SLIDERTYPE::THIRD_SLIDER:
+				for (_uint i = 0; i < CHANNELID::MAXCHANNEL; ++i)
+				{
+					if (i == CHANNELID::SOUND_BGM_CURR)
+						continue;
+
+					GI->Set_ChannelVolume(CHANNELID(i), fCurPosX / m_fLength);
+				}
+				break;
+			}
 		}
 
 		if (true == m_bDrag)
@@ -354,15 +447,30 @@ void CUI_InGame_Setting_Slider::Set_SliderRange()
 	// Setting창에서의 설정 -> 필요시 switch문 추가
 	m_fMinX = m_tInfo.fX;
 	m_fMaxX = m_tInfo.fX + 140.f;
+	m_fLength = fabs(m_fMaxX - m_fMinX);
 
-	_float fOffset = 63.f;
-
-	if (FIRST_SLIDER == m_eType)
-		m_vTextPos = _float2(1310.f, 405.f);
-	else if (SECOND_SLIDER == m_eType)
-		m_vTextPos = _float2(1310.f, 405.f + fOffset);
+	if (true == m_bIsCamera)
+	{
+		_float fOffset = 63.f;
+		
+		if (FIRST_SLIDER == m_eType)
+			m_vTextPos = _float2(1310.f, 405.f);
+		else if (SECOND_SLIDER == m_eType)
+			m_vTextPos = _float2(1310.f, 405.f + fOffset);
+		else
+			m_vTextPos = _float2(1310.f, 405.f + (fOffset * 2.f + 2.f));
+	}
 	else
-		m_vTextPos = _float2(1310.f, 405.f + (fOffset * 2.f + 2.f));
+	{
+		_float fOffset = 64.f;
+
+		if (FIRST_SLIDER == m_eType)
+			m_vTextPos = _float2(1310.f, 170.f);
+		else if (SECOND_SLIDER == m_eType)
+			m_vTextPos = _float2(1310.f, 170.f + fOffset);
+		else
+			m_vTextPos = _float2(1310.f, 170.f + (fOffset * 2.f + 2.f));
+	}
 }
 
 CUI_InGame_Setting_Slider* CUI_InGame_Setting_Slider::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_SETTING_SLIDERTYPE eType)

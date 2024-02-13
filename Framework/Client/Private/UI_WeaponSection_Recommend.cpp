@@ -78,6 +78,15 @@ void CUI_WeaponSection_Recommend::Tick(_float fTimeDelta)
 				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 		}
 
+		// 내 enum값과 Player의 enum이 같으면 끈다.
+		CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
+		ELEMENTAL_TYPE ePlayerElemental = pCharacter->Get_ElementalType();
+
+		if (m_ePosition == ePlayerElemental)
+		{
+			Set_Active(false);
+		}
+
 		__super::Tick(fTimeDelta);
 	}
 
@@ -180,18 +189,21 @@ void CUI_WeaponSection_Recommend::Update_Position(_uint iSlotNum)
 		m_tInfo.fX = m_vPosition[0].x;
 		m_tInfo.fY = m_vPosition[0].y;
 		m_iCurIndex = 0;
+		m_ePosition = ELEMENTAL_TYPE::FIRE;
 		break;
 
 	case 1:
 		m_tInfo.fX = m_vPosition[1].x;
 		m_tInfo.fY = m_vPosition[1].y;
 		m_iCurIndex = 1;
+		m_ePosition = ELEMENTAL_TYPE::WATER;
 		break;
 
 	case 2:
 		m_tInfo.fX = m_vPosition[2].x;
 		m_tInfo.fY = m_vPosition[2].y;
 		m_iCurIndex = 2;
+		m_ePosition = ELEMENTAL_TYPE::WOOD;
 		break;
 	}
 
@@ -283,8 +295,28 @@ void CUI_WeaponSection_Recommend::Decide_WeaponElemental()
 	}
 
 	if (true == pTarget->Is_ReserveDead() || pTarget->Is_Dead())
+	{
+		if (true == Get_Active())
+			Set_Active(false);
 		return;
+	}
 
+	// 타겟과 일정 거리 이상 멀어지면 끈다
+	CTransform* pPlayerTransform = pCharacter->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pPlayerTransform)
+		return;
+	CTransform* pTransform = pTarget->Get_Component<CTransform>(L"Com_Transform");
+
+	_vector vTemp = (pTransform->Get_Position()) - (pPlayerTransform->Get_Position());
+	_float fTotarget = XMVectorGetX(XMVector3Length(vTemp));
+
+	if (fTotarget > 10.f)
+	{
+		Set_Active(false);
+		return;
+	}
+
+	// UI를 위치에 맞게 옮긴다
 	if (OBJ_TYPE::OBJ_MONSTER == pTarget->Get_ObjectType())
 	{
 		ELEMENTAL_TYPE eMonsterElemental = dynamic_cast<CMonster*>(pTarget)->Get_Stat().eElementType;

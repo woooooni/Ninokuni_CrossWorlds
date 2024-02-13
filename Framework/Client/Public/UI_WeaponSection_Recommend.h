@@ -27,6 +27,7 @@ private:
 	void Update_Position(_uint iSlotNum);
 
 private:
+	ELEMENTAL_TYPE m_ePosition = { ELEMENTAL_TYPE::ELEMENTAL_END };
 	_bool m_bUp = { false };
 	_float m_fSpeed = { 30.f };
 
