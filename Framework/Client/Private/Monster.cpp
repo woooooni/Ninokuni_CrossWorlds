@@ -63,7 +63,7 @@ HRESULT CMonster::Initialize(void* pArg)
 	m_fNearDist = 9999.f;
 	m_fTargetSearchDist = 30.f;
 
-	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION || GI->Get_CurrentLevel() == LEVELID::LEVEL_TOOL)
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION /* || GI->Get_CurrentLevel() == LEVELID::LEVEL_TOOL*/)
 		m_bIsInvasion = true;
 
 	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_RUBY_DEFENCE)

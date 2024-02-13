@@ -11,6 +11,7 @@
 #include "Player.h"
 
 #include "Effect_Manager.h"
+#include "Effect.h"
 
 CStelliaState_Rage3Charge::CStelliaState_Rage3Charge(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
@@ -47,8 +48,34 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pStellia->Get_IsPlayerGuardEvent())
+	if (m_pStellia->Get_IsPlayerGuardEvent()) // 플레이어가 현재 막고있는 상태
 	{
+		// Effect Create ----------------------------
+		if (nullptr == m_pPlayerGuard)
+		{
+			_matrix WorldMatrix = m_pStellia->Get_TargetDesc().pTragetTransform->Get_WorldMatrix();
+
+			// 몬스터 - 플레이어
+			Vec4 vStelliaPosition = m_pTransformCom->Get_Position();
+			Vec4 vPlayerPosition  = m_pStellia->Get_TargetDesc().pTragetTransform->Get_State(CTransform::STATE_POSITION);
+			Vec3 vLook = vStelliaPosition - vPlayerPosition;
+			vLook.Normalize();
+			Vec3 vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook);
+			vRight.Normalize();
+			Vec3 vUp = XMVector3Cross(vLook, vRight);
+			vUp.Normalize();
+
+			_float3	vScale = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Scale();
+			WorldMatrix.r[CTransform::STATE_RIGHT] = vRight * vScale.x;
+			WorldMatrix.r[CTransform::STATE_UP]    = vUp    * vScale.y;
+			WorldMatrix.r[CTransform::STATE_LOOK]  = vLook  * vScale.z;
+
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_Skill_Rage03Charge_FrontLine_Player"),
+				WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(10.f, 10.f, 10.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pPlayerGuard, false);
+			Safe_AddRef(m_pPlayerGuard);
+		}
+		// ---------------------------- Effect Create
+
 		m_pStellia->Get_TargetDesc().pTragetTransform->LookAt_ForLandObject(m_pTransformCom->Get_Position());
 		m_pStellia->Get_TargetDesc().pTragetTransform->Move(-m_pStellia->Get_TargetDesc().pTragetTransform->Get_Look(), 3.f, fTimeDelta);
 
@@ -62,8 +89,14 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		//}
 
 		// 파훼 실패(시간 초과)
-		if (m_fAccClickTime >= m_fLimitTime)
+		if (m_fAccClickTime >= m_fLimitTime) // 막고있는 상태 해제
 		{
+			if (nullptr != m_pPlayerGuard)
+			{
+				m_pPlayerGuard->Set_Dead(true);
+				Safe_Release(m_pPlayerGuard);
+			}
+
 			m_pPlayer->Get_CharacterStateCom()->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
 			
 			/* 플레이어와 스텔리아의 위치를 반별하여 플레이어를 날릴 방향 결정 */
@@ -100,8 +133,14 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		}
 
 		// 파훼 성공
-		if (m_iClickPower >= m_iClickDest)
+		if (m_iClickPower >= m_iClickDest) // 막고있는 상태 해제
 		{
+			if (nullptr != m_pPlayerGuard)
+			{
+				m_pPlayerGuard->Set_Dead(true);
+				Safe_Release(m_pPlayerGuard);
+			}
+
 			if (m_iBreakCount < 2)
 			{
 				m_iBreakCount += 1;
@@ -119,8 +158,14 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		}
 
 		// 파훼 실패(중간에 가드 해제)
-		else if (m_pPlayer->Get_CharacterStateCom()->Get_CurrState() != CCharacter::BATTLE_GUARD)
+		else if (m_pPlayer->Get_CharacterStateCom()->Get_CurrState() != CCharacter::BATTLE_GUARD) // 막고있는 상태 해제
 		{
+			if (nullptr != m_pPlayerGuard)
+			{
+				m_pPlayerGuard->Set_Dead(true);
+				Safe_Release(m_pPlayerGuard);
+			}
+
 			dynamic_cast<CCharacter*>(m_pStellia->Get_TargetDesc().pTarget)->Get_CharacterStateCom()->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
 			m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
 				-m_pStellia->Get_TargetDesc().pTarget->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Look(), 10.f, false);
@@ -155,6 +200,11 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 
 void CStelliaState_Rage3Charge::Exit_State()
 {
+	if (nullptr != m_pPlayerGuard)
+	{
+		m_pPlayerGuard->Set_Dead(true);
+		Safe_Release(m_pPlayerGuard);
+	}
 }
 
 CStelliaState_Rage3Charge* CStelliaState_Rage3Charge::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
@@ -173,4 +223,10 @@ CStelliaState_Rage3Charge* CStelliaState_Rage3Charge::Create(CStateMachine* pSta
 void CStelliaState_Rage3Charge::Free()
 {
 	__super::Free();
+
+	if (nullptr != m_pPlayerGuard)
+	{
+		m_pPlayerGuard->Set_Dead(true);
+		Safe_Release(m_pPlayerGuard);
+	}
 }

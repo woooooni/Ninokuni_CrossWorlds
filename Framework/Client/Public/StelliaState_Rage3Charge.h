@@ -37,6 +37,8 @@ private:
 	_float m_fCurChargeLength = 0.f;
 	_float m_fMinChargeLength = 0.f;
 
+	class CEffect* m_pPlayerGuard = nullptr;
+
 public:
 	static CStelliaState_Rage3Charge* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
