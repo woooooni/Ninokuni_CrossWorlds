@@ -119,7 +119,7 @@ namespace Client
 
 	/* Camera - Default */
 
-	enum CAMERA_TYPE 
+	enum CAMERA_TYPE
 	{ 
 		FREE, 
 		FOLLOW, 

@@ -356,9 +356,7 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID, const _uin
 
 		/* Sound */
 		{
-			/*GI->Play_Sound(TEXT("Evermore_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
-			m_fBgmPrevVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
-			GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume * 0.6f);*/
+			GI->Play_Sound(TEXT("WitchForest_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
 		}
 
 	}
@@ -544,6 +542,8 @@ HRESULT CCamera_CutScene_Map::Set_CutSceneTransform(const string& strCutSceneNam
 	{
 		m_tWhaleDesc.bSetTransform = true;
 		Set_Fov(Cam_Fov_CutScene_Map_Default);
+
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Whale_Splash.mp3"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
 	}
 
 	return S_OK;
