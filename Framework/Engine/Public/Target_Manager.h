@@ -58,6 +58,8 @@ private:
 	ID3D11DepthStencilView*					m_pMinimapDSV = { nullptr };
 	ID3D11DepthStencilView*					m_pShadowDSV = { nullptr };
 	ID3D11DepthStencilView*                 m_pUIDSV = { nullptr };
+
+	//
 private:
 	class CRenderTarget* Find_RenderTarget(const wstring& strTargetTag);
 	list<class CRenderTarget*>* Find_MRT(const wstring & strMRTTag);

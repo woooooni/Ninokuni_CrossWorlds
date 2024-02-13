@@ -207,6 +207,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\BTNode_Select.h" />
     <ClInclude Include="..\Public\BTNode_Sequence.h" />
     <ClInclude Include="..\Public\Camera_Manager.h" />
+    <ClInclude Include="..\Public\CascadeMatrixSet.h" />
     <ClInclude Include="..\Public\Cell.h" />
     <ClInclude Include="..\Public\Collider.h" />
     <ClInclude Include="..\Public\Collider_AABB.h" />
@@ -331,6 +332,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\BTNode_Select.cpp" />
     <ClCompile Include="..\Private\BTNode_Sequence.cpp" />
     <ClCompile Include="..\Private\Camera_Manager.cpp" />
+    <ClCompile Include="..\Private\CascadeMatrixSet.cpp" />
     <ClCompile Include="..\Private\Cell.cpp" />
     <ClCompile Include="..\Private\Collider.cpp" />
     <ClCompile Include="..\Private\Collider_AABB.cpp" />
