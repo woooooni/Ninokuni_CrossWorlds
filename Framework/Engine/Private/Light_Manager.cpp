@@ -105,6 +105,7 @@ HRESULT CLight_Manager::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
 
 		if (LIGHTDESC::TYPE_DIRECTIONAL == pLight->Get_LightDesc()->eType)
 		{
+			// Cascade Shadow Gen.
 			if (FAILED(pLight->Render(pShader, pVIBuffer)))
 				return E_FAIL;
 		}
@@ -247,10 +248,72 @@ Vec4 CLight_Manager::Get_SunScreenPos()
 	return light_ss;
 }
 
+void CLight_Manager::CascadeShadowGen(ID3D11DeviceContext* pContext)
+{
+	const int iShadowMapSize = 1024;
+
+	D3D11_VIEWPORT vp[3] = 
+	{	{ 0, 0, iShadowMapSize, iShadowMapSize, 0.0f, 1.0f },
+		{ 0, 0, iShadowMapSize, iShadowMapSize, 0.0f, 1.0f },
+		{ 0, 0, iShadowMapSize, iShadowMapSize, 0.0f, 1.0f } };
+
+
+}
+
+HRESULT CLight_Manager::Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+{
+	const int iShadowMapSize = 1024;
+
+	D3D11_TEXTURE2D_DESC dtd = {
+		iShadowMapSize,
+		iShadowMapSize,
+		1,
+		3,
+		DXGI_FORMAT_R32_TYPELESS,
+		1,
+		0,
+		D3D11_USAGE_DEFAULT,
+		D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE,
+		0,
+		0
+	};
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDepthView =
+	{
+		DXGI_FORMAT_D32_FLOAT,
+		D3D11_DSV_DIMENSION_TEXTURE2DARRAY,
+		0
+	};
+	D3D11_SHADER_RESOURCE_VIEW_DESC descShaderView =
+	{
+		DXGI_FORMAT_R32_FLOAT,
+		D3D11_SRV_DIMENSION_TEXTURE2DARRAY,
+		0,
+		0
+	};
+
+	if(FAILED(pDevice->CreateTexture2D(&dtd, nullptr, &m_pCascadeDepthStencilRT)))
+		return E_FAIL;
+
+	descDepthView.Texture2DArray.ArraySize = 3;
+	if (FAILED(pDevice->CreateDepthStencilView(m_pCascadeDepthStencilRT, &descDepthView, &m_pCascadeDepthStencilDSV)))
+		return E_FAIL;
+
+	descShaderView.Texture2DArray.FirstArraySlice = 0;
+	descShaderView.Texture2DArray.ArraySize = 3;
+	descShaderView.Texture2DArray.MipLevels = 1;
+	if (FAILED(pDevice->CreateShaderResourceView(m_pCascadeDepthStencilRT, &descShaderView, &m_pCascadeDepthStencilSRV)))
+		return E_FAIL;
+}
+
 void CLight_Manager::Free()
 {
 	for (auto& pLight : m_Lights)
 		Safe_Release(pLight);
+
+	Safe_Release<ID3D11Texture2D*>(m_pCascadeDepthStencilRT);
+	Safe_Release<ID3D11DepthStencilView*>(m_pCascadeDepthStencilDSV);
+	Safe_Release<ID3D11ShaderResourceView*>(m_pCascadeDepthStencilSRV);
 
 	m_Lights.clear();
 }
