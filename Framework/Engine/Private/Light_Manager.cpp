@@ -362,6 +362,8 @@ HRESULT CLight_Manager::Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 	descShaderView.Texture2DArray.MipLevels = 1;
 	if (FAILED(pDevice->CreateShaderResourceView(m_pCascadeDepthStencilRT, &descShaderView, &m_pCascadeDepthStencilSRV)))
 		return E_FAIL;
+
+	return S_OK;
 }
 
 void CLight_Manager::Free()

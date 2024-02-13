@@ -25,7 +25,7 @@ private:
 
 private:
 	_int m_iShadowMapSize = 0;
-	_float m_fCascadeTotalRange = 0.0f;
+	_float m_fCascadeTotalRange = 50.0f;
 	_float m_arrCascadeRanges[4] = {};
 
 	Vec3 m_vShadowBoundCenter;
