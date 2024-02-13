@@ -53,16 +53,30 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVELID::LEVEL_KINGDOMHALL)
 	{
-		if (!m_bIsStart)
+		/* 팔로우 카메라에서 쉐이킹이 끝나기 전까지 계속 리턴*/
+		if (!m_bIsShake)
 		{
 			CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::GetInstance()->QUESTEVENT_INVASION);
 
 			/* 레벨 입장 카메라 액션이 진행중이라면 리턴 */
-			if(!Is_Finish_LevelEnterCameraAction())
+			if (!Is_Finish_LevelEnterCameraAction())
 				return NODE_STATE::NODE_RUNNING;
-		
-			//GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR, 0.f);
+
+			if(nullptr == m_pRuslan)
+				m_pRuslan = GI->Find_GameObject(LEVELID::LEVEL_KINGDOMHALL, LAYER_NPC, TEXT("Ruslan"));
+
+			m_bIsShake = true;
 			GI->Play_Sound(L"Obj_CannonTower_Medium_Break_1.ogg", CHANNELID::SOUND_CUTSCENE, 0.6f, true);
+			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Start_Shake(0.01f, 70.f, 1.f);
+		}
+
+		/* 팔로우 카메라 쉐이킹이 끝났다면 대화 캠 시작 */
+		if (m_bIsShake && !m_bIsStart)
+		{
+			if(CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Shake())
+				return NODE_STATE::NODE_RUNNING;
+
+			m_bIsStart = true;
 
 			/* 대화 */
 			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
@@ -74,18 +88,15 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)
 			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
 			if (nullptr != pActionCam)
 			{
-				pActionCam->Start_Action_Talk(nullptr);
-				CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION)->Start_Shake(0.01f, 60.f, 0.75f);
+				pActionCam->Start_Action_Talk(m_pRuslan);
 			}
 
 			TalkEvent();
 
-
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RenderSwitch(CRenderer::RENDER_SWITCH::GODRAY_SWITCH, false);
-			m_bIsStart = true;
 		}
 
-		if (KEY_TAP(KEY::LBTN))
+		if (m_bIsStart && KEY_TAP(KEY::LBTN))
 		{
 			Safe_Delete_Array(m_szpOwner);
 			Safe_Delete_Array(m_szpTalk);
@@ -141,7 +152,7 @@ void CMainQuestNode_Invasion01::TalkEvent()
 		break;
 	case 1:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Invasion_01_01.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;
 	case 2:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Invasion_01_02.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
