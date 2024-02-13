@@ -616,9 +616,18 @@ void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_SMALL_WALK
 				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_SMALL_RUN
 				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_SMALL_THROW
-				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH)
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::TAG_IN
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::TAG_OUT)
+			{
+				if (nullptr != m_pEffectTargetDecal)
+				{
+					m_pEffectTargetDecal->Set_Dead(true);
+					Safe_Release(m_pEffectTargetDecal);
+					m_pEffectTargetDecal = nullptr;
+				}
 				return;
-
+			}
 			Decide_Target(tInfo);
 		}
 	}
@@ -728,9 +737,7 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 	{
 		CCurlingGame_Stone* pStone = dynamic_cast<CCurlingGame_Stone*>(tInfo.pOther);
 		if (nullptr != pStone && pStone->Is_Putted())
-		{
 			return;
-		}
 	}
 
 	if (nullptr == m_pTarget)
@@ -747,7 +754,7 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 			m_pEffectTargetDecal = nullptr;
 		}
 
-		CEffect_Manager::GetInstance()->Generate_Decal_To_Position(L"Decal_Target", XMMatrixIdentity(), Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.5f, 2.f), Vec3(0.f, 0.f, 0.f), m_pTarget, &m_pEffectTargetDecal, false);
+		CEffect_Manager::GetInstance()->Generate_Decal_To_Position(L"Decal_Target", XMMatrixIdentity(), Vec3(0.f, 0.1f, 0.f), Vec3(2.f, 2.f, 2.f), Vec3(0.f, 0.f, 0.f), m_pTarget, &m_pEffectTargetDecal, false);
 		Safe_AddRef(m_pEffectTargetDecal);
 	}
 	else
@@ -769,7 +776,7 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 		CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
 		CTransform* pNewTargetTransform = tInfo.pOther->Get_Component<CTransform>(L"Com_Transform");
 
-		if (nullptr != pTargetTransform)
+		if (nullptr != pTargetTransform && nullptr != pNewTargetTransform)
 		{
 			Vec3 vTargetDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
 			Vec3 vNewTargetDir = pNewTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
@@ -784,10 +791,11 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 					m_pEffectTargetDecal = nullptr;
 				}
 
-				if (OBJ_TYPE::OBJ_CURLINGGAME_PROP == tInfo.pOther->Get_ObjectType()) // 컬링 게임 오브젝트들은 데칼 사용 X
+				if (OBJ_TYPE::OBJ_CURLINGGAME_PROP == tInfo.pOther->Get_ObjectType()
+					|| OBJ_TYPE::OBJ_ANIMAL == tInfo.pOther->Get_ObjectType()) // 컬링 게임
 					return;
 
-				CEffect_Manager::GetInstance()->Generate_Decal(L"Decal_Target", pNewTargetTransform->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.5f, 2.f), Vec3(0.f, 0.f, 0.f), m_pTarget, &m_pEffectTargetDecal, false);
+				CEffect_Manager::GetInstance()->Generate_Decal(L"Decal_Target", pNewTargetTransform->Get_WorldMatrix(), Vec3(0.f, 1.f, 0.f), Vec3(2.f, 2.f, 2.f), Vec3(0.f, 0.f, 0.f), m_pTarget, &m_pEffectTargetDecal, false);
 				Safe_AddRef(m_pEffectTargetDecal);
 			}
 		}
@@ -804,6 +812,9 @@ void CCharacter::LevelUp()
 	m_tStat.iHp = m_tStat.iMaxHp;
 	m_tStat.iAtt += m_tStat.iLevel * 100;
 	CUI_Manager::GetInstance()->OnOff_LevelUp(true, m_tStat.iLevel);
+
+	if (m_tStat.iExp >= m_tStat.iMaxExp)	
+		LevelUp();
 }
 
 
@@ -1008,7 +1019,7 @@ _bool CCharacter::Decrease_HP(_int iDecrease)
 		// 확인 필요
 		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::VEHICLE_TYPE::UDADAK, false);
 
-		m_pStateCom->Change_State(CCharacter::DEAD);
+		m_pStateCom->Change_State(CCharacter::STATE::DEAD);
 		return true;
 	}
 	return false;
@@ -1205,6 +1216,8 @@ HRESULT CCharacter::Exit_Character()
 
 HRESULT CCharacter::Tag_In(Vec4 vInitializePosition)
 {
+	m_pStateCom->Change_State(CCharacter::STATE::TAG_IN);
+
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vInitializePosition, 1.f));
 	m_pControllerCom->Set_Active(true);
 	m_pControllerCom->Set_EnterLevel_Position(XMVectorSetW(vInitializePosition, 1.f));
@@ -1236,11 +1249,20 @@ HRESULT CCharacter::Tag_In(Vec4 vInitializePosition)
 
 HRESULT CCharacter::Tag_Out()
 {
+	m_pStateCom->Change_State(CCharacter::STATE::TAG_OUT);
+
 	m_pControllerCom->Set_Active(false);
 	if (nullptr != m_pTarget)
 	{
 		Safe_Release(m_pTarget);
 		m_pTarget = nullptr;
+	}
+
+	if (nullptr != m_pEffectTargetDecal)
+	{
+		m_pEffectTargetDecal->Set_Dead(true);
+		Safe_Release(m_pEffectTargetDecal);
+		m_pEffectTargetDecal = nullptr;
 	}
 	m_bControllCharacter = false;
 

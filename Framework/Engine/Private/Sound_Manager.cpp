@@ -90,7 +90,7 @@ void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume
 	fFinalVolume = min(fFinalVolume, 1.f);
 	FMOD_BOOL bPlay = FALSE;
 
-	if (eID == CHANNELID::SOUND_FOOT_CHARACTER || eID == CHANNELID::SOUND_FOOT_MONSTER)
+	if (eID == CHANNELID::SOUND_FOOT_CHARACTER || eID == CHANNELID::SOUND_FOOT_MONSTER || eID == CHANNELID::SOUND_FOOT_VEHICLE)
 	{
 		if (GI->Get_CurrentLevel() != 99)
 		{

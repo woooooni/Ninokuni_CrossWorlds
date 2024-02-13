@@ -68,7 +68,7 @@ void CState_VehicleFlying_Rush::Tick_State(_float fTimeDelta)
         return;
     }
      
-
+    m_fAccRadialBlurPower = max(0.f, m_fAccRadialBlurPower);
     CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(true, 16.f, m_fAccRadialBlurPower);
     // m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Look()), -5.f * XMConvertToRadians(180.f) * fTimeDelta);
     m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed() + m_fAccSpeed, fTimeDelta);

@@ -11,7 +11,7 @@ class CBuff_Manager : public CBase
 	DECLARE_SINGLETON(CBuff_Manager)
 
 public:
-	enum BUFF_TYPE { HP_POTION, DESTROYER_FRENGE_CHARGE, BUFF_TYPE_END };
+	enum BUFF_TYPE { HP_POTION, DESTROYER_FRENGE_CHARGE, ENGINEER_TIMELAB, BUFF_TYPE_END };
 
 private:
 	CBuff_Manager();

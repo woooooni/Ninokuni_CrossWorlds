@@ -74,7 +74,9 @@ void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
 	m_bGroundChecked = false;
 
 
+#ifndef _DEBUG
 	GI->Wait_PhysX_Scene();
+#endif
 
 	Vec3 vPosition = m_pTransformCom->Get_Position(); // 피직스 기준으로는 발 끝이다.
 
@@ -124,7 +126,9 @@ void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 	if (false == Is_Active())
 		return;
 
+#ifndef _DEBUG
 	GI->Wait_PhysX_Scene();
+#endif
 
 	PxExtendedVec3 vPhysXPosition = m_pPhysXController->getFootPosition();
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vPhysXPosition.x, vPhysXPosition.y, vPhysXPosition.z, 1.f));
@@ -135,7 +139,9 @@ void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 void CPhysX_Controller::Set_Active(_bool bActive)
 {
 	//m_pPhysXController->getScene()->getSimulationStatistics()
-	// GI->Wait_PhysX_Scene();
+#ifndef _DEBUG
+	GI->Wait_PhysX_Scene();
+#endif
 	
 	m_pPhysXController->getActor()->setActorFlag(PxActorFlag::eVISUALIZATION, bActive);
 	m_pPhysXController->getActor()->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, !bActive);
@@ -151,8 +157,9 @@ _bool CPhysX_Controller::Is_Active()
 
 void CPhysX_Controller::Set_EnterLevel_Position(Vec4 vPosition)
 {
+#ifndef _DEBUG
 	GI->Wait_PhysX_Scene();
-
+#endif
 	m_pPhysXController->setFootPosition(PxExtendedVec3(vPosition.x, vPosition.y, vPosition.z));
 	m_vPrevPosition = Vec3(vPosition.x, vPosition.y, vPosition.z);
 }
@@ -296,8 +303,13 @@ void CPhysX_Controller::Free()
 
 	if (false == m_bRemoved && nullptr != m_pPhysXController)
 	{
-		Set_Active(false);
+		m_pPhysXController->getActor()->setActorFlag(PxActorFlag::eVISUALIZATION, false);
+		m_pPhysXController->getActor()->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, true);
+		m_pPhysXController->invalidateCache();
+
+		m_bActive = false;
 		m_pPhysXController = nullptr;
+		m_bRemoved = true;
 	}
 
 	/*GI->Remove_Controller(m_pPhysXController);

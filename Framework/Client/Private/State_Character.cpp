@@ -25,7 +25,11 @@ CState_Character::CState_Character(CStateMachine* pStateMachine)
 
 HRESULT CState_Character::Initialize(const list<wstring>& AnimationList)
 {
-	__super::Initialize(AnimationList);
+	if (FAILED(__super::Initialize(AnimationList)))
+	{
+		MSG_BOX("__super::Initialize() Failed. : CState_Character::Initialize");
+		return E_FAIL;
+	}
 	m_pCharacter = dynamic_cast<CCharacter*>(m_pStateMachineCom->Get_Owner());
 	if (nullptr == m_pCharacter)
 		return E_FAIL;

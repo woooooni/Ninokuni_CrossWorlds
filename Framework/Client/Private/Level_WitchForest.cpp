@@ -27,6 +27,7 @@
 #include "Ruby.h"
 
 #include "Camera_Action.h"
+#include "Respawn_Box.h"
 
 _bool CLevel_WitchForest::g_bFirstEnter = false;
 
@@ -226,7 +227,7 @@ HRESULT CLevel_WitchForest::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	}
 
 	CGameObject* pDoor = nullptr;
-	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Door_Enter"), nullptr, &pDoor)))
+	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Door_Enter"), nullptr, &pDoor)))
 		return E_FAIL;
 
 	if (nullptr == pDoor)
@@ -725,6 +726,14 @@ HRESULT CLevel_WitchForest::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 //	TriggerDesc.vExtents = { 200.f, 200.f, 150.f };
 //	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
 //		return E_FAIL;
+
+	CRespawn_Box::RESPAWN_DESC RespawnDesc = {};
+	RespawnDesc.vStartPosition = Vec4(0.f, -100.f, 0.f, 1.f);
+	RespawnDesc.vRespawnPosition = Vec4(0.f, 0.f, 0.f, 1.f);
+	RespawnDesc.vExtents = Vec3(1000.f, 5.f, 1000.f);
+
+	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_RespawnBox"), &RespawnDesc)))
+		return E_FAIL;
 
 	return S_OK;
 }

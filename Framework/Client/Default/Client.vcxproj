@@ -351,6 +351,8 @@
     <ClInclude Include="..\Public\PerlinFire.h" />
     <ClInclude Include="..\Public\Skill_Biplane_Burst.h" />
     <ClInclude Include="..\Public\State_CurlingGame_Ending.h" />
+    <ClInclude Include="..\Public\State_Destroyer_TagIn.h" />
+    <ClInclude Include="..\Public\State_Destroyer_TagOut.h" />
     <ClInclude Include="..\Public\State_Enemy.h" />
     <ClInclude Include="..\Public\State_EnemyBiplane_Dead.h" />
     <ClInclude Include="..\Public\State_EnemyBiplane_Finish_Attack.h" />
@@ -367,6 +369,10 @@
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Run.h" />
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Stand.h" />
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Trace.h" />
+    <ClInclude Include="..\Public\State_Engineer_TagIn.h" />
+    <ClInclude Include="..\Public\State_Engineer_TagOut.h" />
+    <ClInclude Include="..\Public\State_SwordMan_TagIn.h" />
+    <ClInclude Include="..\Public\State_SwordMan_TagOut.h" />
     <ClInclude Include="..\Public\State_VehicleFlying_Backflip.h" />
     <ClInclude Include="..\Public\State_VehicleFlying_BossStage_Stand.h" />
     <ClInclude Include="..\Public\State_VehicleFlying_Damaged.h" />
@@ -1468,6 +1474,8 @@
     <ClCompile Include="..\Private\PerlinFire.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_Burst.cpp" />
     <ClCompile Include="..\Private\State_CurlingGame_Ending.cpp" />
+    <ClCompile Include="..\Private\State_Destroyer_TagIn.cpp" />
+    <ClCompile Include="..\Private\State_Destroyer_TagOut.cpp" />
     <ClCompile Include="..\Private\State_Enemy.cpp" />
     <ClCompile Include="..\Private\State_EnemyBiplane_Dead.cpp" />
     <ClCompile Include="..\Private\State_EnemyBiplane_Finish_Attack.cpp" />
@@ -1484,6 +1492,10 @@
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Run.cpp" />
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Stand.cpp" />
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Trace.cpp" />
+    <ClCompile Include="..\Private\State_Engineer_TagIn.cpp" />
+    <ClCompile Include="..\Private\State_Engineer_TagOut.cpp" />
+    <ClCompile Include="..\Private\State_SwordMan_TagIn.cpp" />
+    <ClCompile Include="..\Private\State_SwordMan_TagOut.cpp" />
     <ClCompile Include="..\Private\State_VehicleFlying_Backflip.cpp" />
     <ClCompile Include="..\Private\State_VehicleFlying_BossStage_Stand.cpp" />
     <ClCompile Include="..\Private\State_VehicleFlying_Damaged.cpp" />

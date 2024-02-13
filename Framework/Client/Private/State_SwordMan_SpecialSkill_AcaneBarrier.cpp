@@ -34,7 +34,6 @@ void CState_SwordMan_SpecialSkill_AcaneBarrier::Enter_State(void* pArg)
 
 void CState_SwordMan_SpecialSkill_AcaneBarrier::Tick_State(_float fTimeDelta)
 {
-
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
 }
@@ -43,6 +42,8 @@ void CState_SwordMan_SpecialSkill_AcaneBarrier::Exit_State()
 {
     if (!CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Lock_Fov())
         CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
+
+    m_pCharacter->Set_SuperArmor(10.f, true);
 }
 
 CState_SwordMan_SpecialSkill_AcaneBarrier* CState_SwordMan_SpecialSkill_AcaneBarrier::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

@@ -196,7 +196,7 @@ void CCannon_Ball::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 		return;
 
 	Reserve_Dead(true);
-	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::BLOW, 0.f, 0.f, 0.f, false);
+	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::STRONG, 0.f, 0.f, 0.f, false);
 
 	for (auto& pAttackCollider : Get_Collider(CCollider::DETECTION_TYPE::ATTACK))
 		pAttackCollider->Set_Radius(5.f);

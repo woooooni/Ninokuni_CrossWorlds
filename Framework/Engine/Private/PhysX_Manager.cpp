@@ -109,17 +109,22 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 }
 void CPhysX_Manager::Tick(_float fTimeDelta)
 {
-	m_bSimulating = true;
-	fTimeDelta = min(fTimeDelta, 1.f / 144.f);
 
-	m_pScene->simulate(fTimeDelta);
-	m_pScene->fetchResults(true);
-
-	m_bSimulating = false;
 }
 void CPhysX_Manager::LateTick(_float fTimeDelta)
 {
-	
+	m_bSimulating = true;
+	_float fStepSize = 1.f / 144.f;
+	m_fAccTime += fTimeDelta;
+	if (m_fAccTime >= fStepSize)
+	{
+		m_fAccTime -= fStepSize;
+
+		m_pScene->simulate(fStepSize);
+		m_pScene->fetchResults(true);
+	}
+
+	m_bSimulating = false;
 }
 #ifdef _DEBUG
 HRESULT CPhysX_Manager::Render()

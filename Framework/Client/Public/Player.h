@@ -25,8 +25,9 @@ public:
 
 public:
 	class CCharacter* Get_Character() { return m_pCharacter; }
-	HRESULT Set_Character(CHARACTER_TYPE eType, Vec4 vEnterPosition, _bool bEnterScene);
 	HRESULT Tag_Character(CHARACTER_TYPE eType);
+
+	HRESULT Set_Character(CHARACTER_TYPE eType, Vec4 vEnterPosition, _bool bEnterScene);
 	HRESULT Set_Character_Initial_Position(Vec4 vEnterPosition, _bool bEnterDoor = false);
 
 public:
@@ -41,11 +42,31 @@ public:
 
 	_int Get_Gold() { return m_iGold; }
 
+public:
+	_bool Is_Tagging() { return m_bTagging; }
+	void Set_Tagging(_bool bTagging) { m_bTagging = bTagging; }
+
+public:
+	void Switch_Tag_Character() {
+		if (nullptr == m_pNextCharacter)
+			return;
+
+		m_pCharacter = m_pNextCharacter;
+		m_pNextCharacter = nullptr;
+	}
+
 private:
 	class CCharacter* m_pCharacter = nullptr;
 
+	// 태그용 임시 저장 캐릭터.
+	class CCharacter* m_pNextCharacter = nullptr;
+
+
 private:
 	_int m_iGold = 10000;
+
+private:
+	_bool m_bTagging = false;
 
 private:
 	static CPlayer* Create();

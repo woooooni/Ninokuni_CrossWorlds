@@ -9,6 +9,8 @@
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 
+#include "Particle_Manager.h"
+
 CWitch_ChargeBullet::CWitch_ChargeBullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CMonsterProjectile(pDevice, pContext, strObjectTag)
 {

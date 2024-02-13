@@ -52,12 +52,18 @@ void CState_Destroyer_SpecialSkill_BattleCry::Tick_State(_float fTimeDelta)
                 if (pObject->Is_Dead() || pObject->Is_ReserveDead() || pObject->Get_ObjectType() != OBJ_TYPE::OBJ_MONSTER)
                     continue;
 
-                CMonster* pMonster = dynamic_cast<CMonster*>(pObject);
-
+                CMonster* pMonster = dynamic_cast<CMonster*>(pObject);                
                 if (nullptr == pMonster)
                     continue;
 
-                pMonster->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
+                CTransform* pMonsterTransform = pMonster->Get_Component_Transform();
+                if (nullptr == pMonsterTransform)
+                    continue;
+
+                Vec3 vDir = m_pTransformCom->Get_Position() - pMonsterTransform->Get_Position();
+
+                if (vDir.Length() <= 30.f)
+                    pMonster->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
             }
         }
     }

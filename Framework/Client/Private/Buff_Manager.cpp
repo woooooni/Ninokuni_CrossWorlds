@@ -146,6 +146,12 @@ void CBuff_Manager::Use_Buff(BUFF_TYPE eBuffType)
 		}
 	}
 
+	else if (ENGINEER_TIMELAB == eBuffType)
+	{
+		for (auto& pMonster : GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_MONSTER))		
+			pMonster->Set_ObjectTimeScale(1.f);
+	}
+
 }
 
 

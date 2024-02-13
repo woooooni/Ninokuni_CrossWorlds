@@ -178,34 +178,36 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
     }
     else
     {
+        m_pRigidBodyCom->Set_Ground(false);
+
         if (KEY_TAP(KEY::SPACE))
         {
             Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
             vVelocity.y = 0.f;
 
-            _float fDecisionSpeed = 15.f;
+            _float fDecisionSpeed = 10.f;
+
+            _float fAddSpeed = 0.f;
+#ifdef _DEBUG
+            fAddSpeed = 400.f;
+#endif // _DEBUG
+#ifndef _DEBUG
+            fAddSpeed = 800.f;
+#endif // !_DEBUG
             if (vVelocity.Length() >= fDecisionSpeed) // 20.f -> 15.f ¼öÁ¤
             {
+                m_pRigidBodyCom->Set_Use_Gravity(false);
                 Vec3 vVelocityDir = XMVector3Normalize(m_pTransformCom->Get_Look());
                 vVelocityDir.y = 0.8f;
-                m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), 200.f * fTimeDelta, false);
-                m_pRigidBodyCom->Set_Use_Gravity(false);
+                m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), fAddSpeed * fTimeDelta, false);
             }
             else
             {
+                m_pRigidBodyCom->Set_Use_Gravity(true);
                 Vec3 vVelocityDir = m_pTransformCom->Get_Look();
                 vVelocityDir.y = 0.f;
 
-                _float fAddSpeed = 0.f;
-#ifdef _DEBUG
-                fAddSpeed = 95.f;
-#endif // _DEBUG
-#ifndef _DEBUG
-                fAddSpeed = 95.f;
-#endif // !_DEBUG
                 m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), fAddSpeed * fTimeDelta, false);
-                m_pRigidBodyCom->Set_Ground(false);
-                m_pRigidBodyCom->Set_Use_Gravity(true);
             }
         }
     }
