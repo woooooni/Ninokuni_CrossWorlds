@@ -12,6 +12,7 @@ protected:
 
 public:
 	virtual void Set_Active(_bool bActive) override;
+	void Set_Type(_uint iBossType);
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -21,9 +22,13 @@ public:
 	virtual HRESULT	Render();
 
 private:
+	class CTexture* m_pTextureCom_Stellia = { nullptr };
+	_uint m_iBossType = { 0 };
+
 	_float m_fTimeAcc = { 0.f };
 	_int m_iTextureIndex = { 0 };
 	_bool m_bDone = { false };
+	_bool m_bReverse = { false };
 
 private:
 	virtual HRESULT	Ready_Components() override;

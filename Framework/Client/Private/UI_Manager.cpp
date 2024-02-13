@@ -6586,7 +6586,7 @@ HRESULT CUI_Manager::OnOff_BossHP(_bool bOnOff)
 	return S_OK;
 }
 
-void CUI_Manager::OnOff_BossNameTag(_bool bOnOff)
+void CUI_Manager::OnOff_BossNameTag(_bool bOnOff, UI_BOSS eBossType)
 {
 	if (m_pBossNameTag == nullptr)
 		return;
@@ -6595,6 +6595,7 @@ void CUI_Manager::OnOff_BossNameTag(_bool bOnOff)
 	{
 		if (!m_pBossNameTag->Get_Active())
 		{
+			m_pBossNameTag->Set_Type(eBossType);
 			m_pBossNameTag->Set_Active(true);
 		}
 	}

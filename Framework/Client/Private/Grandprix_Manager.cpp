@@ -43,9 +43,10 @@ HRESULT CGrandprix_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceC
 
 void CGrandprix_Manager::Tick(_float fTimeDelta)
 {
-	// 그랑프리가 시작되었는지 확인한다. false면 return;
 	if (KEY_TAP(KEY::P))
-		Show_GoalObject();
+	{
+		Add_ItemBox(CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP);
+	}
 
 	// 그랑프리가 정상적으로 끝났는지 확인한다.
 	if (false == m_bReset && true == m_bGrandPrixEnd)
@@ -76,8 +77,8 @@ void CGrandprix_Manager::Tick(_float fTimeDelta)
 	{
 		m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP] += fTimeDelta;
 
-		// 10초가 지나면 사이즈 복구
-		if (10.f < m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP])
+		// 20초가 지나면 사이즈 복구(Icon은 10초임)
+		if (20.f < m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP])
 		{
 			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP] = false;
 			m_fTimeAcc[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP] = 0.f;
@@ -88,6 +89,8 @@ void CGrandprix_Manager::Tick(_float fTimeDelta)
 					(false == pVehicle->Is_ReserveDead() && false == pVehicle->Is_Dead()))
 				{
 					pVehicle->Get_Component<CTransform>(L"Com_Transform")->Set_Scale(Vec3(1.f));
+					// 사이즈가 복구된다는 것을 전달함(HP Offset 조절 목적)
+					pVehicle->Set_BiggerSize(false);
 
 					for (auto& pCollider : pVehicle->Get_Collider(CCollider::DETECTION_TYPE::BODY))
 						pCollider->Set_Radius(2.f);
@@ -476,7 +479,7 @@ void CGrandprix_Manager::Add_ItemBox(_uint iType)
 		break;
 
 	case CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP:
-		if (false == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP]) // 10초
+		if (false == m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP]) // 10초 -> 20초로 수정
 		{
 			m_bItem[CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP] = true;
 			// 적과 적의 탈 것의 사이즈를 키운다.
@@ -485,6 +488,9 @@ void CGrandprix_Manager::Add_ItemBox(_uint iType)
 				if (nullptr != pVehicle && (false == pVehicle->Is_ReserveDead() && false == pVehicle->Is_Dead()))
 				{
 					pVehicle->Get_Component<CTransform>(L"Com_Transform")->Set_Scale(Vec3(5.f));
+					// 사이즈가 커진상태란 것을 전달함(HP Offset 조절 목적)
+					pVehicle->Set_BiggerSize(true);
+
 					for (auto& pCollider : pVehicle->Get_Collider(CCollider::DETECTION_TYPE::BODY))
 					{
 						pCollider->Set_Radius(5.f);

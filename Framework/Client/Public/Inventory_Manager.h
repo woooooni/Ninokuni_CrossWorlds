@@ -42,6 +42,7 @@ private:
 public:
 	_bool Is_InInventory(ITEM_CODE eType);
 	const vector<class CGameItem*>& Get_Inventory(ITEM_TYPE eType) { return m_Inventory[_uint(eType)]; }
+	_uint Get_InvenCount(ITEM_CODE eCode);
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

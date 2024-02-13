@@ -30,12 +30,18 @@ public:
 
 private:
 	UI_QUICKSLOT_ITEM m_eType = { QUICKITEM_END };
+	ITEM_CODE m_eCode = { ITEM_CODE::CODE_END };
+	class CTexture* m_pItemTextureCom = { nullptr };
+
+	_uint m_iTextureIndex = { 0 };
 
 	_bool m_bHide = { false };
 	_bool m_bHideFinish = { false };
 	_float m_fHideSpeed = { 500.f };
 	_float2 m_vOriginPosition = _float2(0.f, 0.f);
 	_float2 m_vHidePosition = _float2(0.f, 0.f);
+
+	_bool m_bUsable = { false }; // 아이템이 차있으면 true, 아니면 false
 
 private:
 	virtual HRESULT	Ready_Components() override;
@@ -47,6 +53,7 @@ private:
 private:
 	void Key_Input(_float fTimeDelta);
 	void Movement_BasedOnHiding(_float fTimeDelta);
+	void Use_Item();
 
 public:
 	static CUI_QuickSlot_Item* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_QUICKSLOT_ITEM eType);

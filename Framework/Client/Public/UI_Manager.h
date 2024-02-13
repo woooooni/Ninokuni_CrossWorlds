@@ -15,6 +15,7 @@ class CUI_Manager : public CBase
 
 public:
 	enum UI_DIALOG { MAIN_DIALOG, MINI_DIALOG, BATTLE_DIALOG, DIALOG_END };
+	enum UI_BOSS {BOSS_GLANIX, BOSS_STELLIA, BOSS_END};
 
 private:
 	CUI_Manager();
@@ -196,7 +197,7 @@ public: // Lobby
 
 	HRESULT OnOff_MonsterHP(_bool bOnOff, ELEMENTAL_TYPE eType = ELEMENTAL_TYPE::ELEMENTAL_END);
 	HRESULT OnOff_BossHP(_bool bOnOff);
-	void	OnOff_BossNameTag(_bool bOnOff);
+	void	OnOff_BossNameTag(_bool bOnOff, UI_BOSS eBossType);
 
 	HRESULT OnOff_CostumeWindow(_bool bOnOff);
 	HRESULT OnOff_CostumeSlot(_uint iSection, _bool bOnOff);

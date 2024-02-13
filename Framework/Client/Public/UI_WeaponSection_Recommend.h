@@ -17,15 +17,14 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT	Render();
 
-public:
-	void Update_Position(_uint iSlotNum);
-
 private:
 	virtual HRESULT	Ready_Components() override;
 
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
+	void Decide_WeaponElemental();
+	void Update_Position(_uint iSlotNum);
 
 private:
 	_bool m_bUp = { false };

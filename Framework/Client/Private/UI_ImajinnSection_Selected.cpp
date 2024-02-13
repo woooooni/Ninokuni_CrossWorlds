@@ -61,6 +61,15 @@ void CUI_ImajinnSection_Selected::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+		if (nullptr == pPlayer)
+			return;
+		CCharacter* pCharacter = pPlayer->Get_Character();
+		if (nullptr == pCharacter)
+			return;
+
+		Update_Position(pCharacter->Get_CharacterType());
+
 		//Movement_BasedOnHiding(fTimeDelta);
 
 //		if (!m_bResize)

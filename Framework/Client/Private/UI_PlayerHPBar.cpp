@@ -74,14 +74,30 @@ void CUI_PlayerHPBar::Tick(_float fTimeDelta)
 		
 		m_fTimeAcc += fTimeDelta * 0.1f;
 
+		// 현재 체력이 이전에 저장해 둔 체력보다 작으면
 		if (m_fCurHP < m_fPreHP)
 			m_bLerp = false;
+		// 현재 체력이 이전에 저장해 둔 체력보다 크면
+		else if (m_fCurHP > m_fPreHP)
+			m_bLerp = false;
 
-		if (!m_bLerp && m_fPreHP > m_fCurHP)
+		// 현재 체력이 이전에 저장해 둔 체력보다 작으면 -> 체력 감소가 일어났다
+		if (false == m_bLerp && m_fPreHP > m_fCurHP)
 		{
-			m_fPreHP -= fTimeDelta * 500.f;
+			m_fPreHP -= fTimeDelta * (m_fMaxHP / 2.f);
 
 			if (m_fPreHP <= m_fCurHP)
+			{
+				m_fPreHP = m_fCurHP;
+				m_bLerp = true;
+			}
+		}
+		// 현재 체력이 이전에 저장해 둔 체력보다 크면 -> 아이템으로 인해 체력 증가가 일어났다
+		else if (false == m_bLerp && m_fPreHP < m_fCurHP)
+		{
+			m_fPreHP += fTimeDelta * (m_fMaxHP / 2.f);
+
+			if (m_fPreHP >= m_fCurHP)
 			{
 				m_fPreHP = m_fCurHP;
 				m_bLerp = true;

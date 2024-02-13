@@ -227,7 +227,7 @@ HRESULT CGrandprix_Goal::Ready_Colliders()
 	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
 	ZeroMemory(&SphereDesc, sizeof SphereDesc);
 
-	BoundingSphere tSphere;
+	BoundingSphere tSphere; 
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
 	tSphere.Radius = 6.5f;
 	SphereDesc.tSphere = tSphere;
