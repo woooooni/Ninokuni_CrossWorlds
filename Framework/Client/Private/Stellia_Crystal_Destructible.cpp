@@ -133,6 +133,8 @@ void CStellia_Crystal_Destructible::Tick(_float fTimeDelta)
 	{
 		if (m_iSelfType != m_iBingoType)
 		{
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("BombCrystal.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, .75f, true);
+
 			// Set_Dead 하기 전에 폭발 객체 생성 및 스텔리아 페일 카운트 추가
 			GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Stellia_Crystal_Explosion"), this);
 
@@ -141,6 +143,8 @@ void CStellia_Crystal_Destructible::Tick(_float fTimeDelta)
 		}
 		else if (m_iSelfType == m_iBingoType)
 		{
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("DeleteCrystal.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, .75f, true);
+
 			m_pStellia->Set_CrystalBingoCount(1);
 
 			// 스텔리아에게 전달하여 다시 턴 시키기

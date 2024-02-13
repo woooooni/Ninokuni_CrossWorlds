@@ -50,6 +50,7 @@ HRESULT CWitch_Laser::Initialize(void* pArg)
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false); 
 
 	m_fActiveTime = .5f;
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("Witch_Laser_Ready.ogg"), CHANNELID::SOUND_AIRPLANE, 1.f, false);
 
 	return S_OK;
 }
@@ -67,6 +68,7 @@ void CWitch_Laser::Tick(_float fTimeDelta)
 	{
 		if (!m_bIsLaserCreate && m_pLaserWarning->Is_Dead() && m_pLaser == nullptr)
 		{
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Witch_Laser.ogg"), CHANNELID::SOUND_AIRPLANE, 1.f, false);
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
 			// 공격 레이저 생성

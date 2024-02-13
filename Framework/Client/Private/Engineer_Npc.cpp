@@ -40,7 +40,7 @@ HRESULT CEngineer_Npc::Initialize(void* pArg)
 	if (FAILED(__super::Ready_Components(pArg)))
 		return E_FAIL;
 
-	m_pTransformCom->FixRotation(0.f, -40.f, 0.f);
+	m_pTransformCom->FixRotation(0.f, -34.f, 0.f);
 
 	m_pPartModels[PART_TYPE::HEAD] = CCharacter_Manager::GetInstance()->Get_PartModel(CHARACTER_TYPE::ENGINEER, PART_TYPE::HEAD, L"Adventure");
 	m_pPartModels[PART_TYPE::HAIR] = CCharacter_Manager::GetInstance()->Get_PartModel(CHARACTER_TYPE::ENGINEER, PART_TYPE::HAIR, 0);

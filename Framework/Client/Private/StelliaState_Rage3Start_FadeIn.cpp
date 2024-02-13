@@ -27,6 +27,8 @@ HRESULT CStelliaState_Rage3Start_FadeIn::Initialize(const list<wstring>& Animati
 
 void CStelliaState_Rage3Start_FadeIn::Enter_State(void* pArg)
 {
+	__super::Set_LockOffStellia();
+
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pStellia->Get_Rage3StartPos());
 	m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_OriginPos());
 	m_pStellia->Get_Component<CPhysX_Controller>(TEXT("Com_Controller"))->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
@@ -37,7 +39,7 @@ void CStelliaState_Rage3Start_FadeIn::Enter_State(void* pArg)
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Stand"));
 
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
-		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
 }
 
 void CStelliaState_Rage3Start_FadeIn::Tick_State(_float fTimeDelta)

@@ -11,6 +11,7 @@
 #include "Kuu.h"
 
 #include "UI_Manager.h"
+#include "Quest_Manager.h"
 
 #include "Utils.h"
 
@@ -1691,6 +1692,14 @@ void CCamera_Action::Tick_TowerDefense(_float fTimeDelta)
 			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+
+			// 여기서 대사 치기
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
+			CUI_Manager::GetInstance()->Set_MiniDialogue(TEXT("쿠우"), TEXT("녀석들이 온다! 모두 처치하자!"));
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Invasion_03_00.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.f, true);
+
+			CQuest_Manager::GetInstance()->Set_IsDefenceTalk(true); 
+
 			return;
 		}
 		else

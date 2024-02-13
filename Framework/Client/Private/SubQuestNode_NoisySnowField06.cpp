@@ -85,6 +85,13 @@ void CSubQuestNode_NoisySnowField06::Start()
 	CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
 
 	TalkEvent();
+
+	// 만약 애니메이션 스탑되어있다면 풀어준다.
+	m_pDestroyer->Get_Component_Model()->Set_CanChangeAnimation(true);
+	if (m_pDestroyer->Get_Component_Model()->Is_Stop())
+	{
+		m_pDestroyer->Get_Component_Model()->Set_Stop_Animation(false);
+	}
 }
 
 CBTNode::NODE_STATE CSubQuestNode_NoisySnowField06::Tick(const _float& fTimeDelta)

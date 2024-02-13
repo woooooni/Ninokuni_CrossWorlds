@@ -34,6 +34,10 @@ public:
 	void			Set_Target(CGameObject* pTarget) { m_pTarget = pTarget; }
 	CGameObject*	Get_Target() { return m_pTarget; }
 
+	// 타워디펜스 대사 관련.(현재로서는 여기서 처리하는게 가장 간단하게 먹힘)
+	void   Set_IsDefenceTalk(_bool IsTalk) { m_bIsDefenceTalk = IsTalk; }
+	_bool  Get_IsDefenceTalk() { return m_bIsDefenceTalk; }
+
 	// 퀘스트 완료 스택.
 	_int	Get_QuestClearStack() { return m_iQuestClearStack; }
 	void    Set_QuestClearStack(_int iStack) { m_iQuestClearStack += iStack; }
@@ -73,6 +77,9 @@ private:
 	QUESTEVENT_TYPE m_eCurQuestType = QUESTEVENT_END;
 	_int		m_iMonsterKillCount = 0;
 	_bool		m_bIsBossKill = false;
+
+	// 타워디펜스 대사 관련.(현재로서는 여기서 처리하는게 가장 간단하게 먹힘)
+	_bool		m_bIsDefenceTalk = false;
 
 private:
 	Vec4 m_vOriginSkyCenterColor;

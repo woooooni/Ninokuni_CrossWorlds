@@ -38,6 +38,9 @@ protected:
 
 	void Generate_Explosion(_uint iCount);
 
+	void Set_LockOnStellia();
+	void Set_LockOffStellia();
+
 protected:
 	CCharacter* m_pPlayer = nullptr; // 후에 플레이어로 교체.
 	CTransform* m_pPlayerTransform = nullptr;

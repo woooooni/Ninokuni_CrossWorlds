@@ -28,7 +28,6 @@ HRESULT CMainQuestNode_SnowField02_2::Initialize()
 	m_strNextQuestName = TEXT("ÁÖµÐÁöÀÇ ÁöÈÖ°ü Ã£±â");
 	m_strNextQuestContent = TEXT("ÁÖµÐÁö¿¡¼­ ÁöÈÖ°ü Ã£¾Æº¸ÀÚ");
 
-
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/03.MainQuest_SnowField/MainQuest_SnowField02_2.json");
 
 	for (const auto& talkDesc : Load) {
@@ -37,6 +36,8 @@ HRESULT CMainQuestNode_SnowField02_2::Initialize()
 		sTalkDesc.strTalk = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Talk"]));
 		m_vecTalkDesc.push_back(sTalkDesc);
 	}
+
+	m_fTalkChangeTime = 5.f;
 
 	return S_OK;
 }
@@ -77,7 +78,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField02_2::Tick(const _float& fTimeDelta)
 	{
 		m_fTime += fTimeDelta;
 
-		if (m_fTime >= 4.f)
+		if (m_fTime >= m_fTalkChangeTime)
 		{
 			Safe_Delete_Array(m_szpOwner);
 			Safe_Delete_Array(m_szpTalk);

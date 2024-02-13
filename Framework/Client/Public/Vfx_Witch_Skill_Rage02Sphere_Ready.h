@@ -14,6 +14,7 @@ private:
 	enum TYPE {
 		TYPE_E_SPHERE,
 		TYPE_P_SMALL,
+		TYPE_D_WARNING,
 		TYPE_END
 	};
 
@@ -35,6 +36,7 @@ protected:
 private:
 	class CEffect* m_pSphere = nullptr;
 	class CParticle* m_pParticle = nullptr;
+	class CDecal* m_pWarningDecal = nullptr;
 
 	_bool m_bIsCreate = false;
 	_bool m_bIsCreateParticle = false;

@@ -118,8 +118,8 @@ HRESULT CGlanix::Initialize(void* pArg)
 
 	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 	{
-		if (FAILED(CUI_Manager::GetInstance()->Ready_BossHPBar(this)))
-			return E_FAIL;
+if (FAILED(CUI_Manager::GetInstance()->Ready_BossHPBar(this)))
+return E_FAIL;
 	}
 
 	m_iObjectType = OBJ_TYPE::OBJ_BOSS;
@@ -147,10 +147,10 @@ void CGlanix::Tick(_float fTimeDelta)
 	if (KEY_TAP(KEY::X))
 		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
 
-//#ifdef _DEBUG
-//	if (KEY_TAP(KEY::C))
-//		m_pStateCom->Change_State(GLANIX_RAGE2START);
-//#endif // DEBUG
+	//#ifdef _DEBUG
+	//	if (KEY_TAP(KEY::C))
+	//		m_pStateCom->Change_State(GLANIX_RAGE2START);
+	//#endif // DEBUG
 
 	m_pStateCom->Tick_State(fTimeDelta);
 
@@ -166,7 +166,7 @@ void CGlanix::Tick(_float fTimeDelta)
 void CGlanix::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
-	
+
 	//if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel())
 	//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE, true);
 }
@@ -214,16 +214,18 @@ void CGlanix::Collision_Enter(const COLLISION_INFO& tInfo)
 	/* Counter */
 	if (m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_COUNTER])
 	{
-		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
-			tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK &&
-			tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::STUN)
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || OBJ_CHARACTER_PROJECTILE)
 		{
-			if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+			if (tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK &&
+				tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::STUN)
 			{
-				On_Damaged(tInfo);
-				CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-				m_pStateCom->Change_State(GLANIX_COUNTERSTART);
-				m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_COUNTER] = false;
+				if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+				{
+					On_Damaged(tInfo);
+					CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+					m_pStateCom->Change_State(GLANIX_COUNTERSTART);
+					m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_COUNTER] = false;
+				}
 			}
 		}
 	}

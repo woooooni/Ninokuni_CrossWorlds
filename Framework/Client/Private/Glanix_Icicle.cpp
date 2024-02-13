@@ -53,6 +53,7 @@ HRESULT CGlanix_Icicle::Initialize(void* pArg)
 
 	// Effect Create
 	GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Icicle_Back"), m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), this);
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("IceNiddle.ogg"), CHANNELID::SOUND_AIRPLANE, .6f, false);
 
 	return S_OK;
 }
@@ -151,6 +152,7 @@ void CGlanix_Icicle::Collision_Enter(const COLLISION_INFO& tInfo)
 		_matrix World = m_pTransformCom->Get_WorldMatrix();
 		World.r[CTransform::STATE_POSITION] = XMVectorSetY(World.r[CTransform::STATE_POSITION], XMVectorGetY(World.r[CTransform::STATE_POSITION]) - 0.5f);
 		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_Icicle"), World, this);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("IceNiddleBreak.ogg"), CHANNELID::SOUND_AIRPLANE, .6f, false);
 
 		Set_Dead(true);
 	}
@@ -179,6 +181,7 @@ void CGlanix_Icicle::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 	{
 		// Effect Create
 		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_Icicle"), m_pTransformCom->Get_WorldMatrix(), this);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("IceNiddleBreak.ogg"), CHANNELID::SOUND_AIRPLANE, .6f, false);
 
 		m_pRigidBodyCom->Set_Ground(true);
 		m_pRigidBodyCom->Set_Use_Gravity(false);

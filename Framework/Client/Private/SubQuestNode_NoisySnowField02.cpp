@@ -162,8 +162,6 @@ void CSubQuestNode_NoisySnowField02::TalkEvent()
 		break;
 	case 5:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("NoisyField_02_05.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pBella->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pBella->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_AquarisBella.ao|AquarisBella_talk"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;
@@ -182,8 +180,6 @@ void CSubQuestNode_NoisySnowField02::TalkEvent()
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;
 	case 8:
-		m_pBella->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pBella->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_AquarisBella.ao|AquarisBella_Talk1"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER_FROM_BACK_NPC);
 		break;

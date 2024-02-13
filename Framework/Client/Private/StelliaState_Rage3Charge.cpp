@@ -102,7 +102,7 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		// ÆÄÈÑ ¼º°ø
 		if (m_iClickPower >= m_iClickDest)
 		{
-			if (m_iBreakCount < 2)
+			if (m_iBreakCount < 1)
 			{
 				m_iBreakCount += 1;
 				m_pStellia->Set_IsPlayerGuardEvent(false);

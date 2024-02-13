@@ -175,7 +175,7 @@ void CSubQuestNode_Windmill06::TalkEvent()
 	case 7:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_06_07.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pGeekGirl->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pGeekGirl->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Engineer_SoulDiver.ao|Engineer_NeutralIdle02"));
+		m_pGeekGirl->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Engineer_SoulDiver.ao|Engineer_ControlViewPoint02"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;

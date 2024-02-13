@@ -31,7 +31,6 @@ HRESULT CMainQuestNode_Glanix08::Initialize()
 	m_strNextQuestName = TEXT("루슬란에게 보고하기");
 	m_strNextQuestContent = TEXT("루슬란과 대화하기");
 
-
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/04.MainQuest_Glanix/MainQuest_Glanix08.json");
 
 	for (const auto& talkDesc : Load) {
@@ -40,6 +39,8 @@ HRESULT CMainQuestNode_Glanix08::Initialize()
 		sTalkDesc.strTalk = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Talk"]));
 		m_vecTalkDesc.push_back(sTalkDesc);
 	}
+
+	m_fTalkChangeTime = 3.f;
 
 	return S_OK;
 }
@@ -56,13 +57,13 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix08::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CurrentState() == CCharacter::STATE::NEUTRAL_DOOR_ENTER)
-		return NODE_STATE::NODE_RUNNING;
-
 	if (GI->Get_CurrentLevel() == LEVELID::LEVEL_EVERMORE)
 	{
 		if (!m_bIsStart)
 		{
+			if (!Is_Finish_LevelEnterCameraAction())
+				return NODE_STATE::NODE_RUNNING;
+
 			m_bIsStart = true;
 
 			/* 대화 */
@@ -75,6 +76,32 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix08::Tick(const _float& fTimeDelta)
 			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 			TalkEvent();
+		}
+		
+		m_fTime += fTimeDelta;
+
+		if (m_fTime >= m_fTalkChangeTime)
+		{
+			Safe_Delete_Array(m_szpOwner);
+			Safe_Delete_Array(m_szpTalk);
+
+			m_iTalkIndex += 1;
+
+			if (m_iTalkIndex < m_vecTalkDesc.size())
+			{
+				GI->Stop_Sound(CHANNELID::SOUND_UI);
+				GI->Play_Sound(TEXT("UI_Fx_Comm_Dialog_Text_1.mp3"), CHANNELID::SOUND_UI,
+					GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+			}
+
+			m_fTime = m_fTalkChangeTime - m_fTime;
 		}
 	}
 
@@ -92,33 +119,6 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix08::Tick(const _float& fTimeDelta)
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;
 	}
-	else
-	{
-		m_fTime += fTimeDelta;
-
-		if (m_fTime >= 3.f)
-		{
-			Safe_Delete_Array(m_szpOwner);
-			Safe_Delete_Array(m_szpTalk);
-
-			m_iTalkIndex += 1;
-			GI->Stop_Sound(CHANNELID::SOUND_UI);
-			GI->Play_Sound(TEXT("UI_Fx_Comm_Dialog_Text_1.mp3"), CHANNELID::SOUND_UI,
-				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
-
-			if (m_iTalkIndex < m_vecTalkDesc.size())
-			{
-				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
-
-				TalkEvent();
-			}
-
-			m_fTime = m_fTalkChangeTime - m_fTime;
-		}
-	}
 
 	return NODE_STATE::NODE_RUNNING;
 }
@@ -133,13 +133,9 @@ void CMainQuestNode_Glanix08::TalkEvent()
 	{
 	case 0:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("00_KuuSay_Suprise.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
 		break;
 	case 1:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_08_03_08_01_KuuSay_LetsGo!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
 		break;
 	}
 }
