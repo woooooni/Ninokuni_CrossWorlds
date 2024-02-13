@@ -574,6 +574,7 @@ void CUIMinigame_Manager::End_Grandprix()
 	CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(pCharacter);
 	CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(pCharacter);
 	dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW))->Finish_LockOn(pCharacter);
+	dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW))->Reset_MinMaxLimitY();
 
 	Vec3 vScale = pCharacterTransform->Get_Scale();
 	pCharacterTransform->Set_Right(XMVectorSet(1.f, 0.f, 0.f, 0.f));
