@@ -305,7 +305,7 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID, const _uin
 
 			/* Sound */
 			{
-
+				GI->Play_Sound(TEXT("Invasion_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
 			}
 		}
 		else if (2 == iType)
