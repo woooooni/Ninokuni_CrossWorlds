@@ -897,6 +897,13 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 		break;
 	case CCamera_Action::tagActionTalkDesc::KUU_AND_PLAYER:
 	{
+		/* 대화 시작 처음 쿠우 포지션 세팅 */
+		if (!m_tActionTalkDesc.bSet)
+		{
+			m_tActionTalkDesc.pKuu->Set_GoalPosition();
+			m_tActionTalkDesc.bSet = true;
+		}
+
 
 		if (m_tActionTalkDesc.bFinalBoss)
 		{

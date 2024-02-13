@@ -169,7 +169,8 @@ Vec4 CKuu::Get_GoalPosition()
 
 void CKuu::Set_GoalPosition()
 {
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Get_GoalPosition());
+	m_vCurPos = Get_GoalPosition();
+	m_pTransformCom->Set_Position(m_vCurPos);
 }
 
 
