@@ -170,6 +170,9 @@ void CStellia::Tick(_float fTimeDelta)
 	m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 	m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
 
+	// 보스가 살아있는 동안은 미니맵을 끈다.
+	CUI_Manager::GetInstance()->OnOff_MiniMap(false);
+
 	/* 최초 등장 대기 시간 */
 	//if (!m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_INTRO])
 	//{

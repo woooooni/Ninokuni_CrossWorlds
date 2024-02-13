@@ -24,7 +24,11 @@ HRESULT CMainQuestNode_FinalBattle02::Initialize()
 
 void CMainQuestNode_FinalBattle02::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestName;
+	QuestDesc.strContents = m_strQuestContent;
+	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
 
 	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, _uint(LAYER_NPC), TEXT("Prorotype_GameObject_DreamMazeWitch_Npc"), nullptr, &m_pWitch)))
 	{

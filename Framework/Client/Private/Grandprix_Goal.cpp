@@ -185,9 +185,6 @@ void CGrandprix_Goal::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
-		// 여기서 다시 퀘스트로 돌아간다.
-		
-		
 		// UI 복구, 남은 관련 클래스 Set Dead
 		CUIMinigame_Manager::GetInstance()->End_Grandprix();
 		Set_Dead(true);

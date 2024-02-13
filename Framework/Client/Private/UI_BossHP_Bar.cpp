@@ -83,7 +83,7 @@ void CUI_BossHP_Bar::Tick(_float fTimeDelta)
 
 		if (!m_bLerp && m_fPreHP > m_fCurHP)
 		{
-			m_fPreHP -= fTimeDelta * (m_fMaxHP / 9.f);
+			m_fPreHP -= fTimeDelta * (m_fMaxHP / 6.f);
 		
 			if (m_fPreHP <= m_fCurHP)
 			{

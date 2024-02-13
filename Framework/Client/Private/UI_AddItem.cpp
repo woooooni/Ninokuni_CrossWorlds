@@ -111,6 +111,11 @@ HRESULT CUI_AddItem::Initialize(void* pArg)
 		m_iTextureIndex = 5;
 		break;
 
+	case ITEM_CODE::CONSUMPSION_HP:
+		m_strText = TEXT("HP Æ÷¼Ç X ") + to_wstring(m_tItemDesc.iCount);
+		m_iTextureIndex = 6;
+		break;
+
 	default:
 		return E_FAIL;
 		break;

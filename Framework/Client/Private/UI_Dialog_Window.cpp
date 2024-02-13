@@ -183,10 +183,20 @@ void CUI_Dialog_Window::Tick_Text(_float fTimeDelta)
 void CUI_Dialog_Window::Add_Text()
 {
 	// Name
+	_int iOffset = 0;
+
 	CRenderer::TEXT_DESC NameDesc = {};
 	_int iLength = wcslen(m_szName) - 1;
 	_int iSpaceCount = CUI_Manager::GetInstance()->Count_WordSpacing(m_szName);
-	_int iOffset = (iLength - iSpaceCount) * 10 + (iSpaceCount * 6); // 글자 수 오프셋 + 띄어쓰기 오프셋
+	_int iMarkCount = CUI_Manager::GetInstance()->Exclude_PunctuationMarks(m_szName);
+	if (3 == iMarkCount)
+	{
+		iOffset = iMarkCount * 3.f;
+	}
+	else
+	{
+		iOffset = ((iLength - iSpaceCount) * 10) + (iSpaceCount * 6); // 글자 수 오프셋 + 띄어쓰기 오프셋
+	}
 
 	NameDesc.strText = m_szName;
 	NameDesc.strFontTag = L"Default_Bold";
@@ -198,8 +208,13 @@ void CUI_Dialog_Window::Add_Text()
 
 	//Contents
 	_int iTotalLength = m_iTextCount + 4;
-	_int iMaxLength = 44; // 46 -> 44
+	_int iMaxLength = 47;
 	_uint iDestIndex = 0;
+
+	_int iWords = 0; // Enter하는 곳을 판별하기 위한 수단
+	_int iMarks = 0;
+	_int iTemp = 0;
+	_bool bIsMark = false;
 
 	TCHAR sTempText[MAX_PATH];
 	ZeroMemory(sTempText, sizeof(TCHAR) * MAX_PATH);
@@ -212,11 +227,21 @@ void CUI_Dialog_Window::Add_Text()
 		}
 
 		sTempText[iDestIndex++] = m_szInfoText[i];
-//		GI->Stop_Sound(CHANNELID::SOUND_UI2);
-//		GI->Play_Sound(TEXT("UI_Fx_Comm_Dialog_Text_1.mp3"), CHANNELID::SOUND_UI2,
-//			GI->Get_ChannelVolume(CHANNELID::SOUND_UI2));
 
-		if ((i + 1) % iMaxLength == 0)
+		wstring strTemp(&m_szInfoText[i]);
+		bIsMark = CUI_Manager::GetInstance()->Is_PunctuationMarks(strTemp);
+		if (false == bIsMark) // 
+			iWords++;
+		else
+			iTemp++;
+
+		if (iTemp == 2) // 부호 2개당 글자 1개로 친다
+		{
+			iTemp = 0;
+			iMarks++;
+		}
+
+		if ((iWords + iMarks + 1) % iMaxLength == 0) 		//if ((i + 1) % iMaxLength == 0)
 		{
 			sTempText[iDestIndex++] = '\n';
 		}

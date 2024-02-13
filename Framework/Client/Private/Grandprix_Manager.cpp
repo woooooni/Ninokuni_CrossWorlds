@@ -43,11 +43,6 @@ HRESULT CGrandprix_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceC
 
 void CGrandprix_Manager::Tick(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::P))
-	{
-		Add_ItemBox(CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SIZEUP);
-	}
-
 	// 그랑프리가 정상적으로 끝났는지 확인한다.
 	if (false == m_bReset && true == m_bGrandPrixEnd)
 	{
@@ -457,7 +452,7 @@ void CGrandprix_Manager::End_Grandprix()
 	m_bGrandPrixEnd = true;
 	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(true, 16.f, 0.1f);
 	GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 3.f, 0.2f, true);
-	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 0.2f, true);
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 0.1f, true);
 }
 
 void CGrandprix_Manager::Add_ItemBox(_uint iType)

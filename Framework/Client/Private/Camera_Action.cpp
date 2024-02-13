@@ -1365,6 +1365,7 @@ HRESULT CCamera_Action::Start_Action_TowerDefense()
 	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
 
 	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+	CUI_Manager::GetInstance()->Hide_WorldHPBar(true);
 
 	CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_BuffTower_ThroneBattle_Active_1_St.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
 
@@ -1708,7 +1709,7 @@ void CCamera_Action::Tick_TowerDefense(_float fTimeDelta)
 			CSound_Manager::GetInstance()->Play_Sound(TEXT("Invasion_03_00.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.f, true);
 
 			CQuest_Manager::GetInstance()->Set_IsDefenceTalk(true); 
-
+			CUI_Manager::GetInstance()->Hide_WorldHPBar(false);
 			return;
 		}
 		else

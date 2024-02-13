@@ -7,6 +7,7 @@
 #include "Game_Manager.h"
 #include "UI_Manager.h"
 #include "Quest_Manager.h"
+#include "UI_PopupQuest.h"
 
 CMainQuestNode_Ending01::CMainQuestNode_Ending01()
 {
@@ -27,7 +28,11 @@ void CMainQuestNode_Ending01::Start()
 {
 	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::GetInstance()->QUESTEVENT_ENDING);
 
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestName;
+	QuestDesc.strContents = m_strQuestContent;
+	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
 
 	TalkEvent();
 }

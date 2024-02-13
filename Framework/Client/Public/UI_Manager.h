@@ -15,7 +15,8 @@ class CUI_Manager : public CBase
 
 public:
 	enum UI_DIALOG { MAIN_DIALOG, MINI_DIALOG, BATTLE_DIALOG, DIALOG_END };
-	enum UI_BOSS {BOSS_GLANIX, BOSS_STELLIA, BOSS_END};
+	enum UI_BOSS { BOSS_GLANIX, BOSS_STELLIA, BOSS_END };
+	enum UI_PORTRAIT { KUU, WITCH, PORTRAIT_END };
 
 private:
 	CUI_Manager();
@@ -45,6 +46,7 @@ public: // Get/Set
 	_float			Calculate_Distance_FromPlayer(_float4 vPosition);
 
 	void			Set_MainDialogue(_tchar* pszName, _tchar* pszText);
+	void			Set_MiniDialoguePortrait(UI_PORTRAIT eType);
 	void			Set_MiniDialogue(wstring strName, wstring strContents);
 	void			Set_BattleDialogue(wstring strContents);
 
@@ -76,6 +78,7 @@ public: // Get/Set
 	_int			Count_WordSpacing(const wstring& strText);
 	_int			Count_OnlyWords(const wstring& strText);
 	_int			Exclude_PunctuationMarks(const wstring& strText);
+	_bool			Is_PunctuationMarks(const wstring& strText);
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -142,7 +145,6 @@ public:
 	void	Update_SettingButton(_uint iGroupType);
 	void	Update_SettingGraphicRadio(_uint iGroupType, _uint iBtnType);
 	void	Reset_SettingCamera();
-	void	Update_PlayerSlot(CHARACTER_TYPE eType);
 
 	void	Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag);
 	void	Update_CostumeWeaponModel(const CHARACTER_TYPE& eCharacterType, const wstring& strPartTag);
@@ -151,6 +153,8 @@ public:
 
 	void	Set_MouseCursor(_uint iIndex);
 	void	Hide_MouseCursor(_bool bHide);
+	void	Hide_WorldHPBar(_bool bHide) { m_bHideHP = bHide; }
+	_bool	Is_WorldHP_Hide() { return m_bHideHP; }
 
 public:
 	HRESULT		Using_CloseButton();
@@ -215,6 +219,8 @@ public: // Lobby
 
 	void OnOff_TextUI(_bool bOnOff);
 
+	void Set_QuestRewards(void* pArg);
+	void Update_QuestItemPosition(_int iTotal);
 	void OnOff_QuestRewards(_bool bOnOff, const wstring& strTitle = TEXT(""));
 	void Set_AlphaToItems();
 	void Show_RewardItems();
@@ -378,6 +384,8 @@ private:
 	vector <class CUI_InGame_Setting_Slot*> m_CameraSlot;
 
 	list<class CUI_AddItem*>		m_ItemPopup;
+
+	_bool			m_bHideHP = { false }; // 몬스터 HP바를 숨길 것인가
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };

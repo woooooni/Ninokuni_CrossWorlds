@@ -109,7 +109,8 @@ void CUI_MonsterHP_Bar::Tick(_float fTimeDelta)
 
 		if (!m_bLerp && m_fPreHP > m_fCurHP)
 		{
-			m_fPreHP -= fTimeDelta * 5000.f;
+
+			m_fPreHP -= fTimeDelta * ((m_pTarget->Get_Stat().fMaxHp) / 2.f);
 		
 			if (m_fPreHP <= m_fCurHP)
 			{

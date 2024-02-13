@@ -2,6 +2,8 @@
 
 #include "UI.h"
 
+// 중앙 상단에 위치하는 가로형의 Damage Bar
+
 BEGIN(Client)
 class CUI_Stellia_DamageBar final : public CUI
 {

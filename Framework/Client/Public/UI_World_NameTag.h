@@ -53,6 +53,7 @@ private:
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
+	void Update_OffsetY();
 
 public:
 	static CUI_World_NameTag* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_NAMETAG eType);

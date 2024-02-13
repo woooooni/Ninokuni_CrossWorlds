@@ -206,6 +206,7 @@ HRESULT CUI_Dialog_Portrait::Ready_Components()
 			return E_FAIL;
 
 		m_iTextureIndex = 0;//Äí¿ì
+		//m_iTextureIndex = 1;//¸¶³à
 		break;
 	}
 

@@ -55,7 +55,7 @@ HRESULT CInventory_Manager::Ready_Items()
 	// 포션 5개를 기본으로 세팅한다.
 	for (_int i = 0; i < 5; i++)
 	{
-		Add_Item(ITEM_TYPE::CONSUMPSION, ITEM_CODE::CONSUMPSION_HP);
+		Prepare_Item(ITEM_TYPE::CONSUMPSION, ITEM_CODE::CONSUMPSION_HP);
 	}
 
 	return S_OK;
@@ -67,6 +67,34 @@ void CInventory_Manager::Tick(_float fTimeDelta)
 
 void CInventory_Manager::LateTick(_float fTimeDelta)
 {
+}
+
+HRESULT CInventory_Manager::Prepare_Item(ITEM_TYPE eType, ITEM_CODE eCode)
+{
+	switch (eType)
+	{
+	case ITEM_TYPE::ARMOR:
+		break;
+
+	case ITEM_TYPE::EQUIPMENT:
+		break;
+
+	case ITEM_TYPE::CONSUMPSION:
+		for (auto& iter : m_Inventory[ITEM_TYPE::CONSUMPSION])
+		{
+			if (nullptr != iter)
+			{
+				if (eCode == iter->Get_ItemCode())
+				{
+					iter->Add_InvenCount();
+				}
+			}
+		}
+
+		break;
+	}
+
+	return S_OK;
 }
 
 HRESULT CInventory_Manager::Add_Item(ITEM_TYPE eType, ITEM_CODE eCode)
@@ -87,6 +115,8 @@ HRESULT CInventory_Manager::Add_Item(ITEM_TYPE eType, ITEM_CODE eCode)
 				if (eCode == iter->Get_ItemCode())
 				{
 					iter->Add_InvenCount();
+
+					CUI_Manager::GetInstance()->Show_AddItem(ITEM_TYPE::CONSUMPSION, eCode, 1);
 				}
 			}
 		}

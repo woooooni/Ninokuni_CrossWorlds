@@ -110,33 +110,36 @@ void CUI_QuickSlot_Item::LateTick(_float fTimeDelta)
 
 		if (true == m_bUsable)
 		{
-			_uint iCount = CInventory_Manager::GetInstance()->Get_InvenCount(ITEM_CODE::CONSUMPSION_HP);
-
-			// 1보다 큰 경우에만 Text로 개수를 보여준다.
-			if (1 < iCount)
+			if (true == CUI_Manager::GetInstance()->Is_FadeFinished())
 			{
-				_float2 vDefault = _float2(m_tInfo.fX - 5.5f, m_tInfo.fY + 2.f);
-				_float fOffset = (to_wstring(iCount).length() - 1) * 4.f;
+				_uint iCount = CInventory_Manager::GetInstance()->Get_InvenCount(ITEM_CODE::CONSUMPSION_HP);
 
-				CRenderer::TEXT_DESC  CountDesc;
-				CountDesc.strText = to_wstring(iCount);
-				CountDesc.strFontTag = L"Default_Bold";
-				CountDesc.vScale = { 0.3f, 0.3f };
-				// Outline
-				CountDesc.vColor = { 0.3f, 0.3f, 0.3f, 1.f };
-				CountDesc.vPosition = _float2(vDefault.x - fOffset + 1.f, vDefault.y);
-				m_pRendererCom->Add_Text(CountDesc);
-				CountDesc.vPosition = _float2(vDefault.x - fOffset - 1.f, vDefault.y);
-				m_pRendererCom->Add_Text(CountDesc);
-				CountDesc.vPosition = _float2(vDefault.x - fOffset, vDefault.y + 1.f);
-				m_pRendererCom->Add_Text(CountDesc);
-				CountDesc.vPosition = _float2(vDefault.x - fOffset, vDefault.y - 1.f);
-				m_pRendererCom->Add_Text(CountDesc);
+				// 1보다 큰 경우에만 Text로 개수를 보여준다.
+				if (1 < iCount)
+				{
+					_float2 vDefault = _float2(m_tInfo.fX - 5.5f, m_tInfo.fY + 2.f);
+					_float fOffset = (to_wstring(iCount).length() - 1) * 4.f;
 
-				// Text
-				CountDesc.vPosition = _float2(vDefault.x - fOffset, vDefault.y);
-				CountDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-				m_pRendererCom->Add_Text(CountDesc);
+					CRenderer::TEXT_DESC  CountDesc;
+					CountDesc.strText = to_wstring(iCount);
+					CountDesc.strFontTag = L"Default_Bold";
+					CountDesc.vScale = { 0.3f, 0.3f };
+					// Outline
+					CountDesc.vColor = { 0.3f, 0.3f, 0.3f, 1.f };
+					CountDesc.vPosition = _float2(vDefault.x - fOffset + 1.f, vDefault.y);
+					m_pRendererCom->Add_Text(CountDesc);
+					CountDesc.vPosition = _float2(vDefault.x - fOffset - 1.f, vDefault.y);
+					m_pRendererCom->Add_Text(CountDesc);
+					CountDesc.vPosition = _float2(vDefault.x - fOffset, vDefault.y + 1.f);
+					m_pRendererCom->Add_Text(CountDesc);
+					CountDesc.vPosition = _float2(vDefault.x - fOffset, vDefault.y - 1.f);
+					m_pRendererCom->Add_Text(CountDesc);
+
+					// Text
+					CountDesc.vPosition = _float2(vDefault.x - fOffset, vDefault.y);
+					CountDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+					m_pRendererCom->Add_Text(CountDesc);
+				}
 			}
 		}
 

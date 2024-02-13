@@ -17,12 +17,18 @@ void CUI_Vignette_Ice::Set_Active(_bool bActive)
 {
 	if (true == bActive)
 	{
+		m_bAlpha = false;
+		m_fAlpha = 1.f;
+
 		m_iTextureIndex = 0;
 		m_fTimeAcc = 0.f;
 		m_bIsFinished = false;
+		m_bActive = bActive;
 	}
-
-	m_bActive = bActive;
+	else
+	{
+		m_bAlpha = true;
+	}
 }
 
 HRESULT CUI_Vignette_Ice::Initialize_Prototype()
@@ -52,7 +58,7 @@ HRESULT CUI_Vignette_Ice::Initialize(void* pArg)
 
 void CUI_Vignette_Ice::Tick(_float fTimeDelta)
 {
-	if (m_bActive)
+	if (true == m_bActive)
 	{
 		if (4 > m_iTextureIndex)
 		{
@@ -65,6 +71,19 @@ void CUI_Vignette_Ice::Tick(_float fTimeDelta)
 					m_iTextureIndex++;
 			}
 		}
+
+		if (true == m_bAlpha)
+		{
+			//Ice Vignette를 끄고자 할 때 m_bAlpha가 true로 세팅된다.
+
+			m_fAlpha -= fTimeDelta;
+			if (0.f >= m_fAlpha)
+			{
+				m_fAlpha = 0.f;
+				m_bActive = false;
+			}
+		}
+
 		__super::Tick(fTimeDelta);
 	}
 }

@@ -51,6 +51,7 @@ public:
 	void LateTick(_float fTimeDelta);
 
 public:
+	HRESULT Prepare_Item(ITEM_TYPE eType, ITEM_CODE eCode);
 	HRESULT Add_Item(ITEM_TYPE eType, ITEM_CODE eCode);
 	void	Add_Gold(_uint iGold);
 

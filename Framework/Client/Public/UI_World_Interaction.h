@@ -42,6 +42,8 @@ private:
 	_float2 m_vOriginSize = _float2(0.f, 0.f);
 	_float2 m_vMinSize = _float2(0.f, 0.f);
 
+	_float m_fSpeed = { 30.f };
+
 private:
 	virtual HRESULT	Ready_Components() override;
 

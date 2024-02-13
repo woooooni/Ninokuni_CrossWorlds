@@ -9,6 +9,7 @@
 #include "Camera_Manager.h"
 #include "Game_Manager.h"
 #include "Player.h"
+#include "Quest_Manager.h"
 
 CUI_World_NPCSpeechBalloon::CUI_World_NPCSpeechBalloon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_World_NPCSpeechBalloon")
@@ -92,6 +93,9 @@ void CUI_World_NPCSpeechBalloon::Tick(_float fTimeDelta)
 		if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
 			return;
 
+		if (CQuest_Manager::QUESTEVENT_TYPE::QUESTEVENT_ENDING == CQuest_Manager::GetInstance()->Get_CurQuestEvent())
+			return;
+
 		m_fActiveTimeAcc += fTimeDelta;
 
 		if (5.f < m_fActiveTimeAcc)
@@ -147,6 +151,9 @@ void CUI_World_NPCSpeechBalloon::LateTick(_float fTimeDelta)
 				return;
 
 			if (CAMERA_TYPE::CUTSCENE_MAP == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+				return;
+
+			if (CQuest_Manager::QUESTEVENT_TYPE::QUESTEVENT_ENDING == CQuest_Manager::GetInstance()->Get_CurQuestEvent())
 				return;
 
 			_float4 vCamPos = GI->Get_CamPosition();

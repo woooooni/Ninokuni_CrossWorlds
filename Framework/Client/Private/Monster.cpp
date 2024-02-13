@@ -125,7 +125,18 @@ void CMonster::Tick(_float fTimeDelta)
 				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Monster_Dissolve"), m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pDissolveObject);
 				
 				if (!(TEXT("Glanix") == Get_ObjectTag() || TEXT("Stellia") == Get_ObjectTag() || TEXT("DreamerMazeWitch") == Get_ObjectTag()))
-					CInventory_Manager::GetInstance()->Add_Gold(GI->RandomInt(15, 40));
+				{
+					_int iRandom = GI->RandomInt(0, 9);
+					
+					if (0 == iRandom)
+					{
+						CInventory_Manager::GetInstance()->Add_Item(ITEM_TYPE::CONSUMPSION, ITEM_CODE::CONSUMPSION_HP);
+					}
+					else
+					{
+						CInventory_Manager::GetInstance()->Add_Gold(GI->RandomInt(15, 40));
+					}
+				}
 			}
 			else if (m_fDissolveWeight >= m_fDissolveTotal)
 			{

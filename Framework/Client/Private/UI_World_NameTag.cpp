@@ -119,6 +119,8 @@ void CUI_World_NameTag::Tick(_float fTimeDelta)
 				_float4 Temp;
 				XMStoreFloat4(&Temp, pTransform->Get_Position());
 				m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
+
+				Update_OffsetY();
 			}
 			else if (UI_NAMETAG::NAMETAG_LOBBY == m_eType)
 			{
@@ -413,6 +415,48 @@ HRESULT CUI_World_NameTag::Bind_ShaderResources()
 	}
 
 	return S_OK;
+}
+
+void CUI_World_NameTag::Update_OffsetY()
+{
+	_uint iState = m_pOwner->Get_Component_StateMachine()->Get_CurrState();
+
+	if (iState == CCharacter::STATE::VEHICLE_RUNSTART ||
+		iState == CCharacter::STATE::VEHICLE_STAND ||
+		iState == CCharacter::STATE::VEHICLE_RUN)
+	{
+		switch (m_pOwner->Get_CharacterType())
+		{
+		case CHARACTER_TYPE::SWORD_MAN:
+			m_fOffsetY = 2.4f;
+			break;
+
+		case CHARACTER_TYPE::DESTROYER:
+			m_fOffsetY = 2.5f;
+			break;
+
+		case CHARACTER_TYPE::ENGINEER:
+			m_fOffsetY = 1.9f;
+			break;
+		}
+	}
+	else
+	{
+		switch (m_pOwner->Get_CharacterType())
+		{
+		case CHARACTER_TYPE::SWORD_MAN:
+			m_fOffsetY = 2.f;
+			break;
+
+		case CHARACTER_TYPE::DESTROYER:
+			m_fOffsetY = 2.1f;
+			break;
+
+		case CHARACTER_TYPE::ENGINEER:
+			m_fOffsetY = 1.5f;
+			break;
+		}
+	}
 }
 
 CUI_World_NameTag* CUI_World_NameTag::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_NAMETAG eType)

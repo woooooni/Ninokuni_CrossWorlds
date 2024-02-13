@@ -253,6 +253,9 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 				0.3f, 0.3f로 사이즈를 잡고
 				포지션도 y값은 +5.f를 해주면 됨.
 				*/
+				_int iLength;
+				_float2 vScale = _float2(0.4f, 0.4f);
+				_float fScaleOffset = 0.f;
 
 				if (0 < m_Quest.size() && 4 >= m_Quest.size())
 				{
@@ -283,10 +286,21 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 
 					CRenderer::TEXT_DESC ContentsDesc;
 					ContentsDesc.strText = m_Quest[0].strContents;
+					iLength = CUI_Manager::GetInstance()->Count_OnlyWords(m_Quest[0].strContents);
+					if (18 < iLength)
+					{
+						vScale = _float2(0.3f, 0.3f);
+						fScaleOffset = 5.f;
+					}
+					else
+					{
+						vScale = _float2(0.4f, 0.4f);
+						fScaleOffset = 0.f;
+					}
 					ContentsDesc.strFontTag = L"Default_Bold";
-					ContentsDesc.vScale = { 0.4f, 0.4f };
+					ContentsDesc.vScale = vScale;
 					ContentsDesc.vColor = m_vTextColor;
-					ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY);
+					ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + fScaleOffset);
 					m_pRendererCom->Add_Text(ContentsDesc);
 
 					if (true == m_Quest[0].bCreateSpot)
@@ -336,10 +350,21 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 
 						CRenderer::TEXT_DESC ContentsDesc;
 						ContentsDesc.strText = m_Quest[1].strContents;
+						iLength = CUI_Manager::GetInstance()->Count_OnlyWords(m_Quest[1].strContents);
+						if (18 < iLength)
+						{
+							vScale = _float2(0.3f, 0.3f);
+							fScaleOffset = 5.f;
+						}
+						else
+						{
+							vScale = _float2(0.4f, 0.4f);
+							fScaleOffset = 0.f;
+						}
 						ContentsDesc.strFontTag = L"Default_Bold";
-						ContentsDesc.vScale = { 0.4f, 0.4f };
+						ContentsDesc.vScale = vScale;
 						ContentsDesc.vColor = m_vTextColor;
-						ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + fOffsetY);
+						ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + fOffsetY + fScaleOffset);
 						m_pRendererCom->Add_Text(ContentsDesc);
 
 						if (true == m_Quest[1].bCreateSpot)
@@ -389,10 +414,21 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 
 							CRenderer::TEXT_DESC ContentsDesc;
 							ContentsDesc.strText = m_Quest[2].strContents;
+							iLength = CUI_Manager::GetInstance()->Count_OnlyWords(m_Quest[2].strContents);
+							if (18 < iLength)
+							{
+								vScale = _float2(0.3f, 0.3f);
+								fScaleOffset = 5.f;
+							}
+							else
+							{
+								vScale = _float2(0.4f, 0.4f);
+								fScaleOffset = 0.f;
+							}
 							ContentsDesc.strFontTag = L"Default_Bold";
-							ContentsDesc.vScale = { 0.4f, 0.4f };
+							ContentsDesc.vScale = vScale;
 							ContentsDesc.vColor = m_vTextColor;
-							ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + (fOffsetY * 2.f));
+							ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + (fOffsetY * 2.f) + fScaleOffset);
 							m_pRendererCom->Add_Text(ContentsDesc);
 
 							if (true == m_Quest[2].bCreateSpot)
@@ -441,10 +477,21 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 
 								CRenderer::TEXT_DESC ContentsDesc;
 								ContentsDesc.strText = m_Quest[3].strContents;
+								iLength = CUI_Manager::GetInstance()->Count_OnlyWords(m_Quest[3].strContents);
+								if (18 < iLength)
+								{
+									vScale = _float2(0.3f, 0.3f);
+									fScaleOffset = 5.f;
+								}
+								else
+								{
+									vScale = _float2(0.4f, 0.4f);
+									fScaleOffset = 0.f;
+								}
 								ContentsDesc.strFontTag = L"Default_Bold";
-								ContentsDesc.vScale = { 0.4f, 0.4f };
+								ContentsDesc.vScale = vScale;
 								ContentsDesc.vColor = m_vTextColor;
-								ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + (fOffsetY * 3.f));
+								ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + (fOffsetY * 3.f) + fScaleOffset);
 								m_pRendererCom->Add_Text(ContentsDesc);
 
 								if (true == m_Quest[3].bCreateSpot)

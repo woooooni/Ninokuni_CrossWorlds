@@ -65,10 +65,13 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField04_2::Tick(const _float& fTimeDe
 			Safe_Delete_Array(m_szpTalk);
 
 			m_iTalkIndex += 1;
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_Dialogue_Page_1.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 
 			if (m_iTalkIndex >= m_vecTalkDesc.size())
 			{
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 				// 대화가 종료되었다면 페이드 아웃 시작 
 				if (!m_bFadeOut)

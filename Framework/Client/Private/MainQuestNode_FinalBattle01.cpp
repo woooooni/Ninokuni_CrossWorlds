@@ -31,7 +31,11 @@ void CMainQuestNode_FinalBattle01::Start()
 {
 	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::GetInstance()->QUESTEVENT_FINALBATTLE);
 
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestName;
+	QuestDesc.strContents = m_strQuestContent;
+	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
 
 	m_pWitchWood = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_BUILDING, L"Witch_Wood_Wall");
 	m_pMoon = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_SKYBOX, L"Common_Moon");
@@ -39,7 +43,7 @@ void CMainQuestNode_FinalBattle01::Start()
 	Vec4 vSpotPos = { 97.7f, -4.9f, 24.83f, 1.f };
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 
-	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc = {};
 	QuestDesc.strType = m_strQuestTag;
 	QuestDesc.strTitle = m_strQuestName;
 	QuestDesc.strContents = m_strQuestContent;
