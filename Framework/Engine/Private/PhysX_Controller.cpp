@@ -74,7 +74,10 @@ void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
 	m_bGroundChecked = false;
 
 
+	GI->Wait_PhysX_Scene();
+
 	Vec3 vPosition = m_pTransformCom->Get_Position(); // 피직스 기준으로는 발 끝이다.
+
 	PxExtendedVec3 vPhysPosition = m_pPhysXController->getPosition();
 
 	Vec3 vDirCenter =  Vec3(vPhysPosition.x, vPhysPosition.y, vPhysPosition.z) - m_vPrevPosition;
@@ -121,6 +124,8 @@ void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 	if (false == Is_Active())
 		return;
 
+	GI->Wait_PhysX_Scene();
+
 	PxExtendedVec3 vPhysXPosition = m_pPhysXController->getFootPosition();
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vPhysXPosition.x, vPhysXPosition.y, vPhysXPosition.z, 1.f));
 	m_vPrevPosition = m_pTransformCom->Get_Position();
@@ -129,6 +134,9 @@ void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 
 void CPhysX_Controller::Set_Active(_bool bActive)
 {
+	//m_pPhysXController->getScene()->getSimulationStatistics()
+	GI->Wait_PhysX_Scene();
+	
 	m_pPhysXController->getActor()->setActorFlag(PxActorFlag::eVISUALIZATION, bActive);
 	m_pPhysXController->getActor()->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, !bActive);
 	m_pPhysXController->invalidateCache();
@@ -143,6 +151,8 @@ _bool CPhysX_Controller::Is_Active()
 
 void CPhysX_Controller::Set_EnterLevel_Position(Vec4 vPosition)
 {
+	GI->Wait_PhysX_Scene();
+
 	m_pPhysXController->setFootPosition(PxExtendedVec3(vPosition.x, vPosition.y, vPosition.z));
 	m_vPrevPosition = Vec3(vPosition.x, vPosition.y, vPosition.z);
 }
@@ -173,22 +183,7 @@ CComponent* CPhysX_Controller::Clone(void* pArg)
 	return pInstance;
 }
 
-void CPhysX_Controller::Free()
-{
-	__super::Free();
 
-	if (false == m_bRemoved && nullptr != m_pPhysXController)
-	{
-		Set_Active(false);
-		m_pPhysXController = nullptr;
-	}
-		
-	/*GI->Remove_Controller(m_pPhysXController);
-	m_pPhysXController = nullptr;*/
-		
-
-	Safe_Release(m_pTransformCom);
-}
 
 
 void CPhysX_Controller::onShapeHit(const PxControllerShapeHit& hit)
@@ -293,5 +288,22 @@ void CPhysX_Controller::onControllerHit(const PxControllersHit& hit)
 
 void CPhysX_Controller::onObstacleHit(const PxControllerObstacleHit& hit)
 {
+}
+
+void CPhysX_Controller::Free()
+{
+	__super::Free();
+
+	if (false == m_bRemoved && nullptr != m_pPhysXController)
+	{
+		Set_Active(false);
+		m_pPhysXController = nullptr;
+	}
+
+	/*GI->Remove_Controller(m_pPhysXController);
+	m_pPhysXController = nullptr;*/
+
+
+	Safe_Release(m_pTransformCom);
 }
 

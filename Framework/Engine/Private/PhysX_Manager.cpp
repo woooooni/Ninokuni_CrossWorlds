@@ -41,8 +41,8 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	PxSceneDesc SceneDesc(m_Physics->getTolerancesScale());
 	SceneDesc.gravity = PxVec3(0.0f, 0.0f, 0.0f);
 
-	m_Dispatcher = PxDefaultCpuDispatcherCreate(6);
-	m_Dispatcher->setRunProfiled(true);
+	m_Dispatcher = PxDefaultCpuDispatcherCreate(4);
+	//m_Dispatcher->setRunProfiled(true);
 	if (!m_Dispatcher)
 		return E_FAIL;
 
@@ -50,6 +50,8 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	SceneDesc.kineKineFilteringMode = PxPairFilteringMode::eKEEP;
 	SceneDesc.staticKineFilteringMode = PxPairFilteringMode::eKEEP;
 	SceneDesc.flags |= PxSceneFlag::eENABLE_PCM;
+	SceneDesc.flags |= PxSceneFlag::eENABLE_GPU_DYNAMICS;
+
 
 	SceneDesc.filterShader = FilterShader;
 	SceneDesc.simulationEventCallback = this;
@@ -107,14 +109,17 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 }
 void CPhysX_Manager::Tick(_float fTimeDelta)
 {
+	m_bSimulating = true;
+	fTimeDelta = min(fTimeDelta, 1.f / 144.f);
 
+	m_pScene->simulate(fTimeDelta);
+	m_pScene->fetchResults(true);
+
+	m_bSimulating = false;
 }
 void CPhysX_Manager::LateTick(_float fTimeDelta)
 {
-	// fTimeDelta = min(fTimeDelta, 1.f / 144.f);
 	
-	m_pScene->simulate(fTimeDelta);
-	m_pScene->fetchResults(true);
 }
 #ifdef _DEBUG
 HRESULT CPhysX_Manager::Render()
