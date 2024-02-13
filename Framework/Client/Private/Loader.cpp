@@ -2006,7 +2006,7 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_DreamMazeWitch_Npc", CDreamMazeWitch_Npc::Create(m_pDevice, m_pContext, TEXT("DreamMazeWitch")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_BlackHole", CWitch_BlackHole::Create(m_pDevice, m_pContext, TEXT("Witch_BlackHole")), LAYER_NPC, true)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_BlackHole", CWitch_BlackHole::Create(m_pDevice, m_pContext, TEXT("Witch_BlackHole")), LAYER_PROP, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_VulcanBullet", CWitch_VulcanBullet::Create(m_pDevice, m_pContext, TEXT("Witch_VulcanBullet")), LAYER_PROP, true)))
 		return E_FAIL;
@@ -2016,7 +2016,7 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_Rage01QuadBlackHole", CWitch_Rage01QuadBlackHole::Create(m_pDevice, m_pContext, TEXT("Witch_Rage01QuadBlackHole")), LAYER_PROP, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_Rage02Sphere", CWitch_Rage02Sphere::Create(m_pDevice, m_pContext, TEXT("Witch_Rage02Sphere")), LAYER_NPC, true)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_Rage02Sphere", CWitch_Rage02Sphere::Create(m_pDevice, m_pContext, TEXT("Witch_Rage02Sphere")), LAYER_PROP, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Witch_Laser", CWitch_Laser::Create(m_pDevice, m_pContext, TEXT("Witch_Laser")), LAYER_PROP, true)))
 		return E_FAIL;

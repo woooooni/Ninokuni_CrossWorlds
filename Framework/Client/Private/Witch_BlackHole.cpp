@@ -35,8 +35,8 @@ HRESULT CWitch_BlackHole::Initialize_Prototype()
 HRESULT CWitch_BlackHole::Initialize(void* pArg)
 {
 	// 테스트 끝나면 풀자.
-	//if (pArg == nullptr)
-	//	return E_FAIL;
+	if (pArg == nullptr)
+		return E_FAIL;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -133,8 +133,6 @@ HRESULT CWitch_BlackHole::Ready_Components()
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
-
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(161.5f, 2.311f, 147.5f, 1.f));
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
