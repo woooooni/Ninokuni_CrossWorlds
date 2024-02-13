@@ -78,6 +78,7 @@
 
 /* Witch */
 #include "Vfx_Witch_Marble.h"
+#include "Vfx_Witch_Marble_Hit.h"
 
 #include "Vfx_Witch_Skill_BlackHole_Drain.h"
 #include "Vfx_Witch_Skill_BlackHole_Bomb.h"

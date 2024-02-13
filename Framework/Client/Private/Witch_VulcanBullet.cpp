@@ -9,8 +9,6 @@
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 
-#include "Particle_Manager.h"
-
 CWitch_VulcanBullet::CWitch_VulcanBullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CMonsterProjectile(pDevice, pContext, strObjectTag)
 {
@@ -109,9 +107,7 @@ void CWitch_VulcanBullet::Collision_Enter(const COLLISION_INFO& tInfo)
 		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
 		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
 	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_ClownWizard_DarkBall_Hit"),
-			m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f));
-
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Marble_Hit"), m_pTransformCom->Get_WorldMatrix());
 		Set_Dead(this);
 	}
 }

@@ -440,6 +440,7 @@
     <ClInclude Include="..\Public\State_CurlingGame_Move_Character.h" />
     <ClInclude Include="..\Public\Manager_State.h" />
     <ClInclude Include="..\Public\Vfx_Whale_Jump.h" />
+    <ClInclude Include="..\Public\Vfx_Witch_Marble_Hit.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_BlackHole_Bomb.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_BlackHole_Drain.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_Laser_Warning.h" />
@@ -1556,6 +1557,7 @@
     <ClCompile Include="..\Private\State_CurlingGame_Move_Character.cpp" />
     <ClCompile Include="..\Private\Manager_State.cpp" />
     <ClCompile Include="..\Private\Vfx_Whale_Jump.cpp" />
+    <ClCompile Include="..\Private\Vfx_Witch_Marble_Hit.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_BlackHole_Bomb.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_BlackHole_Drain.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_Laser_Warning.cpp" />
