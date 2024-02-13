@@ -210,6 +210,64 @@ HRESULT CLight_Manager::Reset_Lights()
 	return S_OK;
 }
 
+HRESULT CLight_Manager::Add_Light_UI(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc)
+{
+	CLight* pLight = CLight::Create(pDevice, pContext, LightDesc);
+	if (nullptr == pLight)
+		return E_FAIL;
+
+	pLight->Set_LightID(m_Lights_UI.size());
+	m_Lights_UI.push_back(pLight);
+
+	return S_OK;
+}
+
+HRESULT CLight_Manager::Render_UI(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
+{
+	for (auto& pLight : m_Lights_UI)
+	{
+		LIGHTDESC::TYPE eType = pLight->Get_LightDesc()->eType;
+
+		if (LIGHTDESC::TYPE_DIRECTIONAL == pLight->Get_LightDesc()->eType)
+		{
+			if (FAILED(pLight->Render(pShader, pVIBuffer)))
+				return E_FAIL;
+		}
+		else if ((LIGHTDESC::TYPE_POINT == eType) || (LIGHTDESC::TYPE_SPOT == eType))
+		{
+			CCamera_Manager* pCameraManager = GET_INSTANCE(CCamera_Manager);
+
+			if (nullptr == pCameraManager)
+				return S_OK;
+
+			CCamera* pCamera = pCameraManager->Get_CurCamera();
+			if (nullptr == pCamera)
+				return S_OK;
+
+			Vec3 pCameraPosition = pCamera->Get_Transform()->Get_Position();
+			Vec3 pLightPosition = pLight->Get_LightDesc()->vTempPosition;
+
+			Vec3 vLength = pCameraPosition - pLightPosition;
+			_float fDistance = ::fabs(vLength.Length());
+
+			if (fDistance > pLight->Get_LightDesc()->fTempRange && false == pLight->Get_ModifyLightDesc()->bNonCull)
+				continue;
+			else if (fDistance <= pLight->Get_LightDesc()->fTempRange && false == pLight->Get_LightDesc()->bNonCull)
+			{
+				if (FAILED(pLight->Render(pShader, pVIBuffer, fDistance)))
+					return E_FAIL;
+			}
+			else if (true == pLight->Get_LightDesc()->bNonCull)
+			{
+				if (FAILED(pLight->Render(pShader, pVIBuffer)))
+					return E_FAIL;
+			}
+		}
+	}
+
+	return S_OK;
+}
+
 HRESULT CLight_Manager::Add_Sun(CGameObject* pSun)
 {
 	if (nullptr != m_pSun)
@@ -310,10 +368,15 @@ void CLight_Manager::Free()
 {
 	for (auto& pLight : m_Lights)
 		Safe_Release(pLight);
+	m_Lights.clear();
 
 	Safe_Release<ID3D11Texture2D*>(m_pCascadeDepthStencilRT);
 	Safe_Release<ID3D11DepthStencilView*>(m_pCascadeDepthStencilDSV);
 	Safe_Release<ID3D11ShaderResourceView*>(m_pCascadeDepthStencilSRV);
 
-	m_Lights.clear();
+	
+
+	for (auto& pLight : m_Lights_UI)
+		Safe_Release(pLight);
+	m_Lights_UI.clear();
 }

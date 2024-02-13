@@ -80,39 +80,56 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	const DECAL_DESC& Get_DecalDesc() { return m_tDecalDesc; }
+	_bool Get_DecalDead() { return m_bDecalDie; }
+
+	const DECAL_DESC&       Get_DecalDesc()      { return m_tDecalDesc; }
 	const DECAL_SCALE_DESC& Get_DecalScaleDesc() { return m_tDecalScaleDesc; }
-	const _float& Get_AccLifeTimeDesc() { return m_fAccLifeTime; }
+
 	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
-	Vec4  Get_OffsetPosition() { return m_vOffsetPos; }
+
+	Vec4  Get_OffsetPosition()            { return m_vOffsetPos; }
+	const _float&   Get_AccLifeTimeDesc() { return m_fAccLifeTime; }
+
 public:
 	void Restart_Decal();
+	void Start_AlphaDeleate();
 
 	void Set_DecalDesc(const DECAL_DESC& tDesc);
 	void Set_DecalScaleDesc(const DECAL_SCALE_DESC& tDesc) { m_tDecalScaleDesc = tDesc; }
+
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
 	void Set_DeleteDecal(_bool bDecalDelete) { m_bDecalDelete = bDecalDelete; }
 	void Set_OffsetPosition(Vec4 vPos) { m_vOffsetPos = vPos; }
 	void Set_LifeTime(_float fLifeTime) { m_tDecalDesc.fLifeTime = fLifeTime; };
 	void Set_AlphaSpeed(_float fSpeed) { m_tDecalDesc.fAlphaSpeed = fSpeed; };
-	void Start_AlphaDeleate();
+	void Set_Color(_float3 fColor01, _float3 fColor02)
+	{
+		m_tDecalDesc.fColorAdd_01 = fColor01;
+		m_tDecalDesc.fColorAdd_02 = fColor02;
+	}
 
 	// Show
 	_bool Get_IsDecalShow() { return m_bIsShow; }
 	void  Set_IsDecalShow(_bool bIsShow, _float fTimeDelta);
 
-	void Set_Color(_float3 fColor01, _float3 fColor02) 
-	{ 
-		m_tDecalDesc.fColorAdd_01 = fColor01;
-		m_tDecalDesc.fColorAdd_02 = fColor02;
-	}
+	// UV Flow
+	void Set_UVFlow(_bool bUVFlowChange, _bool bBasicColorAdd, _int iUVFlowLoop, _float2 fUVFlowDir, _float fUVFlowSpeed)
+	{
+		m_bUVFlowChange  = bUVFlowChange;
+		m_bBasicColorAdd = bBasicColorAdd;
 
-	_bool Get_DecalDead() { return m_bDecalDie; }
+		m_iUVFlowLoop   = iUVFlowLoop;
+		m_fUVFlowDir    = fUVFlowDir;
+		m_fUVFlowSpeed  = fUVFlowSpeed;
+
+		m_fAccUVFlow = _float2(0.f, 0.f);
+	}
 
 private:
 	void Tick_Alpha(_float fTimeDelta);
 	void Tick_Scale(_float fTimeDelta);
+	void Tick_UVFlow(_float fTimeDelta);
 
 private:
 	_bool      m_isCloned = { false };
@@ -130,6 +147,16 @@ private:
 
 	_float m_fAccLifeTime     = 0.f;
 	_bool  m_bAlphaCreateSucc = false;
+
+private:
+	_bool   m_bUVFlowChange  = false;
+	_bool   m_bBasicColorAdd = false;
+	_int	m_iUVFlowLoop   = -1; // 0 < UVLoop -> NoLoop
+	_float2	m_fUVFlowDir    = _float2(0.f, 0.f);
+	_float 	m_fUVFlowSpeed  = 0.f;
+
+	_float2 m_fAccUVFlow = _float2(0.f, 0.f);
+
 
 private:
 	class CGameObject* m_pOwnerObject = nullptr;

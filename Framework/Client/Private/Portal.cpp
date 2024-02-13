@@ -12,7 +12,7 @@
 #include "UI_Minimap_Icon.h"
 #include "UI_Manager.h"
 #include "UIMinigame_Manager.h"
-
+#include "UI_Fade.h"
 
 CPortal::CPortal(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext, L"Portal", OBJ_TYPE::OBJ_PORTAL)
@@ -78,20 +78,33 @@ void CPortal::Tick(_float fTimeDelta)
 		}
 	}
 
-	GI->Add_CollisionGroup(COLLISION_GROUP::PORTAL, this);
-
 	if (nullptr != m_pMinimapIcon)
 	{
 		if (true == CUI_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
 			m_pMinimapIcon->Set_Active(true);
 		else
 			m_pMinimapIcon->Set_Active(false);
+
+		m_pMinimapIcon->Tick(fTimeDelta);
 	}
 
-	if (nullptr != m_pMinimapIcon)
-		m_pMinimapIcon->Tick(fTimeDelta);
+	if (true == m_bActivate)
+	{
+		if (true == CUI_Manager::GetInstance()->Is_FadeFinished())
+		{
+			m_bActivate = false;
 
-	__super::Tick(fTimeDelta);
+			if (FAILED(GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel, L""))))
+				MSG_BOX("Portal Failde Activate");
+
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_EnterLevelPosition(m_vNextPos, &m_vRotation);
+		}
+	}
+	else
+	{
+		GI->Add_CollisionGroup(COLLISION_GROUP::PORTAL, this);
+	}
 }
 
 void CPortal::LateTick(_float fTimeDelta)
@@ -121,12 +134,16 @@ HRESULT CPortal::Render()
 void CPortal::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
+
 	if (OBJ_TYPE::OBJ_CHARACTER == tInfo.pOther->Get_ObjectType() && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
-		if (FAILED(GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel, L""))))
-			MSG_BOX("Portal Failde Activate");
+		if (false == m_bActivate)
+		{
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 
-		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_EnterLevelPosition(m_vNextPos, &m_vRotation);
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 3.f);
+			m_bActivate = true;
+		}
 	}
 }
 

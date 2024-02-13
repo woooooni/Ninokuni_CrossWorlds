@@ -49,6 +49,8 @@ private:
 	HRESULT Ready_Collider();
 
 private:
+	_bool m_bActivate = false;
+
 	LEVELID m_eCurrentLevel = LEVELID::LEVEL_END;
 	LEVELID m_eNextLevel = LEVELID::LEVEL_END;
 

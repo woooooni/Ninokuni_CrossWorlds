@@ -103,8 +103,11 @@ void CVfx_Stellia_Skill_Laser::Tick(_float fTimeDelta)
 	{
 		if (m_iCount == TYPE_ET1_D_WARNING && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_D_WARNING])
 		{
+			CDecal* pDecal = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_FourHandSwing_Warning"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_D_WARNING], m_pScaleOffset[TYPE_ET1_D_WARNING], m_pRotationOffset[TYPE_ET1_D_WARNING]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_D_WARNING], m_pScaleOffset[TYPE_ET1_D_WARNING], m_pRotationOffset[TYPE_ET1_D_WARNING], nullptr, &pDecal);
+			if (nullptr != pDecal)
+				pDecal->Set_UVFlow(true, true, 0, _float2(0.f, -1.f), 1.f);
 			m_iCount++;
 		}
 

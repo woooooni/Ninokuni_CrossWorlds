@@ -404,6 +404,14 @@ HRESULT CGameInstance::Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 	return m_pLight_Manager->Add_Light(pDevice, pContext, LightDesc);
 }
 
+HRESULT CGameInstance::Add_Light_UI(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc)
+{
+	if (nullptr == m_pLight_Manager)
+		return E_FAIL;
+
+	return m_pLight_Manager->Add_Light_UI(pDevice, pContext, LightDesc);
+}
+
 HRESULT CGameInstance::Add_ShadowLight(_uint iLevelIndex, _vector vEye, _vector vAt, _vector vUp)
 {
 	return m_pLight_Manager->Add_ShadowLight(iLevelIndex, vEye, vAt, vUp);

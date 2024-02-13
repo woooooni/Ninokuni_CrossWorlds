@@ -57,7 +57,11 @@ void CVfx_Stellia_Skill_Charge::Tick(_float fTimeDelta)
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_FourHandSwing_Warning"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_WARNING], m_pScaleOffset[TYPE_ET1_WARNING], m_pRotationOffset[TYPE_ET1_WARNING], nullptr, &m_pDecal, false);
-			Safe_AddRef(m_pDecal);
+			if (nullptr != m_pDecal)
+			{
+				Safe_AddRef(m_pDecal);
+				m_pDecal->Set_UVFlow(true, true, 0, _float2(0.f, -1.f), 1.f);
+			}
 			m_iCount++;
 		}
 

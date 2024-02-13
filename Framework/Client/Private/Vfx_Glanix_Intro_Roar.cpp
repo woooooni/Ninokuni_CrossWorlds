@@ -5,6 +5,9 @@
 #include "Effect_Manager.h"
 #include "Glanix.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+
 CVfx_Glanix_Intro_Roar::CVfx_Glanix_Intro_Roar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
 {
@@ -195,10 +198,17 @@ void CVfx_Glanix_Intro_Roar::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_ET6_E_ROAR && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET6_E_ROAR])
 		{
+			if (false == m_bRadialBlur)
+			{
+				// 레디얼 블러 활성화
+				CGame_Manager::GetInstance()->Set_RadialBlur(true, 16.f, 0.1f);
+				m_bRadialBlur = true;
+			}
+
 			GET_INSTANCE(CEffect_Manager)->Tick_Generate_Effect(&fTimeAcc, 0.225f, fTimeDelta, TEXT("Effect_Glanix_Roar_TrailLine"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET6_E_ROAR], m_pScaleOffset[TYPE_ET6_E_ROAR], m_pRotationOffset[TYPE_ET6_E_ROAR]);
 
-			if(m_iOwnerFrame >= m_pFrameTriger[TYPE_ET6_E_ROAR] + 25)
+			if (m_iOwnerFrame >= m_pFrameTriger[TYPE_ET6_E_ROAR] + 25)
 				m_iCount++;
 		}
 
@@ -258,5 +268,9 @@ void CVfx_Glanix_Intro_Roar::Free()
 		Safe_Delete_Array(m_pPositionOffset);
 		Safe_Delete_Array(m_pScaleOffset);
 		Safe_Delete_Array(m_pRotationOffset);
+	}
+	else
+	{
+		CGame_Manager::GetInstance()->Set_RadialBlur(false);
 	}
 }

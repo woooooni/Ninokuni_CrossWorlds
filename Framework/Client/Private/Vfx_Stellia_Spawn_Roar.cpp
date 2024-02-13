@@ -9,6 +9,9 @@
 
 #include "Stellia.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+
 CVfx_Stellia_Spawn_Roar::CVfx_Stellia_Spawn_Roar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
 {
@@ -75,7 +78,7 @@ void CVfx_Stellia_Spawn_Roar::Tick(_float fTimeDelta)
 
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Stellia_Spawn_MagicCircle"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET0_D_MAGICCIRCLE], m_pScaleOffset[TYPE_ET0_D_MAGICCIRCLE], m_pRotationOffset[TYPE_ET0_D_MAGICCIRCLE], nullptr, &m_pMagicCircle, false);
-			Safe_AddRef(m_pMagicCircle);
+			//Safe_AddRef(m_pMagicCircle);
 			m_iCount++;
 		}
 
@@ -100,6 +103,13 @@ void CVfx_Stellia_Spawn_Roar::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_ET2_E_ROAR && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_ROAR])
 		{
+			if (false == m_bRadialBlur)
+			{
+				// 레디얼 블러 활성화
+				CGame_Manager::GetInstance()->Set_RadialBlur(true, 16.f, 0.1f);
+				m_bRadialBlur = true;
+			}
+
 			m_fTimeAcc += fTimeDelta;
 			if (m_fTimeAcc >= 0.225f) // 47 65 95 117 131 166 176 /0.5 0.0 0.0 0.0
 			{
@@ -179,5 +189,9 @@ void CVfx_Stellia_Spawn_Roar::Free()
 		Safe_Delete_Array(m_pPositionOffset);
 		Safe_Delete_Array(m_pScaleOffset);
 		Safe_Delete_Array(m_pRotationOffset);
+	}
+	else
+	{
+		CGame_Manager::GetInstance()->Set_RadialBlur(false);
 	}
 }

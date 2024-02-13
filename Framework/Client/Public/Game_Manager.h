@@ -29,6 +29,9 @@ public:
 	class CKuu*	   Get_Kuu() { return m_pKuu; }
 
 public:
+	void Set_RadialBlur(_bool bSet, _float fQuality = 16.f, _float fRadialBlurPower = 0.1f);
+
+public:
 	_float Calculate_Elemental(ELEMENTAL_TYPE eAttackerElemental, ELEMENTAL_TYPE eHitElemental)
 	{
 		switch (eAttackerElemental)

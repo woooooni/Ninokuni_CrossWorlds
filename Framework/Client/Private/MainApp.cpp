@@ -257,28 +257,16 @@ HRESULT CMainApp::Initialize_Client()
 				return E_FAIL;
 		}
 
-		// ShadowLightProj
-		//{
-		//	_float fFovAngleY   = Cam_Fov_Follow_Default;
-		//	_float fAspectRatio = (_float)g_iWinSizeX / g_iWinSizeY;
-		//	_float fNearZ       = 0.2f;
-		//	_float fFarZ        = 1000.f;
-
-		//	if (FAILED(GI->Add_ShadowProj(LEVEL_LOBBY, fFovAngleY, fAspectRatio, fNearZ, fFarZ)))
-		//		return E_FAIL;
-
-		//	if (FAILED(GI->Add_ShadowProj(LEVEL_EVERMORE, fFovAngleY, fAspectRatio, fNearZ, fFarZ)))
-		//		return E_FAIL;
-
-		//	if (FAILED(GI->Add_ShadowProj(LEVEL_KINGDOMHALL, fFovAngleY, fAspectRatio, fNearZ, fFarZ)))
-		//		return E_FAIL;
-
-		//	if (FAILED(GI->Add_ShadowProj(LEVEL_ICELAND, fFovAngleY, fAspectRatio, fNearZ, fFarZ)))
-		//		return E_FAIL;
-
-		//	if (FAILED(GI->Add_ShadowProj(LEVEL_WITCHFOREST, fFovAngleY, fAspectRatio, fNearZ, fFarZ)))
-		//		return E_FAIL;
-		//}
+		// UIMesh Light
+		LIGHTDESC LightUIDesc;
+		ZeroMemory(&LightUIDesc, sizeof(LIGHTDESC));
+		LightUIDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
+		LightUIDesc.vTempDirection = Vec3(-0.45f, -0.445f, -0.745f);
+		LightUIDesc.vTempColor = Vec3(1.f, 1.f, 1.f);
+		LightUIDesc.vAmbientLowerColor = Vec3(0.5f, 0.5f, 0.5f);
+		LightUIDesc.vAmbientUpperColor = Vec3(1.0f, 1.0f, 1.0f);
+		if (FAILED(GI->Add_Light_UI(m_pDevice, m_pContext, LightUIDesc)))
+			return E_FAIL;
 	}
 
 	return S_OK;

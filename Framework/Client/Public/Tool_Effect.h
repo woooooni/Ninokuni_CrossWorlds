@@ -61,6 +61,11 @@ private:
 	CEffect::EFFECT_DESC m_tEffectInfo;
 	CDecal::DECAL_DESC   m_tDecalInfo;
 	CDecal::DECAL_SCALE_DESC m_tDecalScaleInfo;
+	_bool   m_bUVFlowChange  = false;
+	_bool   m_bBasicColorAdd = false;
+	_int	m_iUVFlowLoop   = -1; // 0 < UVLoop -> NoLoop
+	_float2	m_fUVFlowDir    = _float2(0.f, 0.f);
+	_float 	m_fUVFlowSpeed  = 0.f;
 
 private:
 	_float3 m_fPosition;

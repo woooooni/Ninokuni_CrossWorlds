@@ -7,6 +7,9 @@
 #include "Effect.h"
 #include "Decal.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+
 CVfx_Glanix_Skill_HandDown::CVfx_Glanix_Skill_HandDown(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
 {
@@ -101,7 +104,11 @@ void CVfx_Glanix_Skill_HandDown::Tick(_float fTimeDelta)
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_FourHandSwing_Warning"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_START_WARNING], m_pScaleOffset[TYPE_D_START_WARNING], m_pRotationOffset[TYPE_D_START_WARNING], nullptr, &m_pWarningDecal, false);
-			Safe_AddRef(m_pWarningDecal);
+			if (nullptr != m_pWarningDecal)
+			{
+				Safe_AddRef(m_pWarningDecal);
+				m_pWarningDecal->Set_UVFlow(true, true, 0, _float2(0.f, -1.f), 1.f);
+			}
 			m_iCount++;
 		}
 
@@ -114,6 +121,13 @@ void CVfx_Glanix_Skill_HandDown::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_E_PREACT_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_PREACT_CIRCLELINE])
 		{
+			if (false == m_bRadialBlur)
+			{
+				// 레디얼 블러 활성화
+				CGame_Manager::GetInstance()->Set_RadialBlur(true, 16.f, 0.02f);
+				m_bRadialBlur = true;
+			}
+
 			GET_INSTANCE(CEffect_Manager)->Tick_Generate_Effect(&m_fTimeAcc, 0.2f, fTimeDelta, TEXT("Effect_Glanix_Roar_TrailLine"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_PREACT_CIRCLELINE], m_pScaleOffset[TYPE_E_PREACT_CIRCLELINE], m_pRotationOffset[TYPE_E_PREACT_CIRCLELINE]);
 			
@@ -156,6 +170,8 @@ void CVfx_Glanix_Skill_HandDown::Tick(_float fTimeDelta)
 		{
 			m_pWarningDecal->Set_Dead(true);
 			Safe_Release(m_pWarningDecal);
+
+			CGame_Manager::GetInstance()->Set_RadialBlur(false);
 
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_HandDown_Crack"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_ATTACK_CRACK], m_pScaleOffset[TYPE_D_ATTACK_CRACK], m_pRotationOffset[TYPE_D_ATTACK_CRACK]);
@@ -336,5 +352,9 @@ void CVfx_Glanix_Skill_HandDown::Free()
 		Safe_Delete_Array(m_pPositionOffset);
 		Safe_Delete_Array(m_pScaleOffset);
 		Safe_Delete_Array(m_pRotationOffset);
+	}
+	else
+	{
+		CGame_Manager::GetInstance()->Set_RadialBlur(false);
 	}
 }

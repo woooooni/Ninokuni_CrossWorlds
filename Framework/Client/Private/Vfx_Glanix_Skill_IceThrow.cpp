@@ -5,6 +5,7 @@
 #include "Effect_Manager.h"
 #include "Glanix.h"
 #include "Effect.h"
+#include "Decal.h"
 
 CVfx_Glanix_Skill_IceThrow::CVfx_Glanix_Skill_IceThrow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -119,8 +120,11 @@ void CVfx_Glanix_Skill_IceThrow::Tick(_float fTimeDelta)
 		{
 			if (m_iCount == TYPE_ET1_1_D_RECTWARNING && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_1_D_RECTWARNING])
 			{
+				CDecal* pDecal = nullptr;
 				GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_FourHandSwing_Warning"),
-					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_1_D_RECTWARNING], m_pScaleOffset[TYPE_ET1_1_D_RECTWARNING], m_pRotationOffset[TYPE_ET1_1_D_RECTWARNING]);
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_1_D_RECTWARNING], m_pScaleOffset[TYPE_ET1_1_D_RECTWARNING], m_pRotationOffset[TYPE_ET1_1_D_RECTWARNING], nullptr, &pDecal);
+				if (nullptr != pDecal)
+					pDecal->Set_UVFlow(true, true, 0, _float2(0.f, -1.f), 1.f);
 				m_iCount++;
 
 				m_bEvent_1 = true;

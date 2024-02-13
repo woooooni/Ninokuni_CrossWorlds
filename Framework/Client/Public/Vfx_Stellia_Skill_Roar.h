@@ -51,6 +51,7 @@ protected:
 
 private:
 	_int m_iFinishFrame = 90;
+	_bool m_bRadialBlur = false;
 
 public:
 	static CVfx_Stellia_Skill_Roar* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

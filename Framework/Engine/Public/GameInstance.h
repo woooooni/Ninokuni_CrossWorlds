@@ -85,6 +85,7 @@ public: /* For.Light_Manager */
 	const LIGHTDESC* Get_LightDesc(_uint iIndex);
 	list<class CLight*>* Get_LightList();
 	HRESULT Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const LIGHTDESC & LightDesc);
+	HRESULT Add_Light_UI(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const LIGHTDESC & LightDesc);
 	HRESULT Add_ShadowLight(_uint iLevelIndex, _vector vEye, _vector vAt, _vector vUp);
 	HRESULT Add_Sun(class CGameObject* pSun);
 	_float4x4 Get_ShadowViewMatrix(_uint iLevelIndex);
