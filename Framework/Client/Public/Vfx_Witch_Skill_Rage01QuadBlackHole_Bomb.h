@@ -8,22 +8,23 @@ END
 
 BEGIN(Client)
 
-class CVfx_Witch_Marble final : public CVfx
+class CVfx_Witch_Skill_Rage01QuadBlackHole_Bomb final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_ET1_E_MARBLE,
-		TYPE_ET1_E_MARBLE_OUTLINE,
+		TYPE_P_SMALL,
+		TYPE_P_SMOKE,
 
-		TYPE_ET1_P_BACK,
+		TYPE_E_ELECTLINE,
+		TYPE_P_ELECTCIRCLE,
 
 		TYPE_END
 	};
 
 protected:
-	CVfx_Witch_Marble(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CVfx_Witch_Marble(const CVfx_Witch_Marble& rhs);
-	virtual ~CVfx_Witch_Marble() = default;
+	CVfx_Witch_Skill_Rage01QuadBlackHole_Bomb(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVfx_Witch_Skill_Rage01QuadBlackHole_Bomb(const CVfx_Witch_Skill_Rage01QuadBlackHole_Bomb& rhs);
+	virtual ~CVfx_Witch_Skill_Rage01QuadBlackHole_Bomb() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -35,13 +36,8 @@ public:
 protected:
 	virtual HRESULT Ready_Components() override;
 
-private:
-	_bool m_bCreate = false;
-
-	class CEffect* m_pMarble = nullptr;
-
 public:
-	static CVfx_Witch_Marble* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
+	static CVfx_Witch_Skill_Rage01QuadBlackHole_Bomb* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 		const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;

@@ -7,6 +7,7 @@
 #include "GameInstance.h"
 
 #include "Stellia_Crystal_Destructible.h"
+#include "Particle_Manager.h"
 
 CStellia_Crystal_Explosion::CStellia_Crystal_Explosion(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CMonsterProjectile(pDevice, pContext, strObjectTag)
@@ -51,6 +52,14 @@ HRESULT CStellia_Crystal_Explosion::Initialize(void* pArg)
 
 void CStellia_Crystal_Explosion::Tick(_float fTimeDelta)
 {
+	// Effect Create
+	if (false == m_bEffect)
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Crystal_Explosion_Circle"),
+			m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+		m_bEffect = true;
+	}
+
 	m_fTime += fTimeDelta;
 
 	__super::Tick(fTimeDelta);

@@ -78,6 +78,7 @@
 
 /* Witch */
 #include "Vfx_Witch_Marble.h"
+#include "Vfx_Witch_Marble_Hit.h"
 
 #include "Vfx_Witch_Skill_BlackHole_Drain.h"
 #include "Vfx_Witch_Skill_BlackHole_Bomb.h"
@@ -85,7 +86,8 @@
 #include "Vfx_Witch_Skill_Rage02Sphere_Ready.h"
 
 #include "Vfx_Witch_Skill_Laser_Warning.h"
-
+#include "Vfx_Witch_Skill_Rage01QuadBlackHole_Explosive.h"
+#include "Vfx_Witch_Skill_Rage01QuadBlackHole_Bomb.h"
 // -------------------------------------------------
 // ANIMAL //
 #include "Vfx_Whale_Jump.h"
