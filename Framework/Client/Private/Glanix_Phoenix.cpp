@@ -187,18 +187,21 @@ void CGlanix_Phoenix::Collision_Enter(const COLLISION_INFO& tInfo)
 	{
 		if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN))
 		{
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("ColPhoenix.ogg"), CHANNELID::SOUND_AIRPLANE, .5f, false);
 			CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN)->Set_Speed_Weight(CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN)->Get_Speed_Weight() + 0.1f);
 			CUI_Manager::GetInstance()->On_FireVignette();
 		}
 
 		if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER))
 		{
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("ColPhoenix.ogg"), CHANNELID::SOUND_AIRPLANE, .5f, false);
 			CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER)->Set_Speed_Weight(CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER)->Get_Speed_Weight() + 0.1f);
 			CUI_Manager::GetInstance()->On_FireVignette();
 		}
 
 		if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER))
 		{
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("ColPhoenix.ogg"), CHANNELID::SOUND_AIRPLANE, .5f, false);
 			CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER)->Set_Speed_Weight(CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER)->Get_Speed_Weight() + 0.1f);
 			CUI_Manager::GetInstance()->On_FireVignette();
 		}

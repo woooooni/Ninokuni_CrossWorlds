@@ -100,7 +100,7 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill04::Tick(const _float& fTimeDelta)
 
 			// 엔지니어 생성.
 			OBJECT_INIT_DESC pDesc = {};
-			pDesc.vStartPosition = { -73.7f, -7.f, -55.27f, 1.f };
+			pDesc.vStartPosition = { -75.f, -7.f, -54.7f, 1.f };
 
 			if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_Engineer_Npc"), &pDesc)))
 			{

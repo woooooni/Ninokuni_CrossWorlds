@@ -6,6 +6,7 @@
 #include "Stellia.h"
 
 #include "Effect.h"
+#include "Decal.h"
 
 CVfx_Witch_Skill_BlackHole_Drain::CVfx_Witch_Skill_BlackHole_Drain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -38,6 +39,12 @@ HRESULT CVfx_Witch_Skill_BlackHole_Drain::Initialize_Prototype()
 	m_pPositionOffset[TYPE_E_DRAIN] = _float3(0.f, 0.f, 0.f);
 	m_pScaleOffset[TYPE_E_DRAIN] = _float3(2.5f, 2.5f, 2.5f);  
 	m_pRotationOffset[TYPE_E_DRAIN] = _float3(0.f, 0.f, 0.f); 
+
+	// 1_2
+	m_pFrameTriger[TYPE_D_WARNING] = 0;
+	m_pPositionOffset[TYPE_D_WARNING] = _float3(0.f, -2.3f, 0.f);
+	m_pScaleOffset[TYPE_D_WARNING] = _float3(4.f, 2.f, 4.f);
+	m_pRotationOffset[TYPE_D_WARNING] = _float3(0.f, 0.f, 0.f);
 
 	// 2
 	m_pFrameTriger[TYPE_E_SPHERE_SMALLER] = 0;
@@ -93,6 +100,9 @@ void CVfx_Witch_Skill_BlackHole_Drain::Tick(_float fTimeDelta)
 			// 작아지는 블랙홀 생성
 			if (!m_bIsSmaller && m_pBlackHoleSmaller == nullptr)
 			{
+				GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Witch_BlackHole"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_WARNING], m_pScaleOffset[TYPE_D_WARNING], m_pRotationOffset[TYPE_D_WARNING], nullptr, &m_pWarningDecal);
+
 				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_BalckHole_Sphere_Smaller"),
 					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_SPHERE_SMALLER], m_pScaleOffset[TYPE_E_SPHERE_SMALLER], m_pRotationOffset[TYPE_E_SPHERE_SMALLER], nullptr, &m_pBlackHoleSmaller);
 
@@ -123,6 +133,7 @@ void CVfx_Witch_Skill_BlackHole_Drain::Tick(_float fTimeDelta)
 	{
 		if (m_pBlackHoleSmaller02->Is_Dead() || m_pBlackHoleSmaller02->Get_DieEffect())
 		{
+			m_pWarningDecal->Set_Dead(true);
 			Set_Dead(true);
 		}
 	}

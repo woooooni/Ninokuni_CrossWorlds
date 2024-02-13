@@ -35,6 +35,12 @@ void CStelliaState_Charge::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	if (m_pModelCom->Get_CurrAnimationFrame() == 35)
+	{
+		__super::Set_LockOffStellia();
+	}
+
+
 	m_pModelCom->Get_CurrAnimation()->Get_Duration();
 
 	if (m_pModelCom->Get_CurrAnimationFrame() >= 65 && m_pModelCom->Get_CurrAnimationFrame() <= 90)
@@ -56,6 +62,7 @@ void CStelliaState_Charge::Tick_State(_float fTimeDelta)
 
 void CStelliaState_Charge::Exit_State()
 {
+	__super::Set_LockOnStellia();
 }
 
 CStelliaState_Charge* CStelliaState_Charge::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

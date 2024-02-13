@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 #include "Utils.h"
 
+#include "Game_Manager.h"
 #include "UI_Manager.h"
 #include "UI_PopupQuest.h"
 
@@ -23,12 +24,25 @@ HRESULT CSubQuestNode_Windmill09::Initialize()
 	m_strNextQuestName = TEXT("풍차 수리");
 	m_strNextQuestContent = TEXT("베르디에게 돌아가기");
 
+	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/02. SubQuest02_Verde_WindmillRepair/SubQuest_Windmill09.json");
+
+	for (const auto& talkDesc : Load)
+	{
+		TALK_DELS sTalkDesc;
+		sTalkDesc.strOwner = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Owner"]));
+		sTalkDesc.strTalk = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Talk"]));
+		m_vecTalkDesc.push_back(sTalkDesc);
+	}
+
+
+	m_fTalkDeleteTime = 3.f;
 
 	return S_OK;
 }
 
 void CSubQuestNode_Windmill09::Start()
 {
+	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 	m_pVerde = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Verde"));
 	Vec4 vSpotPos = Set_DestSpot(m_pVerde);
 
@@ -42,6 +56,15 @@ void CSubQuestNode_Windmill09::Start()
 	QuestDesc.bCreateSpot = true;
 	QuestDesc.vDestPosition = vSpotPos;
 	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
+
+	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, CUI_Manager::MINI_DIALOG);
+	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+	TalkEvent();
+
 }
 
 CBTNode::NODE_STATE CSubQuestNode_Windmill09::Tick(const _float& fTimeDelta)
@@ -51,6 +74,17 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill09::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_EVERMORE)
 	{
+		m_fTime += fTimeDelta;
+
+		if (m_fTime >= m_fTalkDeleteTime)
+		{
+			Safe_Delete_Array(m_szpOwner);
+			Safe_Delete_Array(m_szpTalk);
+
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
+		}
+
+
 		if (m_pQuestDestSpot != nullptr)
 		{
 			m_pQuestDestSpot->Tick(fTimeDelta);
@@ -80,6 +114,16 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill09::Tick(const _float& fTimeDelta)
 
 void CSubQuestNode_Windmill09::LateTick(const _float& fTimeDelta)
 {
+}
+
+void CSubQuestNode_Windmill09::TalkEvent()
+{
+	switch (m_iTalkIndex)
+	{
+	case 0:
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Windmill_09_00.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		break;
+	}
 }
 
 CSubQuestNode_Windmill09* CSubQuestNode_Windmill09::Create()

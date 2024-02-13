@@ -7,6 +7,7 @@
 
 #include "Effect.h"
 #include "Particle.h"
+#include "Decal.h"
 
 CVfx_Witch_Skill_Rage02Sphere_Ready::CVfx_Witch_Skill_Rage02Sphere_Ready(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -39,6 +40,10 @@ HRESULT CVfx_Witch_Skill_Rage02Sphere_Ready::Initialize_Prototype()
 	m_pScaleOffset[TYPE_P_SMALL] = _float3(1.f, 1.f, 1.f);
 	m_pRotationOffset[TYPE_P_SMALL] = _float3(0.f, 0.f, 0.f);
 
+	m_pFrameTriger[TYPE_D_WARNING] = 0;
+	m_pPositionOffset[TYPE_D_WARNING] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_D_WARNING] = _float3(2.5f, 2.f, 2.5f);
+	m_pRotationOffset[TYPE_D_WARNING] = _float3(0.f, 0.f, 0.f);
 
 	return S_OK;
 }
@@ -67,6 +72,9 @@ void CVfx_Witch_Skill_Rage02Sphere_Ready::Tick(_float fTimeDelta)
 		m_fAccTime += fTimeDelta;
 		if (m_fAccTime > m_fCreateParticleTime)
 		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Witch_Rage02Sphere"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_WARNING], m_pScaleOffset[TYPE_D_WARNING], m_pRotationOffset[TYPE_D_WARNING], nullptr, &m_pWarningDecal);
+
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Witch_Rage02Sphere_Small"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SMALL], m_pScaleOffset[TYPE_P_SMALL], m_pRotationOffset[TYPE_P_SMALL], nullptr, &m_pParticle);
 			m_bIsCreateParticle = true;
@@ -95,6 +103,7 @@ void CVfx_Witch_Skill_Rage02Sphere_Ready::Tick(_float fTimeDelta)
 		{
 			Set_Dead(true);
 			m_pParticle->Set_Dead(true);
+			m_pWarningDecal->Set_Dead(true);
 		}
 	}
 }

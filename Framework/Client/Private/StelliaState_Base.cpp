@@ -12,6 +12,8 @@
 #include "Particle_Manager.h"
 #include "Decal.h"
 
+#include "Camera_Group.h"
+
 _uint CStelliaState_Base::m_iAtkIndex = 0;
 
 CStelliaState_Base::CStelliaState_Base(CStateMachine* pStateMachine)
@@ -140,15 +142,54 @@ void CStelliaState_Base::Generate_Explosion(_uint iCount)
 	}
 }
 
+
 void CStelliaState_Base::Reset_Transform()
 {
 	// 스텔리아의 현재 트랜스폼을 초기 생성 포지션과 룩으로 되돌림
 
 	Vec4 vOriginPos = m_pStellia->Get_OriginPos();
 	vOriginPos.y -= 2.5f; /* 공중에서 떨어지지 않도록 높이를 최대한 낮춤 */
-	
+
 	m_pTransformCom->Set_Position(vOriginPos);
 	m_pTransformCom->Set_LookAtByDir(m_pStellia->Get_OriginLook().ZeroY().ZeroW().Normalized());
+}
+
+void CStelliaState_Base::Set_LockOnStellia()
+{
+	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	if (nullptr != pFollowCam)
+	{
+		/* 기존 세팅 초기화 */
+		{
+			pFollowCam->Reset_WideView_To_DefaultView(true);
+			pFollowCam->Set_Default_Position();
+		}
+
+		/* 락온 설정 */
+		{
+			pFollowCam->Set_LockBoneNumber(3);
+
+			CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Stellia");
+			if (nullptr != pTarget)
+				pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Stellia, Cam_LookAt_Offset_LockOn_Stellia);
+		}
+	}
+}
+
+void CStelliaState_Base::Set_LockOffStellia()
+{
+	// 카메라 블렌딩 시작 
+	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+
+	if (nullptr != pFollowCam)
+	{
+		/* 락온이었다면 해제 */
+		if (pFollowCam->Is_LockOn())
+			pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+
+		pFollowCam->Reset_WideView_To_DefaultView(true);
+		pFollowCam->Set_Default_Position();
+	}
 }
 
 void CStelliaState_Base::Free()

@@ -39,6 +39,8 @@ protected:
 	void Generate_Explosion(_uint iCount);
 
 	void Reset_Transform(); // 스텔리아의 현재 트랜스폼을 초기 생성 포지션과 룩으로 되돌림
+	void Set_LockOnStellia();
+	void Set_LockOffStellia();
 
 protected:
 	CCharacter* m_pPlayer = nullptr; // 후에 플레이어로 교체.

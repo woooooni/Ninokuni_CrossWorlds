@@ -49,6 +49,7 @@ void CStelliaState_Rage2Start::Exit_State()
 {
 	/* 农府胶呕 积己 */
 	m_pStellia->Create_Crystals();
+	__super::Set_LockOffStellia();
 
 	/* Camera - 迫肺快 -> 啪轰 */
 	//CCamera_Top* pCamTop = dynamic_cast<CCamera_Top*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::TOP));

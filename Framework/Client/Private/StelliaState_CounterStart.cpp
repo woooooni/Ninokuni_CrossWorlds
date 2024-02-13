@@ -21,6 +21,8 @@ HRESULT CStelliaState_CounterStart::Initialize(const list<wstring>& AnimationLis
 
 void CStelliaState_CounterStart::Enter_State(void* pArg)
 {
+	__super::Set_LockOnStellia();
+
 	m_pStellia->Set_StelliaHit(true);
 
 	if (pArg != nullptr)

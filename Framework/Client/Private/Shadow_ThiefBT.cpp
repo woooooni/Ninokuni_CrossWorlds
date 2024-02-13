@@ -144,15 +144,15 @@ void CShadow_ThiefBT::Tick(const _float& fTimeDelta)
 
 void CShadow_ThiefBT::LateTick(const _float& fTimeDelta)
 {
-	if (KEY_TAP(KEY::M))
-	{
-		m_pRootNode->Init_Start();
-		m_pShadow_Thief->Set_StunTime(3.f);
-		m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"));
-		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, true);
-		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN, true);
-		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
-	}
+	//if (KEY_TAP(KEY::M))
+	//{
+	//	m_pRootNode->Init_Start();
+	//	m_pShadow_Thief->Set_StunTime(3.f);
+	//	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"));
+	//	m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, true);
+	//	m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN, true);
+	//	m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
+	//}
 }
 
 void CShadow_ThiefBT::Init_NodeStart()

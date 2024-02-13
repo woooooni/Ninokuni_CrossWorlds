@@ -273,16 +273,18 @@ void CStellia::Collision_Enter(const COLLISION_INFO& tInfo)
 	/* Counter */
 	if (m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_COUNTER])
 	{
-		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
-			tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK &&
-			tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::STUN)
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || OBJ_CHARACTER_PROJECTILE)
 		{
-			if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+			if (tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK &&
+				tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::STUN)
 			{
-				On_Damaged(tInfo);
-				CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-				m_pStateCom->Change_State(STELLIA_COUNTERSTART);
-				m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_COUNTER] = false;
+				if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+				{
+					On_Damaged(tInfo);
+					CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+					m_pStateCom->Change_State(STELLIA_COUNTERSTART);
+					m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_COUNTER] = false;
+				}
 			}
 		}
 	}

@@ -15,6 +15,8 @@ private:
 		TYPE_E_SPHERE,
 		TYPE_E_DRAIN,
 
+		TYPE_D_WARNING,
+
 		TYPE_E_SPHERE_SMALLER,
 		TYPE_E_DRAND_SMALLER,
 
@@ -43,6 +45,8 @@ private:
 	class CEffect* m_pBlackHole = nullptr;
 	class CEffect* m_pBlackHoleSmaller = nullptr;
 	class CEffect* m_pBlackHoleSmaller02 = nullptr;
+
+	class CDecal* m_pWarningDecal = nullptr;
 
 	_bool m_bIsCreate = false;
 	_bool m_bIsSmaller = false;

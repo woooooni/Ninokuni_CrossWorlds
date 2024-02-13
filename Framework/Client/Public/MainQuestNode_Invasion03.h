@@ -15,19 +15,10 @@ public:
 	virtual void	LateTick(const _float& fTimeDelta);
 
 private:
-	CBTNode::NODE_STATE	ProgressTalk(const _float& fTimeDelta);
-	virtual void    TalkEvent();
-
-private:
 	CGameObject* m_pKuu = nullptr;
 
-	_float m_fTalkChangeTime = 0.f;
-	_float m_fTime = 0.f;
-
-	_bool m_bIsShowDialog = false;
-
-	_int	m_iPrevKillCount = 0;
-	_int	m_iDestKillCount = 7;
+	_float m_fAccTime = 0.f;
+	_float m_fDeleteTime = 0.f;
 
 public:
 	static CMainQuestNode_Invasion03* Create();

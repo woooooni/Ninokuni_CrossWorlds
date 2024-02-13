@@ -141,7 +141,7 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 				Safe_Release(m_pPlayerGuard);
 			}
 
-			if (m_iBreakCount < 2)
+			if (m_iBreakCount < 1)
 			{
 				m_iBreakCount += 1;
 				m_pStellia->Set_IsPlayerGuardEvent(false);

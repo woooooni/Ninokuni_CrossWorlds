@@ -35,8 +35,8 @@ HRESULT CWitch_Rage02Sphere::Initialize_Prototype()
 HRESULT CWitch_Rage02Sphere::Initialize(void* pArg)
 {
 	// 테스트 끝나면 풀자.
-	if (pArg == nullptr)
-		return E_FAIL;
+	//if (pArg == nullptr)
+	//	return E_FAIL;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -50,6 +50,8 @@ HRESULT CWitch_Rage02Sphere::Initialize(void* pArg)
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
 
 	m_fActiveTime = 0.5f;
+
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("Witch_Rage02_Sphere.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, .75f, true);
 
 	return S_OK;
 }
@@ -74,6 +76,8 @@ void CWitch_Rage02Sphere::Tick(_float fTimeDelta)
 			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_BlackHole_Bomb"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pBomb);
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 			m_bIsBombCreate = true;
+
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Witch_Rage02_SphereBomb.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, .75f, true);
 		}
 	}
 
@@ -135,7 +139,7 @@ HRESULT CWitch_Rage02Sphere::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
-
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(161.5f, 2.311f, 147.5f, 1.f));
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))

@@ -129,6 +129,8 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 
 HRESULT CStellia_Crystal_Controller::Create_Crystals(CStellia* pStellia)
 {
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("CreateCrystal.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, .75f, true);
+
 	m_bIsProgress = true;
 
 	if (pStellia == nullptr)

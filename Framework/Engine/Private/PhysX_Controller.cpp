@@ -135,7 +135,7 @@ void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 void CPhysX_Controller::Set_Active(_bool bActive)
 {
 	//m_pPhysXController->getScene()->getSimulationStatistics()
-	GI->Wait_PhysX_Scene();
+	// GI->Wait_PhysX_Scene();
 	
 	m_pPhysXController->getActor()->setActorFlag(PxActorFlag::eVISUALIZATION, bActive);
 	m_pPhysXController->getActor()->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, !bActive);

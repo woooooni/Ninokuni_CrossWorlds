@@ -378,33 +378,41 @@ void CMonster::Search_Target(_float fTimeDelta)
 		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
 		CGameObject* pCarriage = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_DYNAMIC, TEXT("Ruby_Carriage"));
 	
-		// 최초 한 번만
-		if (!m_bIsEscort && m_tTargetDesc.pTarget == nullptr)
+		if (!m_bIsEscortHitPlayer)
 		{
-			m_tTargetDesc.pTarget = pCarriage;
-
-			if (m_tTargetDesc.pTarget != nullptr)
+			// 최초 한 번만
+			if (!m_bIsEscort && m_tTargetDesc.pTarget == nullptr)
 			{
-				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
-				m_bIsEscort = true;
+				m_tTargetDesc.pTarget = pCarriage;
+
+				if (m_tTargetDesc.pTarget != nullptr)
+				{
+					m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
+					m_bIsEscort = true;
+				}
+				else
+				{
+					m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+					m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
+					m_bIsEscort = true;
+
+				}
 			}
-			else
+
+			// 한 번이라도 플레이어게 맞았으면
+			if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT])
 			{
 				m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
-				m_bIsEscort = true;
+				if (m_tTargetDesc.pTarget != nullptr)
+					m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
 
+				m_bIsEscortHitPlayer = true;
 			}
 		}
-
-		// 한 번이라도 플레이어게 맞았으면
-		if (!m_bIsEscortHitPlayer && m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT])
+		else
 		{
 			m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-			if(m_tTargetDesc.pTarget != nullptr)
-				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
-
-			m_bIsEscortHitPlayer = true;
+			m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
 		}
 	}
 
