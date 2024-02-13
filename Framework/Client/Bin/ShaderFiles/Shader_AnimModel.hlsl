@@ -742,41 +742,29 @@ PS_OUT_PICKING PS_PICKING(PS_IN In)
 // Geom
 cbuffer LightTransform
 {
-    matrix lightTransform[3];
+    matrix CascadeViewProj[3];
 };
 
 struct GS_IN
 {
     float4 vPosition : SV_POSITION;
-    float2 vTexcoord : TEXCOORD0;
 };
 
 struct GS_OUT
 {
     float4 vPosition : SV_POSITION;
-    float2 vTexcoord : TEXCOORD0;
     uint RTIndex : SV_RenderTargetArrayIndex;
 };
 
 VS_CASCADE_OUT VS_CASCADE(VS_IN input)
 {
     VS_CASCADE_OUT Out = (VS_CASCADE_OUT) 0;
-
-    matrix matWV, matWVP;
-
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
-
     float4x4 BoneMatrix = Create_BoneMatrix_By_Lerp(input);
-    //float4x4 BoneMatrix = Create_BoneMatrix_By_Affine(In);
 
     vector vPosition = mul(vector(input.vPosition, 1.f), BoneMatrix);
-    vector vNormal = mul(vector(input.vNormal, 0.f), BoneMatrix);
-    vector vTangent = mul(vector(input.vTangent, 0.f), BoneMatrix);
-
-    Out.vPosition = mul(vPosition, matWVP);
-    Out.vTexcoord = input.vTexUV;
-
+    
+    Out.vPosition = vPosition;
+    
     return Out;
 }
 
@@ -789,24 +777,11 @@ void GS_CASCADE(triangle GS_IN input[3], inout TriangleStream<GS_OUT> output)
         element.RTIndex = face;
         for (int i = 0; i < 3; ++i)
         {
-            element.vPosition = mul(input[i].vPosition, lightTransform[face]);
-            element.vTexcoord = input[i].vTexcoord;
+            element.vPosition = mul(input[i].vPosition, CascadeViewProj[face]);
             output.Append(element);
         }
         output.RestartStrip();
     }
-}
-
-// Pixel
-struct PS_CASCADE_IN
-{
-    float4 vPosition : SV_POSITION;
-    float2 vTexcoord : TEXCOORD0;
-};
-
-void PS_CASCADE(PS_CASCADE_IN input)
-{
-    
 }
 
 RasterizerState CullClockWiseRS
@@ -1024,7 +999,7 @@ technique11 DefaultTechnique
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_CASCADE();
-        GeometryShader = NULL;
+        GeometryShader = compile gs_5_0 GS_CASCADE();
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = NULL;

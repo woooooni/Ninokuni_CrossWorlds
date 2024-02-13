@@ -29,7 +29,6 @@ Texture2D g_BlendTarget;
 Texture2D g_DistortionTarget;
 
 
-
 // Α¶Έν
 vector g_vCamPosition;
 
@@ -58,12 +57,28 @@ float g_fQuality = 16.f;
 float g_fRadialPower = 0.1f;
 
 // JunYeop
+Texture2DArray CascadeShadowMapTexture;
+SamplerComparisonState PCFSampler
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = CLAMP;
+    AddressV = CLAMP;
+    AddressW = CLAMP;
+    MaxAnisotropy = 1;
+    ComparisonFunc = LESS_EQUAL;
+    MaxLOD = 3.402823466e+38f;
+};
+
 cbuffer cbDirLightPS : register(b1)
 {
     float3 vLightAmbientDown : packoffset(c0);
     float3 vLightAmbientUp : packoffset(c1);
     float3 vDirToLight : packoffset(c2);
     float3 vDirLightColor : packoffset(c3);
+    float4x4 ToShadowSpace : packoffset(c4);
+    float4 ToCascadeOffsetX : packoffset(c8);
+    float4 ToCascadeOffsetY : packoffset(c9);
+    float4 ToCascadeScale : packoffset(c10);
 }
 
 cbuffer cbPointLightPixel
@@ -139,7 +154,40 @@ struct PS_OUT_LIGHT
 {
 	float4	vShade : SV_TARGET0;	
 	float4	vSpecular : SV_TARGET1;
+    float4  vShadow : SV_TARGET2;
 };
+
+float CascadeShadow(float3 position)
+{
+    float4 posShadowSpace = mul(float4(position, 1.0f), ToShadowSpace);
+    
+    float4 posCascadeSpaceX = (ToCascadeOffsetX + posShadowSpace.xxxx) * ToCascadeScale;
+    float4 posCascadeSpaceY = (ToCascadeOffsetY + posShadowSpace.yyyy) * ToCascadeScale;
+    
+    float4 inCascadeX = abs(posCascadeSpaceX) <= 1.0f;
+    float4 inCascadeY = abs(posCascadeSpaceY) <= 1.0f;
+    float4 inCascade = inCascadeX * inCascadeY;
+    
+    float4 bestCascadeMask = inCascade;
+    bestCascadeMask.yzw = (1.0f - bestCascadeMask.x) * bestCascadeMask.yzw;
+    bestCascadeMask.zw = (1.0f - bestCascadeMask.y) * bestCascadeMask.zw;
+    bestCascadeMask.w = (1.0f - bestCascadeMask.z) * bestCascadeMask.w;
+    float bestCascade = dot(bestCascadeMask, float4(0.0f, 1.0f, 2.0f, 3.0f));
+
+    float3 UVD;
+    UVD.x = dot(posCascadeSpaceX, bestCascadeMask);
+    UVD.y = dot(posCascadeSpaceY, bestCascadeMask);
+    UVD.z = posShadowSpace.z;
+    
+    UVD.xy = 0.5f * UVD.xy + 0.5f;
+    UVD.y = 1.0f - UVD.y;
+    
+    float shadow = CascadeShadowMapTexture.SampleCmpLevelZero(PCFSampler, float3(UVD.xy, bestCascade), UVD.z);
+    
+    shadow = saturate(shadow + 1.0f - any(bestCascadeMask));
+    
+    return shadow;
+}
 
 void CaclDirectional(float3 position, float3 normal, float3 ambientColor, inout PS_OUT_LIGHT output)
 {
@@ -154,6 +202,10 @@ void CaclDirectional(float3 position, float3 normal, float3 ambientColor, inout 
     float NDotH = saturate(dot(HalfWay, normal));
 	// Pow -> (NDotH, specPow) * SpecIntensity(SpecularMap Sampling)
     output.vSpecular = float4(vDirLightColor.rgb * pow(NDotH, 10.0f) * 1.0f, 1.0f);
+    
+    float shadowAtt;
+    shadowAtt = CascadeShadow(position);
+    output.vShadow = float4(shadowAtt, shadowAtt, shadowAtt, 1.0f);
 }
 
 float3 CaclAmbient(float3 normal)
@@ -188,6 +240,9 @@ void CaclPoint(float3 position, float3 normal, inout PS_OUT_LIGHT output)
     
     output.vShade *= Attn;
     output.vSpecular *= Attn;
+    
+    output.vShadow = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
 }
 
 void CaclSpot(float3 position, float3 normal, inout PS_OUT_LIGHT output)
@@ -218,6 +273,8 @@ void CaclSpot(float3 position, float3 normal, inout PS_OUT_LIGHT output)
 	
     output.vShade *= Attn * conAtt;
     output.vSpecular *= Attn * conAtt;
+    
+    output.vShadow = float4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN input)

@@ -98,6 +98,7 @@ HRESULT CBuilding::Render_ShadowDepth()
 	return S_OK;
 }
 
+
 HRESULT CBuilding::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	if (true == m_bEnable)
@@ -171,6 +172,30 @@ HRESULT CBuilding::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_
 		/*if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 			return E_FAIL;*/
 		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, 10)))
+			return E_FAIL;
+	}
+	return S_OK;
+}
+
+HRESULT CBuilding::Render_Instance_CascadeShadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const Matrix mCascadeShadowGenMat[3])
+{
+	if (true == m_bEnable)
+		return S_OK;
+
+	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
+		return E_FAIL;
+
+	if (FAILED(pInstancingShader->Bind_Matrices("CascadeViewProj", mCascadeShadowGenMat, 3)))
+		return E_FAIL;
+
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+		/*if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+			return E_FAIL;*/
+		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, 13)))
 			return E_FAIL;
 	}
 	return S_OK;

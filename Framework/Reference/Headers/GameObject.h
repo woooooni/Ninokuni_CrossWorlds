@@ -40,7 +40,7 @@ public:
 	virtual HRESULT Render_Minimap() { return S_OK; }
 
 	// Cascade Shadow Render Temp
-	virtual HRESULT Render_Cascade_Depth(const Matrix lightViewMatrix, const Matrix LightOrthoMatrix) { return S_OK; }
+	virtual HRESULT Render_Cascade_Depth(const Matrix mCascadeShadowGenMat[3]) { return S_OK; }
 	virtual HRESULT Render_Instance_AnimModel_CascadeShadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer,
 		const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc, const Matrix lightMatrix[3]) {
 		return S_OK;

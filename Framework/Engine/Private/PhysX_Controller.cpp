@@ -139,6 +139,7 @@ void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 void CPhysX_Controller::Set_Active(_bool bActive)
 {
 	//m_pPhysXController->getScene()->getSimulationStatistics()
+
 #ifndef _DEBUG
 	GI->Wait_PhysX_Scene();
 #endif

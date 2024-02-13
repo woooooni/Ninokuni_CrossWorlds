@@ -1,5 +1,7 @@
 #include "..\Public\Target_Manager.h"
 #include "RenderTarget.h"
+#include "CascadeMatrixSet.h"
+#include "GameInstance.h"
 
 IMPLEMENT_SINGLETON(CTarget_Manager)
 
@@ -19,6 +21,9 @@ HRESULT CTarget_Manager::Reserve_Manager(ID3D11Device* pDevice, _uint iWinSizeX,
 	if (FAILED(Ready_UI_DSV(pDevice, iWinSizeX, iWinSizeY)))
 		return E_FAIL;
 
+
+	if (FAILED(Ready_Cascade_Initialize(pDevice)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -124,6 +129,57 @@ HRESULT CTarget_Manager::Ready_UI_DSV(ID3D11Device* pDevice, _uint iWinSizeX, _u
 		return E_FAIL;
 
 	Safe_Release(pDSV);
+
+	return S_OK;
+}
+
+HRESULT CTarget_Manager::Ready_Cascade_Initialize(ID3D11Device* pDevice)
+{
+	const int iShadowMapSize = 1024;
+
+	D3D11_TEXTURE2D_DESC dtd = {
+		iShadowMapSize,
+		iShadowMapSize,
+		1,
+		3,
+		DXGI_FORMAT_R32_TYPELESS,
+		1,
+		0,
+		D3D11_USAGE_DEFAULT,
+		D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE,
+		0,
+		0
+	};
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDepthView =
+	{
+		DXGI_FORMAT_D32_FLOAT,
+		D3D11_DSV_DIMENSION_TEXTURE2DARRAY,
+		0
+	};
+	D3D11_SHADER_RESOURCE_VIEW_DESC descShaderView =
+	{
+		DXGI_FORMAT_R32_FLOAT,
+		D3D11_SRV_DIMENSION_TEXTURE2DARRAY,
+		0,
+		0
+	};
+
+	if (FAILED(pDevice->CreateTexture2D(&dtd, nullptr, &m_pCascadeDepthStencilRT)))
+		return E_FAIL;
+
+	descDepthView.Texture2DArray.ArraySize = 3;
+	if (FAILED(pDevice->CreateDepthStencilView(m_pCascadeDepthStencilRT, &descDepthView, &m_pCascadeDepthStencilDSV)))
+		return E_FAIL;
+
+	descShaderView.Texture2DArray.FirstArraySlice = 0;
+	descShaderView.Texture2DArray.ArraySize = 3;
+	descShaderView.Texture2DArray.MipLevels = 1;
+	if (FAILED(pDevice->CreateShaderResourceView(m_pCascadeDepthStencilRT, &descShaderView, &m_pCascadeDepthStencilSRV)))
+		return E_FAIL;
+
+	m_pCascadeMatrixSet = new CCascadeMatrixSet();
+	m_pCascadeMatrixSet->Init(iShadowMapSize);
 
 	return S_OK;
 }
@@ -325,6 +381,52 @@ HRESULT CTarget_Manager::Begin_UI_MRT(ID3D11DeviceContext* pContext, const wstri
 //	return	S_OK;
 //}
 
+HRESULT CTarget_Manager::Begin_Cascade_MRT(ID3D11DeviceContext* pContext, const Vec3& vDirectionalDir)
+{
+	const int iShadowMapSize = 1024;
+
+	D3D11_VIEWPORT vp[3] =
+	{ { 0, 0, iShadowMapSize, iShadowMapSize, 0.0f, 1.0f },
+		{ 0, 0, iShadowMapSize, iShadowMapSize, 0.0f, 1.0f },
+		{ 0, 0, iShadowMapSize, iShadowMapSize, 0.0f, 1.0f } };
+
+	pContext->RSSetViewports(3, vp);
+	
+	pContext->ClearDepthStencilView(m_pCascadeDepthStencilDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	ID3D11RenderTargetView* nullRT = nullptr;
+	pContext->OMSetRenderTargets(1, &nullRT, m_pCascadeDepthStencilDSV);
+
+	// 매트릭스 업데이트
+	m_pCascadeMatrixSet->Tick(vDirectionalDir);
+
+
+	return S_OK;
+}
+
+HRESULT CTarget_Manager::End_Cascade_MRT(ID3D11DeviceContext* pContext)
+{
+	pContext->OMSetRenderTargets(8, m_pPrevRTVs, m_pDSV);
+
+	D3D11_VIEWPORT			ViewPortDesc;
+	ZeroMemory(&ViewPortDesc, sizeof(D3D11_VIEWPORT));
+	ViewPortDesc.TopLeftX = 0;
+	ViewPortDesc.TopLeftY = 0;
+	ViewPortDesc.Width = 1600.f;
+	ViewPortDesc.Height = 900.f;
+	ViewPortDesc.MinDepth = 0.f;
+	ViewPortDesc.MaxDepth = 1.f;
+
+	pContext->RSSetViewports(1, &ViewPortDesc);
+
+	return S_OK;
+}
+
+HRESULT CTarget_Manager::Bind_Cascade_SRV(CShader* pShader, const _char* pConstantName)
+{
+	return pShader->Bind_Texture(pConstantName, m_pCascadeDepthStencilSRV);
+}
+
 HRESULT CTarget_Manager::Clear_RenderTarget(const wstring& strTargetTag)
 {
 	CRenderTarget* pRenderTarget = Find_RenderTarget(strTargetTag);
@@ -438,4 +540,9 @@ void CTarget_Manager::Free()
 	Safe_Release(m_pMinimapDSV);
 	Safe_Release(m_pShadowDSV);
 	Safe_Release(m_pUIDSV);
+
+	Safe_Release<ID3D11Texture2D*>(m_pCascadeDepthStencilRT);
+	Safe_Release<ID3D11DepthStencilView*>(m_pCascadeDepthStencilDSV);
+	Safe_Release<ID3D11ShaderResourceView*>(m_pCascadeDepthStencilSRV);
+	Safe_Release<CCascadeMatrixSet*>(m_pCascadeMatrixSet);
 }

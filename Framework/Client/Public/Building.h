@@ -23,6 +23,9 @@ public:
 	virtual HRESULT Render_Instance(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
 	virtual HRESULT Render_Instance_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
 
+
+	virtual HRESULT Render_Instance_CascadeShadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const Matrix mCascadeShadowGenMat[3]);
+
 	virtual HRESULT Render_Picking() override;
 
 public:

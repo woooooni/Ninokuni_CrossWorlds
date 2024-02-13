@@ -68,16 +68,6 @@ private:
 private:
 	_bool m_bDisappear = false;
 
-
-public:
-	void CascadeShadowGen(ID3D11DeviceContext* pContext);
-	HRESULT Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-
-private:
-	ID3D11Texture2D* m_pCascadeDepthStencilRT = nullptr;
-	ID3D11DepthStencilView* m_pCascadeDepthStencilDSV = nullptr;
-	ID3D11ShaderResourceView* m_pCascadeDepthStencilSRV = nullptr;
-
 public:
 	virtual void Free() override;
 };

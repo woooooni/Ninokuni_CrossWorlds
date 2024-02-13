@@ -12,6 +12,7 @@
 #include <random>
 #include "Engine_Defines.h"
 #include <DirectXPackedVector.h>
+#include "CascadeMatrixSet.h"
 
 
 CRenderer::CRenderer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -262,6 +263,9 @@ HRESULT CRenderer::Draw_World()
 			return E_FAIL;
 
 		if (FAILED(Render_Shadow())) // MRT_Shadow -> ShadowDepth
+			return E_FAIL;
+
+		if (FAILED(Render_Cascade_Shadow()))
 			return E_FAIL;
 
 		if (FAILED(Render_Lights())) // MRT_Lights -> Shade / Specular
@@ -782,6 +786,72 @@ HRESULT CRenderer::Render_Shadow_Caculation()
 	return S_OK;
 }
 
+HRESULT CRenderer::Render_Cascade_Shadow()
+{
+	// Viewport -> RSSet -> OM DepthStencilSet -> Clear -> Matrix Tick -> Shader에 값에 Bind.
+	// 애초에 RTV를 사용하지 않으니까 OMGetRenderTarget 이런 과정이 불필요하고, 마지막에 다시 Set만 해주면 될 듯.
+	//m_pLight_Manager->CascadeShadowGen(m_pContext, m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]);
+	const LIGHTDESC* pLighrDesc = m_pLight_Manager->Get_LightDesc(0);
+	if (nullptr == pLighrDesc)
+		return S_OK;
+
+	Vec3 vDirectionalLight = pLighrDesc->vTempDirection;
+
+	if (FAILED(m_pTarget_Manager->Begin_Cascade_MRT(m_pContext, vDirectionalLight)))
+		return E_FAIL;
+
+	Matrix CascadeShadowGenMat[3];
+
+	for (_uint i = 0; i < 3; ++i)
+		CascadeShadowGenMat[i] = *m_pTarget_Manager->Get_CascadeMatrix()->GetWorldToCascadeProj(i);
+
+	
+	for (auto& iter : m_RenderObjects[RENDER_CASCADE])
+	{
+		// 여기에 ShadowMat를 던져서 그린다.?
+		if (FAILED(iter->Render_Cascade_Depth(CascadeShadowGenMat)))
+			return E_FAIL;
+		
+		Safe_Release(iter);
+	}
+	m_RenderObjects[RENDER_CASCADE].clear();
+
+	// 이 시점에서는 아무것도 안 그려짐. -> Depth 기록만했음.
+	for (auto& Pair : m_Render_Instancing_Objects[RENDER_CASCADE])
+	{
+		if (nullptr == Pair.second.pGameObject)
+			continue;
+
+		if (m_bShadowDraw)
+		{
+			if (Pair.second.eShaderType == INSTANCING_SHADER_TYPE::ANIM_MODEL)
+			{
+				if (FAILED(m_pIntancingShaders[Pair.second.eShaderType]->Bind_RawValue("g_AnimInstancingDesc", Pair.second.AnimInstanceDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * Pair.second.AnimInstanceDesc.size())))
+					return E_FAIL;
+			}
+
+			if (FAILED(Pair.second.pGameObject->Render_Instance_CascadeShadow(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, CascadeShadowGenMat)))
+				return E_FAIL;
+
+			if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel_Shadow(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc, Pair.second.AnimInstanceDesc)))
+				return E_FAIL;
+		}
+
+		Pair.second.TweenDesc.clear();
+		Pair.second.WorldMatrices.clear();
+		Pair.second.AnimInstanceDesc.clear();
+		Pair.second.EffectInstancingDesc.clear();
+
+		Safe_Release(Pair.second.pGameObject);
+		Pair.second.pGameObject = nullptr;
+	}
+
+	if (FAILED(m_pTarget_Manager->End_Cascade_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 // MRT_GameObjects
 HRESULT CRenderer::Render_NonBlend()
 {
@@ -860,6 +930,23 @@ HRESULT CRenderer::Render_Lights()
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Normal"), "g_NormalTarget")))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Depth"), "g_DepthTarget")))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Bind_Cascade_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], "CascadeShadowMapTexture")))
+		return E_FAIL;
+
+	CCascadeMatrixSet* pCascadeMatrix = m_pTarget_Manager->Get_CascadeMatrix();
+	const Matrix mToShadowSpace = *pCascadeMatrix->GetWorldToShadowSpace();
+	Vec4 vCascadeOffsetX = pCascadeMatrix->GetToCascadeOffsetX();
+	Vec4 vCascadeOffsetY = pCascadeMatrix->GetToCascadeOffsetY();
+	Vec4 vCascadeScale = pCascadeMatrix->GetToCascadeScale();
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("ToShadowSpace", &mToShadowSpace)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("ToCascadeOffsetX", &vCascadeOffsetX, sizeof(Vec4))))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("ToCascadeOffsetY", &vCascadeOffsetY, sizeof(Vec4))))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("ToCascadeScale", &vCascadeScale, sizeof(Vec4))))
 		return E_FAIL;
 
 	if(FAILED(m_pLight_Manager->Render(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
@@ -2244,9 +2331,9 @@ HRESULT CRenderer::Create_Target()
 		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
-	/* For.Target_Specular */
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Ambient"),
-		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Cascade_Shadow"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f))))
 		return E_FAIL;
 #pragma endregion
 
@@ -2558,7 +2645,7 @@ HRESULT CRenderer::Set_TargetsMrt()
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Lights"), TEXT("Target_Specular"))))
 			return E_FAIL;
 
-		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Lights"), TEXT("Target_Ambient"))))
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Lights"), TEXT("Target_Cascade_Shadow"))))
 			return E_FAIL;
 	}
 
@@ -2834,7 +2921,7 @@ HRESULT CRenderer::Set_Debug()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Specular"),               (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Ambient"),				 (fSizeX / 2.f) + (fSizeX * 2), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Cascade_Shadow"),				 (fSizeX / 2.f) + (fSizeX * 2), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
 		return E_FAIL;
 	// MRT_Shadow
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_ShadowDepth"),                 (fSizeX / 2.f) + (fSizeX * 3), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))

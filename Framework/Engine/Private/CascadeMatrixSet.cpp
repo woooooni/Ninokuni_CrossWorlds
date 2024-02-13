@@ -11,17 +11,17 @@ void CCascadeMatrixSet::Init(int iShadowMapSize)
 {
 	m_iShadowMapSize = iShadowMapSize;
 
-	// Set the range values
-	//m_arrCascadeRanges[0] = g_Camera.GetNearClip();
-	//m_arrCascadeRanges[1] = 10.0f;
-	//m_arrCascadeRanges[2] = 25.0f;
-	//m_arrCascadeRanges[3] = m_fCascadeTotalRange;
+	//Set the range values
+	m_arrCascadeRanges[0] = 0.2f;
+	m_arrCascadeRanges[1] = 10.0f;
+	m_arrCascadeRanges[2] = 25.0f;
+	m_arrCascadeRanges[3] = 1000.0f;
 
-	//for (int i = 0; i < m_iTotalCascades; i++)
-	//{
-	//	m_arrCascadeBoundCenter[i] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	//	m_arrCascadeBoundRadius[i] = 0.0f;
-	//}
+	for (int i = 0; i < m_iTotalCascades; i++)
+	{
+		m_arrCascadeBoundCenter[i] = Vec3(0.0f, 0.0f, 0.0f);
+		m_arrCascadeBoundRadius[i] = 0.0f;
+	}
 }
 
 void CCascadeMatrixSet::Tick(const Vec3& vDirectionalDir)
@@ -35,8 +35,8 @@ void CCascadeMatrixSet::Tick(const Vec3& vDirectionalDir)
 	if (nullptr == pCamera)
 		return;
 
-	Vec3 vCamLook = Vec3(pCamera->Get_LookAt());
-	Vec3 vCamEye = Vec3(pCamera->Get_Component_Transform()->Get_Position());
+	Vec3 vCamLook = Vec3(pCamera->Get_Transform()->Get_Look());
+	Vec3 vCamEye = Vec3(pCamera->Get_Transform()->Get_Position());
 	_float fCurFar = pCamera->Get_ProjDesc().fFar;
 
 	Vec3 vWorldCenter = vCamEye + vCamLook * m_fCascadeTotalRange * 0.5f;
@@ -63,7 +63,7 @@ void CCascadeMatrixSet::Tick(const Vec3& vDirectionalDir)
 
 	// For each cascade find the transformation from shadow to cascade space
 	Matrix mShadowViewInv;
-	mShadowViewInv = mShadowViewInv.Transpose();
+	mShadowViewInv = mShadowView.Invert();
 	for (int iCascadeIdx = 0; iCascadeIdx < m_iTotalCascades; iCascadeIdx++)
 	{
 		Matrix cascadeTrans;
@@ -92,8 +92,8 @@ void CCascadeMatrixSet::Tick(const Vec3& vDirectionalDir)
 			vCascadeCenterShadowSpace = Vec3::Transform(m_arrCascadeBoundCenter[iCascadeIdx], m_WorldToShadowSpace);
 
 			// Update the translation from shadow to cascade space
-			(&m_vToCascadeOffsetX.x)[iCascadeIdx] -= vCascadeCenterShadowSpace.x;
-			(&m_vToCascadeOffsetY.x)[iCascadeIdx] -= vCascadeCenterShadowSpace.y;
+			(&m_vToCascadeOffsetX.x)[iCascadeIdx] = -vCascadeCenterShadowSpace.x;
+			(&m_vToCascadeOffsetY.x)[iCascadeIdx] = -vCascadeCenterShadowSpace.y;
 			cascadeTrans = cascadeTrans.CreateTranslation((&m_vToCascadeOffsetX.x)[iCascadeIdx], (&m_vToCascadeOffsetY.x)[iCascadeIdx], 0.0f);
 			//m_vToCascadeOffsetX.m128_f32[iCascadeIdx] = -vCascadeCenterShadowSpace.x;
 			//m_vToCascadeOffsetY.m128_f32[iCascadeIdx] = -vCascadeCenterShadowSpace.y;
@@ -163,6 +163,113 @@ void CCascadeMatrixSet::Tick(const Vec3& vDirectionalDir)
 	}
 }
 
+void CCascadeMatrixSet::TestTick()
+{
+	CCamera_Manager* pCameraManager = GET_INSTANCE(CCamera_Manager);
+	if (nullptr == pCameraManager)
+		return;
+
+	CCamera* pCamera = pCameraManager->Get_CurCamera();
+	if (nullptr == pCamera)
+		return;
+
+
+	_float fFov = pCamera->Get_Fov();
+	_float fAspect = pCamera->Get_ProjDesc().fAspect;
+	const _int FRUSTUN_VERTEX_NUM = 8;
+	Vec3 frustumPoint[FRUSTUN_VERTEX_NUM];
+	Matrix mLightViewMatrix = GI->GetViewLightMatrix();
+
+	const _float CASCADE_PERCENT[m_iTotalCascades + 1] = { 0.0f, 0.05f, 0.15f, 0.6f };
+	for (int nCascadeindex = 0; nCascadeindex < m_iTotalCascades; ++nCascadeindex)
+	{
+
+		_float fNearPlane = 0;
+		_float fFarPlane = pCamera->Get_ProjDesc().fFar * CASCADE_PERCENT[nCascadeindex + 1];
+		_float fFarY = tan(fFov / 2.0f) * fFarPlane;
+		_float fFarX = fFarY / fAspect;
+
+		frustumPoint[0] = XMVectorSet(fNearPlane, fNearPlane, fNearPlane, 1.0f); 
+		frustumPoint[1] = XMVectorSet(fNearPlane, fNearPlane, fNearPlane, 1.0f); 
+		frustumPoint[2] = XMVectorSet(fNearPlane, fNearPlane, fNearPlane, 1.0f); 
+		frustumPoint[3] = XMVectorSet(fNearPlane, fNearPlane, fNearPlane, 1.0f); 
+		frustumPoint[4] = XMVectorSet(fFarX, fFarY, fFarPlane, 1.0f);
+		frustumPoint[5] = XMVectorSet(fFarX, -fFarY, fFarPlane, 1.0f);
+		frustumPoint[6] = XMVectorSet(-fFarX, fFarY, fFarPlane, 1.0f);
+		frustumPoint[7] = XMVectorSet(-fFarX, -fFarY, fFarPlane, 1.0f); 
+
+
+		Matrix mCamviewMatrix = GI->Get_TransformMatrix(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+		Matrix invenseViewMatrix = mCamviewMatrix.Invert();
+		XMVECTOR lightVsSceneAABBMax = XMVectorSet(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN);
+		XMVECTOR lightVsSceneAABBMin = XMVectorSet(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
+		Vec3 tempFrustumPoint;
+
+		for (_int nFrustumindex = 0; nFrustumindex < FRUSTUN_VERTEX_NUM; ++nFrustumindex)
+		{
+			// 절두체를 월드로 변환.
+			frustumPoint[nFrustumindex] = Vec3::Transform(frustumPoint[nFrustumindex], invenseViewMatrix);
+			//frustumPoint[nFrustumindex] = XMVector3TransformCoord(frustumPoint[nFrustumindex], invenseViewMatrix);
+		}
+
+		for (_int nFrustumindex = 0; nFrustumindex < FRUSTUN_VERTEX_NUM; ++nFrustumindex)
+		{
+			// 절두체를 월드에서 라이트 뷰 매트릭스로 변환.
+			tempFrustumPoint = Vec3::Transform(frustumPoint[nFrustumindex], mLightViewMatrix);
+			//tempFrustumPoint = XMVector3TransformCoord(frustumPoint[nFrustumindex], mLightViewMatrix);
+			lightVsSceneAABBMax = XMVectorMax(lightVsSceneAABBMax, tempFrustumPoint);
+			lightVsSceneAABBMin = XMVectorMin(lightVsSceneAABBMin, tempFrustumPoint);
+		}
+
+		_float fLightVsSceneAABBMinZ = XMVectorGetZ(lightVsSceneAABBMin);
+		_float fLightVsSceneAABBMaxZ = XMVectorGetZ(lightVsSceneAABBMax);
+
+		XMVECTOR vDiagonal = frustumPoint[0] - frustumPoint[7];
+		vDiagonal = XMVector3Length(vDiagonal);
+		_float fCascadeDiagonal = XMVectorGetX(vDiagonal);
+		Vec4 vBorderoffset = (vDiagonal - (lightVsSceneAABBMax - lightVsSceneAABBMin)) * XMVectorSet(0.5f,0.5f,0.0f,0.0f);
+
+		lightVsSceneAABBMax += vBorderoffset;
+		lightVsSceneAABBMin -= vBorderoffset;
+
+
+		//lightVsSceneAABBMax lightVsSceneAABBMin
+		//(1)OrthoViewFrustum ShadowMap
+		//fWorldUnitPerTexel -->OrthoViewFrustum ShadowMap
+		_float fWorldUnitPerTexel = fCascadeDiagonal / static_cast<_float>(1024.0f);
+		Vec4 vWorldUnitPerTexel = Vec4(fWorldUnitPerTexel, fWorldUnitPerTexel, 0.0f, 0.0f);
+		//Vec4 vWorldUnitPerTexel = XMVectorSet(fWorldUnitPerTexel, fWorldUnitPerTexel, 0, 0);
+
+		//(2)lightVsSceneAABBMax lightVsSceneAABBMin fWorldUnitPerTexel
+		//(1)(2)ightVsSceneAABBMax lightVsSceneAABBMin
+		
+		lightVsSceneAABBMin /= vWorldUnitPerTexel;
+		lightVsSceneAABBMin = XMVectorFloor(lightVsSceneAABBMin);
+		lightVsSceneAABBMin *= vWorldUnitPerTexel;
+
+		lightVsSceneAABBMax /= vWorldUnitPerTexel;
+		lightVsSceneAABBMax = XMVectorFloor(lightVsSceneAABBMax);
+		lightVsSceneAABBMax *= vWorldUnitPerTexel;
+
+
+		Vec3 f3LightVsSceneAABBMax;
+		Vec3 f3LightVsSceneAABBMin;
+		f3LightVsSceneAABBMax = lightVsSceneAABBMax;
+		f3LightVsSceneAABBMin = lightVsSceneAABBMin;
+		//XMStoreFloat3(&f3LightVsSceneAABBMax, lightVsSceneAABBMax);
+		//XMStoreFloat3(&f3LightVsSceneAABBMin, lightVsSceneAABBMin);
+
+		//GCamera->mFarPlane * 0.5f
+		//GCamera->mFarPlane * 0.15 Othrho ZBuffer 1.0
+		m_ArrayLightOrthoMatrix[nCascadeindex] = XMMatrixOrthographicOffCenterLH
+		(
+			f3LightVsSceneAABBMin.x, f3LightVsSceneAABBMax.x,
+			f3LightVsSceneAABBMin.y, f3LightVsSceneAABBMax.y,
+			fLightVsSceneAABBMinZ - pCamera->Get_ProjDesc().fFar * 0.5f, fLightVsSceneAABBMaxZ + pCamera->Get_ProjDesc().fFar * 0.15f
+		);
+	}
+}
+
 void CCascadeMatrixSet::ExtractFrustumPoints(_float fNear, _float fFar, Vec3* arrFrustumCorners)
 {
 	CCamera_Manager* pCameraManager = GET_INSTANCE(CCamera_Manager);
@@ -174,16 +281,16 @@ void CCascadeMatrixSet::ExtractFrustumPoints(_float fNear, _float fFar, Vec3* ar
 		return;
 
 	// Get the camera bases
-	const Vec3& camPos = pCamera->Get_Component_Transform()->Get_Position();
-	const Vec3& camRight = pCamera->Get_Component_Transform()->Get_Right();
-	const Vec3& camUp = pCamera->Get_Component_Transform()->Get_Up();
-	const Vec3& camForward = pCamera->Get_Component_Transform()->Get_Look();
+	const Vec3& camPos = Vec3(pCamera->Get_Transform()->Get_Position());
+	const Vec3& camRight = pCamera->Get_Transform()->Get_Right();
+	const Vec3& camUp = pCamera->Get_Transform()->Get_Up();
+	const Vec3& camForward = pCamera->Get_Transform()->Get_Look();
 
 	_float fAspect = pCamera->Get_ProjDesc().fAspect;
 	_float fFov = pCamera->Get_Fov();
 	// Calculate the tangent values (this can be cached
-	const float fTanFOVX = tanf(fAspect * fFov);
-	const float fTanFOVY = tanf(fAspect);
+	const _float fTanFOVX = tanf(fAspect * fFov);
+	const _float fTanFOVY = tanf(fAspect);
 
 	// Calculate the points on the near plane
 	arrFrustumCorners[0] = camPos + (-camRight * fTanFOVX + camUp * fTanFOVY + camForward) * fNear;
@@ -210,16 +317,16 @@ void CCascadeMatrixSet::ExtractFrustumBoundSphere(_float fNear, _float fFar, Vec
 		return;
 
 	// Get the camera bases
-	const Vec3& camPos = pCamera->Get_Component_Transform()->Get_Position();
-	const Vec3& camRight = pCamera->Get_Component_Transform()->Get_Right();
-	const Vec3& camUp = pCamera->Get_Component_Transform()->Get_Up();
-	const Vec3& camForward = pCamera->Get_Component_Transform()->Get_Look();
+	const Vec3& camPos = Vec3(pCamera->Get_Transform()->Get_Position());
+	const Vec3& camRight = pCamera->Get_Transform()->Get_Right();
+	const Vec3& camUp = pCamera->Get_Transform()->Get_Up();
+	const Vec3& camForward = pCamera->Get_Transform()->Get_Look();
 
 	_float fAspect = pCamera->Get_ProjDesc().fAspect;
 	_float fFov = pCamera->Get_Fov();
 	// Calculate the tangent values (this can be cached as long as the FOV doesn't change)
-	const float fTanFOVX = tanf(fAspect * fFov);
-	const float fTanFOVY = tanf(fAspect);
+	const _float fTanFOVX = tanf(fAspect * fFov);
+	const _float fTanFOVY = tanf(fAspect);
 
 	// The center of the sphere is in the center of the frustum
 	vBoundCenter = camPos + camForward * (fNear + 0.5f * (fNear + fFar));

@@ -17,6 +17,16 @@ public:
 
 	static const int m_iTotalCascades = 3;
 public:
+	const Matrix* GetWorldToShadowSpace() const { return &m_WorldToShadowSpace; }
+	const Matrix* GetWorldToCascadeProj(_int i) const { return &m_arrWorldToCascadeProj[i]; }
+	const Vec4 GetToCascadeOffsetX() const { return m_vToCascadeOffsetX; }
+	const Vec4 GetToCascadeOffsetY() const { return m_vToCascadeOffsetY; }
+	const Vec4 GetToCascadeScale() const { return m_vToCascadeScale; }
+
+
+public:
+	Matrix Get_LightOrthoMatrix(_int i) { return m_ArrayLightOrthoMatrix[i]; }
+	void TestTick();
 
 private:
 	void ExtractFrustumPoints(_float fNear, _float fFar, Vec3* arrFrustumCorners);
@@ -36,11 +46,16 @@ private:
 	Matrix m_WorldToShadowSpace;
 	Matrix m_arrWorldToCascadeProj[m_iTotalCascades];
 
-	Vec3 m_vToCascadeOffsetX = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-	Vec3 m_vToCascadeOffsetY = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-	Vec3 m_vToCascadeScale = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	Vec4 m_vToCascadeOffsetX = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	Vec4 m_vToCascadeOffsetY = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	Vec4 m_vToCascadeScale = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 
 	_bool m_bAntiFlickerOn = true;
+
+
+private:
+	Matrix m_ArrayLightOrthoMatrix[m_iTotalCascades];
+
 public:
 	virtual void Free() override;
 };
