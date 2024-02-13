@@ -324,12 +324,12 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID, const _uin
 			}
 			Start_CutScenes(CutSceneNames, true);
 
-			///* Sound */
-			//{
-			//	GI->Play_Sound(TEXT("Evermore_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
-			//	m_fBgmPrevVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
-			//	GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume * 0.6f);
-			//}
+			/* Sound */
+			{
+				GI->Play_Sound(TEXT("Evermore_Ending_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
+				//m_fBgmPrevVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
+				//GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume * 0.6f);
+			}
 		}
 	}
 		break;
