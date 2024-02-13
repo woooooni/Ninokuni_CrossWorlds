@@ -140,6 +140,17 @@ void CStelliaState_Base::Generate_Explosion(_uint iCount)
 	}
 }
 
+void CStelliaState_Base::Reset_Transform()
+{
+	// 스텔리아의 현재 트랜스폼을 초기 생성 포지션과 룩으로 되돌림
+
+	Vec4 vOriginPos = m_pStellia->Get_OriginPos();
+	vOriginPos.y -= 2.5f; /* 공중에서 떨어지지 않도록 높이를 최대한 낮춤 */
+	
+	m_pTransformCom->Set_Position(vOriginPos);
+	m_pTransformCom->Set_LookAtByDir(m_pStellia->Get_OriginLook().ZeroY().ZeroW().Normalized());
+}
+
 void CStelliaState_Base::Free()
 {
 	__super::Free();

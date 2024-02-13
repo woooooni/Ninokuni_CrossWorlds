@@ -36,6 +36,8 @@ void CState_CurlingGame_Move_Character::Enter_State(void* pArg)
 		
 		if (FAILED(m_pManager->Change_Turn()))
 			return;
+
+		GI->Play_BGM(TEXT("BGM_Field_Village_Peace_2.ogg"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
 	}
 	
 	if (!m_pManager->m_bPlayerTurn)

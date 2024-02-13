@@ -331,6 +331,7 @@ void CSound_Manager::Tick_BgmBlending(_float fTimeDelta)
 
 				/* 다음 bgm 세팅 */
 				FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, m_pNextBgmKey, FALSE, &m_pChannelArr[SOUND_BGM_CURR]);
+				FMOD_Channel_SetMode(m_pChannelArr[SOUND_BGM_CURR], FMOD_LOOP_NORMAL);
 				FMOD_System_Update(m_pSystem);
 
 				m_pNextBgmKey = nullptr;

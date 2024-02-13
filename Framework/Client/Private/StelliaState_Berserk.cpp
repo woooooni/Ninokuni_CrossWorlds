@@ -27,10 +27,7 @@ void CStelliaState_Berserk::Enter_State(void* pArg)
 	///* 연출 위해 포지션 중앙으로 세팅 */
 	//{
 	//	/* 공중에서 떨어지지 않도록 높이를 최대한 낮춤 */
-	//	Vec4 vOriginPos = m_pStellia->Get_OriginPos();
-	//	vOriginPos.y -= 2.5f;
-	//	m_pTransformCom->Set_Position(vOriginPos);
-	//	m_pTransformCom->Set_LookAtByDir(m_pStellia->Get_OriginLook().ZeroY().ZeroW().Normalized());
+	//	Reset_Transform();
 	//}
 
 	// Effect Create

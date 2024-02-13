@@ -105,6 +105,8 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 				if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::ENDING)))
 					return;
 
+				GI->Play_BGM(TEXT("BGM_Field_Village_Winter_Po_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
+
 				return;
 			}
 		}
@@ -286,6 +288,11 @@ void CState_CurlingGame_Launch_Stone::Calculate_Score()
 		}
 	}
 
+	/* Sound */
+	if(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iScore < m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iScore)
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("HBK_Audience_CROWD.mp3"), CHANNELID::SOUND_AIRPLANE, 1.f, true);
+	else if (m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iScore > m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iScore)
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("disappointed.mp3"), CHANNELID::SOUND_AIRPLANE, 1.f, true);
 }
 
 void CState_CurlingGame_Launch_Stone::Send_To_Ui()

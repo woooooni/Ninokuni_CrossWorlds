@@ -153,9 +153,15 @@ HRESULT CLevel_Evermore::Initialize()
 		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogColor(Vec4(0.396f, 0.744f, 1.0f, 1.0f));
 	}
 
-	/* Set Bgm */
-	GI->Play_BGM(TEXT("BGM_Town_Evermore_Normal_Castle_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
-
+	/* Set Bgm (엔딩 퀘스트에서 에버모어 입장시 다른 BGM 실행 */
+	if (CQuest_Manager::QUESTEVENT_ENDING != CQuest_Manager::GetInstance()->Get_CurQuestEvent() && g_iStartQuestLevel != QUEST_LEVEL::QL_9_ENDING)
+	{
+		GI->Play_BGM(TEXT("BGM_Town_Evermore_Normal_Castle_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
+	}
+	else
+	{
+		GI->Play_BGM(TEXT("BGM_Town_Evermore_1stAnniversary_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
+	}
 	return S_OK;
 }
 

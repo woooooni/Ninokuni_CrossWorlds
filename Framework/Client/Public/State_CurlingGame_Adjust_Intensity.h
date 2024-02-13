@@ -6,6 +6,10 @@ BEGIN(Client)
 
 class CState_CurlingGame_Adjust_Intensity final : public CState_CurlingGame_Base
 {
+
+private:
+	static void Play_GuageSound(const _bool bReverse);
+
 	typedef struct tagGuageDesc
 	{
 		_bool				bActive = false;
@@ -43,9 +47,15 @@ class CState_CurlingGame_Adjust_Intensity final : public CState_CurlingGame_Base
 				if (!tLerpValue.bActive)
 				{
 					if (bIncrease)
+					{
 						tLerpValue.Start(fMaxValue, fMinValue, fLerpTime, eLerpMode);
+						Play_GuageSound(true);
+					}
 					else
+					{
 						tLerpValue.Start(fMinValue, fMaxValue, fLerpTime, eLerpMode);
+						Play_GuageSound(false);
+					}
 
 					bIncrease = !bIncrease;
 				}

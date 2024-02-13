@@ -138,6 +138,9 @@ HRESULT CState_CurlingGame_Intro::Ready_Stadium()
 	if (nullptr != pActionCam)
 	{
 		pActionCam->Start_Action_Stadium(m_tStadiumDesc.fLerpTime + 1.3f);
+
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_Earthquake_Mountain_Medium_Lp_2.mp3"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
+
 		return S_OK;
 	}
 	else

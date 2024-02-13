@@ -897,6 +897,13 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 		break;
 	case CCamera_Action::tagActionTalkDesc::KUU_AND_PLAYER:
 	{
+		/* 대화 시작 처음 쿠우 포지션 세팅 */
+		if (!m_tActionTalkDesc.bSet)
+		{
+			m_tActionTalkDesc.pKuu->Set_GoalPosition();
+			m_tActionTalkDesc.bSet = true;
+		}
+
 
 		if (m_tActionTalkDesc.bFinalBoss)
 		{
@@ -1358,6 +1365,8 @@ HRESULT CCamera_Action::Start_Action_TowerDefense()
 
 	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
 
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_BuffTower_ThroneBattle_Active_1_St.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
+
 	return S_OK;
 }
 
@@ -1697,6 +1706,16 @@ void CCamera_Action::Tick_TowerDefense(_float fTimeDelta)
 		{
 			m_pTransformCom->Set_Position(m_tActionTowerDefenseDesc.vPositions[m_tActionTowerDefenseDesc.iCurViewIndex]);
 			m_pTransformCom->Set_LookAtByDir(m_tActionTowerDefenseDesc.vLooks[m_tActionTowerDefenseDesc.iCurViewIndex]);
+		}
+
+		/* Sound Play */
+		if (ACTION_TOWER_DEFENSE_DESC::VIEW_NUM::LEFT == m_tActionTowerDefenseDesc.iCurViewIndex)
+		{
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_BuffTower_ThroneBattle_Interacting_1_1_St.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
+		}
+		if (ACTION_TOWER_DEFENSE_DESC::VIEW_NUM::RIGHT == m_tActionTowerDefenseDesc.iCurViewIndex)
+		{
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_BuffTower_ThroneBattle_Interacting_1_2_St.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
 		}
 	}
 }

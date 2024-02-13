@@ -253,7 +253,7 @@ public:
 		_uint iCurViewIndex		= CENTER;
 
 		_float fAcc = 0.f;
-		const _float fLimitPerView = 1.75f;
+		const _float fLimitPerView = 2.f;
 
 		Vec4 vPositions[VIEW_NUM_END] =
 		{

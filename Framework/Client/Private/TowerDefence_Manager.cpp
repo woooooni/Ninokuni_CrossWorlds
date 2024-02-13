@@ -605,7 +605,9 @@ HRESULT CTowerDefence_Manager::Create_Defence_Object()
 	Safe_AddRef(pNewGameObject);
 	m_DefenceObjects.push_back(pNewGameObject);
 		
-	
+
+	/* Play Sound */
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("obj_prop_st01_crane_wire_stop_01_1.mp3"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
 
 	return S_OK;
 }

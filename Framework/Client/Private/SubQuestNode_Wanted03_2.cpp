@@ -201,7 +201,7 @@ void CSubQuestNode_Wanted03_2::TalkEvent()
 
 		// 아래 카메라 액션 변경시 카메라 담당 상의 필요
 		m_pCriminal->Get_Component_Transform()->LookAt_ForLandObject((m_vCirminalOriginLookAt * -1.f).OneW());
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_RIGTH);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER_FROM_BACK_NPC);
 		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
 	case 4:
@@ -210,13 +210,18 @@ void CSubQuestNode_Wanted03_2::TalkEvent()
 
 		// 아래 카메라 액션 변경시 카메라 담당 상의 필요
 		m_pCriminal->Get_Component_Transform()->LookAt_ForLandObject((m_vCirminalOriginLookAt * -1.f).OneW());
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_LEFT);
 		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
 	case 5:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Wanted_03_02_06.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
+
+		// 아래 카메라 액션 변경시 카메라 담당 상의 필요
+		m_pCriminal->Get_Component_Transform()->LookAt_ForLandObject((m_vCirminalOriginLookAt * -1.f).OneW());
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_LEFT);
+		pActionCam->Set_NpcTransformByBackupDesc(m_pCriminal->Get_Component_Transform());
 		break;
 	}
 

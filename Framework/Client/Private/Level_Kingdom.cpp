@@ -79,7 +79,7 @@ HRESULT CLevel_Kingdom::Initialize()
 		}
 	}
 
-	GI->Play_BGM(TEXT("BGM_Town_Evermore_Normal_Castle_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
+	GI->Play_BGM(TEXT("BGM_Kingdom_Default_1.OGG"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
 
 	CUI_Manager::GetInstance()->OnOff_MapName(true, TEXT("에스타바니아 왕성"));
 

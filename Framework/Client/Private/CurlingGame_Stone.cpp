@@ -174,6 +174,8 @@ void CCurlingGame_Stone::Collision_Enter(const COLLISION_INFO& tInfo)
 		{
 			Calculate_ElasticCollision(pProp);
 
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_Nomad_Lift_FlowerPot01_1_St.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
+
 			++m_iNumCol;
 		}
 		else if (CG_TYPE::CG_WALL == pProp->Get_CGType())
@@ -181,11 +183,16 @@ void CCurlingGame_Stone::Collision_Enter(const COLLISION_INFO& tInfo)
 			CCurlingGame_Wall* pWall = dynamic_cast<CCurlingGame_Wall*>(pProp);
 			if(nullptr != pWall)
 				Calculate_ActionAndReaction(pWall);
+
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_Nomad_Lift_FlowerPot01_1_St.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
+
 		}
 		else if (CG_TYPE::CG_DEADZONE == pProp->Get_CGType())
 		{
 			m_bOutted = true;
 			m_pRigidBodyCom->Set_Use_Gravity(true);
+
+			//CSound_Manager::GetInstance()->Play_Sound(TEXT("disappointed.mp3"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
 		}
 	}
 }
@@ -200,6 +207,8 @@ void CCurlingGame_Stone::Launch(Vec4 vDir, const _float& fPower)
 	m_pRigidBodyCom->Set_Sleep(false);
 
 	m_bLaunched = m_bMoving = true;
+
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_Nomad_Lift_SoccerBall_1.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
 }
 
 void CCurlingGame_Stone::PutDown()

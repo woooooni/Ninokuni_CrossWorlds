@@ -15,6 +15,14 @@
 #include "Character.h"
 
 
+void CState_CurlingGame_Adjust_Intensity::Play_GuageSound(const _bool bReverse)
+{
+	if(bReverse)
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_Nomad_Run_SoccerBall_1_Reverse.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
+	else
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_Nomad_Run_SoccerBall_1_2.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
+}
+
 CState_CurlingGame_Adjust_Intensity::CState_CurlingGame_Adjust_Intensity(CManager_StateMachine* pStateMachine)
 	: CState_CurlingGame_Base(pStateMachine)
 {
@@ -34,6 +42,8 @@ void CState_CurlingGame_Adjust_Intensity::Enter_State(void* pArg)
 		return;
 
 	m_tGuageDesc.Start();
+
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_Nomad_Run_SoccerBall_1_2.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
 }
 
 void CState_CurlingGame_Adjust_Intensity::Tick_State(const _float& fTimeDelta)
