@@ -58,7 +58,7 @@ void CWitch_Rage01QuadBlackHole::Tick(_float fTimeDelta)
 {
 	if (m_pBlackHole == nullptr && !m_bIsBlackHoleCreate)
 	{
-		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_BlackHole_Drain"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pBlackHole);
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_Rage01QuadBlackHole_Explosive"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pBlackHole);
 
 		m_bIsBlackHoleCreate = true;
 	}
@@ -67,7 +67,7 @@ void CWitch_Rage01QuadBlackHole::Tick(_float fTimeDelta)
 		if (m_pBlackHole->Is_Dead() && !m_bIsBombCreate)
 		{
 			// 喉发圈 气惯 积己
-			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_BlackHole_Bomb"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pEffectBomb);
+			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_Rage01QuadBlackHole_Bomb"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pEffectBomb);
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 			m_bIsBombCreate = true;
 		}
