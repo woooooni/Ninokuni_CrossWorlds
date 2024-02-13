@@ -61,6 +61,8 @@ public:
 	_uint*	Get_SlowStack() { return &m_iSlowStack; }
 	void	Set_SlowStack(_int iAmount) { m_iSlowStack += iAmount; }
 
+	void Set_DissolveDuration(const _float fDuration) { m_fDissolveDuration = fDuration; }
+
 public:
 	HRESULT Create_Pillars();
 	HRESULT Delete_Pillar(const _int& iKey);

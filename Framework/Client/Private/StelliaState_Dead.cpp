@@ -38,8 +38,8 @@ void CStelliaState_Dead::Tick_State(_float fTimeDelta)
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		/* 디졸브 보여주지 않고 바로 마녀 컷신으로 넘어가기 위함 */
-		//CQuest_Manager::GetInstance()->Set_IsBossKill(true);
-		//m_pStellia->Set_DissolveDuration(0.1f);
+		CQuest_Manager::GetInstance()->Set_IsBossKill(true);
+		m_pStellia->Set_DissolveDuration(1.f);
 
 		m_pStellia->Reserve_Dead(true);
 	}

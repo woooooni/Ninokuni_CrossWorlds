@@ -75,7 +75,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)
 			if (nullptr != pActionCam)
 			{
 				pActionCam->Start_Action_Talk(nullptr);
-				CCamera_Manager::GetInstance()->Start_Action_Shake(0.1f, 17.f, 0.3f); // 대화 카메라에 쉐이킹 적용 예정
+				CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION)->Start_Shake(0.01f, 60.f, 0.75f);
 			}
 
 			TalkEvent();
@@ -102,7 +102,9 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)
 
 				CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
 				if (nullptr != pActionCam)
+				{
 					pActionCam->Finish_Action_Talk();
+				}
 
 				return NODE_STATE::NODE_FAIL;
 			}
@@ -135,17 +137,17 @@ void CMainQuestNode_Invasion01::TalkEvent()
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Invasion_01_00.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
 		break;
 	case 1:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Invasion_01_01.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
 		break;
 	case 2:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("Invasion_01_02.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
 		break;
 	}
 }

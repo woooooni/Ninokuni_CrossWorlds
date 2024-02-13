@@ -226,6 +226,7 @@ public:
 
 	/* Shake */
 	void Start_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration);
+	void Stop_Shake();
 	const _bool& Is_Shake() const { return m_tShakeDesc.bActive; }
 	Vec3 Get_ShakeLocalPos() { return m_tShakeDesc.Get_ShakeLocalPos(); }
 
