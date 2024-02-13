@@ -141,7 +141,7 @@ void CPortal::Collision_Enter(const COLLISION_INFO& tInfo)
 		{
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 
-			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 3.f);
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
 			m_bActivate = true;
 		}
 	}

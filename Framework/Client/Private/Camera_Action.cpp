@@ -1358,6 +1358,8 @@ HRESULT CCamera_Action::Start_Action_TowerDefense()
 
 	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
 
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_BuffTower_ThroneBattle_Active_1_St.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
+
 	return S_OK;
 }
 
@@ -1697,6 +1699,16 @@ void CCamera_Action::Tick_TowerDefense(_float fTimeDelta)
 		{
 			m_pTransformCom->Set_Position(m_tActionTowerDefenseDesc.vPositions[m_tActionTowerDefenseDesc.iCurViewIndex]);
 			m_pTransformCom->Set_LookAtByDir(m_tActionTowerDefenseDesc.vLooks[m_tActionTowerDefenseDesc.iCurViewIndex]);
+		}
+
+		/* Sound Play */
+		if (ACTION_TOWER_DEFENSE_DESC::VIEW_NUM::LEFT == m_tActionTowerDefenseDesc.iCurViewIndex)
+		{
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_BuffTower_ThroneBattle_Interacting_1_1_St.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
+		}
+		if (ACTION_TOWER_DEFENSE_DESC::VIEW_NUM::RIGHT == m_tActionTowerDefenseDesc.iCurViewIndex)
+		{
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_BuffTower_ThroneBattle_Interacting_1_2_St.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
 		}
 	}
 }
