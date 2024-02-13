@@ -30,6 +30,7 @@ public:
 
 public:
 	void Set_RadialBlur(_bool bSet, _float fQuality = 16.f, _float fRadialBlurPower = 0.1f);
+	void Lerp_RadialBlur(_bool bRadialBlurInOut, _bool bWaitFinish, _float fStartPower, _float fEndPower, _float fSpeed, _float fQuality = 16.f);
 
 public:
 	_float Calculate_Elemental(ELEMENTAL_TYPE eAttackerElemental, ELEMENTAL_TYPE eHitElemental)
@@ -74,6 +75,9 @@ public:
 	void Set_KuuTarget_Player();
 
 private:
+	void Tick_RadialBlur(_float fTimeDelta);
+
+private:
 	ID3D11Device* m_pDevice = nullptr;
 	ID3D11DeviceContext* m_pContext = nullptr;
 
@@ -84,6 +88,14 @@ private:
 	wstring m_strUserName = L"";
 	_bool m_bReserved = false;
 
+private:
+	_bool m_bWaitFinish = true;
+	_bool m_bRadialBlurIn  = false;
+	_bool m_bRadialBlurOut = false;
+	_float m_fAccRadialBlurPower = 0.1f;
+	_float m_fRadialBlurEnd      = 0.f;
+	_float m_fAccRadialBlurSpeed = 1.f;
+	_float m_fRadialBlurQuality  = 0.f;
 public:
 	virtual void Free() override;
 };

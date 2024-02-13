@@ -60,7 +60,7 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle06::Tick(const _float& fTimeDelta)
 						pActionCam->Start_Action_Witch_Roar();
 
 					// 레디얼 블러 활성화
-					CGame_Manager::GetInstance()->Set_RadialBlur(true, 16.f, 0.05f);
+					CGame_Manager::GetInstance()->Lerp_RadialBlur(true, true, 0.f, -0.05f, 0.3f, 16.f);
 				}
 
 				if(m_pWitch->Get_Component_Model()->Get_CurrAnimationFrame() == 100)
@@ -68,7 +68,7 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle06::Tick(const _float& fTimeDelta)
 					if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 					{
 						// 레디얼 블러 비활성화
-						CGame_Manager::GetInstance()->Set_RadialBlur(false);
+						CGame_Manager::GetInstance()->Lerp_RadialBlur(false, false, -0.05f, 0.f, 0.15f, 16.f);
 
 						m_bIsFadeOut = true;
 						CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
