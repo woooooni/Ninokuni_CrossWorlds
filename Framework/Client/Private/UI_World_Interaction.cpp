@@ -83,8 +83,8 @@ HRESULT CUI_World_Interaction::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_vOriginSize = _float2(m_tInfo.fCX, m_tInfo.fCY);
-	m_vMinSize = _float2(m_vOriginSize.x * 0.8f, m_vOriginSize.y * 0.8f);
+	m_vOriginSize = _float2(m_tInfo.fCX * 0.85f, m_tInfo.fCY * 0.85f);
+	m_vMinSize = _float2(m_vOriginSize.x * 0.7f, m_vOriginSize.y * 0.7f);
 
 	m_bActive = true;
 	m_bResize = false;
@@ -124,8 +124,8 @@ void CUI_World_Interaction::Tick(_float fTimeDelta)
 
 			if (!m_bResize)
 			{
-				m_tInfo.fCX -= fTimeDelta * 10.f;
-				m_tInfo.fCY -= fTimeDelta * 10.f;
+				m_tInfo.fCX -= fTimeDelta * m_fSpeed;
+				m_tInfo.fCY -= fTimeDelta * m_fSpeed;
 
 				if (m_tInfo.fCX <= m_vMinSize.x)
 				{
@@ -139,8 +139,8 @@ void CUI_World_Interaction::Tick(_float fTimeDelta)
 			}
 			else
 			{
-				m_tInfo.fCX += fTimeDelta * 10.f;
-				m_tInfo.fCY += fTimeDelta * 10.f;
+				m_tInfo.fCX += fTimeDelta * m_fSpeed;
+				m_tInfo.fCY += fTimeDelta * m_fSpeed;
 
 				if (m_tInfo.fCX >= m_vOriginSize.x)
 				{

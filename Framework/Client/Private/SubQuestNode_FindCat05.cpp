@@ -9,6 +9,8 @@
 
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
+#include "UI_Quest_Reward_Item.h"
+#include "Inventory_Manager.h"
 
 CSubQuestNode_FindCat05::CSubQuestNode_FindCat05()
 {
@@ -87,6 +89,24 @@ CBTNode::NODE_STATE CSubQuestNode_FindCat05::Tick(const _float& fTimeDelta)
 					pActionCam->Finish_Action_Talk();
 
 				/* 여기서 퀘스트 보상 받기.(퀘스트 보상 다 받으면 return하기.*/
+				CUI_Quest_Reward_Item::REWARDS_DESC ItemDesc = {};
+				ItemDesc.bFirstSlot = true;
+				ItemDesc.eFirstItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN;
+				ItemDesc.iFirstAmount = 1000;
+
+				ItemDesc.bSecondSlot = true;
+				ItemDesc.eSecondItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_EXP;
+				ItemDesc.iSecondAmount = 100;
+
+				ItemDesc.bThirdSlot = true;
+				ItemDesc.eThirdItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_HPPOTION;
+				ItemDesc.iThirdAmount = 3;
+				for (_int i = 0; i < ItemDesc.iThirdAmount; i++)
+				{
+					CInventory_Manager::GetInstance()->Prepare_Item(ITEM_TYPE::CONSUMPSION, ITEM_CODE::CONSUMPSION_HP);
+				}
+
+				CUI_Manager::GetInstance()->Set_QuestRewards(&ItemDesc);
 				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("클로이의 고양이 찾기"));
 				m_bIsRewarding = true;
 			}

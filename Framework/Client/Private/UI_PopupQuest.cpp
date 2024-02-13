@@ -287,10 +287,10 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 					CRenderer::TEXT_DESC ContentsDesc;
 					ContentsDesc.strText = m_Quest[0].strContents;
 					iLength = CUI_Manager::GetInstance()->Count_OnlyWords(m_Quest[0].strContents);
-					if (16 < iLength)
+					if (18 < iLength)
 					{
 						vScale = _float2(0.3f, 0.3f);
-						fScaleOffset = 0.5f;
+						fScaleOffset = 5.f;
 					}
 					else
 					{
@@ -351,10 +351,10 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 						CRenderer::TEXT_DESC ContentsDesc;
 						ContentsDesc.strText = m_Quest[1].strContents;
 						iLength = CUI_Manager::GetInstance()->Count_OnlyWords(m_Quest[1].strContents);
-						if (16 < iLength)
+						if (18 < iLength)
 						{
 							vScale = _float2(0.3f, 0.3f);
-							fScaleOffset = 0.5f;
+							fScaleOffset = 5.f;
 						}
 						else
 						{
@@ -415,10 +415,10 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 							CRenderer::TEXT_DESC ContentsDesc;
 							ContentsDesc.strText = m_Quest[2].strContents;
 							iLength = CUI_Manager::GetInstance()->Count_OnlyWords(m_Quest[2].strContents);
-							if (16 < iLength)
+							if (18 < iLength)
 							{
 								vScale = _float2(0.3f, 0.3f);
-								fScaleOffset = 0.5f;
+								fScaleOffset = 5.f;
 							}
 							else
 							{
@@ -478,10 +478,10 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 								CRenderer::TEXT_DESC ContentsDesc;
 								ContentsDesc.strText = m_Quest[3].strContents;
 								iLength = CUI_Manager::GetInstance()->Count_OnlyWords(m_Quest[3].strContents);
-								if (16 < iLength)
+								if (18 < iLength)
 								{
 									vScale = _float2(0.3f, 0.3f);
-									fScaleOffset = 0.5f;
+									fScaleOffset = 5.f;
 								}
 								else
 								{

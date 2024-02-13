@@ -101,6 +101,8 @@ void CUI_MonsterHP_World::Tick(_float fTimeDelta)
 		if (Is_Dead())
 			return;
 
+		if (true == CUI_Manager::GetInstance()->Is_WorldHP_Hide())
+			return;
 
 		if (nullptr != m_pOwner)
 		{
@@ -150,6 +152,9 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 	if (m_bActive)
 	{
 		if (Is_Dead())
+			return;
+
+		if (true == CUI_Manager::GetInstance()->Is_WorldHP_Hide())
 			return;
 
 		Distinguish_Target();

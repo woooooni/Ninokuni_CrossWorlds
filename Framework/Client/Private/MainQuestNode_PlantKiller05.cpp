@@ -49,7 +49,12 @@ void CMainQuestNode_PlantKiller05::Start()
 	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
 
 	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::GetInstance()->QUESTEVENT_ESCORT);
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestName;
+	QuestDesc.strContents = m_strQuestContent;
+	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
 
 	m_pRuby = static_cast<CRuby*>(GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_NPC, TEXT("Ruby")));
 	if (nullptr == m_pRuby)

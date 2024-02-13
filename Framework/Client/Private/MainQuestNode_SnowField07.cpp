@@ -11,6 +11,7 @@
 
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
+#include "UI_Quest_Reward_Item.h"
 
 CMainQuestNode_SnowField07::CMainQuestNode_SnowField07()
 {
@@ -90,6 +91,12 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField07::Tick(const _float& fTimeDelta)
 					pActionCam->Finish_Action_Talk();
 
 				/* 여기서 퀘스트 보상 받기.(퀘스트 보상 다 받으면 return하기.*/
+				CUI_Quest_Reward_Item::REWARDS_DESC ItemDesc = {};
+				ItemDesc.bFirstSlot = true;
+				ItemDesc.eFirstItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN;
+				ItemDesc.iFirstAmount = 10000;
+
+				CUI_Manager::GetInstance()->Set_QuestRewards(&ItemDesc);
 				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("몬스터 정리"));
 				m_bIsRewarding = true;
 			}

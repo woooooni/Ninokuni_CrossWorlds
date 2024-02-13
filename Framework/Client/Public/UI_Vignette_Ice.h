@@ -32,6 +32,7 @@ private:
 	_float m_fTimeAcc = { 0.f };
 	_uint m_iMaxTextureIndex = { 0 };
 	_uint m_iTextureIndex = { 0 };
+	_bool m_bAlpha = { false }; // true : 알파를 낮추고 0이되면 m_bActive = false
 
 private:
 	HRESULT	Ready_Components();

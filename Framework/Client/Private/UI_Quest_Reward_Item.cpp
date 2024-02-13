@@ -20,12 +20,90 @@ void CUI_Quest_Reward_Item::Set_Active(_bool bActive)
 	if (false == bActive)
 	{
 		m_fAlpha = 1.f;
-		m_bSetInt = false;
-		m_iRandomInt = 0;
-		m_fRandomTimeAcc = 0.f;
+		//m_bSetInt = false;
+		//m_iRandomInt = 0;
+		//m_fRandomTimeAcc = 0.f;
+
+		m_bActive = bActive;
+	}
+	else
+	{
+		if (false == m_bUsable)
+			return;
+
+		m_bActive = bActive;
+	}
+}
+
+void CUI_Quest_Reward_Item::Set_Position(_int iTotal, _int iOrder)
+{
+	if (1 > iTotal || 4 < iTotal)
+		return;
+
+	// iTotal = 아이템의 총 개수(1부터 시작), iOrder = 아이템의 순서(0부터 시작)
+	_float fSize = 64.f * 0.5f;
+	_float fOffset = 5.f;
+	m_tInfo.fY = 285.f;
+
+	switch (iTotal)
+	{
+	case 1:
+		if (0 == iOrder)
+		{
+			m_tInfo.fX = g_iWinSizeX * 0.5f;
+		}
+		break;
+
+	case 2:
+		if (0 == iOrder)
+		{
+			m_tInfo.fX = g_iWinSizeX * 0.5f - (fSize * 0.5f + fOffset);
+		}
+		else if (1 == iOrder)
+		{
+			m_tInfo.fX = g_iWinSizeX * 0.5f + (fSize * 0.5f + fOffset);
+		}
+		break;
+
+	case 3:
+		if (0 == iOrder)
+		{
+			m_tInfo.fX = g_iWinSizeX * 0.5f - (fSize + fOffset);
+		}
+		else if (1 == iOrder)
+		{
+			m_tInfo.fX = g_iWinSizeX * 0.5f;
+		}
+		else if (2 == iOrder)
+		{
+			m_tInfo.fX = g_iWinSizeX * 0.5f + (fSize + fOffset);
+		}
+		break;
+
+	case 4:
+		if (0 == iOrder)
+		{
+			m_tInfo.fX = g_iWinSizeX * 0.5f - ((fSize * 0.5f + fOffset) * 2.f);
+		}
+		else if (1 == iOrder)
+		{
+			m_tInfo.fX = g_iWinSizeX * 0.5f - (fSize * 0.5f + fOffset);
+		}
+		else if (2 == iOrder)
+		{
+			m_tInfo.fX = g_iWinSizeX * 0.5f + (fSize * 0.5f + fOffset);
+		}
+		else if (3 == iOrder)
+		{
+			m_tInfo.fX = g_iWinSizeX * 0.5f + ((fSize * 0.5f + fOffset) * 2.f);
+		}
+		break;
 	}
 
-	m_bActive = bActive;
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+
+	m_vTextPosition = _float2(m_tInfo.fX, m_tInfo.fY + 16.f);
 }
 
 HRESULT CUI_Quest_Reward_Item::Initialize_Prototype()
@@ -58,7 +136,7 @@ void CUI_Quest_Reward_Item::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		m_fRandomTimeAcc += fTimeDelta;
+		//m_fRandomTimeAcc += fTimeDelta;
 
 		__super::Tick(fTimeDelta);
 	}
@@ -68,86 +146,31 @@ void CUI_Quest_Reward_Item::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		if (REWARD_EXP == m_eType)
+		if (0.4f <= m_fAlpha)
 		{
-			if (0.4f <= m_fAlpha)
-			{
-				if (!m_bSetInt)
-				{
-					if (1.f < m_fRandomTimeAcc)
-					{
-						m_fRandomTimeAcc = 0.f;
-						m_bSetInt = true;
-						m_iRandomInt = GI->RandomInt(1, 9);
-						m_strText = to_wstring(m_iRandomInt * 10000);
-					}
-					else
-					{
-						_int iRandom = GI->RandomInt(1, 9);
-						m_strText = to_wstring(iRandom * 10000);
-					}
-				}
-				_int iLength = m_strText.length();
+			if (0 >= m_iAmount)
+				return;
 
-				CRenderer::TEXT_DESC TextDesc;
-				TextDesc.strText = m_strText;
-				TextDesc.strFontTag = L"Default_Bold";
-				TextDesc.vScale = { 0.25f, 0.25f };
-				TextDesc.vColor = _float4(0.f, 0.f, 0.f, 1.f);
-				TextDesc.vPosition = _float2((m_vTextPosition.x - iLength * 3.5f) + 1.f, m_vTextPosition.y);
-				m_pRendererCom->Add_Text(TextDesc);
-				TextDesc.vPosition = _float2((m_vTextPosition.x - iLength * 3.5f) - 1.f, m_vTextPosition.y);
-				m_pRendererCom->Add_Text(TextDesc);
-				TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y - 1.f);
-				m_pRendererCom->Add_Text(TextDesc);
-				TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y + 1.f);
-				m_pRendererCom->Add_Text(TextDesc);
+			m_strText = to_wstring(m_iAmount);
+			_int iLength = m_strText.length();
 
-				TextDesc.vColor = _float4(0.478f, 0.541f, 0.549f, 1.f);
-				TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y);
-				m_pRendererCom->Add_Text(TextDesc);
-			}
-		}
+			CRenderer::TEXT_DESC TextDesc;
+			TextDesc.strText = m_strText;
+			TextDesc.strFontTag = L"Default_Bold";
+			TextDesc.vScale = { 0.25f, 0.25f };
+			TextDesc.vColor = _float4(0.f, 0.f, 0.f, 1.f);
+			TextDesc.vPosition = _float2((m_vTextPosition.x - iLength * 3.5f) + 1.f, m_vTextPosition.y);
+			m_pRendererCom->Add_Text(TextDesc);
+			TextDesc.vPosition = _float2((m_vTextPosition.x - iLength * 3.5f) - 1.f, m_vTextPosition.y);
+			m_pRendererCom->Add_Text(TextDesc);
+			TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y - 1.f);
+			m_pRendererCom->Add_Text(TextDesc);
+			TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y + 1.f);
+			m_pRendererCom->Add_Text(TextDesc);
 
-		if (REWARD_COIN == m_eType)
-		{
-			if (0.4f <= m_fAlpha)
-			{
-				if (!m_bSetInt)
-				{
-					if (1.f < m_fRandomTimeAcc)
-					{
-						m_fRandomTimeAcc = 0.f;
-						m_bSetInt = true;
-						m_iRandomInt = GI->RandomInt(1, 9);
-						m_strText = to_wstring(m_iRandomInt * 10000);
-					}
-					else
-					{
-						_int iRandom = GI->RandomInt(1, 9);
-						m_strText = to_wstring(iRandom * 10000);
-					}
-				}
-				_int iLength = m_strText.length();
-
-				CRenderer::TEXT_DESC TextDesc;
-				TextDesc.strText = m_strText;
-				TextDesc.strFontTag = L"Default_Bold";
-				TextDesc.vScale = { 0.25f, 0.25f };
-				TextDesc.vColor = _float4(0.f, 0.f, 0.f, 1.f);
-				TextDesc.vPosition = _float2((m_vTextPosition.x - iLength * 3.5f) + 1.f, m_vTextPosition.y);
-				m_pRendererCom->Add_Text(TextDesc);
-				TextDesc.vPosition = _float2((m_vTextPosition.x - iLength * 3.5f) - 1.f, m_vTextPosition.y);
-				m_pRendererCom->Add_Text(TextDesc);
-				TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y - 1.f);
-				m_pRendererCom->Add_Text(TextDesc);
-				TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y + 1.f);
-				m_pRendererCom->Add_Text(TextDesc);
-
-				TextDesc.vColor = _float4(0.478f, 0.541f, 0.549f, 1.f);
-				TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y);
-				m_pRendererCom->Add_Text(TextDesc);
-			}
+			TextDesc.vColor = _float4(0.478f, 0.541f, 0.549f, 1.f);
+			TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y);
+			m_pRendererCom->Add_Text(TextDesc);
 		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);

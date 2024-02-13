@@ -18,6 +18,7 @@
 #include "Weapon.h"
 #include "Weapon_Manager.h"
 #include "UI_Dummy_Weapon.h"
+#include "Inventory_Manager.h"
 
 #include "Mirror.h"
 #include "UI_Fade.h"
@@ -3473,7 +3474,7 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 	UIDesc.fCX = 64.f * 0.5f;
 	UIDesc.fCY = UIDesc.fCX;
-	UIDesc.fX = g_iWinSizeX * 0.5f - (UIDesc.fCX * 0.5f + 5.f);
+	UIDesc.fX = g_iWinSizeX * 0.5f - ((UIDesc.fCX * 0.5f + 5.f) * 2.f);
 	UIDesc.fY = 285.f;
 	CGameObject* pItem = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Quest_Reward_Item"), &UIDesc, &pItem)))
@@ -3484,11 +3485,8 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	Safe_AddRef(pItem);
 	pItem->Set_ObjectTag(TEXT("UI_Quest_Reward_Item_First"));
 
-	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	UIDesc.fCX = 64.f * 0.5f;
-	UIDesc.fCY = UIDesc.fCX;
-	UIDesc.fX = g_iWinSizeX * 0.5f + (UIDesc.fCX * 0.5f + 5.f);
-	UIDesc.fY = 285.f;
+	UIDesc.fX = g_iWinSizeX * 0.5f - (UIDesc.fCX * 0.5f + 5.f);
+//	UIDesc.fX = g_iWinSizeX * 0.5f + (UIDesc.fCX * 0.5f + 5.f);
 	pItem = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Quest_Reward_Item"), &UIDesc, &pItem)))
 		return E_FAIL;
@@ -3497,7 +3495,31 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pItem);
 	pItem->Set_ObjectTag(TEXT("UI_Quest_Reward_Item_Second"));
-	m_QuestItems[1]->Set_Type(CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN); // Gara
+	m_QuestItems[1]->Set_Type(CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN);
+
+	// 주석처리 필요함
+	UIDesc.fX = g_iWinSizeX * 0.5f + (UIDesc.fCX * 0.5f + 5.f);
+	pItem = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Quest_Reward_Item"), &UIDesc, &pItem)))
+		return E_FAIL;
+	m_QuestItems.push_back(dynamic_cast<CUI_Quest_Reward_Item*>(pItem));
+	if (nullptr == pItem)
+		return E_FAIL;
+	Safe_AddRef(pItem);
+	pItem->Set_ObjectTag(TEXT("UI_Quest_Reward_Item_Third"));
+	m_QuestItems[2]->Set_Type(CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN);
+
+	UIDesc.fX = g_iWinSizeX * 0.5f + ((UIDesc.fCX * 0.5f + 5.f) * 2.f);
+	pItem = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Quest_Reward_Item"), &UIDesc, &pItem)))
+		return E_FAIL;
+	m_QuestItems.push_back(dynamic_cast<CUI_Quest_Reward_Item*>(pItem));
+	if (nullptr == pItem)
+		return E_FAIL;
+	Safe_AddRef(pItem);
+	pItem->Set_ObjectTag(TEXT("UI_Quest_Reward_Item_Fourth"));
+	m_QuestItems[3]->Set_Type(CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN);
+	// 여기까지
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 	UIDesc.fCX = 400.f * 0.5f;
@@ -3528,8 +3550,10 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	UIDesc.fCX = g_iWinSizeX;
-	UIDesc.fCY = g_iWinSizeY;
+//	UIDesc.fCX = g_iWinSizeX;
+//	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fCX = g_iWinSizeX * 1.2f;
+	UIDesc.fCY = g_iWinSizeY * 1.2f;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
 	UIDesc.fY = g_iWinSizeY * 0.5f;
 	pWindow = nullptr;
@@ -7761,6 +7785,108 @@ void CUI_Manager::OnOff_TextUI(_bool bOnOff)
 	}
 
 	m_bAddText = bOnOff;
+}
+
+void CUI_Manager::Set_QuestRewards(void* pArg)
+{
+	CUI_Quest_Reward_Item::REWARDS_DESC ItemDesc = {};
+	ItemDesc = *((CUI_Quest_Reward_Item::REWARDS_DESC*)pArg);
+
+	_int iTotal = 0;
+
+	// 첫번째 아이템
+	if (true == ItemDesc.bFirstSlot)
+	{
+//		iTotal++;
+		iTotal = 1;
+
+		m_QuestItems[0]->Set_Usable(true);
+		m_QuestItems[0]->Set_Type(ItemDesc.eFirstItem);
+		m_QuestItems[0]->Set_Amount(ItemDesc.iFirstAmount);
+	}
+	else
+	{
+		m_QuestItems[0]->Set_Usable(false);
+	}
+
+	// 두번째 아이템
+	if (true == ItemDesc.bSecondSlot)
+	{
+//		iTotal++;
+		iTotal = 2;
+
+		m_QuestItems[1]->Set_Usable(true);
+		m_QuestItems[1]->Set_Type(ItemDesc.eSecondItem);
+		m_QuestItems[1]->Set_Amount(ItemDesc.iSecondAmount);
+	}
+	else
+	{
+		m_QuestItems[1]->Set_Usable(false);
+	}
+
+	// 세번째 아이템
+	if (true == ItemDesc.bThirdSlot)
+	{
+//		iTotal++;
+		iTotal = 3;
+
+		m_QuestItems[2]->Set_Usable(true);
+		m_QuestItems[2]->Set_Type(ItemDesc.eThirdItem);
+		m_QuestItems[2]->Set_Amount(ItemDesc.iThirdAmount);
+	}
+	else
+	{
+		m_QuestItems[2]->Set_Usable(false);
+	}
+
+	// 마지막 아이템
+	if (true == ItemDesc.bFourthSlot)
+	{
+//		iTotal++;
+		iTotal = 4;
+
+		m_QuestItems[3]->Set_Usable(true);
+		m_QuestItems[3]->Set_Type(ItemDesc.eFourthItem);
+		m_QuestItems[3]->Set_Amount(ItemDesc.iFourthAmount);
+	}
+	else
+	{
+		m_QuestItems[3]->Set_Usable(false);
+	}
+
+	// iTotal은 아이템의 총 개수임. 이것을 기반으로 Position을 새로 세팅한다.
+	Update_QuestItemPosition(iTotal);
+}
+
+void CUI_Manager::Update_QuestItemPosition(_int iTotal)
+{
+	if (0 >= iTotal || 4 < iTotal) 	// iTotal -> Item의 개수
+		return;
+
+	switch (iTotal)
+	{
+	case 1:
+		m_QuestItems[0]->Set_Position(iTotal, 0);
+		break;
+		
+	case 2:
+		m_QuestItems[0]->Set_Position(iTotal, 0);
+		m_QuestItems[1]->Set_Position(iTotal, 1);
+		break;
+
+	case 3:
+		m_QuestItems[0]->Set_Position(iTotal, 0);
+		m_QuestItems[1]->Set_Position(iTotal, 1);
+		m_QuestItems[2]->Set_Position(iTotal, 2);
+		break;
+
+	case 4:
+		m_QuestItems[0]->Set_Position(iTotal, 0);
+		m_QuestItems[1]->Set_Position(iTotal, 1);
+		m_QuestItems[2]->Set_Position(iTotal, 2);
+		m_QuestItems[3]->Set_Position(iTotal, 3);
+		break;
+	}
 }
 
 void CUI_Manager::OnOff_QuestRewards(_bool bOnOff, const wstring& strTitle)

@@ -10,6 +10,7 @@
 
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
+#include "UI_Quest_Reward_Item.h"
 
 CSubQuestNode_Wanted09::CSubQuestNode_Wanted09()
 {
@@ -91,6 +92,12 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted09::Tick(const _float& fTimeDelta)
 					pActionCam->Finish_Action_Talk();
 
 				/* 여기서 퀘스트 보상 받기.(퀘스트 보상 다 받으면 return하기.*/
+				CUI_Quest_Reward_Item::REWARDS_DESC ItemDesc = {};
+				ItemDesc.bFirstSlot = true;
+				ItemDesc.eFirstItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN;
+				ItemDesc.iFirstAmount = 10000;
+
+				CUI_Manager::GetInstance()->Set_QuestRewards(&ItemDesc);
 				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("현상범 잡기"));
 				m_bIsRewarding = true;
 			}

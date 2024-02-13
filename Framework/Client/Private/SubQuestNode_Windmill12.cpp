@@ -11,6 +11,7 @@
 #include "Camera_Group.h"
 
 #include "Building.h"
+#include "UI_Quest_Reward_Item.h"
 
 CSubQuestNode_Windmill12::CSubQuestNode_Windmill12()
 {
@@ -78,6 +79,12 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill12::Tick(const _float& fTimeDelta)
 				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MAIN_DIALOG);
 
 				/* 여기서 퀘스트 보상 받기.(퀘스트 보상 다 받으면 return하기.*/
+				CUI_Quest_Reward_Item::REWARDS_DESC ItemDesc = {};
+				ItemDesc.bFirstSlot = true;
+				ItemDesc.eFirstItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN;
+				ItemDesc.iFirstAmount = 10000;
+
+				CUI_Manager::GetInstance()->Set_QuestRewards(&ItemDesc);
 				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("풍차 수리"));
 				m_bIsRewarding = true;
 

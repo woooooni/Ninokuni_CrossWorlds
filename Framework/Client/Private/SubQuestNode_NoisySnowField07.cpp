@@ -29,7 +29,12 @@ HRESULT CSubQuestNode_NoisySnowField07::Initialize()
 
 void CSubQuestNode_NoisySnowField07::Start()
 {
-	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+//	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strNextQuestTag;
+	QuestDesc.strTitle = m_strNextQuestName;
+	QuestDesc.strContents = m_strNextQuestContent;
+	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 
 	m_pBella = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("AquarisBella"));
 	Vec4 vSpotPos = Set_DestSpot(m_pBella);
@@ -37,7 +42,7 @@ void CSubQuestNode_NoisySnowField07::Start()
 	// 임시로 monster에 
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 
-	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc = {};
 	QuestDesc.strType = m_strQuestTag;
 	QuestDesc.strTitle = m_strQuestName;
 	QuestDesc.strContents = m_strQuestContent;

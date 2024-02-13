@@ -1357,6 +1357,7 @@ HRESULT CCamera_Action::Start_Action_TowerDefense()
 	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
 
 	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+	CUI_Manager::GetInstance()->Hide_WorldHPBar(true);
 
 	return S_OK;
 }
@@ -1691,6 +1692,7 @@ void CCamera_Action::Tick_TowerDefense(_float fTimeDelta)
 			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+			CUI_Manager::GetInstance()->Hide_WorldHPBar(false);
 			return;
 		}
 		else

@@ -183,10 +183,20 @@ void CUI_Dialog_Window::Tick_Text(_float fTimeDelta)
 void CUI_Dialog_Window::Add_Text()
 {
 	// Name
+	_int iOffset = 0;
+
 	CRenderer::TEXT_DESC NameDesc = {};
 	_int iLength = wcslen(m_szName) - 1;
 	_int iSpaceCount = CUI_Manager::GetInstance()->Count_WordSpacing(m_szName);
-	_int iOffset = (iLength - iSpaceCount) * 10 + (iSpaceCount * 6); // 글자 수 오프셋 + 띄어쓰기 오프셋
+	_int iMarkCount = CUI_Manager::GetInstance()->Exclude_PunctuationMarks(m_szName);
+	if (3 == iMarkCount)
+	{
+		iOffset = iMarkCount * 3.f;
+	}
+	else
+	{
+		iOffset = ((iLength - iSpaceCount) * 10) + (iSpaceCount * 6); // 글자 수 오프셋 + 띄어쓰기 오프셋
+	}
 
 	NameDesc.strText = m_szName;
 	NameDesc.strFontTag = L"Default_Bold";
@@ -198,7 +208,7 @@ void CUI_Dialog_Window::Add_Text()
 
 	//Contents
 	_int iTotalLength = m_iTextCount + 4;
-	_int iMaxLength = 49;
+	_int iMaxLength = 47;
 	_uint iDestIndex = 0;
 
 	_int iWords = 0; // Enter하는 곳을 판별하기 위한 수단

@@ -153,6 +153,8 @@ public:
 
 	void	Set_MouseCursor(_uint iIndex);
 	void	Hide_MouseCursor(_bool bHide);
+	void	Hide_WorldHPBar(_bool bHide) { m_bHideHP = bHide; }
+	_bool	Is_WorldHP_Hide() { return m_bHideHP; }
 
 public:
 	HRESULT		Using_CloseButton();
@@ -217,6 +219,8 @@ public: // Lobby
 
 	void OnOff_TextUI(_bool bOnOff);
 
+	void Set_QuestRewards(void* pArg);
+	void Update_QuestItemPosition(_int iTotal);
 	void OnOff_QuestRewards(_bool bOnOff, const wstring& strTitle = TEXT(""));
 	void Set_AlphaToItems();
 	void Show_RewardItems();
@@ -380,6 +384,8 @@ private:
 	vector <class CUI_InGame_Setting_Slot*> m_CameraSlot;
 
 	list<class CUI_AddItem*>		m_ItemPopup;
+
+	_bool			m_bHideHP = { false }; // 몬스터 HP바를 숨길 것인가
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };

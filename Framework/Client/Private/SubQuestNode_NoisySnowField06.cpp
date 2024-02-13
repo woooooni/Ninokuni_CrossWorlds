@@ -15,6 +15,7 @@
 
 #include "Character_Manager.h"
 #include "Player.h"
+#include "UI_PopupQuest.h"
 
 CSubQuestNode_NoisySnowField06::CSubQuestNode_NoisySnowField06()
 {
@@ -68,7 +69,11 @@ void CSubQuestNode_NoisySnowField06::Start()
 		m_bIsVictory = false;
 	}
 
-	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strNextQuestTag;
+	QuestDesc.strTitle = m_strNextQuestName;
+	QuestDesc.strContents = m_strNextQuestContent;
+	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName , &QuestDesc);
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 
 	/* 현재 퀘스트에 연관있는 객체들 */

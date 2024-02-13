@@ -24,7 +24,11 @@ HRESULT CMainQuestNode_PlantKiller03::Initialize()
 
 void CMainQuestNode_PlantKiller03::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc.strType = m_strQuestTag;
+	QuestDesc.strTitle = m_strQuestName;
+	QuestDesc.strContents = m_strQuestContent;
+	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
 
 	m_pRuby = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_NPC, TEXT("Ruby"));
 	Vec4 vSpotPos = Set_DestSpot(m_pRuby);
@@ -32,7 +36,7 @@ void CMainQuestNode_PlantKiller03::Start()
 	// 임시로 monster에 
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 
-	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	QuestDesc = {};
 	QuestDesc.strType = m_strQuestTag;
 	QuestDesc.strTitle = m_strQuestName;
 	QuestDesc.strContents = m_strQuestContent;

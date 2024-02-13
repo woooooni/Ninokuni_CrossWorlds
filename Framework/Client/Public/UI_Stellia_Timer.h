@@ -2,6 +2,8 @@
 
 #include "UI.h"
 
+// 보스 체력바에 위치하는 Timer UI
+
 BEGIN(Client)
 class CUI_Stellia_Timer final : public CUI
 {
