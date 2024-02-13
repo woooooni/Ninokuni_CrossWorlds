@@ -336,7 +336,8 @@ void CUI_World_Interaction::Update_ButtonIcon()
 		TEXT("Animal_PolarBear") == m_pOwner->Get_ObjectTag() ||
 		TEXT("Animal_Fox") == m_pOwner->Get_ObjectTag() ||
 		TEXT("Animal_Rabbit") == m_pOwner->Get_ObjectTag() ||
-		TEXT("Animal_Ermine") == m_pOwner->Get_ObjectTag())
+		TEXT("Animal_Ermine") == m_pOwner->Get_ObjectTag() ||
+		TEXT("Animal_WelshCorgi") == m_pOwner->Get_ObjectTag())
 	{
 		if (dynamic_cast<CAnimals*>(m_pOwner)->Lifting())
 		{

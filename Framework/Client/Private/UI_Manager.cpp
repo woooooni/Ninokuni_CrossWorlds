@@ -294,6 +294,14 @@ void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
 	}
 }
 
+void CUI_Manager::Set_MiniDialoguePortrait(UI_PORTRAIT eType)
+{
+	if (nullptr == m_Portrait[CUI_Dialog_Portrait::PORTRAIT_CHARACTER])
+		return;
+
+	m_Portrait[CUI_Dialog_Portrait::PORTRAIT_CHARACTER]->Set_TextureIndex(eType);
+}
+
 void CUI_Manager::Set_MiniDialogue(wstring strName, wstring strContents)
 {
 	if (nullptr == m_pDialogMini)
@@ -4536,6 +4544,21 @@ _int CUI_Manager::Exclude_PunctuationMarks(const wstring& strText)
 	return iCount;
 }
 
+_bool CUI_Manager::Is_PunctuationMarks(const wstring& strText)
+{
+	// 지금 들어온 매개변수가 문장부호인지 아닌지 판별한다
+	// + 0, + 1로 사용하기 위해서
+
+	_bool IsTrue = false;
+
+	if (strText == L"," || strText == L"." || strText == L"?" || strText == L"!" || strText == L"~" || strText == L" ")
+		IsTrue = true;
+	else
+		IsTrue = false;
+
+	return IsTrue;
+}
+
 HRESULT CUI_Manager::Ready_BossHPBar(CBoss* pBoss, void* pArg)
 {
 	if (nullptr == pBoss)
@@ -5915,7 +5938,23 @@ void CUI_Manager::Show_AddItem(ITEM_TYPE eItemType, ITEM_CODE eItemCode, _uint i
 			Safe_AddRef(pSlot);
 		}
 	}
-	else if (eItemCode == ITEM_CODE::CONSUMPSION_ENERGY)
+
+	if (eItemCode == ITEM_CODE::CONSUMPSION_HP)
+	{
+		ITEMDesc.fX = g_iWinSizeX * 0.5f;
+		ITEMDesc.fY = g_iWinSizeY * 0.5f;
+		ITEMDesc.eCode = ITEM_CODE::CONSUMPSION_HP;
+		ITEMDesc.iCount = iCount;
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_AddItem_Popup"), &ITEMDesc, &pSlot)))
+			return;
+		if (nullptr == pSlot)
+			return;
+		dynamic_cast<CUI_AddItem*>(pSlot)->Set_Position(m_ItemPopup.size());
+		m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
+		Safe_AddRef(pSlot);
+	}
+
+	if (eItemCode == ITEM_CODE::CONSUMPSION_ENERGY)
 	{
 		ITEMDesc.fX = g_iWinSizeX * 0.5f;
 		ITEMDesc.fY = g_iWinSizeY * 0.5f;

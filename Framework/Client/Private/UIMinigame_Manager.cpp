@@ -547,7 +547,7 @@ void CUIMinigame_Manager::Start_Grandprix()
 void CUIMinigame_Manager::End_Grandprix()
 {
 	OnOff_GrandprixGauge(false);
-
+	OnOff_Grandprix(false); // UI 세팅을 복구한다.
 	m_bFlying = false;
 
 	m_bIntroStarted = false;
@@ -1784,7 +1784,8 @@ void CUIMinigame_Manager::LateTick_Grandprix(_float fTimeDelta)
 		if (true == m_Counts[m_iCountIndex]->Is_End()) // 사이즈 조정이 끝났다면
 		{
 			m_Counts[m_iCountIndex]->Set_Active(false); // 비활성화 시키고
-			OnOff_Grandprix(false); // UI 세팅을 복구한다.
+//			OnOff_Grandprix(false); // UI 세팅을 복구한다.
+			m_iCountIndex = 0;
 		}
 	}
 }

@@ -15,6 +15,12 @@ protected:
 
 public:
 	virtual void Set_Active(_bool bActive) override;
+	void Set_TextureIndex(_int iIndex) {
+		if (0 > iIndex)
+			return;
+
+		m_iTextureIndex = iIndex;
+	}
 
 public:
 	virtual HRESULT	Initialize_Prototype();

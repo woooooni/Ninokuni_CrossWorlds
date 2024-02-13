@@ -16,6 +16,8 @@ HRESULT CGameItem_Consumpsion::Initialize(void* pArg)
 	m_tEtcDesc.eCode = tConsumeDesc.eCode;
 
 	m_eItemCode = tConsumeDesc.eCode;
+//	if (ITEM_CODE::CONSUMPSION_HP == m_eItemCode)
+//		m_iCount = 5;
 
 	m_tEtcDesc.strName = tConsumeDesc.strName;
 	m_tEtcDesc.strContent = tConsumeDesc.strContent;

@@ -457,7 +457,7 @@ void CGrandprix_Manager::End_Grandprix()
 	m_bGrandPrixEnd = true;
 	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(true, 16.f, 0.1f);
 	GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 3.f, 0.2f, true);
-	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 0.2f, true);
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 0.1f, true);
 }
 
 void CGrandprix_Manager::Add_ItemBox(_uint iType)

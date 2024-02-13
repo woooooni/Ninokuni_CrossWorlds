@@ -73,13 +73,13 @@ void CUI_World_AnimalTag::Tick(_float fTimeDelta)
 		CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
 
-		if (m_pOwner->Lifting())
+		if (true == m_pOwner->Lifting())
 		{
 			if (TEXT("Animal_PolarBear") == m_pOwner->Get_ObjectTag() ||
 				TEXT("Animal_Rabbit") == m_pOwner->Get_ObjectTag())
-			{
 				m_fOffsetY = 0.5f;
-			}
+			else if (TEXT("Animal_WelshCorgi") == m_pOwner->Get_ObjectTag())
+				m_fOffsetY = 0.7f;
 			else
 				m_fOffsetY = 0.4f;
 		}

@@ -198,8 +198,11 @@ void CUI_Dialog_Window::Add_Text()
 
 	//Contents
 	_int iTotalLength = m_iTextCount + 4;
-	_int iMaxLength = 44; // 46 -> 44
+	_int iMaxLength = 47; // 44 -> 48
 	_uint iDestIndex = 0;
+
+	_int iEnter = 0; // Enter하는 곳을 판별하기 위한 수단
+	_bool bIsMark = false;
 
 	TCHAR sTempText[MAX_PATH];
 	ZeroMemory(sTempText, sizeof(TCHAR) * MAX_PATH);
@@ -212,11 +215,15 @@ void CUI_Dialog_Window::Add_Text()
 		}
 
 		sTempText[iDestIndex++] = m_szInfoText[i];
-//		GI->Stop_Sound(CHANNELID::SOUND_UI2);
-//		GI->Play_Sound(TEXT("UI_Fx_Comm_Dialog_Text_1.mp3"), CHANNELID::SOUND_UI2,
-//			GI->Get_ChannelVolume(CHANNELID::SOUND_UI2));
 
-		if ((i + 1) % iMaxLength == 0)
+		// 20240213 수정중
+		wstring strTemp(&m_szInfoText[i]);
+		bIsMark = CUI_Manager::GetInstance()->Is_PunctuationMarks(strTemp);
+		if (false == bIsMark) // 
+			iEnter++;
+		//
+
+		if ((iEnter + 1) % iMaxLength == 0) 		//if ((i + 1) % iMaxLength == 0)
 		{
 			sTempText[iDestIndex++] = '\n';
 		}

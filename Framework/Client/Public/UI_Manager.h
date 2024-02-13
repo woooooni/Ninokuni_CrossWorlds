@@ -15,7 +15,8 @@ class CUI_Manager : public CBase
 
 public:
 	enum UI_DIALOG { MAIN_DIALOG, MINI_DIALOG, BATTLE_DIALOG, DIALOG_END };
-	enum UI_BOSS {BOSS_GLANIX, BOSS_STELLIA, BOSS_END};
+	enum UI_BOSS { BOSS_GLANIX, BOSS_STELLIA, BOSS_END };
+	enum UI_PORTRAIT { KUU, WITCH, PORTRAIT_END };
 
 private:
 	CUI_Manager();
@@ -45,6 +46,7 @@ public: // Get/Set
 	_float			Calculate_Distance_FromPlayer(_float4 vPosition);
 
 	void			Set_MainDialogue(_tchar* pszName, _tchar* pszText);
+	void			Set_MiniDialoguePortrait(UI_PORTRAIT eType);
 	void			Set_MiniDialogue(wstring strName, wstring strContents);
 	void			Set_BattleDialogue(wstring strContents);
 
@@ -76,6 +78,7 @@ public: // Get/Set
 	_int			Count_WordSpacing(const wstring& strText);
 	_int			Count_OnlyWords(const wstring& strText);
 	_int			Exclude_PunctuationMarks(const wstring& strText);
+	_bool			Is_PunctuationMarks(const wstring& strText);
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

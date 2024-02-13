@@ -208,6 +208,16 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 						if (m_bIsTarget)
 						{
 							_float2 vfOffset = _float2(15.f, -25.f);
+
+							if (m_pOwner->Get_ObjectTag() == TEXT("Stellia_Crystal_Destructible"))
+							{
+								vfOffset = _float2(25.f, -25.f);
+							}
+							//else
+							//{
+							//	vfOffset = _float2(15.f, -25.f);
+							//}
+
 							_float2 vArrowPos;
 							// Target인 경우에 Arrow를 보여준다. 위치 조정이 필요하다.
 							for (auto& iter : m_Arrow)
@@ -397,8 +407,8 @@ void CUI_MonsterHP_World::Distinguish_Target()
 	{
 		if (false == m_bIsTarget)
 		{
-			if (m_pOwner->Get_ObjectTag() == TEXT("Stellia_Crystal"))
-				return;
+//			if (m_pOwner->Get_ObjectTag() == TEXT("Stellia_Crystal"))
+//				return;
 
 			m_bIsTarget = true;
 
