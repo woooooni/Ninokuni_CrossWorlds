@@ -11,6 +11,8 @@
 #include "CurlingGame_Wall.h"
 #include "CurlingGame_Manager.h"
 
+#include "Particle_Manager.h"
+
 CCurlingGame_Stone::CCurlingGame_Stone(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CCurlingGame_Prop(pDevice, pContext, strObjectTag)
 {
@@ -115,6 +117,10 @@ void CCurlingGame_Stone::Tick(_float fTimeDelta)
 		/* 회전 적용 */
 		//const _float fRotateSpeed = Vec3(m_pRigidBodyCom->Get_Velocity()).Length() * m_fRotateSpeed * fTimeDelta;
 		//m_pTransformCom->Rotation(Vec3::Up, fRotateSpeed);
+
+		// Effect : Move
+		GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle_To_Matrix(&m_fEffectAcc, 0.25f, fTimeDelta, TEXT("Particle_CurlingGame_Smoke"),
+			m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.05f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 	}
 }
 
@@ -175,6 +181,9 @@ void CCurlingGame_Stone::Collision_Enter(const COLLISION_INFO& tInfo)
 			Calculate_ElasticCollision(pProp);
 
 			CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_Nomad_Lift_FlowerPot01_1_St.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
+			// Effect : Stone + Stone
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_CurlingGame_Hit"),
+				m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.7f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 
 			++m_iNumCol;
 		}
@@ -185,6 +194,9 @@ void CCurlingGame_Stone::Collision_Enter(const COLLISION_INFO& tInfo)
 				Calculate_ActionAndReaction(pWall);
 
 			CSound_Manager::GetInstance()->Play_Sound(TEXT("Obj_Nomad_Lift_FlowerPot01_1_St.ogg"), CHANNELID::SOUND_BGM_NEXT, 1.f, true);
+			// Effect : Stone + Wall
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_CurlingGame_Hit"),
+				m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.7f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 
 		}
 		else if (CG_TYPE::CG_DEADZONE == pProp->Get_CGType())

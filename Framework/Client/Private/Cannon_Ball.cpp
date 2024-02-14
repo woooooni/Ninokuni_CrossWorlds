@@ -185,6 +185,7 @@ void CCannon_Ball::Collision_Enter(const COLLISION_INFO& tInfo)
 		CCamera_Manager::GetInstance()->Start_Action_Shake_Default_Attack();
 
 		// TODO :: Explosion Effect
+		Create_Effect();
 	}
 }
 
@@ -205,6 +206,7 @@ void CCannon_Ball::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 	m_fDeletionTime = 0.1f;
 
 	// TODO :: Explosion Effect
+	Create_Effect();
 }
 
 _bool CCannon_Ball::Find_Dest_Position(_float fTimeDelta)
@@ -228,6 +230,17 @@ _bool CCannon_Ball::Find_Dest_Position(_float fTimeDelta)
 		}
 	}
 	return bFind;
+}
+
+void CCannon_Ball::Create_Effect()
+{
+	_matrix WorldMatrix = XMMatrixIdentity();
+	WorldMatrix.r[CTransform::STATE_POSITION] = m_pTransformCom->Get_Position();
+	GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Explosion_Fire_Big"),
+		WorldMatrix, _float3(0.f, 0.5f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+
+	GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Explosion_Fire_Small"),
+		WorldMatrix, _float3(0.f, 0.5f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 }
 
 

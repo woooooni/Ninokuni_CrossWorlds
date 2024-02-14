@@ -4,6 +4,7 @@
 #include "State_Engineer_TagOut.h"
 #include "Game_Manager.h"
 #include "Player.h"
+#include "Particle_Manager.h"
 
 CState_Engineer_TagOut::CState_Engineer_TagOut(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -37,6 +38,9 @@ void CState_Engineer_TagOut::Enter_State(void* pArg)
     }*/
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
+
+    GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Change_Player"),
+        m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 1.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 }
 
 void CState_Engineer_TagOut::Tick_State(_float fTimeDelta)

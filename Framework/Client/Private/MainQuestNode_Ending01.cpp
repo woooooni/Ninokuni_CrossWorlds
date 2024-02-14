@@ -8,6 +8,7 @@
 #include "UI_Manager.h"
 #include "Quest_Manager.h"
 #include "UI_PopupQuest.h"
+#include "Effect_Manager.h"
 
 CMainQuestNode_Ending01::CMainQuestNode_Ending01()
 {
@@ -44,6 +45,11 @@ CBTNode::NODE_STATE CMainQuestNode_Ending01::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_EVERMORE)
 	{
+		// Effect
+		_matrix WorldMatrix = XMMatrixIdentity();
+		WorldMatrix.r[3] = XMVectorSet(0.f, 30.f, 60.f, 1.f);
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_FireCracker"), WorldMatrix);
+
 		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 
 		m_bIsClear = true;

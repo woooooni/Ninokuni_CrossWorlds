@@ -14,6 +14,7 @@
 #include "Quest_Manager.h"
 
 #include "Camera_Group.h"
+#include "Particle_Manager.h"
 
 CMainQuestNode_Invasion02::CMainQuestNode_Invasion02()
 {
@@ -107,6 +108,17 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02::Tick(const _float& fTimeDelta)
 			// Light
 			// Diffuse Ambient Upper 
 
+			// Effect Change ------------------------
+			list<CGameObject*>& Particles = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT);
+			for (auto& pParticle : Particles)
+			{
+				if (wstring::npos != pParticle->Get_PrototypeTag().find(L"Particle_Leaf"))
+					pParticle->Set_Dead(true);
+			}
+			_matrix WorldMatrix = XMMatrixIdentity();
+			WorldMatrix.r[3] = XMVectorSet(0.f, 30.f, 60.f, 1.f);
+			GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_EVERMORE, TEXT("Particle_FallFire"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+			// ------------------------ Effect Change
 
 			GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR, 0.f);
 			GI->Play_BGM(L"BGM_Field_Hunting_CastleInside_Dark_1.ogg", 1.f, true);

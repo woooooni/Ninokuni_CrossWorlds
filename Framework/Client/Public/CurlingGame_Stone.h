@@ -110,6 +110,8 @@ private:
 
 	_uint				m_iPoint			= 0;
 
+	_float              m_fEffectAcc        = 0.f;
+
 public:
 	static CCurlingGame_Stone* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;

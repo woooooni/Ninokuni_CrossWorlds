@@ -418,6 +418,8 @@
     <ClInclude Include="..\Public\Vehicle_Flying_EnemyBoto.h" />
     <ClInclude Include="..\Public\Vehicle_Object_Biplane.h" />
     <ClInclude Include="..\Public\Vfx_Engineer_Skill_Destruction_Boom.h" />
+    <ClInclude Include="..\Public\Vfx_Explosion.h" />
+    <ClInclude Include="..\Public\Vfx_FireCracker.h" />
     <ClInclude Include="..\Public\Vfx_Glanix_Skill_RageStamp.h" />
     <ClInclude Include="..\Public\Vfx_Glanix_Skill_Spawn.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_BigBang.h" />
@@ -1546,6 +1548,8 @@
     <ClCompile Include="..\Private\Vehicle_Flying_EnemyBoto.cpp" />
     <ClCompile Include="..\Private\Vehicle_Object_Biplane.cpp" />
     <ClCompile Include="..\Private\Vfx_Engineer_Skill_Destruction_Boom.cpp" />
+    <ClCompile Include="..\Private\Vfx_Explosion.cpp" />
+    <ClCompile Include="..\Private\Vfx_FireCracker.cpp" />
     <ClCompile Include="..\Private\Vfx_Glanix_Skill_RageStamp.cpp" />
     <ClCompile Include="..\Private\Vfx_Glanix_Skill_Spawn.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_BigBang.cpp" />

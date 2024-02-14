@@ -30,6 +30,9 @@ private:
 	_bool Find_Dest_Position(_float fTimeDelta);
 
 private:
+	void Create_Effect();
+
+private:
 	class CPhysX_Controller* m_pControllerCom = nullptr;
 
 private:
