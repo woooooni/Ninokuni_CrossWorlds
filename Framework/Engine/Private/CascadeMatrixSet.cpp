@@ -35,19 +35,19 @@ void CCascadeMatrixSet::Tick(const Vec3& vDirectionalDir)
 	if (nullptr == pCamera)
 		return;
 
-	//Vec3 vCamLook = Vec3(pCamera->Get_Transform()->Get_Look());
-	//Vec3 vCamEye = Vec3(pCamera->Get_Transform()->Get_Position());
-	//_float fCurFar = pCamera->Get_ProjDesc().fFar;
+	Vec3 vCamLook = Vec3(pCamera->Get_Transform()->Get_Look());
+	Vec3 vCamEye = Vec3(pCamera->Get_Transform()->Get_Position());
+	_float fCurFar = pCamera->Get_ProjDesc().fFar;
 
-	//Vec3 vWorldCenter = vCamEye + vCamLook * m_fCascadeTotalRange * 0.5f;
-	//Vec3 vPos = vWorldCenter;
-	//Vec3 vLookAt = vWorldCenter + vDirectionalDir * fCurFar;
-	//Vec3 vUp;
-	//Vec3 vRight = Vec3(1.0f, 0.0f, 0.0f);
-	//vUp = vDirectionalDir.Cross(vRight);
-	//vUp.Normalize();
-	//Matrix mShadowView;
-	//mShadowView = ::XMMatrixLookAtLH(vPos, vLookAt, vUp);
+	Vec3 vWorldCenter = vCamEye + vCamLook * m_fCascadeTotalRange * 0.5f;
+	Vec3 vPos = vWorldCenter;
+	Vec3 vLookAt = vWorldCenter + vDirectionalDir * fCurFar;
+	Vec3 vUp;
+	Vec3 vRight = Vec3(1.0f, 0.0f, 0.0f);
+	vUp = vDirectionalDir.Cross(vRight);
+	vUp.Normalize();
+	Matrix mShadowView;
+	mShadowView = ::XMMatrixLookAtLH(vPos, vLookAt, vUp);
 
 	Matrix mCameraViewInv = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
 	const _float fFov = pCamera->Get_Fov();
