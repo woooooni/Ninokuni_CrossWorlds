@@ -306,7 +306,7 @@ float4 PS_SSAO(VertexOut input) : SV_Target
     
     // SSAOMap의 효과를 선명하게 할려면 pow를 사용
     // SSAOMap은 회색조이다.
-    return saturate(pow(access, 4.0f));
+    return saturate(pow(access, 4.0f)) + float4(0.549f, 0.384f, 0.235f, 1.0f);
 }
 
 technique11 DefaultTechnique
