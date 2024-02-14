@@ -68,7 +68,8 @@ void CState_VehicleFlying_Backflip::Enter_State(void* pArg)
         
     }
 
-    
+    GI->Stop_Sound(CHANNELID::SOUND_VEHICLE);
+    GI->Play_Sound(TEXT("sp_ie_st07_pool_core_smash_hit_01.wav"), CHANNELID::SOUND_VEHICLE, 0.4f);
     
     m_bFinished = false;
     m_fTimeAcc = 0.f;

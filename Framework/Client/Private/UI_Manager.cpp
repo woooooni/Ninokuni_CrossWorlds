@@ -3835,6 +3835,19 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pRecommend);
 
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 1024.f * 0.7f;
+	UIDesc.fCY = 512.f * 0.7f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	CGameObject* pLogo = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ending_Logo"), &UIDesc, &pLogo)))
+		return E_FAIL;
+	m_pEndingLogo = dynamic_cast<CUI_Basic*>(pLogo);
+	if (nullptr == m_pEndingLogo)
+		return E_FAIL;
+	Safe_AddRef(m_pEndingLogo);
+
 //	CUI_AddItem::UIITEM_DESC ITEMDesc = {};
 //	ITEMDesc.fCX = 400.f * 0.5f;
 //	ITEMDesc.fCY = 93.f * 0.5f;
@@ -4580,6 +4593,12 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pRecommend)))
 		return E_FAIL;
 	Safe_AddRef(m_pRecommend);
+
+	if (nullptr == m_pEndingLogo)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pEndingLogo)))
+		return E_FAIL;
+	Safe_AddRef(m_pEndingLogo);
 
 	return S_OK;
 }
@@ -6044,6 +6063,14 @@ void CUI_Manager::Show_AddItem(ITEM_TYPE eItemType, ITEM_CODE eItemCode, _uint i
 		m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
 		Safe_AddRef(pSlot);
 	}
+}
+
+void CUI_Manager::On_EndingLogo()
+{
+	if (nullptr == m_pEndingLogo)
+		return;
+
+	m_pEndingLogo->Set_Active(true);
 }
 
 void CUI_Manager::Use_AttackBtn()
@@ -9264,6 +9291,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Stellia_GaugeBar::Create(m_pDevice, m_pContext), LAYER_UI))) // 원형만 생성한다
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ending_Logo"),
+		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Ending_Logo", CUI_Basic::UI_BASIC::UI_ENDING), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -9593,6 +9624,7 @@ void CUI_Manager::Free()
 
 	Safe_Release(m_pRecommend);
 	Safe_Release(m_pSkillAnnounce);
+	Safe_Release(m_pEndingLogo);
 
 	for (auto& pFrame : m_CoolTimeFrame)
 		Safe_Release(pFrame);

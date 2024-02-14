@@ -5,6 +5,7 @@
 #include "Game_Manager.h"
 #include "Character_Manager.h"
 #include "Player.h"
+#include "UI_Fade.h"
 
 CUI_Basic::CUI_Basic(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, UI_BASIC eType)
 	: CUI(pDevice, pContext, strObjectTag), m_eType(eType)
@@ -173,8 +174,6 @@ void CUI_Basic::Tick(_float fTimeDelta)
 			{
 				m_fAlpha += fTimeDelta * 2.f;
 
-
-
 				if (1.f <= m_fAlpha)
 				{
 					m_bAlpha = true;
@@ -184,6 +183,34 @@ void CUI_Basic::Tick(_float fTimeDelta)
 
 			// 회전시킨다
 			m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 0.f, 1.f, 0.f), fTimeDelta * 2.f);
+		}
+		else if (m_eType == UI_ENDING)
+		{
+			if (false == m_bEnd)
+			{
+				if (false == m_bAlpha)
+				{
+					m_fAlpha += fTimeDelta * 0.5f;
+
+					if (1.f <= m_fAlpha)
+					{
+						m_fAlpha = 1.f;
+						m_bAlpha = true;
+					}
+				}
+				else
+				{
+					// 시간을 누적한다.
+					m_fTimeAcc += fTimeDelta;
+
+					if (6.f < m_fTimeAcc)
+					{
+						m_bEnd = true;
+						m_fTimeAcc = 0.f;
+						CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 2.f, true);
+					}
+				}
+			}
 		}
 
 		__super::Tick(fTimeDelta);
@@ -447,6 +474,17 @@ HRESULT CUI_Basic::Ready_Components()
 		m_fAlpha = 1.f;
 		break;
 
+	case UI_ENDING:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Ending_Logo"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_bEnd = false;
+		m_bAlpha = false;
+		m_bActive = false;
+		m_fAlpha = 0.f;
+		m_fTimeAcc = 0.f;
+		break;
+
 	default:
 		break;
 	}
@@ -485,7 +523,7 @@ HRESULT CUI_Basic::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
 		return E_FAIL;
 
 	return S_OK;

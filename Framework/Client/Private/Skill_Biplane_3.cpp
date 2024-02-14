@@ -42,8 +42,12 @@ _bool CSkill_Biplane_3::Use_Skill()
 		Shoot_GuidedMissile();
 		return true;
 	}
-	else	
+	else
+	{
+		GI->Play_Sound(TEXT("npc_np0900_tr_combo_fail_01.wav"), CHANNELID::SOUND_UI,
+			0.3f);
 		return false;
+	}
 }
 
 void CSkill_Biplane_3::Shoot_GuidedMissile()
@@ -106,6 +110,9 @@ void CSkill_Biplane_3::Shoot_GuidedMissile()
 			}
 		}
 	}
+
+	GI->Play_Sound(TEXT("sp_mng_st12_last_atk_blow_partner_01_2.wav"), CHANNELID::SOUND_ATTACK,
+		GI->Get_ChannelVolume(CHANNELID::SOUND_ATTACK));
 }
 
 

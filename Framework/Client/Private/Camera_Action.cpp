@@ -528,6 +528,10 @@ void CCamera_Action::Tick_Ending(_float fTimeDelta)
 		{
 			m_tActionEndingDesc.bActive = false;
 
+			{
+				// UI 로고 On
+				CUI_Manager::GetInstance()->On_EndingLogo();
+			}
 			/* 높이 보간 시작 */
 			{
 				m_tActionEndingDesc.fOriginHeight = Vec4(m_pTransformCom->Get_Position()).y;
@@ -1983,6 +1987,9 @@ HRESULT CCamera_Action::Start_Action_Ending()
 	m_eCurActionType = CAMERA_ACTION_TYPE::ENDING;
 
 	m_tActionEndingDesc.bActive = true;
+
+	// 마우스 비활성화
+	CUI_Manager::GetInstance()->Hide_MouseCursor(true);
 
 	ACTION_ENDING_DESC::VIEW_NUM eView = ACTION_ENDING_DESC::VIEW_NUM::V0;
 	{

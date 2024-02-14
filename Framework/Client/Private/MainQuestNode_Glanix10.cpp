@@ -91,10 +91,10 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix10::Tick(const _float& fTimeDelta)
 				ItemDesc.bFirstSlot = true;
 				ItemDesc.eFirstItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN;
 				ItemDesc.iFirstAmount = 10000;
-				CGame_Manager::GetInstance()->Get_Player()->Increase_Gold(ItemDesc.iFirstAmount);
 
 				CUI_Manager::GetInstance()->Set_QuestRewards(&ItemDesc);
 				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("코에루크 설원의 문제 해결하기"));
+				CGame_Manager::GetInstance()->Get_Player()->Increase_Gold(ItemDesc.iFirstAmount);
 				m_bIsRewarding = true;
 			}
 

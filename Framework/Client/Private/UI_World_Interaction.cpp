@@ -86,6 +86,11 @@ HRESULT CUI_World_Interaction::Initialize(void* pArg)
 	m_vOriginSize = _float2(m_tInfo.fCX * 0.85f, m_tInfo.fCY * 0.85f);
 	m_vMinSize = _float2(m_vOriginSize.x * 0.7f, m_vOriginSize.y * 0.7f);
 
+	// ±ôºýÀÓ ¹æÁö·Î ResizeÇÏÁö¾ÊÀ½
+	m_tInfo.fCX = m_vMinSize.x;
+	m_tInfo.fCY = m_vMinSize.y;
+	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+
 	m_bActive = true;
 	m_bResize = false;
 
@@ -122,35 +127,35 @@ void CUI_World_Interaction::Tick(_float fTimeDelta)
 			XMStoreFloat4(&Temp, pTransform->Get_Position());
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
 
-			if (!m_bResize)
-			{
-				m_tInfo.fCX -= fTimeDelta * m_fSpeed;
-				m_tInfo.fCY -= fTimeDelta * m_fSpeed;
-
-				if (m_tInfo.fCX <= m_vMinSize.x)
-				{
-					m_bResize = true;
-					m_tInfo.fCX = m_vMinSize.x;
-					m_tInfo.fCY = m_vMinSize.y;
-				}
-
-				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-
-			}
-			else
-			{
-				m_tInfo.fCX += fTimeDelta * m_fSpeed;
-				m_tInfo.fCY += fTimeDelta * m_fSpeed;
-
-				if (m_tInfo.fCX >= m_vOriginSize.x)
-				{
-					m_bResize = false;
-					m_tInfo.fCX = m_vOriginSize.x;
-					m_tInfo.fCY = m_vOriginSize.y;
-				}
-
-				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-			}
+//			if (!m_bResize)
+//			{
+//				m_tInfo.fCX -= fTimeDelta * m_fSpeed;
+//				m_tInfo.fCY -= fTimeDelta * m_fSpeed;
+//
+//				if (m_tInfo.fCX <= m_vMinSize.x)
+//				{
+//					m_bResize = true;
+//					m_tInfo.fCX = m_vMinSize.x;
+//					m_tInfo.fCY = m_vMinSize.y;
+//				}
+//
+//				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+//
+//			}
+//			else
+//			{
+//				m_tInfo.fCX += fTimeDelta * m_fSpeed;
+//				m_tInfo.fCY += fTimeDelta * m_fSpeed;
+//
+//				if (m_tInfo.fCX >= m_vOriginSize.x)
+//				{
+//					m_bResize = false;
+//					m_tInfo.fCX = m_vOriginSize.x;
+//					m_tInfo.fCY = m_vOriginSize.y;
+//				}
+//
+//				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+//			}
 
 			Update_ButtonIcon();
 			__super::Tick(fTimeDelta);

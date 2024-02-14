@@ -227,6 +227,7 @@ public: // Lobby
 	void Show_RewardItems();
 
 	void Show_AddItem(ITEM_TYPE eItemType, ITEM_CODE eItemCode, _uint iCount);
+	void On_EndingLogo();
 
 private:
 	CHARACTER_TYPE m_eCurPlayer = { CHARACTER_TYPE::SWORD_MAN };
@@ -386,6 +387,7 @@ private:
 	vector <class CUI_InGame_Setting_Slot*> m_SoundSlot;
 
 	list<class CUI_AddItem*>		m_ItemPopup;
+	class CUI_Basic*				m_pEndingLogo = { nullptr };
 
 	_bool			m_bHideHP = { false }; // 몬스터 HP바를 숨길 것인가
 

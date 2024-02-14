@@ -114,6 +114,9 @@ void CState_EnemyBiplane_Skill_1::Shoot_Bullet_Ball()
     pProjectileTransform->Set_Scale(vScale);
 
     pBulletBall->Set_OffsetPosition(Vec4(m_iShootBallCount, 1.5f, 2.f, 1.f));
+     
+    GI->Play_Sound(TEXT("obj_gmk_st07_core_appear_01_4.wav"), CHANNELID::SOUND_VOICE_MONSTER2,
+        GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_MONSTER2));
 }
 
 CState_EnemyBiplane_Skill_1* CState_EnemyBiplane_Skill_1::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

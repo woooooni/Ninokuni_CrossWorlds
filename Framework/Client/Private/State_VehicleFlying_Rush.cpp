@@ -55,6 +55,8 @@ void CState_VehicleFlying_Rush::Enter_State(void* pArg)
         }
     }
 
+    GI->Stop_Sound(CHANNELID::SOUND_UI2);
+    GI->Play_Sound(TEXT("Grandprix_Rush.wav"), CHANNELID::SOUND_UI2, GI->Get_ChannelVolume(CHANNELID::SOUND_UI2));
 }
 
 void CState_VehicleFlying_Rush::Tick_State(_float fTimeDelta)

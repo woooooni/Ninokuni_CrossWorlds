@@ -58,6 +58,9 @@ void CUI_Minigame_GaugeBar::Tick(_float fTimeDelta)
 		if (KEY_TAP(KEY::SPACE))
 		{
 			m_iValue++;
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("ui_menu_pause_option_select_01_14.wav"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 		}
 
 		if (m_iValue == 2)
@@ -78,6 +81,10 @@ void CUI_Minigame_GaugeBar::LateTick(_float fTimeDelta)
 	{
 		if (m_iTextureIndex == 22)
 		{
+			GI->Stop_Sound(CHANNELID::SOUND_UI2);
+			GI->Play_Sound(TEXT("sp_mng_st02_steampipe_air_01_1.wav"), CHANNELID::SOUND_UI2,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI2));
+
 			CUIMinigame_Manager::GetInstance()->OnOff_Grandprix(true);
 			return;
 		}

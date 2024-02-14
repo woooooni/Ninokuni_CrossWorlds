@@ -92,7 +92,8 @@ void CUI_World_NPCTag::LateTick(_float fTimeDelta)
 			if (CAMERA_TYPE::CUTSCENE_MAP == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
 				return;
 
-			if (CQuest_Manager::QUESTEVENT_TYPE::QUESTEVENT_ENDING == CQuest_Manager::GetInstance()->Get_CurQuestEvent())
+			if (CQuest_Manager::QUESTEVENT_TYPE::QUESTEVENT_ENDING == CQuest_Manager::GetInstance()->Get_CurQuestEvent() ||
+				CQuest_Manager::QUESTEVENT_TYPE::QUESTEVENT_INVASION == CQuest_Manager::GetInstance()->Get_CurQuestEvent())
 				return;
 
 			_float4 vCamPos = GI->Get_CamPosition();

@@ -590,6 +590,27 @@ void CVehicle_Flying_EnemyBiplane::On_Damaged(const COLLISION_INFO& tInfo)
 		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.3f, 17.f, 0.3f);
 	}
 
+//	switch (GI->RandomInt(0, 2))
+//	{
+//	case 0:
+//		GI->Stop_Sound(CHANNELID::SOUND_VOICE_MONSTER1);
+//		GI->Play_Sound(TEXT("obj_gmk_statue_kale_hit_great_shpt_01_05.wav"), CHANNELID::SOUND_VOICE_MONSTER1, 0.1f);
+//		break;
+//
+//	case 1:
+//		GI->Stop_Sound(CHANNELID::SOUND_VOICE_MONSTER2);
+//		GI->Play_Sound(TEXT("obj_gmk_statue_kale_hit_great_shpt_01_04.wav"), CHANNELID::SOUND_VOICE_MONSTER1, 0.1f);
+//		break;
+//
+//	case 2:
+//		GI->Stop_Sound(CHANNELID::SOUND_VOICE_MONSTER2);
+//		GI->Play_Sound(TEXT("obj_gmk_statue_kale_hit_great_shpt_01_02.wav"), CHANNELID::SOUND_VOICE_MONSTER1, 0.1f);
+//		break;
+//	}
+
+	GI->Stop_Sound(CHANNELID::SOUND_VOICE_MONSTER1);
+	GI->Play_Sound(TEXT("sp_ie_st07_pool_core_smash_hit_01.wav"), CHANNELID::SOUND_VOICE_MONSTER1, 0.1f);
+
 	m_tStat.fCurHP = max(0, m_tStat.fCurHP - iDamage);
 
 	if (0.f >= m_tStat.fCurHP)

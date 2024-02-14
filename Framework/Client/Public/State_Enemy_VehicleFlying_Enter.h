@@ -26,7 +26,7 @@ private:
 	void Move(_float fTimeDelta);
 
 private:
-	_float m_fMovingSpeed = { 12.f }; // Temp
+	_float m_fMovingSpeed = { 12.f };
 	_bool m_bUpdate = { false };
 	_bool m_bSet = { false };
 

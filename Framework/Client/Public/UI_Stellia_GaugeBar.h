@@ -31,7 +31,8 @@ public:
 
 private:
 	class CTexture* m_pGaugeTextureCom = { nullptr };
-	_uint m_iPass = { 25 };
+//	_uint m_iPass = { 25 };
+	_uint m_iPass = { 14 };
 
 	_bool m_bDisappear = { false };
 	_float m_fTimeAcc = { 0.f };

@@ -94,6 +94,9 @@ void CState_EnemyBiplane_Skill_2::Shoot_Feathers()
         }
         
     }
+
+    GI->Play_Sound(TEXT("UI_Fx_Quest_Reward_Item_1.mp3"), CHANNELID::SOUND_VOICE_MONSTER3,
+        GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_MONSTER3));
 }
 
 CState_EnemyBiplane_Skill_2* CState_EnemyBiplane_Skill_2::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

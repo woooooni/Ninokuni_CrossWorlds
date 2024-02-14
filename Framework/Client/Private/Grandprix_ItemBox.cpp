@@ -170,6 +170,10 @@ void CGrandprix_ItemBox::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
+		GI->Stop_Sound(CHANNELID::SOUND_UI2);
+		GI->Play_Sound(TEXT("ui_gmk_korsica_fail_01.wav"), CHANNELID::SOUND_UI2,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI2));
+
 		CGrandprix_Manager::GetInstance()->Add_ItemBox(m_eItemType);
 		Set_Dead(true);
 	}
