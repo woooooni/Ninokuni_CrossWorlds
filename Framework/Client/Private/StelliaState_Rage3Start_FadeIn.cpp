@@ -27,18 +27,38 @@ HRESULT CStelliaState_Rage3Start_FadeIn::Initialize(const list<wstring>& Animati
 
 void CStelliaState_Rage3Start_FadeIn::Enter_State(void* pArg)
 {
-	/* 공중에서 떨어지지 않도록 y 포지션을 최대한 지면과 가깝게 설정 */
-	Vec3 vPos = m_pStellia->Get_Rage3StartPos();
-	vPos.y -= 2.5f;
+	/* 스텔리아 트랜스폼 설정 (포지션 y를 지면과 딱 맞게) */
+	{
+		Vec4 vPos = m_pStellia->Get_Rage3StartPos();
+		vPos.y -= 2.5f;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
 
-	__super::Set_LockOffStellia();
-	m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_OriginPos());
-	m_pStellia->Get_Component<CPhysX_Controller>(TEXT("Com_Controller"))->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
+		__super::Set_LockOffStellia();
+		m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_OriginPos());
+		m_pStellia->Get_Component<CPhysX_Controller>(TEXT("Com_Controller"))->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
+	}
+
+	/* 플레이어 트랜스폼 설정 (포지션 y를 지면과 딱 맞게) */
+	{
+		Vec4 vPos = m_pStellia->Get_OriginPos();
+		vPos.y -= 2.5f;
+
+		m_pPlayerTransform->Set_State(CTransform::STATE_POSITION, vPos);
+		m_pPlayer->Get_Component<CPhysX_Controller>(TEXT("Com_Controller"))->Set_EnterLevel_Position(m_pPlayerTransform->Get_Position());
+	}
+
+	/* 플레이어와 카메라가 스텔리아를 바라보도록 설정 */
+	{
+		m_pPlayerTransform->LookAt_ForLandObject(m_pStellia->Get_Component_Transform()->Get_Position());
+
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+			pFollowCam->Set_Default_Position();
+	}
 	
-	m_pPlayerTransform->Set_State(CTransform::STATE_POSITION, m_pStellia->Get_OriginPos());
-	m_pPlayer->Get_Component<CPhysX_Controller>(TEXT("Com_Controller"))->Set_EnterLevel_Position(m_pPlayerTransform->Get_Position());
+	/* 페이드 되는 동안 플레이어 인풋을 막아둔다. */
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Stand"));
 
@@ -53,6 +73,9 @@ void CStelliaState_Rage3Start_FadeIn::Tick_State(_float fTimeDelta)
 		if (CUI_Manager::GetInstance()->Is_FadeFinished())
 		{
 			m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE3TURN_AROUND);
+
+			/* 페이드가 끝나면 플레이어 인풋을 다시 연다. */
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 		}
 	}
 	else

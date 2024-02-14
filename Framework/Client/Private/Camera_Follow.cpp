@@ -227,7 +227,6 @@ void CCamera_Follow::Set_Blending(const _bool& bBlending)
 			CUI_Manager::GetInstance()->Hide_MouseCursor(false);
 		}
 
-
 		if (CAMERA_TYPE::TOP == CCamera_Manager::GetInstance()->Get_PrevCamera()->Get_Key())
 		{
 			/* 탑뷰에서 블렌딩이 끝났다면 모든 인풋을 열어준다. */
@@ -251,6 +250,11 @@ void CCamera_Follow::Set_Blending(const _bool& bBlending)
 
 				/* UI를 켜준다. */
 				CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+			}
+
+			if (CCamera_Action::CAMERA_ACTION_TYPE::STELLIA_GUARD == pActionCam->Get_Camera_ActionType())
+			{
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 			}
 		}
 	}
@@ -436,7 +440,6 @@ HRESULT CCamera_Follow::Finish_LockOn(CGameObject* pTargetObject, const _float& 
 		
 		m_eLockProgress = LOCK_PROGRESS::FINISH_BLEIDING;
 	}
-
 
 	m_bLockLookHeight = false;
 

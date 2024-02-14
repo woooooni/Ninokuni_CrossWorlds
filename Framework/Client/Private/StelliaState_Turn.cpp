@@ -50,7 +50,6 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 	// 레이지3 패턴 (위에게 진짜 조건문)
 	if (!m_bIsRage3Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.15f &&
 		m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
-	//if (!m_bIsRage3Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.9f)
 	{
 		m_bIsRage3Init = true;
 		m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE3, true);

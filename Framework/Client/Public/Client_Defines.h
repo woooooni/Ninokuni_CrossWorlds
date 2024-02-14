@@ -119,7 +119,7 @@ namespace Client
 
 	/* Camera - Default */
 
-	enum CAMERA_TYPE 
+	enum CAMERA_TYPE
 	{ 
 		FREE, 
 		FOLLOW, 
@@ -163,6 +163,9 @@ namespace Client
 
 	static const _float Cam_Dist_Follow_Default					= 4.5f;
 	static const _float Cam_Dist_Follow_Wide					= 5.5f;
+
+	static const _float Cam_Dist_Follow_Stellia					= 7.5f;
+
 
 	static const _float Cam_Dist_Quater_Min						= 15.f;
 	static const _float Cam_Dist_Quater_Default					= 30.f;
@@ -215,6 +218,9 @@ namespace Client
 
 	static const Vec4	Cam_Target_Offset_LockOn_Stellia	= Vec4{ 0.7f, 2.f, -6.f, 1.f };
 	static const Vec4	Cam_LookAt_Offset_LockOn_Stellia	= Vec4{ 0.f, 2.f, 0.f, 1.f };
+
+	static const Vec4	Cam_Target_Offset_Stellia			= Vec4{ 0.7f, 1.5f, 0.f, 1.f };
+	static const Vec4	Cam_LookAt_Offset_Stellia			= Vec4{ 0.7f, 2.f, 0.f, 1.f };
 
 	static const Vec4	Cam_Target_Offset_LockOn_GrandPrix	= Vec4{ 0.f, 0.f, 0.f, 0.f };
 

@@ -95,11 +95,16 @@ public:
 	HRESULT Start_CutScene(const LEVELID& eLevelID, const _uint& iType = 0);
 	HRESULT Start_CutScene(const string& strCutSceneName, const _bool& bWillRetruePrevCam = false); /* 단일 컷신 실행 */
 	HRESULT Start_CutScenes(vector<string> strCutSceneNames, const _bool& bWillRetruePrevCam = false); /* 복수 컷신 실행 */
+	
 	HRESULT Stop_CutScene(const _bool& bClearReservedCutScene = false);
 	const _bool Is_Playing_CutScenc() const { return m_tTimeDesc.bActive; }
+	
 	HRESULT Reserve_Fade(const _float& fIntroDuration, const _bool& bIntroWhite, const _float& fOuttroDuration, const _bool& bOuttroWhite);
+	
 	HRESULT Set_CutSceneTransform(const string& strCutSceneName); /* 블렌딩이 필요한 경우 해당 컷신의 트랜스폼을 미리 세팅해둔다. */
+	
 	static Vec4 Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio);
+	
 	void Reserve_NextCameraType(const CAMERA_TYPE& eType) { m_eReservedNextCameraType = eType; }
 
 	const _bool Is_LastCutScene();
