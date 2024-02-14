@@ -27,6 +27,7 @@ public:
 public:
 	class CPlayer* Get_Player() { return m_pPlayer; }
 	class CKuu*	   Get_Kuu() { return m_pKuu; }
+	class CRenderer* Get_Renderer();
 
 public:
 	void Set_RadialBlur(_bool bSet, _float fQuality = 16.f, _float fRadialBlurPower = 0.1f);
