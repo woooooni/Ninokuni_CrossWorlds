@@ -28,13 +28,18 @@ void CState_Character_Battle_Dash::Enter_State(void* pArg)
     switch (eCharacterType)
     {
     case CHARACTER_TYPE::SWORD_MAN:
-        strSoundKey = L"Swordsman_V_Atk_Short_" + to_wstring(GI->RandomInt(1, 3));
+        strSoundKey = L"Swordsman_V_Atk_Cast_" + to_wstring(GI->RandomInt(1, 3));
+        strSoundKey += L".mp3";
         CSound_Manager::GetInstance()->Play_Sound(strSoundKey, CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
         break;
     case CHARACTER_TYPE::ENGINEER:
+        strSoundKey = L"Engineer_V_Atk_Cast_" + to_wstring(GI->RandomInt(1, 3));
+        strSoundKey += L".mp3";
         CSound_Manager::GetInstance()->Play_Sound(strSoundKey, CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
         break;
     case CHARACTER_TYPE::DESTROYER:
+        strSoundKey = L"Destroyer_V_Atk_Cast_" + to_wstring(GI->RandomInt(1, 3));
+        strSoundKey += L".mp3";
         CSound_Manager::GetInstance()->Play_Sound(strSoundKey, CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
         break;
     }

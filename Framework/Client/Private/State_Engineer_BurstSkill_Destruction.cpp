@@ -24,6 +24,9 @@ void CState_Engineer_BurstSkill_Destruction::Enter_State(void* pArg)
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
     m_pCharacter->Look_For_Target();
 
+    wstring strVoiceNum = to_wstring(CUtils::Random_Int(1, 3));
+    CSound_Manager::GetInstance()->Play_Sound(L"Engineer_V_Atk_Cast_Long_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
+
     m_pCharacter->Appear_Weapon();
     
     // Effect Create

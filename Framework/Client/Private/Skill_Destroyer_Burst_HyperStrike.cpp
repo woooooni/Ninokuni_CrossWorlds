@@ -4,7 +4,7 @@
 
 CSkill_Destroyer_Burst_HyperStrike::CSkill_Destroyer_Burst_HyperStrike()
 {
-	
+	m_fCoolTime = 30.f;
 }
 
 

@@ -601,8 +601,6 @@ void CCharacter::Collision_Enter(const COLLISION_INFO& tInfo)
 			break;
 
 		}
-			
-		
 	}
 }
 

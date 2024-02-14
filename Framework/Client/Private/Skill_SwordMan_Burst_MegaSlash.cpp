@@ -3,8 +3,9 @@
 #include "..\Public\Skill_SwordMan_Burst_MegaSlash.h"
 
 CSkill_SwordMan_Burst_MegaSlash::CSkill_SwordMan_Burst_MegaSlash()
+	: CSkill()
 {
-	
+	m_fCoolTime = 30.f;
 }
 
 
@@ -14,7 +15,7 @@ HRESULT CSkill_SwordMan_Burst_MegaSlash::Initialize(ID3D11Device* pDevice, ID3D1
 	if (FAILED(__super::Initialize(pDevice, pContext, pOwner)))
 		return E_FAIL;
 
-	m_fCoolTime = 30.f;
+	
 
 	return S_OK;
 }

@@ -169,6 +169,7 @@ void CDestroyer_HyperStrike_Hammer::Ground_Collision_Enter(PHYSX_GROUND_COLLISIO
 {
 	// ¶¥¿¡ ´ê¾ÒÀ»¶§.
 	CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+	GI->Play_Sound(L"Impact_Metal_Stone_1.mp3", CHANNELID::SOUND_SKILL, 0.5f, true);
 
 	if (false == m_bCollisionGround)
 		m_bCollisionGround = true;

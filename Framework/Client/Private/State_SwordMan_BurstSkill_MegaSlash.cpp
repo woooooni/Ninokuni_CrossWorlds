@@ -65,17 +65,16 @@ void CState_SwordMan_BurstSkill_MegaSlash::Tick_State(_float fTimeDelta)
             Stop_Action();
             m_bStopAction = true;
         }
-        
     }
 
     
 
-    if (m_pCharacter->Get_RendererCom()->Get_Current_ScreenEffect() == CRenderer::SCREEN_EFFECT::SWORDMAN_SPLIT)
-    {
-        m_vScreenSpeed.x += 50.f * fTimeDelta;
-        m_vScreenSpeed.y += 100.f * fTimeDelta;
-        m_pCharacter->Get_RendererCom()->Add_ScreenEffectAcc(Vec2((-0.5f -m_vScreenSpeed.x) * fTimeDelta, (-0.7f - m_vScreenSpeed.y) * fTimeDelta));
-    }
+    //if (m_pCharacter->Get_RendererCom()->Get_Current_ScreenEffect() == CRenderer::SCREEN_EFFECT::SWORDMAN_SPLIT)
+    //{
+    //    m_vScreenSpeed.x += 50.f * fTimeDelta;
+    //    m_vScreenSpeed.y += 100.f * fTimeDelta;
+    //    m_pCharacter->Get_RendererCom()->Add_ScreenEffectAcc(Vec2((-0.5f -m_vScreenSpeed.x) * fTimeDelta, (-0.7f - m_vScreenSpeed.y) * fTimeDelta));
+    //}
         
 
     if (GI->Get_TimeScale(TIMER_TYPE::GAME_PLAY) >= 1.f)
