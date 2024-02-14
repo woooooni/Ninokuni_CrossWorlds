@@ -69,6 +69,7 @@ public:
 	void Set_Default_Position();
 
 	void Reset_Damping() { m_tDampingDesc.bSet = false; }
+	void Reset_DampingBackLimitRad() { m_tDampingDesc.fDampingBackLimitRad = 1.57f; }
 
 	virtual Vec4 Get_LookAt() override;
 	virtual void Set_Blending(const _bool& bBlending) override;
@@ -122,7 +123,7 @@ private:
 	const _float	m_fDefaultAngleY		= 1.3f ;
 
 	/* 구면 좌표계에서 카메라의 최대 최소 y 값*/
-	_float			m_fMinLimitY			= Cam_Follow_Limit_Min_Y;// 0.7f;
+	_float			m_fMinLimitY			= Cam_Follow_Limit_Min_Y;
 	_float			m_fMaxLimitY			= Cam_Follow_Limit_Max_Y;
 
 	/* 회전량이 너무 많거나 적을경우 카메라가 획 도는 경우를 방지하기 위한 Limit값 */
