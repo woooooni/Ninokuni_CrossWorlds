@@ -42,7 +42,7 @@ void CGlanixState_IntroIdle::Enter_State(void* pArg)
 
 
 	/* Change Bgm */
-	GI->Play_BGM(L"BGM_Field_BridgeCave_Ne_1.ogg", GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, 0.75f);
+	GI->Play_BGM(L"BGM_Int_Boss_Asian_1_Part1.ogg", GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, 0.75f);
 }
 
 void CGlanixState_IntroIdle::Tick_State(_float fTimeDelta)
