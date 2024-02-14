@@ -79,6 +79,7 @@ HRESULT CLevel_Logo::Enter_Level()
 
 HRESULT CLevel_Logo::Exit_Level()
 {
+	GI->Clear_PhysX_Ground();
 	return S_OK;
 }
 

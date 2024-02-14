@@ -135,6 +135,9 @@ void CCharacter_Destroyer::Tick(_float fTimeDelta)
 		}
 	}
 
+	if (false == m_bControllCharacter)
+		return;
+
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 

@@ -149,6 +149,7 @@ HRESULT CLevel_Test::Enter_Level()
 
 HRESULT CLevel_Test::Exit_Level()
 {
+	GI->Clear_PhysX_Ground();
 	return S_OK;
 }
 

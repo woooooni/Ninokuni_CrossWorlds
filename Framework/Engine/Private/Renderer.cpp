@@ -1968,10 +1968,6 @@ HRESULT CRenderer::Render_Debug_Target()
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
-	if (FAILED(CPhysX_Manager::GetInstance()->Render()))
-		return E_FAIL;
-
-	// 
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_GameObjects"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 

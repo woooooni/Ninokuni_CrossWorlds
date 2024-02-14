@@ -123,6 +123,9 @@ void CCharacter_Engineer::Tick(_float fTimeDelta)
 {
 	m_pStateCom->Tick_State(fTimeDelta);
 
+	if (false == m_bControllCharacter)
+		return;
+
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 
@@ -134,7 +137,9 @@ void CCharacter_Engineer::Tick(_float fTimeDelta)
 
 void CCharacter_Engineer::LateTick(_float fTimeDelta)
 {
-	
+	if (false == m_bControllCharacter)
+		return;
+
 	__super::LateTick(fTimeDelta);
 
 #ifdef _DEBUG

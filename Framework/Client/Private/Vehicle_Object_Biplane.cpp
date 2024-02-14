@@ -68,8 +68,6 @@ void CVehicle_Object_Biplane::LateTick(_float fTimeDelta)
 	{
 		__super::LateTick(fTimeDelta);
 
-		Update_Rider(fTimeDelta);
-
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
 	}

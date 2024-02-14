@@ -641,15 +641,9 @@ HRESULT CGameInstance::Add_Ground(CGameObject* pGameObject, CModel* pModel, _mat
 	return m_pPhysXManager->Add_Ground(pGameObject, pModel, WorldMatrix, strCollisionTag);
 }
 
-_bool CGameInstance::Wait_PhysX_Scene()
+void CGameInstance::Wait_PhysX_Scene()
 {
-	while (true)
-	{
-		if(true == m_pPhysXManager->Is_Valid_Scene())
-			return true;
-	}
-
-	return true;
+	m_pPhysXManager->Is_Valid_Scene();
 }
 
 HRESULT CGameInstance::Remove_Actor(class CGameObject* pGameObject)

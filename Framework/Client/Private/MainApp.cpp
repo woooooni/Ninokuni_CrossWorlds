@@ -116,7 +116,6 @@ void CMainApp::Tick(_float fTimeDelta)
 	CTowerDefence_Manager::GetInstance()->LateTick(fTimeDelta);
 	GI->LateTick(fTimeDelta);
 	
-	
 	m_fTimeAcc += fTimeDelta;
 }
 
