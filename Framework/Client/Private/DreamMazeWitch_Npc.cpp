@@ -113,6 +113,11 @@ void CDreamMazeWitch_Npc::Tick(_float fTimeDelta)
 			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_LASER ||
 			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_FOLLOWING_RAGE02 ||
 			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_RAGE3_LASER ||
+			m_pStateCom->Get_CurrState() == WITCHSTATE_INVASION_APPEAR ||
+			m_pStateCom->Get_CurrState() == WITCHSTATE_INVASION_DISAPPEARTURN ||
+			m_pStateCom->Get_CurrState() == WITCHSTATE_INVASION_DISAPPEAR ||
+			m_pStateCom->Get_CurrState() == NPC_IDLE ||
+			m_pStateCom->Get_CurrState() == NPC_UNIQUENPC_TALK ||
 			m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Death")
 			)
 		{
