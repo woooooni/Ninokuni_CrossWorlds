@@ -277,15 +277,20 @@ HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 {
+	// 아이슬랜드 -> 에버모어 
+	const Vec4 vPlayerPos = { 11.f, 9.9f, 97.f, 1.f };
+	const Vec3 vPlayerRot = { 0.f, -43.f, 0.f };
 
 	CGameObject* pPortal = nullptr;
 
 	CPortal::PORTAL_DESC PortalInfo = {};
 	PortalInfo.vStartPosition = XMVectorSet(143.f, 0.11316f, 12.f, 1.f);
-	PortalInfo.vNextPosition = XMVectorSet(-20.f, 9.9f, 133.f, 1.f);
+	PortalInfo.vNextPosition = vPlayerPos;
+	PortalInfo.vNextRotation = vPlayerRot;
 	PortalInfo.eCurrentLevel = LEVEL_ICELAND;
 	PortalInfo.eNextLevel = LEVEL_EVERMORE;
 	PortalInfo.vEffectScale = Vec3(15.f, 0.3f, 1.f);
+
 
 	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo, &pPortal)))
 		return E_FAIL;
@@ -302,7 +307,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 
 	PortalInfo.vStartPosition = XMVectorSet(141.75f, 0.11316f, 20.f, 1.f);
-	PortalInfo.vNextPosition = XMVectorSet(-20.f, 9.9f, 133.f, 1.f);
+	PortalInfo.vNextPosition = vPlayerPos;
 	PortalInfo.eCurrentLevel = LEVEL_ICELAND;
 	PortalInfo.eNextLevel = LEVEL_EVERMORE;
 	PortalInfo.vEffectScale = Vec3(15.f, 0.3f, 1.f);

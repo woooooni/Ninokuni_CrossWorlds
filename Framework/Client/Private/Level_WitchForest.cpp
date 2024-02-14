@@ -640,13 +640,16 @@ HRESULT CLevel_WitchForest::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 {
 	CGameObject* pPortal = nullptr;
 
+	const Vec4 vPlayerPos = { 11.f, 9.9f, 97.f, 1.f };
+	const Vec3 vPlayerRot = { 0.f, -43.f, 0.f };
+
 	CPortal::PORTAL_DESC PortalInfo = {};
 	PortalInfo.vStartPosition = XMVectorSet(4.f, 2.262f, -95.961, 1.f);
-	PortalInfo.vNextPosition = XMVectorSet(124.f, 0.f, 111.f, 1.f);
+	PortalInfo.vNextPosition = vPlayerPos;
+	PortalInfo.vNextRotation = vPlayerRot;
 	PortalInfo.eCurrentLevel = LEVEL_WITCHFOREST;
 	PortalInfo.eNextLevel = LEVEL_EVERMORE;
 	PortalInfo.vEffectScale = Vec3(15.f, 0.3f, 1.f);
-	PortalInfo.vNextRotation = Vec3(8.f, -90.f, 0.f);
 	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo, &pPortal)))
 		return E_FAIL;
 	if (nullptr == pPortal)
@@ -658,11 +661,11 @@ HRESULT CLevel_WitchForest::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 
 	PortalInfo.vStartPosition = XMVectorSet(8.f, 2.262f, -91.f, 1.f);
-	PortalInfo.vNextPosition = XMVectorSet(124.f, 0.f, 111.f, 1.f);
+	PortalInfo.vNextPosition = vPlayerPos;
 	PortalInfo.eCurrentLevel = LEVEL_WITCHFOREST;
 	PortalInfo.eNextLevel = LEVEL_EVERMORE;
 	PortalInfo.vEffectScale = Vec3(15.f, 0.3f, 1.f);
-	PortalInfo.vNextRotation = Vec3(8.f, -90.f, 0.f);
+	PortalInfo.vNextRotation = Vec3(0.f, -90.f, 0.f);
 	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo, &pPortal)))
 		return E_FAIL;
 	if (nullptr == pPortal)
