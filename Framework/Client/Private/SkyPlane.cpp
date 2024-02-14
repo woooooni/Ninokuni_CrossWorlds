@@ -102,7 +102,7 @@ HRESULT CSkyPlane::Render()
 
 		/*if (FAILED(m_pShaderCom->Begin(1)))
 			return E_FAIL;*/
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, 1)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, 0, 1)))
 			return E_FAIL;
 	}
 
