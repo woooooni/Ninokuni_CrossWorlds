@@ -27,6 +27,9 @@ void CState_Character_DoorEnter::Enter_State(void* pArg)
     CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::VEHICLE_TYPE::UDADAK, false);
     m_pRigidBodyCom->Set_Use_Gravity(true);
     m_pRigidBodyCom->Set_Ground(false);
+
+    /* 도어 액션 하는 동안 인풋 막음 for 카메라 블렌딩 */
+    m_pCharacter->Set_All_Input(false);
 }
 
 void CState_Character_DoorEnter::Tick_State(_float fTimeDelta)
@@ -37,6 +40,8 @@ void CState_Character_DoorEnter::Tick_State(_float fTimeDelta)
 
 void CState_Character_DoorEnter::Exit_State()
 {
+    /* 도어 액션 끝나면 인풋 열어줌 */
+    m_pCharacter->Set_All_Input(true);
 }
 
 CState_Character_DoorEnter* CState_Character_DoorEnter::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

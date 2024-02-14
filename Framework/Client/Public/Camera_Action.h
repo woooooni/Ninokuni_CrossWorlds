@@ -313,19 +313,22 @@ public:
 
 	typedef struct tagStelliaGuardDesc
 	{
-		enum class PROGRESS_TYPE {BLENDING_IN, ING, BLENDING_OUT, TYPEEND };
+		enum class PROGRESS_TYPE { BLENDING_IN, ING, BLENDING_OUT, TYPEEND };
+		enum class VIEW_TYPE { EAST, EAST_SOUTH, WEST_SOUTH, TYPEEND }; /* 플레잉 위치가 남, 스텔리아 위치가 북 기준*/
 
-		PROGRESS_TYPE eCurProgress = PROGRESS_TYPE::TYPEEND;
+		PROGRESS_TYPE	eCurProgress = PROGRESS_TYPE::TYPEEND;
+		VIEW_TYPE		eCurViewType = VIEW_TYPE::EAST; /* 누적되므로 Clear() 하면 안됨 */
 
-		const Vec4 vTargetOffset = { 0.f, 0.f, 0.f, 1.f };
-		const Vec4 vLookAtOffset = { 0.f, 0.f, 0.f, 1.f };
+		const Vec4 vTargetOffset = { 0.f, 2.f, 0.f, 1.f };
+		const Vec4 vLookAtOffset = { 0.f, 2.f, 0.f, 1.f };
 
-		const _float fDist = 5.f;
-		const _float fFov = Cam_Fov_Default;
+		const _float fDist = 12.f;
+		const _float fFov = XMConvertToRadians(65.0f);
 
 		CTransform* pStelliaTransform = nullptr;
 
 		Vec4 vPrevLookAt = {};
+		Vec4 vOriginLookAt = {};
 
 		void Clear()
 		{
