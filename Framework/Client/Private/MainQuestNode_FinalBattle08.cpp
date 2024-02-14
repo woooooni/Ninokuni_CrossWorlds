@@ -105,13 +105,25 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle08::Tick(const _float& fTimeDelta)
 				CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 				if (nullptr != pFollowCam)
 				{
+					/* 와이드뷰 가능성 On */
+					pFollowCam->Set_CanWideView(true);
+
 					/* 락온이었다면 해제 */
 					if (pFollowCam->Is_LockOn())
 						pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 
 					pFollowCam->Reset_WideView_To_DefaultView(true);
+
+					/* 카메라 오프셋 변경 */
+					pFollowCam->Set_TargetOffSet(Cam_TargetOffset_Follow_SholderView_Default);
+					pFollowCam->Set_LookAtOffSet(Cam_LookAtOffset_Follow_SholderView_Default);
+
+					/* 디스턴스 변경 */
+					pFollowCam->Set_Distance(Cam_Dist_Follow_Default);
+
 					pFollowCam->Set_Default_Position();
-					CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
+					
+					CCamera_Manager::GetInstance()->Change_Camera(pFollowCam->Get_Key());
 				}
 			}
 

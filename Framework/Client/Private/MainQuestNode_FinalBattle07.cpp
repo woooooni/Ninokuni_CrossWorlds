@@ -55,6 +55,14 @@ void CMainQuestNode_FinalBattle07::Start()
 		/* 기존 세팅 초기화 */
 		{
 			pFollowCam->Reset_WideView_To_DefaultView(true);
+
+			/* 카메라 오프셋 변경 */
+			pFollowCam->Set_TargetOffSet(Cam_Target_Offset_Stellia);
+			pFollowCam->Set_LookAtOffSet(Cam_LookAt_Offset_Stellia);
+
+			/* 디스턴스 변경 */
+			pFollowCam->Set_Distance(Cam_Dist_Follow_Stellia);
+
 			pFollowCam->Set_Default_Position();
 
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
@@ -63,14 +71,17 @@ void CMainQuestNode_FinalBattle07::Start()
 			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
 		}
 
-		/* 락온 설정 */
-		{
-			pFollowCam->Set_LockBoneNumber(3);
-			
-			CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Stellia");
-			if (nullptr != pTarget)
-				pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Stellia, Cam_LookAt_Offset_LockOn_Stellia);
-		}
+		///* 락온 설정 */
+		//{
+		//	pFollowCam->Set_LockBoneNumber(3);
+		//	
+		//	CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Stellia");
+		//	if (nullptr != pTarget)
+		//		pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Stellia, Cam_LookAt_Offset_LockOn_Stellia);
+		//}
+
+		/* 와이드뷰 가능성 해제 */
+		pFollowCam->Set_CanWideView(false);
 	}
 
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);

@@ -156,40 +156,40 @@ void CStelliaState_Base::Reset_Transform()
 
 void CStelliaState_Base::Set_LockOnStellia()
 {
-	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-	if (nullptr != pFollowCam)
-	{
-		/* 기존 세팅 초기화 */
-		{
-			pFollowCam->Reset_WideView_To_DefaultView(true);
-			pFollowCam->Set_Default_Position();
-		}
-
-		/* 락온 설정 */
-		{
-			pFollowCam->Set_LockBoneNumber(3);
-
-			CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Stellia");
-			if (nullptr != pTarget)
-				pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Stellia, Cam_LookAt_Offset_LockOn_Stellia);
-		}
-	}
+	//CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	//if (nullptr != pFollowCam)
+	//{
+	//	/* 기존 세팅 초기화 */
+	//	{
+	//		pFollowCam->Reset_WideView_To_DefaultView(true);
+	//		pFollowCam->Set_Default_Position();
+	//	}
+	//
+	//	/* 락온 설정 */
+	//	{
+	//		pFollowCam->Set_LockBoneNumber(3);
+	//
+	//		CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Stellia");
+	//		if (nullptr != pTarget)
+	//			pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Stellia, Cam_LookAt_Offset_LockOn_Stellia);
+	//	}
+	//}
 }
 
 void CStelliaState_Base::Set_LockOffStellia()
 {
-	// 카메라 블렌딩 시작 
-	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-
-	if (nullptr != pFollowCam)
-	{
-		/* 락온이었다면 해제 */
-		if (pFollowCam->Is_LockOn())
-			pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-
-		pFollowCam->Reset_WideView_To_DefaultView(true);
-		pFollowCam->Set_Default_Position();
-	}
+	//// 카메라 블렌딩 시작 
+	//CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	//
+	//if (nullptr != pFollowCam)
+	//{
+	//	/* 락온이었다면 해제 */
+	//	if (pFollowCam->Is_LockOn())
+	//		pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+	//
+	//	pFollowCam->Reset_WideView_To_DefaultView(true);
+	//	pFollowCam->Set_Default_Position();
+	//}
 }
 
 void CStelliaState_Base::Free()
