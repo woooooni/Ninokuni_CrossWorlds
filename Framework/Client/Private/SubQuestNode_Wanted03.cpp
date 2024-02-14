@@ -75,7 +75,8 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted03::Tick(const _float& fTimeDelta)
 					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 
 					m_bIsClear = true;
-					m_pQuestDestSpot->Set_Dead(true);
+					m_pQuestDestSpot->Set_ReadyDelete(true);
+					Safe_Release(m_pQuestDestSpot);
 					return NODE_STATE::NODE_FAIL;
 				}
 			}
