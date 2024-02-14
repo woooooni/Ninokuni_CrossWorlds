@@ -244,9 +244,13 @@ HRESULT CLevel_Kingdom::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Kingdom::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 {
+	const Vec4 vPlayerPos = { 11.f, 9.9f, 97.f, 1.f };
+	const Vec3 vPlayerRot = { 0.f, -43.f, 0.f };
+
 	CPortal::PORTAL_DESC PortalInfo = {};
 	PortalInfo.vStartPosition = XMVectorSet(0.f, 0.f, -9.f, 1.f);
-	PortalInfo.vNextPosition = XMVectorSet(-0.35f, 9.9f, 140.f, 1.f);
+	PortalInfo.vNextPosition = vPlayerPos;
+	PortalInfo.vNextRotation = vPlayerRot;
 
 	PortalInfo.eCurrentLevel = LEVEL_KINGDOMHALL;
 	PortalInfo.eNextLevel = LEVEL_EVERMORE;

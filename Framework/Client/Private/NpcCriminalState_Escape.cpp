@@ -28,7 +28,7 @@ void CNpcCriminalState_Escape::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), 2.5f, fTimeDelta);
+	//m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), 2.5f, fTimeDelta);
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 		m_pStateMachineCom->Change_State(CCriminal_Npc::NPC_CRIMINAL_STATE::NPC_CRIMINAL_ESCAPERUN);

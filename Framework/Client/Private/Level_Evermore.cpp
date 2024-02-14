@@ -333,6 +333,11 @@ HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 
 		if (FAILED(CGrandprix_Manager::GetInstance()->Prepare_Grandprix()))
 			return E_FAIL;
+
+		/* 처음 에버모어 들어갈 때 문 살짝 내려가있는 현상 방지 */
+		Vec3 vDoorPos = pDoorTransform->Get_Position();
+		vDoorPos.y += 0.1f;
+		pDoorTransform->Set_Position(vDoorPos);
 	}
 	else
 	{
@@ -598,10 +603,10 @@ HRESULT CLevel_Evermore::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 {
-	// Evermore -> KINGDOM
+	// Evermore -> Kingdom
 	CPortal::PORTAL_DESC PortalInfo = {};
 	PortalInfo.vStartPosition = XMVectorSet(-0.35f, 9.9f, 145.f, 1.f);
-	PortalInfo.vNextPosition = XMVectorSet(0.f, 0.05f, -5.f, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(0.f, 0.05f, -3.f, 1.f);
 
 	PortalInfo.eCurrentLevel = LEVEL_EVERMORE;
 	PortalInfo.eNextLevel = LEVEL_KINGDOMHALL;
@@ -614,7 +619,8 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	// Evermore -> IceLand
 	CGameObject* pPortal = nullptr;
 	PortalInfo.vStartPosition = XMVectorSet(-50.5f, 9.9f, 162.f, 1.f);
-	PortalInfo.vNextPosition = XMVectorSet(111.f, -0.785f, 8.f, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(127.3f, -0.675f, 11.4f, 1.f);
+	PortalInfo.vNextRotation = { 0.f, -90.f, 0.f };
 
 	PortalInfo.eCurrentLevel = LEVEL_EVERMORE;
 	PortalInfo.eNextLevel = LEVEL_ICELAND;
@@ -634,7 +640,8 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 	// Evermore -> WitchForest
 	PortalInfo.vStartPosition = XMVectorSet(127.94f, -0.015f, 111.5f, 1.f);
-	PortalInfo.vNextPosition = XMVectorSet(-5.828f, 2.262f, -86.776f, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(-2.92f, 2.262f, -89.727f, 1.f);
+	PortalInfo.vNextRotation = { 0.f, -45.f, 0.f };
 
 	PortalInfo.eCurrentLevel = LEVEL_EVERMORE;
 	PortalInfo.eNextLevel = LEVEL_WITCHFOREST;

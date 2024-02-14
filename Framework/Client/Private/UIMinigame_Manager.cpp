@@ -41,6 +41,8 @@
 #include "UI_Minigame_PlayerInfo.h"
 #include "UI_Grandprix_PlaneHP.h"
 
+#include "Kuu.h"
+
 IMPLEMENT_SINGLETON(CUIMinigame_Manager)
 
 CUIMinigame_Manager::CUIMinigame_Manager()
@@ -517,6 +519,11 @@ void CUIMinigame_Manager::Intro_Grandprix()
 	pCharacter->Get_CharacterTransformCom()->Set_Position(Vec4(0.f, 1.f, 0.f, 1.f));
 	pCharacter->Get_CharacterTransformCom()->LookAt_ForLandObject(Vec4(0.f, 0.f, 1.f, 1.f));
 	pCharacter->Get_ControllerCom()->Set_EnterLevel_Position(Vec4(0.f, 1.f, 0.f, 1.f));
+
+	/* 捻快 波林扁 */
+	CKuu* pKuu = CGame_Manager::GetInstance()->Get_Kuu();
+	if (nullptr != pKuu)
+		pKuu->Set_Active(false);
 }
 
 void CUIMinigame_Manager::Start_Grandprix()
@@ -590,6 +597,11 @@ void CUIMinigame_Manager::End_Grandprix()
 			pCharacterTransform->LookAt_ForLandObject(pNpcTransform->Get_Position());
 		}
 	}
+
+	/* 捻快 难林扁 */
+	CKuu* pKuu = CGame_Manager::GetInstance()->Get_Kuu();
+	if (nullptr != pKuu)
+		pKuu->Set_Active(true);
 }
 
 void CUIMinigame_Manager::Use_GrandprixSkill(SKILL_TYPE eType)

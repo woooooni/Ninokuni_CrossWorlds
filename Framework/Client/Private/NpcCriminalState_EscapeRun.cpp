@@ -64,12 +64,18 @@ void CNpcCriminalState_EscapeRun::Tick_State(_float fTimeDelta)
 		_vector vCrossProduct = XMVector3Cross(vCurDir, vDestDir);
 		_float fCrossProductY = XMVectorGetY(vCrossProduct);
 		
+		_float fTurnSpeed = 2.5f;
+		
+		/* 첫번째 턴이라면 빠르게 턴하도록 스피드를 높인다. */
+		if(0 == m_pNpc->Get_CurRoamingIndex())
+			fTurnSpeed = 5.f;
+
 		/* 오른쪽으로 턴 */
 		if (fCrossProductY > 0.f)
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), 2.5f, fTimeDelta);
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTurnSpeed, fTimeDelta);
 		/* 왼쪽으로 턴 */
 		if (fCrossProductY < 0.f)
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), -2.5f, fTimeDelta);
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), -fTurnSpeed, fTimeDelta);
 	}
 	//
 

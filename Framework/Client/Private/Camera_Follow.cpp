@@ -93,7 +93,7 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	Check_WideView(fTimeDelta);
 
 	/* Test */
-	Test(fTimeDelta);
+	//Test(fTimeDelta);
 }
 
 void CCamera_Follow::LateTick(_float fTimeDelta)
@@ -240,7 +240,7 @@ void CCamera_Follow::Set_Blending(const _bool& bBlending)
 			if (CCamera_Action::CAMERA_ACTION_TYPE::DOOR == pActionCam->Get_Camera_ActionType())
 			{
 				/* 이전 카메라가 도어 액션이었다면 모든 인풋을 열어준다. */
-				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+				//CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 			}
 
 			if (CCamera_Action::CAMERA_ACTION_TYPE::TALK == pActionCam->Get_Camera_ActionType())
@@ -774,28 +774,52 @@ const _bool CCamera_Follow::Is_Target_Exception()
 
 void CCamera_Follow::Test(_float fTimeDelta)
 {
-	/* Quater View */
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
-	{
-		const _uint iCurLevel = GI->Get_CurrentLevel();
-		{
-			if (LEVELID::LEVEL_EVERMORE == iCurLevel || LEVELID::LEVEL_TOOL == iCurLevel)
-			{
-				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::QUATER);
-			}
-		}
-	}
+	CRenderer* const pRenderer = dynamic_cast<CRenderer*>(GI->Clone_Component(0, TEXT("Prototype_Component_Renderer")));
+	if (nullptr == pRenderer)
+		return;
 
-	/* CutScene */
-	//if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::DEL))
-	//{
-	//	CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
-	//	if (nullptr != pCutSceneMap)
-	//	{
-	//		pCutSceneMap->Start_CutScene(LEVELID::LEVEL_WITCHFOREST);
-	//		pCutSceneMap->Reserve_NextCameraType(CAMERA_TYPE::FOLLOW);
-	//	}
-	//}	
+	Vec2			vPos = { 1600.f * 0.2f, 900.f * 0.75f };
+	const Vec2		vDelta = { 0.f, 30.f };
+	const Vec2		vScale(0.4f);
+	const wstring	wstrFont = L"Default_Bold";
+
+	CRenderer::TEXT_DESC desc = {};
+
+	/* Pos */
+	ZeroMemory(&desc, sizeof(CRenderer::TEXT_DESC));
+	{
+		vPos += vDelta;
+
+		const Vec3 vCamPos = m_pTargetObj->Get_Component_Transform()->Get_Position();
+
+		desc.strText = L"Pos : x  " + to_wstring(vCamPos.x)
+			+ L", y : " + to_wstring(vCamPos.y)
+			+ L", z : " + to_wstring(vCamPos.z);
+
+		desc.strFontTag = wstrFont;
+		desc.vScale = vScale * 1.5f;
+		desc.vPosition = vPos;
+		desc.vColor = (Vec4)DirectX::Colors::Black;
+	}
+	pRenderer->Add_Text(desc);
+
+	/* Look */
+	ZeroMemory(&desc, sizeof(CRenderer::TEXT_DESC));
+	{
+		vPos += vDelta;
+
+		const Vec3 vCamLook = m_pTargetObj->Get_Component_Transform()->Get_Position();
+
+		desc.strText = L"Look : x  " + to_wstring(vCamLook.x)
+			+ L", y : " + to_wstring(vCamLook.y)
+			+ L", z : " + to_wstring(vCamLook.z);
+
+		desc.strFontTag = wstrFont;
+		desc.vScale = vScale * 1.5f;
+		desc.vPosition = vPos;
+		desc.vColor = (Vec4)DirectX::Colors::Black;
+	}
+	pRenderer->Add_Text(desc);
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
