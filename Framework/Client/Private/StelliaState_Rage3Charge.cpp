@@ -63,6 +63,8 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 
 	if (m_pStellia->Get_IsPlayerGuardEvent()) // 플레이어가 현재 막고있는 상태
 	{
+		m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position());
+
 		if (!m_bIsStartEvent)
 		{
 			m_pStellia->Get_TargetDesc().pTragetTransform->LookAt_ForLandObject(m_pTransformCom->Get_Position());
@@ -141,16 +143,14 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 			{
 				Vec3 m_vRightRot = XMVector3Rotate(vLookNormal, XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians(45.f), 0.0f));
 
-				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(m_vRightRot, 10.f, true);
-				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity({ 0.f, 1.f, 0.f }, 10.f, true);
+				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity({ 0.f, 1.f, 0.f }, 6.f, true);
 			}
 			/* 보스가 바라보는 방향을 기준으로 왼쪽에 위치. */
 			else if (fCrossProductY < 0.f)
 			{
 				Vec3 m_vLeftRot = XMVector3Rotate(vLookNormal, XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians(-45.f), 0.0f));
 
-				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(m_vLeftRot, 10.f, false);
-				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity({ 0.f, 1.f, 0.f }, 10.f, false);
+				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity({ 0.f, 1.f, 0.f }, 6.f, false);
 			}
 
 			m_pStellia->Set_IsPlayerGuardEvent(false);
@@ -220,9 +220,13 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		// ui
 		m_pStellia->Get_StelliaGaugeBar()->Set_CurGauge(m_iClickPower);
 	}
-	//else
-		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRage3AroundSpeed, fTimeDelta);
+
+	if (!m_bIsStartEvent)
+	{
 		m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position());
+	}
+
+	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRage3AroundSpeed, fTimeDelta);
 
 	// 최소 질주 거리 계산(시작하자마자 브레이크 밟는거 방지)
 	Vec4 vCurPos = (Vec4)m_pTransformCom->Get_Position() - m_vStartPos;

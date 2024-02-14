@@ -229,10 +229,10 @@ public:
 	void Set_OffsetPosition(Vec4 offset) { m_vAddOffsetPos = offset; }
 	void Set_DeleteParticle(_bool bParticleDelete) { m_bParticleDelete = bParticleDelete; }
 
-	void Set_LoopParticle(_bool bLoop)   
+	void Set_LoopParticle(_bool bLoop, _bool bDelete = true)   
 	{ 
 		m_tParticleDesc.bParticleLoop = bLoop; 
-		if (false == m_tParticleDesc.bParticleLoop)
+		if (false == m_tParticleDesc.bParticleLoop && bDelete == true)
 			Set_DeleteParticle(true);
 	}
 	void Set_Rigidbody(_bool bRigidbody) { m_tRigidbodyDesc.bRigidbody = bRigidbody; }
@@ -243,6 +243,9 @@ public:
 	void  Set_IsParticleShow(_bool bIsShow, _float fTimeDelta);
 
 	void Set_Color(_float3 fColor);
+
+	// 리스타트 추가
+	void ReStartParticle();
 
 private:
 	_bool m_isCloned = { false };

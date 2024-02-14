@@ -288,8 +288,8 @@ HRESULT CCriminal_Monster::Ready_States()
 	m_tStat.iAtk = 25;
 	m_tStat.iDef = 0;
 
-	m_tStat.fAirVelocity = 8.5f;
-	m_tStat.fAirDeadVelocity = 12.f;
+	m_tStat.fAirVelocity = 6.5f;
+	m_tStat.fAirDeadVelocity = 9.f;
 
 	return S_OK;
 }

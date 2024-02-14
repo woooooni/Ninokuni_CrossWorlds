@@ -33,6 +33,8 @@ public:
 protected:
 	void Following_Stellia(_float fTimeDelta);
 
+	// 반짝이 함수 추가하기
+
 protected:
 	CCharacter* m_pPlayer = nullptr;
 	CTransform* m_pPlayerTransform = nullptr;

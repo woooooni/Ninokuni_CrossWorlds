@@ -541,7 +541,7 @@ void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
 
 void CMonster::Collision_Continue(const COLLISION_INFO& tInfo)
 {
-	// 퀘스트 단계가 아닐 때 (플레이어 공격)
+	// 타워 퀘스트 단계가 아닐 때 (플레이어 공격)
 	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() != CQuest_Manager::GetInstance()->QUESTEVENT_TOWERDEFENCE)
 	{
 		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)

@@ -956,6 +956,7 @@ void CStellia::Free()
 
 	Safe_Release(m_pUI_DamageBar);
 	Safe_Release(m_pUI_Timer);
+	Safe_Release(m_pUI_GaugeBar);
 
 }
 
