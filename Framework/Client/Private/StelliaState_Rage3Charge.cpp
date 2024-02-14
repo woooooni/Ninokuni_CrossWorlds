@@ -32,7 +32,6 @@ HRESULT CStelliaState_Rage3Charge::Initialize(const list<wstring>& AnimationList
 	m_fLimitTime = 6.f;
 	m_fShakeTime = 0.5f;
 	m_iClickDest = 30.f;
-	m_fMinChargeLength = 5.f;
 
 	return S_OK;
 }
@@ -48,10 +47,18 @@ void CStelliaState_Rage3Charge::Enter_State(void* pArg)
 	m_bIsStartEvent = false;
 	m_bIsTimeSlep = false;
 	m_bIsSlow = false;
+	m_bIsFinishGuard = false;
 
 	m_iClickPower = 0;
 
-	m_vStartPos = m_pTransformCom->Get_Position();
+	_float fOffSet = ((Vec4)m_pTransformCom->Get_Position() - m_pStellia->Get_OriginPos()).Length();
+
+	if (fOffSet >= 30.f)
+	{
+		m_bIsStartPosOut = true;
+	}
+	else
+		m_bIsStartPosOut = false;
 
 	// Effect Create
 	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage03Charge"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
@@ -61,42 +68,16 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pStellia->Get_IsPlayerGuardEvent()) // 플레이어가 현재 막고있는 상태
+	// 거리 구하기
+	_float fDist = ((Vec4)m_pTransformCom->Get_Position() - (Vec4)m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position()).Length();
+
+	//if (m_pStellia->Get_IsPlayerGuardEvent()) // 플레이어가 현재 막고있는 상태
+	if (!m_bIsFinishGuard && fDist < 10.f) // 플레이어가 현재 막고있는 상태
 	{
 		m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position());
 
-		if (!m_bIsStartEvent)
-		{
-			m_pStellia->Get_TargetDesc().pTragetTransform->LookAt_ForLandObject(m_pTransformCom->Get_Position());
-			Vec3 vPlayerLook = m_pStellia->Get_TargetDesc().pTarget->Get_Component_Transform()->Get_Look();
-			m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(-vPlayerLook, 20.f, true);
-
-			GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 0.1f);
-
-			m_bIsTimeSlep = true;
-			m_bIsSlow = true;
-			m_bIsStartEvent = true;
-		}
-
-		if (m_bIsTimeSlep)
-		{
-			if (m_bIsSlow)
-			{
-				m_fAccSlepTime += fTimeDelta;
-
-				if (m_fAccSlepTime >= m_fSlepTime)
-				{
-					m_bIsTimeSlep = false;
-					m_bIsSlow = false;
-					GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 1.f);
-
-					m_pStellia->Get_TargetDesc().pTragetTransform->Set_Position(m_pTransformCom->Get_Position() + m_pTransformCom->Get_Look() * 3.f);
-					
-					// ui 띄우기
-					m_pStellia->Get_StelliaGaugeBar()->Set_MaxGauge(30);
-				}
-			}
-		}
+		// 처음 한 번 호출.
+		First_GuardEvent(fTimeDelta);
 
 		if (false == m_bGuardEffect)
 		{
@@ -124,36 +105,11 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 			Create_ResultEffect(false);
 
 			m_pPlayer->Get_CharacterStateCom()->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
-			
-			/* 플레이어와 스텔리아의 위치를 반별하여 플레이어를 날릴 방향 결정 */
-			_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
-			Vec4 vDest = m_pStellia->Get_OriginPos();
-			vDest -= m_pTransformCom->Get_Position();
-			_vector vDestNormal = XMVector3Normalize(vDest);
 
-			_float fDotProduct = XMVectorGetX(XMVector3Dot(vLookNormal, vDestNormal));
-			_float fAngle = XMConvertToDegrees(acosf(fDotProduct));
-
-			/* 보스의 look을 기준으로 센터가 왼쪽, 오른쪽에 위치하는지를 판별. */
-			_vector vCrossProduct = XMVector3Cross(vLookNormal, vDestNormal);
-			_float fCrossProductY = XMVectorGetY(vCrossProduct);
-
-			/* 보스가 바라보는 방향을 기준으로 오른쪽에 위치. */
-			if (fCrossProductY > 0.f)
-			{
-				Vec3 m_vRightRot = XMVector3Rotate(vLookNormal, XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians(45.f), 0.0f));
-
-				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity({ 0.f, 1.f, 0.f }, 6.f, true);
-			}
-			/* 보스가 바라보는 방향을 기준으로 왼쪽에 위치. */
-			else if (fCrossProductY < 0.f)
-			{
-				Vec3 m_vLeftRot = XMVector3Rotate(vLookNormal, XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians(-45.f), 0.0f));
-
-				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity({ 0.f, 1.f, 0.f }, 6.f, false);
-			}
-
+			Player_KnockDown();
+		
 			m_pStellia->Set_IsPlayerGuardEvent(false);
+			m_bIsFinishGuard = true;
 		}
 
 		// 파훼 성공
@@ -190,14 +146,10 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 			Delete_GuardEffect();
 			Create_ResultEffect(false);
 
-			dynamic_cast<CCharacter*>(m_pStellia->Get_TargetDesc().pTarget)->Get_CharacterStateCom()->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
-			m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
-				-m_pStellia->Get_TargetDesc().pTarget->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Look(), 10.f, false);
-
-			m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
-				{ 0.f, 1.f, 0.f }, 10.f, false);
+			Player_KnockDown();
 
 			m_pStellia->Set_IsPlayerGuardEvent(false);
+			m_bIsFinishGuard = true;
 		}
 
 		// 버튼 클릭
@@ -221,29 +173,133 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		// ui
 		m_pStellia->Get_StelliaGaugeBar()->Set_CurGauge(m_iClickPower);
 	}
+	else
+	{
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRage3AroundSpeed, fTimeDelta);
+
+		// 만약 타임 슬립 걸려 있다면
+		if (m_bIsTimeSlep)
+		{
+			if (m_bIsSlow)
+			{
+				m_fAccSlepTime += fTimeDelta;
+		
+				if (m_fAccSlepTime >= m_fSlepTime)
+				{
+					m_bIsTimeSlep = false;
+					m_bIsSlow = false;
+					GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 1.f);
+				}
+			}
+		}
+	}
 
 	if (!m_bIsStartEvent)
 	{
 		m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position());
 	}
 
-	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRage3AroundSpeed, fTimeDelta);
 
-	// 최소 질주 거리 계산(시작하자마자 브레이크 밟는거 방지)
-	Vec4 vCurPos = (Vec4)m_pTransformCom->Get_Position() - m_vStartPos;
-	m_fCurChargeLength = fabs(vCurPos.Length());
-
-	// 스텔리아가 AroundDist에 도달한다면 Turn.
-	Vec4 vCenterToStellia = m_pStellia->Get_OriginPos() - (Vec4)m_pTransformCom->Get_Position();
-	if (fabs(vCenterToStellia.Length()) > m_fAroundDist && m_fCurChargeLength > m_fMinChargeLength)
-	{
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE3CHARGE_BREAK);
-	}
+	// 다음 상태 넘어가기 위한 검사 함수.
+	Check_RangeOut();
 }
 
 void CStelliaState_Rage3Charge::Exit_State()
 {
 	Delete_GuardEffect();
+}
+
+void CStelliaState_Rage3Charge::First_GuardEvent(_float fTimeDelta)
+{
+	if (!m_bIsStartEvent)
+	{
+		m_pStellia->Get_TargetDesc().pTragetTransform->LookAt_ForLandObject(m_pTransformCom->Get_Position());
+		Vec3 vPlayerLook = m_pStellia->Get_TargetDesc().pTarget->Get_Component_Transform()->Get_Look();
+		m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(-vPlayerLook, 20.f, true);
+
+		GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 0.1f);
+
+		m_bIsTimeSlep = true;
+		m_bIsSlow = true;
+		m_bIsStartEvent = true;
+	}
+
+	if (m_bIsTimeSlep)
+	{
+		if (m_bIsSlow)
+		{
+			m_fAccSlepTime += fTimeDelta;
+
+			if (m_fAccSlepTime >= m_fSlepTime)
+			{
+				m_bIsTimeSlep = false;
+				m_bIsSlow = false;
+				GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 1.f);
+
+				m_pStellia->Get_TargetDesc().pTragetTransform->Set_Position(m_pTransformCom->Get_Position() + m_pTransformCom->Get_Look() * 3.f);
+
+				// ui 띄우기
+				m_pStellia->Get_StelliaGaugeBar()->Set_MaxGauge(30);
+			}
+		}
+	}
+}
+
+void CStelliaState_Rage3Charge::Player_KnockDown()
+{
+	/* 플레이어와 스텔리아의 위치를 반별하여 플레이어를 날릴 방향 결정 */
+	//_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
+	//Vec4 vDest = m_pStellia->Get_OriginPos();
+	//vDest -= m_pTransformCom->Get_Position();
+	//_vector vDestNormal = XMVector3Normalize(vDest);
+	//
+	//_float fDotProduct = XMVectorGetX(XMVector3Dot(vLookNormal, vDestNormal));
+	//_float fAngle = XMConvertToDegrees(acosf(fDotProduct));
+
+	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
+	_vector vDestNormal = XMVector3Normalize(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position() - m_pTransformCom->Get_Position());
+
+	/* 보스의 look을 기준으로 플레이어가 왼쪽, 오른쪽에 위치하는지를 판별. */
+	_vector vCrossProduct = XMVector3Cross(vLookNormal, vDestNormal);
+	_float fCrossProductY = XMVectorGetY(vCrossProduct);
+
+	/* 보스가 바라보는 방향을 기준으로 오른쪽에 위치. */
+	if (fCrossProductY > 0.f)
+	{
+		Vec3 vDir = m_pTransformCom->Get_Right() + m_pTransformCom->Get_Up() * 0.5f;
+		vDir.Normalize();
+
+		dynamic_cast<CCharacter*>(m_pStellia->Get_TargetDesc().pTarget)->Get_CharacterStateCom()->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
+		m_pStellia->Get_TargetDesc().pTarget->Get_Component_Rigidbody()->Add_Velocity(vDir, 15.f, true);
+	}
+	/* 보스가 바라보는 방향을 기준으로 왼쪽에 위치. */
+	else 
+	{
+		Vec3 vDir = m_pTransformCom->Get_Left() + m_pTransformCom->Get_Up() * 0.5f;
+		vDir.Normalize();
+
+		dynamic_cast<CCharacter*>(m_pStellia->Get_TargetDesc().pTarget)->Get_CharacterStateCom()->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
+		m_pStellia->Get_TargetDesc().pTarget->Get_Component_Rigidbody()->Add_Velocity(vDir, 15.f, true);
+	}
+
+}
+
+void CStelliaState_Rage3Charge::Check_RangeOut()
+{
+	Vec4 vCenterToStellia = m_pStellia->Get_OriginPos() - (Vec4)m_pTransformCom->Get_Position();
+
+	if (m_bIsStartPosOut)
+	{
+		if (vCenterToStellia.Length() < m_fAroundDist - 1.f)
+		{
+			m_bIsStartPosOut = false;
+		}
+	}
+	// 스텔리아가 AroundDist에 도달한다면 Break.
+	if (!m_bIsStartPosOut && vCenterToStellia.Length() >= m_fAroundDist)
+	{
+		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE3CHARGE_BREAK);
+	}
 }
 
 void CStelliaState_Rage3Charge::Create_GuardEffect()

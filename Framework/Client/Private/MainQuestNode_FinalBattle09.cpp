@@ -29,6 +29,8 @@ HRESULT CMainQuestNode_FinalBattle09::Initialize()
 
 void CMainQuestNode_FinalBattle09::Start()
 {
+	GI->Play_BGM(TEXT("BGM_Field_Forest_Mystic_Night_2.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, 0.5f);
+
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 

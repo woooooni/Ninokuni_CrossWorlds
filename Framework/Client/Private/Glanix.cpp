@@ -352,16 +352,24 @@ HRESULT CGlanix::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_PhysXBody */
+	//CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
+	//
+	//ControllerDesc.eType = CPhysX_Controller::CAPSULE;
+	//ControllerDesc.pTransform = m_pTransformCom;
+	//ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
+	//ControllerDesc.fHeight = 1.f;
+	//ControllerDesc.fMaxJumpHeight = 10.f;
+	//ControllerDesc.fRaidus = 5.f;
+	//ControllerDesc.pOwner = this;
 	CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
-
-	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
+	ControllerDesc.eType = CPhysX_Controller::BOX;
 	ControllerDesc.pTransform = m_pTransformCom;
 	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
-	ControllerDesc.fHeight = 1.f;
-	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 1.f;
+	ControllerDesc.vExtents = { 4.f, 4.f, 4.f };
+	//ControllerDesc.fHeight = 1.f;
+	//ControllerDesc.fMaxJumpHeight = 10.f;
+	//ControllerDesc.fRaidus = 5.f;
 	ControllerDesc.pOwner = this;
-
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
 		return E_FAIL;
 
