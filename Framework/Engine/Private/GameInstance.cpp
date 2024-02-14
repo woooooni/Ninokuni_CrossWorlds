@@ -109,8 +109,8 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, _uint iNumLayerType,
 	if (FAILED(m_pCamera_Manager->Reserve_Manager(*ppDevice, *ppContext)))
 		return E_FAIL;
 
-	if (FAILED(m_pLight_Manager->Init(*ppDevice, *ppContext)))
-		return E_FAIL;
+	//if (FAILED(m_pLight_Manager->Init(*ppDevice, *ppContext)))
+	//	return E_FAIL;
 
 	return S_OK;
 }

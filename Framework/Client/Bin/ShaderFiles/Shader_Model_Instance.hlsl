@@ -865,6 +865,55 @@ PS_OUT PS_Grass(GeomData i)
     return Out;
 }
 
+struct VS_CASCADE_OUT
+{
+    float4 vPosition : SV_POSITION;
+};
+
+cbuffer LightTransform
+{
+    matrix CascadeViewProj[3];
+};
+
+struct GS_IN
+{
+    float4 vPosition : SV_POSITION;
+};
+
+struct GS_OUT
+{
+    float4 vPosition : SV_POSITION;
+    uint RTIndex : SV_RenderTargetArrayIndex;
+};
+
+VS_CASCADE_OUT VS_CASCADE(VS_IN input)
+{
+    VS_CASCADE_OUT Out = (VS_CASCADE_OUT) 0;
+
+    vector vPosition = float4(input.vPosition, 1.0f);
+    
+    Out.vPosition = mul(vPosition, g_WorldMatrix);
+    
+    return Out;
+}
+
+[maxvertexcount(9)]
+void GS_CASCADE(triangle GS_IN input[3], inout TriangleStream<GS_OUT> output)
+{
+    for (int face = 0; face < 3; ++face)
+    {
+        GS_OUT element = (GS_OUT) 0;
+        element.RTIndex = face;
+        for (int i = 0; i < 3; ++i)
+        {
+            element.vPosition = mul(input[i].vPosition, CascadeViewProj[face]);
+            output.Append(element);
+        }
+        output.RestartStrip();
+    }
+}
+
+
 RasterizerState RS_WireFrame
 {
     FillMode = WireFrame;
@@ -1052,5 +1101,19 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_LANTERN_MAIN();
+    }
+
+    pass CascadeShadow_Depth
+    {
+        // 13
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Shadow, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_CASCADE();
+        GeometryShader = compile gs_5_0 GS_CASCADE();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = NULL;
     }
 }

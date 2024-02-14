@@ -68,7 +68,7 @@ HRESULT CMainApp::Initialize()
 	
 	// Set Start Type
 	{
-		g_eStartLevel = LEVELID::LEVEL_LOGO;					/* 시작 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_TOOL;					/* 시작 레벨 타입 */
 
 		g_iStartQuestLevel = QUEST_LEVEL::QL_1_INTRO_TOUR;	/* 시작 퀘스트 레벨 */
 

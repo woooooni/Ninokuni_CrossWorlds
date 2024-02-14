@@ -134,7 +134,7 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 	virtual HRESULT Render_ShadowDepth();
-	virtual HRESULT Render_Cascade_Depth(const Matrix lightViewMatrix, const Matrix LightOrthoMatrix)  override;
+	virtual HRESULT Render_Cascade_Depth(const Matrix mCascadeShadowGenMat[3])  override;
 //	virtual HRESULT Render_Minimap();
 
 public:

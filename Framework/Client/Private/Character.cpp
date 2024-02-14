@@ -370,7 +370,8 @@ void CCharacter::LateTick(_float fTimeDelta)
 	}
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_CASCADE, this);
+	//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
 	//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_MINIMAP, this);
 
 
@@ -492,24 +493,28 @@ HRESULT CCharacter::Render_ShadowDepth()
 }
 
 
-HRESULT CCharacter::Render_Cascade_Depth(const Matrix lightViewMatrix, const Matrix LightOrthoMatrix)
+HRESULT CCharacter::Render_Cascade_Depth(const Matrix mCascadeShadowGenMat[3])
 {
 
 	if (nullptr == m_pShaderCom || nullptr == m_pTransformCom)
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &lightViewMatrix)))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &LightOrthoMatrix)))
-		return E_FAIL;
-
-
 	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
 		return E_FAIL;
 
+	if (FAILED(m_pShaderCom->Bind_Matrices("CascadeViewProj", mCascadeShadowGenMat, 3)))
+		return E_FAIL;
 
+	Matrix World = m_pTransformCom->Get_WorldFloat4x4();
+	Matrix View = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+	Matrix proj = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
+
+	Matrix WV, WVP;
+	WV = World * View;
+	WVP = WV * proj;
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("WorldViewProjMatrix", &WVP)))
+		return E_FAIL;
 
 	for (size_t i = 0; i < PART_TYPE::PART_END; i++)
 	{

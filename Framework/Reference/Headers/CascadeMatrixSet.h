@@ -14,9 +14,19 @@ public:
 	void Init(int iShadowMapSize);
 	void Tick(const Vec3& vDirectionalDir);
 
+	void SubdivisionFrustum(const Vec3& vDirectinoalLight);
 
 	static const int m_iTotalCascades = 3;
 public:
+	const Matrix* GetWorldToShadowSpace() const { return &m_WorldToShadowSpace; }
+	const Matrix* GetWorldToCascadeProj(_int i) const { return &m_arrWorldToCascadeProj[i]; }
+	const Vec4 GetToCascadeOffsetX() const { return m_vToCascadeOffsetX; }
+	const Vec4 GetToCascadeOffsetY() const { return m_vToCascadeOffsetY; }
+	const Vec4 GetToCascadeScale() const { return m_vToCascadeScale; }
+
+public:
+	const _float Get_CascadeEnd(_int index) const { return m_fCascadeEnd[index]; }
+	const Matrix Get_ShadowOrthoProj(_int index) const { return m_shadowOrthoProj[index]; }
 
 private:
 	void ExtractFrustumPoints(_float fNear, _float fFar, Vec3* arrFrustumCorners);
@@ -36,11 +46,15 @@ private:
 	Matrix m_WorldToShadowSpace;
 	Matrix m_arrWorldToCascadeProj[m_iTotalCascades];
 
-	Vec3 m_vToCascadeOffsetX = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-	Vec3 m_vToCascadeOffsetY = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-	Vec3 m_vToCascadeScale = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	Vec4 m_vToCascadeOffsetX = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	Vec4 m_vToCascadeOffsetY = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	Vec4 m_vToCascadeScale = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 
 	_bool m_bAntiFlickerOn = true;
+
+private:
+	_float m_fCascadeEnd[4] = {};
+	Matrix m_shadowOrthoProj[3];
 public:
 	virtual void Free() override;
 };
