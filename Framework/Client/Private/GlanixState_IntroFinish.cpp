@@ -65,8 +65,8 @@ void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)
 		}
 	}
 
-	if (m_pModelCom->Get_CurrAnimationFrame() == 50)
-		CUI_Manager::GetInstance()->OnOff_BossNameTag(true, CUI_Manager::UI_BOSS::BOSS_GLANIX);
+//	if (m_pModelCom->Get_CurrAnimationFrame() == 50)
+//		CUI_Manager::GetInstance()->OnOff_BossNameTag(true, CUI_Manager::UI_BOSS::BOSS_GLANIX);
 
 	if (!m_pModelCom->Is_Tween() && 0.95f <= m_pModelCom->Get_Progress() && !m_bFadeOut)
 	{
