@@ -30,10 +30,10 @@ void CStelliaState_SpawnIdle::Tick_State(_float fTimeDelta)
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_SPAWNSTAND);
 	}
 
-	if (5 == m_pModelCom->Get_CurrAnimationFrame())
-	{
-		CUI_Manager::GetInstance()->OnOff_BossNameTag(true, CUI_Manager::UI_BOSS::BOSS_STELLIA);
-	}
+//	if (5 == m_pModelCom->Get_CurrAnimationFrame())
+//	{
+//		CUI_Manager::GetInstance()->OnOff_BossNameTag(true, CUI_Manager::UI_BOSS::BOSS_STELLIA);
+//	}
 }
 
 void CStelliaState_SpawnIdle::Exit_State()
