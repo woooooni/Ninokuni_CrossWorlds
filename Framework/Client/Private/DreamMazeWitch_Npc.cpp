@@ -37,6 +37,9 @@
 
 #include "GameInstance.h"
 
+#include "Particle_Manager.h"
+#include "Particle.h"
+
 CDreamMazeWitch_Npc::CDreamMazeWitch_Npc(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -100,10 +103,72 @@ void CDreamMazeWitch_Npc::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
+	if (m_pSparkle != nullptr && m_pStateCom != nullptr)
+	{
+		if (m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_ATTACK ||
+			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_VULCAN_ATTACK ||
+			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_CHARGE ||
+			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_QUADBLACKHOLE ||
+			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_LASER ||
+			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_FOLLOWING_RAGE02 ||
+			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_RAGE3_LASER
+			)
+		{
+			m_pSparkle->Set_LoopParticle(false, false);
+			m_bIsShowParticle = false;
+		}
+		else
+		{
+			if (!m_bIsShowParticle)
+			{
+				m_bIsShowParticle = true;
+				m_pSparkle->ReStartParticle();
+				m_pSparkle->Set_LoopParticle(true);
+			}
+		}
+
+
+	}
+
+
+
 	m_pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 
 	if (m_bIsBattle)
 	{
+		if (!m_bIsCreateSparkle)
+		{
+			Matrix matHand = m_pModelCom->Get_SocketLocalMatrix(0); // 뼈 행렬 x 플레이어 월드 행렬 = 뼈 월드 행렬
+
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Witch_IdleSparkle"),
+				matHand * m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, -0.5f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), nullptr, &m_pSparkle, false);
+			Safe_AddRef(m_pSparkle);
+
+			m_bIsCreateSparkle = true;
+		}
+		else
+		{
+			if (m_pTransformCom != nullptr && m_pSparkle != nullptr)
+			{
+				Matrix matHand = m_pModelCom->Get_SocketLocalMatrix(0);
+				Matrix OwnerWorldMatrix = m_pTransformCom->Get_WorldMatrix();
+
+				// Scale / Rotation
+				Matrix matScale = matScale.CreateScale(m_pSparkle->Get_TransformCom()->Get_Scale());//m_pScaleOffset[TYPE_E_CIRCLE_LHAND_06]);
+				Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(0.f, 0.f, 0.f));
+				Matrix matResult = matScale * matRotation * (matHand * OwnerWorldMatrix);
+				m_pSparkle->Get_TransformCom()->Set_WorldMatrix(matResult);
+
+				// Position
+				_vector vCurrentPosition = m_pSparkle->Get_TransformCom()->Get_Position();
+				_vector vFinalPosition = vCurrentPosition;
+				vFinalPosition += m_pSparkle->Get_TransformCom()->Get_State(CTransform::STATE_RIGHT) * 0.f;
+				vFinalPosition += m_pSparkle->Get_TransformCom()->Get_State(CTransform::STATE_UP) * -0.5f;
+				vFinalPosition += m_pSparkle->Get_TransformCom()->Get_State(CTransform::STATE_LOOK) * 0.f;
+				m_pSparkle->Get_TransformCom()->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
+			}
+		}
+
 		if (m_pStellia != nullptr)
 		{
 			if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_DEAD)
@@ -409,4 +474,6 @@ void CDreamMazeWitch_Npc::Free()
 
 	Safe_Release(m_pTag);
 	Safe_Release(m_pBalloon);
+
+	Safe_Release(m_pSparkle);
 }

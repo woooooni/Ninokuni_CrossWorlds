@@ -816,12 +816,12 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 void CCharacter::LevelUp()
 {
 	m_tStat.iExp = max(0, m_tStat.iExp - m_tStat.iMaxExp);
-	m_tStat.iMaxExp += (m_tStat.iMaxExp) * 0.5f;	
+	m_tStat.iMaxExp += (m_tStat.iMaxExp) * 2.f;	
 	m_tStat.iLevel++;
 
-	m_tStat.iMaxHp += m_tStat.iLevel * 100;
+	m_tStat.iMaxHp += m_tStat.iLevel * 20;
 	m_tStat.iHp = m_tStat.iMaxHp;
-	m_tStat.iAtt += m_tStat.iLevel * 100;
+	m_tStat.iAtt += m_tStat.iLevel * 5;
 	if (false == CUI_Manager::GetInstance()->Is_QuestRewardsOn())
 	{
 		m_bReserveUI = false;

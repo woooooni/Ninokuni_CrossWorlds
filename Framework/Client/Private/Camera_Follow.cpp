@@ -689,8 +689,9 @@ void CCamera_Follow::Check_WideView(_float fTimeDelta)
 		if (!m_bCanWideView)
 			return;
 		
-		/* 킹덤홀은 내부가 작으므로 리턴한다. */
-		if (LEVELID::LEVEL_KINGDOMHALL == GI->Get_CurrentLevel())
+		/* Level별 리턴. */
+		const _uint iCurLevel = GI->Get_CurrentLevel();
+		if (LEVELID::LEVEL_KINGDOMHALL == iCurLevel || LEVELID::LEVEL_TOOL == iCurLevel || LEVELID::LEVEL_WITCHFOREST == iCurLevel)
 			return;
 
 		/* 락온 상태 혹은 블렌딩 상태에서는 체크하지 않는다. -> 이전에 디폴트 fov, dist로 세팅 되어 있어야 한다. */

@@ -72,6 +72,8 @@ private:
 	_bool m_bIsBattle = false;
 	_bool m_bIsFollowing = false;
 	_bool m_bIsFollowingPlayer = false;
+	_bool m_bIsCreateSparkle = false;
+	_bool m_bIsShowParticle = true;
 
 	/* Damping */
 	CGameObject* m_pStellia = nullptr;
@@ -94,6 +96,7 @@ private:
 	const _float m_fDampingCoefficient = 0.027f; /* (144 프레임 기준 댐핑 계수 - 0과 1사이 범위를 갖으며, 값이 클수록 빨리 따라감)*/
 	const _float m_fDampingLimitDistance = 100.f;
 
+	class CParticle* m_pSparkle = false;
 
 public:
 	static CDreamMazeWitch_Npc* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

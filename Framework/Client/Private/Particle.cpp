@@ -60,6 +60,11 @@ void CParticle::Set_Color(_float3 fColor)
 	m_pVIBufferCom->Set_Color(fColor);
 }
 
+void CParticle::ReStartParticle()
+{
+	m_pVIBufferCom->Restart_ParticleBufferDesc(m_tParticleDesc.iNumEffectCount);
+}
+
 void CParticle::Set_ParticleDesc(const PARTICLE_DESC& tDesc)
 {
 	m_tParticleDesc = tDesc;

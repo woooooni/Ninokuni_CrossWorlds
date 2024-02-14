@@ -19,11 +19,11 @@ HRESULT CMainQuestNode_SnowField02::Initialize()
 
 	m_strQuestTag = TEXT("[메인]");
 	m_strQuestName = TEXT("코에루크 설원으로");
-	m_strQuestContent = TEXT("동쪽 문을 통해 설원으로 향하기");
+	m_strQuestContent = TEXT("서문 광장을 통해 설원으로 향하기");
 
 	m_strNextQuestTag = TEXT("[메인]");
 	m_strNextQuestName = TEXT("코에루크 설원으로");
-	m_strNextQuestContent = TEXT("동쪽 문을 통해 설원으로 향하기");
+	m_strNextQuestContent = TEXT("서문 광장을 통해 설원으로 향하기");
 
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/03.MainQuest_SnowField/MainQuest_SnowField02.json");
 
