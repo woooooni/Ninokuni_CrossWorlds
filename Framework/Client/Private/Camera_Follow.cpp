@@ -251,6 +251,11 @@ void CCamera_Follow::Set_Blending(const _bool& bBlending)
 				/* UI를 켜준다. */
 				CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
 			}
+
+			if (CCamera_Action::CAMERA_ACTION_TYPE::STELLIA_GUARD == pActionCam->Get_Camera_ActionType())
+			{
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+			}
 		}
 	}
 }

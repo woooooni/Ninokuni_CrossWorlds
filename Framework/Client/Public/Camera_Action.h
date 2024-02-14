@@ -20,7 +20,7 @@ public:
 		LOBBY, DOOR, TALK, WINDMILL, 
 		SWORDMAN_BURST, ENGINEER_BURST, DESTROYER_BURST, 
 		STADIUM, ENDING, WITCH_INVASION, WITCH_ROAR, WITCH_AWAY, TOWER_DEFENSE,
-		STELLIA_ROAR, STELLIA_DEAD, GLANIX_DEAD,
+		STELLIA_ROAR, STELLIA_DEAD, GLANIX_DEAD, STELLIA_GUARD,
 		CAMERA_ACTION_END };
 
 public:
@@ -311,6 +311,33 @@ public:
 
 	}ACTION_GLANIX_DEAD_DESC;
 
+	typedef struct tagStelliaGuardDesc
+	{
+		enum class PROGRESS_TYPE {BLENDING_IN, ING, BLENDING_OUT, TYPEEND };
+
+		PROGRESS_TYPE eCurProgress = PROGRESS_TYPE::TYPEEND;
+
+		const Vec4 vTargetOffset = { 0.f, 0.f, 0.f, 1.f };
+		const Vec4 vLookAtOffset = { 0.f, 0.f, 0.f, 1.f };
+
+		const _float fDist = 5.f;
+		const _float fFov = Cam_Fov_Default;
+
+		CTransform* pStelliaTransform = nullptr;
+
+		Vec4 vPrevLookAt = {};
+
+		void Clear()
+		{
+			eCurProgress = PROGRESS_TYPE::TYPEEND;
+
+			pStelliaTransform = nullptr;
+
+			vPrevLookAt = {};
+		}
+
+	}ACTION_STELLIA_GUARD_DESC;
+
 private:
 	CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_Action(const CCamera_Action& rhs);
@@ -355,6 +382,9 @@ public:
 
 	HRESULT Start_Action_Glanix_Dead(CGameObject* pGameObject);
 
+	HRESULT Start_Action_Stellia_Guard(CTransform* pStelliaTransform);
+	HRESULT Finish_Action_Stellia_Guard(const _bool& bBlending);
+
 	// 캐릭터 버스트 스킬 액션.
 	HRESULT Start_Action_SwordManBurst(class CTransform* pSwordManTransform);
 	HRESULT Start_Action_EngineerBurst(class CTransform* pEngineerTransform);
@@ -386,6 +416,7 @@ private:
 	void Tick_Stellia_Roar(_float fTimeDelta);
 	void Tick_Stellia_Dead(_float fTimeDelta);
 	void Tick_Glanix_Dead(_float fTimeDelta);
+	void Tick_Stellia_Guard(_float fTimeDelta);
 
 	void Tick_SwordManBurst(_float fTimeDelta);
 	void Tick_EngineerBurst(_float fTimeDelta);
@@ -418,6 +449,7 @@ private:
 	ACTION_STELLIA_ROAR_DESC	m_tActionStelliaRoarDesc	= {};
 	ACTION_STELLIA_DEAD_DESC	m_tActionStelliaDeadDesc	= {};
 	ACTION_GLANIX_DEAD_DESC		m_tActionGlanixDeadDesc		= {};
+	ACTION_STELLIA_GUARD_DESC	m_tActionStelliaGuardDesc	= {};
 
 	ACTION_SWORDMAN_BURST_DESC m_tActionSwordManBurstDesc	= {};
 	ACTION_ENGINEER_BURST_DESC m_tActionEngineerBurstDesc	= {};

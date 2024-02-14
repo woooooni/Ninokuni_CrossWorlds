@@ -17,40 +17,40 @@ HRESULT CStelliaState_Turn::Initialize(const list<wstring>& AnimationList)
 
 void CStelliaState_Turn::Enter_State(void* pArg)
 {
-	//  폭주 아닐 시 폭주 체크
-	if (m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp / 2.f && !m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
-	{
-		m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK, true);
-		m_pStellia->Set_SkillTree();
-		m_iAtkIndex = 0;
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_BERSERK);
-		return;
-	}
-
-	// 레이지1 패턴
-	if (!m_bIsRageInit && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.75f)
-	{
-		m_bIsRageInit = true;
-		m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE, true);
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE1START_TURN_OC);
-		return;
-	}
-	
-	// 레이지2 패턴 (위에게 진짜 조건문)
-	if (!m_bIsRage2Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.40f &&
-		m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
-	//if (!m_bIsRage2Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.90f)
-	{
-		m_bIsRage2Init = true;
-		m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE2, true);
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE2START_TURN_OC);
-		return;
-	}
-
-	// 레이지3 패턴 (위에게 진짜 조건문)
-	if (!m_bIsRage3Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.15f &&
-		m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
-	// if (!m_bIsRage3Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.9f)
+	////  폭주 아닐 시 폭주 체크
+	//if (m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp / 2.f && !m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
+	//{
+	//	m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK, true);
+	//	m_pStellia->Set_SkillTree();
+	//	m_iAtkIndex = 0;
+	//	m_pStateMachineCom->Change_State(CStellia::STELLIA_BERSERK);
+	//	return;
+	//}
+	//
+	//// 레이지1 패턴
+	//if (!m_bIsRageInit && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.75f)
+	//{
+	//	m_bIsRageInit = true;
+	//	m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE, true);
+	//	m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE1START_TURN_OC);
+	//	return;
+	//}
+	//
+	//// 레이지2 패턴 (위에게 진짜 조건문)
+	//if (!m_bIsRage2Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.40f &&
+	//	m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
+	////if (!m_bIsRage2Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.90f)
+	//{
+	//	m_bIsRage2Init = true;
+	//	m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE2, true);
+	//	m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE2START_TURN_OC);
+	//	return;
+	//}
+	//
+	//// 레이지3 패턴 (위에게 진짜 조건문)
+	//if (!m_bIsRage3Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.15f &&
+	//	m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
+	 if (!m_bIsRage3Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.9f)
 	{
 		m_bIsRage3Init = true;
 		m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE3, true);

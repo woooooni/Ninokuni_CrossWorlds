@@ -120,6 +120,9 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		case CCamera_Action::GLANIX_DEAD:
 			Tick_Glanix_Dead(fTimeDelta);
 			break;
+		case CCamera_Action::STELLIA_GUARD:
+			Tick_Stellia_Guard(fTimeDelta);
+			break;
 		default:
 			break;
 		}
@@ -271,6 +274,11 @@ Vec4 CCamera_Action::Get_LookAt()
 	case CAMERA_ACTION_TYPE::WITCH_AWAY:
 	{
 		return m_tActionWitchAwayDesc.vPervLookAt;
+	}
+	break;
+	case CAMERA_ACTION_TYPE::STELLIA_GUARD:
+	{
+		return m_tActionStelliaGuardDesc.vPrevLookAt;
 	}
 	break;
 	default:
@@ -1317,6 +1325,30 @@ void CCamera_Action::Tick_Glanix_Dead(_float fTimeDelta)
 	}
 }
 
+void CCamera_Action::Tick_Stellia_Guard(_float fTimeDelta)
+{
+	/* Blending In*/
+	if (m_bBlending && ACTION_STELLIA_GUARD_DESC::PROGRESS_TYPE::BLENDING_IN == m_tActionStelliaGuardDesc.eCurProgress)
+	{
+		const Vec4 vCamPosition = CCamera_Manager::GetInstance()->Get_BlendingPosition();
+
+		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPosition);
+
+		m_tActionStelliaGuardDesc.vPrevLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
+
+		m_pTransformCom->LookAt(m_tActionStelliaGuardDesc.vPrevLookAt);
+	}
+
+	/* Shake */
+	{
+		/* 스텔리아 쪽에서 관리하지 않고 여기서 관리 */
+		if (Is_Shake())
+		{
+
+		}
+	}
+}
+
 HRESULT CCamera_Action::Ready_Components()
 {
 	return S_OK;
@@ -1692,6 +1724,86 @@ HRESULT CCamera_Action::Start_Action_Glanix_Dead(CGameObject* pGameObject)
 	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
 
 	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Start_Action_Stellia_Guard(CTransform* pStelliaTransform)
+{
+	if (nullptr == pStelliaTransform)
+		return E_FAIL;
+
+	/* Defualt */
+	{
+		m_bAction = true;
+
+		m_eCurActionType = CAMERA_ACTION_TYPE::STELLIA_GUARD;
+	}
+
+	/* Struct */
+	{
+		m_tActionStelliaGuardDesc.pStelliaTransform = pStelliaTransform;
+
+		m_tActionStelliaGuardDesc.eCurProgress = ACTION_STELLIA_GUARD_DESC::PROGRESS_TYPE::BLENDING_IN;
+	}
+
+	/* Camera */
+	{
+		Set_Fov(m_tActionStelliaGuardDesc.fFov);
+
+		Set_TargetOffSet(m_tActionStelliaGuardDesc.vTargetOffset);
+
+		Set_LookAtOffSet(m_tActionStelliaGuardDesc.vLookAtOffset);
+	}
+
+	/* Transform */
+	{
+		Vec4 vCamPosition, vLookAt;
+
+		Vec4 vStelliaPos	= pStelliaTransform->Get_Position();
+		Vec4 vPlayerPos		= CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_Transform()->Get_Position();
+
+		const Vec4 vPlayerToStelliaDir	= (vStelliaPos.ZeroY() - vPlayerPos.ZeroY()).Normalized();
+		const Vec4 vRightDir			= Vec4(XMVector3Cross(Vec3::UnitY, vPlayerToStelliaDir.xyz())).ZeroY().ZeroW().Normalized();
+		const Vec4 vLeftDir				= vRightDir * -1.f;
+
+		const Vec4 vCenterPos			= (vStelliaPos + vPlayerPos) * 0.5f;
+
+		/* Position */
+		{
+			vCamPosition = vCenterPos + (vRightDir * m_tActionStelliaGuardDesc.fDist) + m_tTargetOffset.vCurVec;
+		}
+
+		/* LookAt */
+		{
+			vLookAt = vCenterPos + m_tLookAtOffset.vCurVec;
+		}
+
+		m_pTransformCom->Set_Position(vCamPosition.OneW());
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
+	
+	/* Change */
+	CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::ACTION);
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Finish_Action_Stellia_Guard(const _bool& bBlending)
+{
+	if (bBlending) /* 가드 성공 - 스텔리아 뒤로 밀려남 -> 팔로우 카메라로 블렌딩 */
+	{
+		/* 플레이어 인풋 막기 */
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+
+		CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
+		m_tActionStelliaGuardDesc.Clear();
+	}
+	else /* 가드 실패 - 플레이어 날라감 -> 블렌딩 없이 바로 팔로우 카메라 세팅 */
+	{
+		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+		m_tActionStelliaGuardDesc.Clear();
+	}
 
 	return S_OK;
 }
