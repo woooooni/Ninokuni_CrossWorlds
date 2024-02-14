@@ -19,11 +19,18 @@ public:
 	virtual void Exit_State();
 
 private:
+	void First_GuardEvent(_float fTimeDelta);
+	void Player_KnockDown();
+	void Check_RangeOut();
+
 	void Create_GuardEffect();
 	void Delete_GuardEffect();
 	void Create_ResultEffect(_bool bSuccess);
 
 private:
+	// 가드 이벤트
+	_bool m_bIsFinishGuard = false;
+
 	// 최초 충돌
 	_bool m_bIsStartEvent = false;
 	_bool m_bIsTimeSlep = false;
@@ -49,10 +56,9 @@ private:
 	_int m_iBreakCount = 0;
 
 	// 시작하자마자 브레이크 밟는거 방지
-	Vec4 m_vStartPos;
-	_float m_fCurChargeLength = 0.f;
-	_float m_fMinChargeLength = 0.f;
+	_bool m_bIsStartPosOut = false;
 
+	// 이펙트
 	_bool m_bGuardEffect = false;
 	class CEffect*   m_pPlayerGuard = nullptr;
 	class CParticle* m_pSpark_Player = nullptr;

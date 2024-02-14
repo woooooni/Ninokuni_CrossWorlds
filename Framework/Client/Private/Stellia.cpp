@@ -235,8 +235,11 @@ void CStellia::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
-	if(m_bDead == true)
+	if (m_bDead == true)
+	{
+		CUI_Manager::GetInstance()->OnOff_BossHP(false);
 		CQuest_Manager::GetInstance()->Set_IsBossKill(true);
+	}
 
 	if (nullptr != m_pCrystalController)
 		m_pCrystalController->Tick(fTimeDelta);
@@ -359,17 +362,31 @@ void CStellia::Collision_Enter(const COLLISION_INFO& tInfo)
 		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
 		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
-		/* 레이지3 가드이벤트 */
-		if (dynamic_cast<CCharacter*>(tInfo.pOther)->Get_CharacterStateCom()->Get_CurrState() == CCharacter::BATTLE_GUARD &&
-			m_pStateCom->Get_CurrState() == STELLIA_RAGE3CHARGE)
+		// 스텔리아 기믹3 around 패턴
+		if (m_pStateCom->Get_CurrState() == STELLIA_RAGE3AROUND)
 		{
-			m_bIsPlayerGuardEvent = true;
+			Vec3 vDir = m_pTransformCom->Get_Right() + m_pTransformCom->Get_Up() * 0.5f;
+			vDir.Normalize();
+
+			dynamic_cast<CCharacter*>(Get_TargetDesc().pTarget)->Get_CharacterStateCom()->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
+			m_tTargetDesc.pTarget->Get_Component_Rigidbody()->Add_Velocity(vDir, 15.f, true);
 		}
-	
-		/* 평소 */
+
+		// 아니라면 
 		else
 		{
-			m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND] = true;
+			///* 레이지3 가드이벤트 */
+			//if (dynamic_cast<CCharacter*>(tInfo.pOther)->Get_CharacterStateCom()->Get_CurrState() == CCharacter::BATTLE_GUARD &&
+			//	m_pStateCom->Get_CurrState() == STELLIA_RAGE3CHARGE)
+			//{
+			//	m_bIsPlayerGuardEvent = true;
+			//}
+			//
+			///* 평소 */
+			//else
+			//{
+				m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND] = true;
+			//}
 		}
 	}
 

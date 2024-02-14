@@ -39,6 +39,7 @@
 
 #include "Particle_Manager.h"
 #include "Particle.h"
+#include "Animation.h"
 
 CDreamMazeWitch_Npc::CDreamMazeWitch_Npc(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
@@ -111,7 +112,8 @@ void CDreamMazeWitch_Npc::Tick(_float fTimeDelta)
 			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_QUADBLACKHOLE ||
 			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_LASER ||
 			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_FOLLOWING_RAGE02 ||
-			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_RAGE3_LASER
+			m_pStateCom->Get_CurrState() == WITCHSTATE_BATTLE_RAGE3_LASER ||
+			m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Death")
 			)
 		{
 			m_pSparkle->Set_LoopParticle(false, false);

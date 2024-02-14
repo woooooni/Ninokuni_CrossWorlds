@@ -20,6 +20,7 @@ public:
 
 private:
 	Vec3 m_vDestLook = {};
+	Vec3 m_vStartLook = {};
 
 	_float m_fAccAroundTime = 0.f;
 	_float m_fAroundTime = 0.f;
