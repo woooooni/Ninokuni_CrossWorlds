@@ -18,10 +18,12 @@ public:
 	virtual void Exit_State();
 
 private:
-	_float	m_fFadeInTime = 0.f;
-	_float	m_fFadeOutTime = 0.f;
+	const _float	m_fFadeInTime = 1.f;
+	const _float	m_fFadeOutTime = 1.f;
 
 	_bool	m_bFadeOut = false;
+	const _float m_fWaitTime = 0.5f;
+	_float	m_fAcc = 0.f;
 
 public:
 	static CGlanixState_IntroFinish* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
