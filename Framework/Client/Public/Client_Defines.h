@@ -214,7 +214,7 @@ namespace Client
 	static const _float Cam_LockOn_Time_BlendingOut = 0.f;
 
 	static const Vec4	Cam_Target_Offset_LockOn_Glanix		= Vec4{ 0.7f, 2.f, -6.f, 1.f };
-	static const Vec4	Cam_LookAt_Offset_LockOn_Glanix		= Vec4{ 0.f, 0.5f, 0.f, 1.f };
+	static const Vec4	Cam_LookAt_Offset_LockOn_Glanix		= Vec4{ 0.f, 0.f, 0.f, 1.f };
 
 	static const Vec4	Cam_Target_Offset_LockOn_Stellia	= Vec4{ 0.7f, 2.f, -6.f, 1.f };
 	static const Vec4	Cam_LookAt_Offset_LockOn_Stellia	= Vec4{ 0.f, 2.f, 0.f, 1.f };
