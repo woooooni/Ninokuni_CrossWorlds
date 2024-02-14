@@ -20,9 +20,9 @@ HRESULT CMainQuestNode_IntroTour01::Initialize()
 void CMainQuestNode_IntroTour01::Start()
 {
 	// 초반 연출 스킵용
-	//CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_CHLOE_FINDCAT, true);
-	//CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WINDMILL, true);
-	//CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WANTED, true);
+	CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_CHLOE_FINDCAT, true);
+	CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WINDMILL, true);
+	CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WANTED, true);
 
 	Vec4 vSpotPos = { 0.f, 0.f, 5.f, 1.f };
 
