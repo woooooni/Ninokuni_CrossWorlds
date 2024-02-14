@@ -25,6 +25,9 @@ void CState_FlameTower_Attack::Enter_State(void* pArg)
     m_fAccOnOffAttack = 0.f;
     m_fOnOffAttackTime = 0.5f;
     m_bFire = false;
+
+    wstring strSoundKey = L"Obj_FlareTower_Shot_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
+    GI->Play_Sound(strSoundKey, CHANNELID::SOUND_AIRPLANE, 0.5f);
 }
 
 void CState_FlameTower_Attack::Tick_State(_float fTimeDelta)
@@ -35,6 +38,11 @@ void CState_FlameTower_Attack::Tick_State(_float fTimeDelta)
         {
             Fire();
             m_bFire = true;
+        }
+        else
+        {
+            wstring strSoundKey = L"Ele_Shot_Fire_" + to_wstring(GI->RandomInt(1, 4)) + L".mp3";
+            GI->Play_Sound(strSoundKey, CHANNELID::SOUND_BOSS, 0.5f);
         }
     }
 

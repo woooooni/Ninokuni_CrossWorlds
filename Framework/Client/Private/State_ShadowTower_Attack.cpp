@@ -27,6 +27,9 @@ void CState_ShadowTower_Attack::Enter_State(void* pArg)
 {
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
     m_bShoot = false;
+
+    wstring strSoundKey = L"Ele_Cast_Darkness_" + to_wstring(GI->RandomInt(1, 9)) + L".mp3";
+    GI->Play_Sound(strSoundKey, CHANNELID::SOUND_VEHICLE, 0.5f);
 }
 
 void CState_ShadowTower_Attack::Tick_State(_float fTimeDelta)
@@ -98,6 +101,9 @@ void CState_ShadowTower_Attack::Fire()
             return;
         }
     }
+
+    wstring strSoundKey = L"Ele_Shot_Darkness_Fire_" + to_wstring(GI->RandomInt(1, 3)) + L".mp3";
+    GI->Play_Sound(strSoundKey, CHANNELID::SOUND_SHAKE, 0.5f);
 }
 
 CState_ShadowTower_Attack* CState_ShadowTower_Attack::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
