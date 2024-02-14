@@ -123,7 +123,7 @@ PS_OUT WinterSkyPlanePixelShader(PS_IN input)
     float4 cloudColor2;
     
 
-    float noiseValue = WinterNoiseTexture2.Sample(LinearSampler, input.vTexcoord * 12.0).r;
+    float noiseValue = WinterNoiseTexture2.Sample(LinearSampler, input.vTexcoord * 12.0f).r;
     
    if(noiseValue > 0.9)
        output.vColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -173,7 +173,7 @@ technique11 CloudDefault
 
     pass WinterSkyPlane
     {
-        SetRasterizerState(RS_SkyPlane);
+        SetRasterizerState(RS_NoneCull);
         SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
