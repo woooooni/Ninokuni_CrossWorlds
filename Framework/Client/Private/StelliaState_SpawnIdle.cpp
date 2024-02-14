@@ -3,7 +3,7 @@
 
 #include "Stellia.h"
 #include "UI_Manager.h"
-
+#include "UI_Fade.h"
 CStelliaState_SpawnIdle::CStelliaState_SpawnIdle(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -25,15 +25,18 @@ void CStelliaState_SpawnIdle::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
+	/* 이름 UI를 띄우지 않으므로 컷신 후반을 자른다. */
+	if (!m_bStartFadeOut && !m_pModelCom->Is_Tween() && 0.25f <= m_pModelCom->Get_Progress())
 	{
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_SPAWNSTAND);
+		m_bStartFadeOut = true;
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
 	}
 
-//	if (5 == m_pModelCom->Get_CurrAnimationFrame())
-//	{
-//		CUI_Manager::GetInstance()->OnOff_BossNameTag(true, CUI_Manager::UI_BOSS::BOSS_STELLIA);
-//	}
+	if (m_bStartFadeOut && CUI_Manager::GetInstance()->Is_FadeFinished())
+	{
+		m_pStateMachineCom->Change_State(CStellia::STELLIA_SPAWNSTAND);
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
+	}
 }
 
 void CStelliaState_SpawnIdle::Exit_State()

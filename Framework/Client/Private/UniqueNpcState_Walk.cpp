@@ -40,7 +40,7 @@ void CUniqueNpcState_Walk::Tick_State(_float fTimeDelta)
 			Vec4 vDir = pPlantTransform->Get_Position() - m_pTransformCom->Get_Position();
 			_float fDistance = vDir.Length();
 
-			if (fDistance >= 1.5f)
+			if (fDistance >= 1.75f)
 			{
 				vDir.Normalize();
 				m_pTransformCom->LookAt_ForLandObject(pPlantTransform->Get_Position());

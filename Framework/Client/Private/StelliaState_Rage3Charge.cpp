@@ -204,6 +204,7 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		if (KEY_TAP(KEY::LBTN))
 		{
 			CSound_Manager::GetInstance()->Play_Sound(TEXT("Impact_Metal_Bell_1_1.ogg"), CHANNELID::SOUND_UI2, 1.f, true);
+
 			m_iClickPower += 1;
 		}
 
@@ -248,7 +249,7 @@ void CStelliaState_Rage3Charge::Exit_State()
 void CStelliaState_Rage3Charge::Create_GuardEffect()
 {
 	// 레디얼 블러 활성화
-	CGame_Manager::GetInstance()->Lerp_RadialBlur(true, true, 0.f, -0.1f, 0.6f, 16.f);
+	CGame_Manager::GetInstance()->Lerp_RadialBlur(true, true, 0.f, -0.025f, 0.6f, 16.f);
 
 	_matrix WorldMatrix = m_pStellia->Get_TargetDesc().pTragetTransform->Get_WorldMatrix();
 

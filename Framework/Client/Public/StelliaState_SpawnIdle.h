@@ -18,6 +18,9 @@ public:
 	virtual void Tick_State(_float fTimeDelta);
 	virtual void Exit_State();
 
+private:
+	_bool	m_bStartFadeOut = false;
+
 public:
 	static CStelliaState_SpawnIdle* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

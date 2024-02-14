@@ -27,9 +27,6 @@ HRESULT CGlanixState_IntroFinish::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
-	m_fFadeOutTime = 0.75f;
-	m_fFadeInTime = 0.75f;
-
 	m_bFadeOut = false;
 
 	return S_OK;
@@ -65,9 +62,6 @@ void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)
 		}
 	}
 
-//	if (m_pModelCom->Get_CurrAnimationFrame() == 50)
-//		CUI_Manager::GetInstance()->OnOff_BossNameTag(true, CUI_Manager::UI_BOSS::BOSS_GLANIX);
-
 	if (!m_pModelCom->Is_Tween() && 0.95f <= m_pModelCom->Get_Progress() && !m_bFadeOut)
 	{
 		/* Start Fade Out */
@@ -77,9 +71,13 @@ void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)
 		m_bFadeOut = true;
 	}
 
-	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
+	if (m_bFadeOut)
 	{
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_TURN);
+		m_fAcc += fTimeDelta;
+		if (m_fWaitTime <= m_fAcc)
+		{
+			m_pStateMachineCom->Change_State(CGlanix::GLANIX_TURN);
+		}
 	}
 }
 
