@@ -64,8 +64,6 @@ void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 	{
 		if (m_bIsSetY)
 		{
-			__super::Set_LockOnStellia();
-
 			Vec4 vStelliaPos = m_pTransformCom->Get_Position();
 			m_pStellia->Get_Component_Rigidbody()->Set_Use_Gravity(true);
 			vStelliaPos.y = 0.f;
@@ -112,6 +110,7 @@ void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 
 void CStelliaState_JumpStamp::Exit_State()
 {
+	__super::Set_LockOnStellia();
 }
 
 CStelliaState_JumpStamp* CStelliaState_JumpStamp::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

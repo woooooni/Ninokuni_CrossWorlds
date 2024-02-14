@@ -12,6 +12,7 @@ class CVfx_Stellia_Skill_Rage01Explosion final : public CVfx
 {
 private:
 	enum TYPE {
+		TYPE_E_PULL,
 		TYPE_D_DECAL_00,
 		TYPE_P_CIRCLES,
 		TYPE_D_DECAL_01,
@@ -42,6 +43,8 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	class CEffect* m_pSmokeIn_01 = nullptr;
+
 	class CEffect* m_pDecal01Effect = nullptr;
 	class CEffect* m_pDecla02Effect = nullptr;
 

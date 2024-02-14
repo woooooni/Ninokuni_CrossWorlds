@@ -22,6 +22,8 @@ HRESULT CStelliaState_Rage3Charge::Initialize(const list<wstring>& AnimationList
 {
 	__super::Initialize(AnimationList);
 
+	m_fSlepTime = 0.05f;
+
 	m_fLimitTime = 6.f;
 	m_fShakeTime = 0.5f;
 	m_iClickDest = 30.f;
@@ -33,8 +35,13 @@ HRESULT CStelliaState_Rage3Charge::Initialize(const list<wstring>& AnimationList
 void CStelliaState_Rage3Charge::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill06_New_Loop"));
+	m_fAccSlepTime = 0.f;
 	m_fAccClickTime = 0.f;
 	m_fAccShakeTime = 0.5f;
+
+	m_bIsStartEvent = false;
+	m_bIsTimeSlep = false;
+	m_bIsSlow = false;
 
 	m_iClickPower = 0;
 
@@ -50,6 +57,37 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 
 	if (m_pStellia->Get_IsPlayerGuardEvent()) // 플레이어가 현재 막고있는 상태
 	{
+		if (!m_bIsStartEvent)
+		{
+			m_pStellia->Get_TargetDesc().pTragetTransform->LookAt_ForLandObject(m_pTransformCom->Get_Position());
+			Vec3 vPlayerLook = m_pStellia->Get_TargetDesc().pTarget->Get_Component_Transform()->Get_Look();
+			m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(-vPlayerLook, 20.f, true);
+
+			GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 0.1f);
+
+			m_bIsTimeSlep = true;
+			m_bIsSlow = true;
+			m_bIsStartEvent = true;
+		}
+
+		if (m_bIsTimeSlep)
+		{
+			if (m_bIsSlow)
+			{
+				m_fAccSlepTime += fTimeDelta;
+
+				if (m_fAccSlepTime >= m_fSlepTime)
+				{
+					m_bIsTimeSlep = false;
+					m_bIsSlow = false;
+					GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 1.f);
+
+					m_pStellia->Get_TargetDesc().pTragetTransform->Set_Position(m_pTransformCom->Get_Position() + m_pTransformCom->Get_Look() * 3.f);
+				}
+			}
+		}
+
+
 		// Effect Create ----------------------------
 		if (nullptr == m_pPlayerGuard)
 		{
@@ -77,14 +115,12 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		// ---------------------------- Effect Create
 
 		m_pStellia->Get_TargetDesc().pTragetTransform->LookAt_ForLandObject(m_pTransformCom->Get_Position());
-		m_pStellia->Get_TargetDesc().pTragetTransform->Move(-m_pStellia->Get_TargetDesc().pTragetTransform->Get_Look(), 3.f, fTimeDelta);
 
 		m_fAccClickTime += fTimeDelta;
 		m_fAccShakeTime += fTimeDelta;
 
 		//if (m_fAccShakeTime >= m_fShakeTime)
 		//{
-			CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
 		//	m_fAccShakeTime = m_fShakeTime - m_fAccShakeTime;
 		//}
 
@@ -117,8 +153,8 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 			{
 				Vec3 m_vRightRot = XMVector3Rotate(vLookNormal, XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians(45.f), 0.0f));
 
-				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(m_vRightRot, 10.f, false);
-				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity({ 0.f, 1.f, 0.f }, 10.f, false);
+				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(m_vRightRot, 10.f, true);
+				m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity({ 0.f, 1.f, 0.f }, 10.f, true);
 			}
 			/* 보스가 바라보는 방향을 기준으로 왼쪽에 위치. */
 			else if (fCrossProductY < 0.f)
@@ -183,8 +219,9 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 			m_iClickPower += 1;
 		}
 	}
-	else
+	//else
 		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRage3AroundSpeed, fTimeDelta);
+		m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position());
 
 	// 최소 질주 거리 계산(시작하자마자 브레이크 밟는거 방지)
 	Vec4 vCurPos = (Vec4)m_pTransformCom->Get_Position() - m_vStartPos;

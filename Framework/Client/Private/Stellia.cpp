@@ -136,7 +136,7 @@ HRESULT CStellia::Initialize(void* pArg)
 	m_vBloomPower = _float3(2.f, 2.f, 2.f);
 
 	// 레이지 1에서 채워야 하는 데미지
-	m_iDestDamage = 20000;
+	m_iDestDamage = 50000;
 
 	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 	{
@@ -230,8 +230,88 @@ void CStellia::LateTick(_float fTimeDelta)
 
 HRESULT CStellia::Render()
 {
-	if (FAILED(__super::Render()))
+	//if (FAILED(__super::Render()))
+	//	return E_FAIL;
+
+	if (nullptr == m_pShaderCom || nullptr == m_pTransformCom)
 		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	// Bloom -----------------
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
+		return E_FAIL;
+	// ----------------- Bloom
+
+	// RimLight -----------------
+	_float4 vRimLightColor = _float4(0.f, 0.f, 0.f, 0.f);
+
+	if (m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_COUNTER])
+	{
+		vRimLightColor = m_vCounterRimColor;
+	}
+	else if (m_bIsRimUse)
+	{
+		vRimLightColor = m_vRimLightColor;
+	}
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimLightColor, sizeof(_float4))))
+		return E_FAIL;
+	// ----------------- RimLight
+
+	// Dissolve -----------------
+	if (FAILED(m_pDissoveTexture->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture", 51)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_DissolveDuration", &m_fDissolveDuration, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fDissolveWeight, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vDissolveColor", &m_vDissolveColor, sizeof(_float4))))
+		return E_FAIL;
+	// ----------------- Dissolve
+
+	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+		return E_FAIL;
+
+	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+	_uint iPassIndex = 0;
+
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		if (i != 2)
+		{
+			if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+		}
+		else
+		{
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_eTextureType)))
+				return E_FAIL;
+		}
+
+		if (m_bStartDissolve || m_bReserveDead)
+			iPassIndex = 2;
+		else if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+			iPassIndex = 0;
+		else
+			iPassIndex++;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
+			return E_FAIL;
+	}
+
 
 	return S_OK;
 }
@@ -364,6 +444,10 @@ void CStellia::Set_SkillTree()
 
 HRESULT CStellia::Ready_Components()
 {
+	/* For.Com_Texture */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Stellia"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+		return E_FAIL;
+
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
@@ -438,7 +522,7 @@ HRESULT CStellia::Ready_States()
 {
 	m_tStat.fMaxHp = 700000;
 	m_tStat.fHp = 700000;
-	m_tStat.iAtk = 350;
+	m_tStat.iAtk = 200;
 	m_tStat.iDef = 120;
 
 	list<wstring> strAnimationName;
@@ -817,7 +901,8 @@ CGameObject* CStellia::Clone(void* pArg)
 void CStellia::Free()
 {
 	__super::Free();
-	
+
+	Safe_Release(m_pTextureCom);
 	Safe_Delete(m_pCrystalController);
 }
 

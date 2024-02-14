@@ -1067,6 +1067,11 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 			CVfx_Witch_Skill_Laser_Warning::Create(m_pDevice, m_pContext, TEXT("Witch_Skill_Laser_Warning")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
 
+		// Prototype_Vfx_Witch_Skill_Laser
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Witch_Skill_Laser"),
+			CVfx_Witch_Skill_Laser::Create(m_pDevice, m_pContext, TEXT("Witch_Skill_Laser")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
 		// Prototype_Vfx_Witch_Skill_Rage01QuadBlackHole_Explosive
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Witch_Skill_Rage01QuadBlackHole_Explosive"),
 			CVfx_Witch_Skill_Rage01QuadBlackHole_Explosive::Create(m_pDevice, m_pContext, TEXT("Witch_Skill_Rage01QuadBlackHole_Explosive")), LAYER_TYPE::LAYER_EFFECT)))

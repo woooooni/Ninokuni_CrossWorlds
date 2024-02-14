@@ -35,8 +35,8 @@ HRESULT CWitch_Laser::Initialize_Prototype()
 
 HRESULT CWitch_Laser::Initialize(void* pArg)
 {
-	//if (pArg == nullptr)
-	//	return E_FAIL;
+	if (pArg == nullptr)
+		return E_FAIL;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -68,19 +68,21 @@ void CWitch_Laser::Tick(_float fTimeDelta)
 	{
 		if (!m_bIsLaserCreate && m_pLaserWarning->Is_Dead() && m_pLaser == nullptr)
 		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Skill_Laser"), m_pTransformCom->Get_WorldMatrix(), nullptr, &m_pLaser);
+
 			CSound_Manager::GetInstance()->Play_Sound(TEXT("Witch_Laser.ogg"), CHANNELID::SOUND_AIRPLANE, 1.f, false);
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
-			// 공격 레이저 생성
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_Rage3_LaserLine"), m_pTransformCom->Get_WorldMatrix(), 
-				_float3(0.f, 0.045, -0.055f), _float3(40.f, 50.f, 875.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pLaser);
-			if (nullptr != m_pLaser)
-			{
-				m_pLaser->Reserve_Dissolve(73,  // Index
-					_float4(1.f, 1.f, 1.f, 1.f),// Color
-					5.f,   // Speed
-					10.f); // Total
-			}
+			//// 공격 레이저 생성
+			//GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Witch_Rage3_LaserLine"), m_pTransformCom->Get_WorldMatrix(), 
+			//	_float3(0.f, 0.045, -0.055f), _float3(40.f, 50.f, 875.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pLaser);
+			//if (nullptr != m_pLaser)
+			//{
+			//	m_pLaser->Reserve_Dissolve(73,  // Index
+			//		_float4(1.f, 1.f, 1.f, 1.f),// Color
+			//		5.f,   // Speed
+			//		10.f); // Total
+			//}
 
 			m_bIsLaserCreate = true;
 		}
@@ -169,7 +171,7 @@ HRESULT CWitch_Laser::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 1.35f, 1.5f, 32.f };
+	OBBBox.Extents = { 1.35f, 1.5f, 40.f };
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;
