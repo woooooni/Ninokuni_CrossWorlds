@@ -129,10 +129,10 @@ void CCharacter_SwordMan::Tick(_float fTimeDelta)
 {
 	m_pStateCom->Tick_State(fTimeDelta);
 
-	if (KEY_TAP(KEY::NUM_6))
+	/*if (KEY_TAP(KEY::NUM_6))
 	{
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(-44.f, 1.6f, 315.f, 1.f));
-	}
+	}*/
 
 	if (true == m_bScreenEffect)
 	{

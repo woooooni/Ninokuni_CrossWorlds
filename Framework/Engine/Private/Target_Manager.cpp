@@ -135,7 +135,7 @@ HRESULT CTarget_Manager::Ready_UI_DSV(ID3D11Device* pDevice, _uint iWinSizeX, _u
 
 HRESULT CTarget_Manager::Ready_Cascade_Initialize(ID3D11Device* pDevice)
 {
-	const int iShadowMapSize = 1024;
+	const int iShadowMapSize = 2048;
 
 	D3D11_TEXTURE2D_DESC dtd = {
 		iShadowMapSize,
@@ -383,14 +383,14 @@ HRESULT CTarget_Manager::Begin_UI_MRT(ID3D11DeviceContext* pContext, const wstri
 
 HRESULT CTarget_Manager::Begin_Cascade_MRT(ID3D11DeviceContext* pContext, const Vec3& vDirectionalDir)
 {
-	const int iShadowMapSize = 1024;
+	const int iShadowMapSize = 2048;
 
 	D3D11_VIEWPORT vp[3] =
 	{ { 0, 0, iShadowMapSize, iShadowMapSize, 0.0f, 1.0f },
 		{ 0, 0, iShadowMapSize, iShadowMapSize, 0.0f, 1.0f },
 		{ 0, 0, iShadowMapSize, iShadowMapSize, 0.0f, 1.0f } };
 
-	pContext->RSSetViewports(3, vp);
+	pContext->RSSetViewports(1, vp);
 	
 	pContext->ClearDepthStencilView(m_pCascadeDepthStencilDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
@@ -398,9 +398,10 @@ HRESULT CTarget_Manager::Begin_Cascade_MRT(ID3D11DeviceContext* pContext, const 
 	pContext->OMSetRenderTargets(1, &nullRT, m_pCascadeDepthStencilDSV);
 
 	// 매트릭스 업데이트
-	m_pCascadeMatrixSet->Tick(vDirectionalDir);
+	//m_pCascadeMatrixSet->Tick(vDirectionalDir);
 	//m_pCascadeMatrixSet->SubdivisionFrustum(vDirectionalDir);
-
+	m_pCascadeMatrixSet->FrustumUpdate();
+	//m_pCascadeMatrixSet->UpdateShadowMatrix(vDirectionalDir);
 	return S_OK;
 }
 

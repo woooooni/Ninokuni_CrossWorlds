@@ -265,8 +265,8 @@ HRESULT CRenderer::Draw_World()
 		if (FAILED(Render_Shadow())) // MRT_Shadow -> ShadowDepth
 			return E_FAIL;
 
-		if (FAILED(Render_Cascade_Shadow()))
-			return E_FAIL;
+	/*	if (FAILED(Render_Cascade_Shadow()))
+			return E_FAIL;*/
 
 		if (FAILED(Render_Lights())) // MRT_Lights -> Shade / Specular
 			return E_FAIL;
@@ -804,11 +804,15 @@ HRESULT CRenderer::Render_Cascade_Shadow()
 
 	Matrix CascadeShadowGenMat[3];
 
-	for (_uint i = 0; i < 3; ++i)
-		CascadeShadowGenMat[i] = *m_pTarget_Manager->Get_CascadeMatrix()->GetWorldToCascadeProj(i);
+	//for (_uint i = 0; i < 3; ++i)
+	//	CascadeShadowGenMat[i] = *m_pTarget_Manager->Get_CascadeMatrix()->GetWorldToCascadeProj(i);
 
 	//for (_uint i = 0; i < 3; ++i)
 	//	CascadeShadowGenMat[i] = m_pTarget_Manager->Get_CascadeMatrix()->Get_ShadowOrthoProj(i);
+
+	for (_uint i = 0; i < 3; ++i)
+		CascadeShadowGenMat[i] = m_pTarget_Manager->Get_CascadeMatrix()->Get_ArrayOrthoMatrix(i);
+
 
 	for (auto& iter : m_RenderObjects[RENDER_CASCADE])
 	{
@@ -878,9 +882,11 @@ HRESULT CRenderer::Render_Cascade_Caculation()
 	if (FAILED(m_pTarget_Manager->Bind_Cascade_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], "CascadeShadowMapTexture")))
 		return E_FAIL;
 
-	//CCascadeMatrixSet* pCascadeMatrix = m_pTarget_Manager->Get_CascadeMatrix();
-	//Matrix CascadeShadowGenMat[3];
-	//Matrix projectionMatrix = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
+	CCascadeMatrixSet* pCascadeMatrix = m_pTarget_Manager->Get_CascadeMatrix();
+	Matrix CascadeShadowGenMat[3];
+
+
+	Matrix projectionMatrix = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
 
 	//_float vCascadeEndClip[3];
 	//for (_uint i = 0; i < 3; ++i)
@@ -889,28 +895,38 @@ HRESULT CRenderer::Render_Cascade_Caculation()
 	//	vCascadeEndClip[i] = vClip.z;
 	//}
 
-	//for (_uint i = 0; i < 3; ++i)
-	//	CascadeShadowGenMat[i] = m_pTarget_Manager->Get_CascadeMatrix()->Get_ShadowOrthoProj(i);
+	for (_uint i = 0; i < 3; ++i)
+		CascadeShadowGenMat[i] = m_pTarget_Manager->Get_CascadeMatrix()->Get_ShadowOrthoProj(i);
 
-	CCascadeMatrixSet* pCascadeMatrix = m_pTarget_Manager->Get_CascadeMatrix();
-	const Matrix mToShadowSpace = *pCascadeMatrix->GetWorldToShadowSpace();
-	Vec4 vCascadeOffsetX = pCascadeMatrix->GetToCascadeOffsetX();
-	Vec4 vCascadeOffsetY = pCascadeMatrix->GetToCascadeOffsetY();
-	Vec4 vCascadeScale = pCascadeMatrix->GetToCascadeScale();
+	//for (_uint i = 0; i < 3; ++i)
+	//	CascadeShadowGenMat[i] = m_pTarget_Manager->Get_CascadeMatrix()->Get_ArrayOrthoMatrix(i);
+
+	_float vCascadeEndClip[3];
+	for (_uint i = 0; i < 3; ++i)
+	{
+		Vec4 vClip = Vec4::Transform(Vec4(0.0f, 0.0f, pCascadeMatrix->Get_CascadePercent(i), 1.0f), projectionMatrix);
+		vCascadeEndClip[i] = vClip.z;
+	}
+
+	//CCascadeMatrixSet* pCascadeMatrix = m_pTarget_Manager->Get_CascadeMatrix();
+	//const Matrix mToShadowSpace = *pCascadeMatrix->GetWorldToShadowSpace();
+	//Vec4 vCascadeOffsetX = pCascadeMatrix->GetToCascadeOffsetX();
+	//Vec4 vCascadeOffsetY = pCascadeMatrix->GetToCascadeOffsetY();
+	//Vec4 vCascadeScale = pCascadeMatrix->GetToCascadeScale();
 	
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("ToShadowSpace", &mToShadowSpace)))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("ToCascadeOffsetX", &vCascadeOffsetX, sizeof(Vec4))))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("ToCascadeOffsetY", &vCascadeOffsetY, sizeof(Vec4))))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("ToCascadeScale", &vCascadeScale, sizeof(Vec4))))
-		return E_FAIL;
+	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("ToShadowSpace", &mToShadowSpace)))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("ToCascadeOffsetX", &vCascadeOffsetX, sizeof(Vec4))))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("ToCascadeOffsetY", &vCascadeOffsetY, sizeof(Vec4))))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("ToCascadeScale", &vCascadeScale, sizeof(Vec4))))
+	//	return E_FAIL;
 	
-	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("cascadeEndClipSpace", &vCascadeEndClip, sizeof(_float) * 3)))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrices("lightPV", CascadeShadowGenMat, 3)))
-	//	return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("cascadeEndClipSpace", &vCascadeEndClip, sizeof(_float) * 3)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrices("lightPV", CascadeShadowGenMat, 3)))
+		return E_FAIL;
 
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Begin(11)))
 		return E_FAIL;
@@ -1200,15 +1216,15 @@ HRESULT CRenderer::Render_Deferred()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Specular"), "g_SpecularTarget")))
 		return E_FAIL;
-	//if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Cascade_Shadow"), "g_ShadowTarget")))
-	//	return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_ShadowDepth_Caculation_Blur"), "g_ShadowTarget")))
+		return E_FAIL;
 	//if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Ambient"), "g_AmbientTarget")))
 	//	return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Depth"), "g_DepthTarget")))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Cascade_Shadow"), "g_ShadowTarget")))
-		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Cascade_Shadow"), "g_ShadowTarget")))
+	//	return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_SSAO_Blur"), "g_SSAOTarget")))
 		return E_FAIL;

@@ -44,7 +44,7 @@ private:
 	CVIBuffer_SkyPlane* m_pSkyPlaneCom = nullptr;
 
 	_float m_fBrightness = 0.5f;
-	_float m_fScale = 0.3f;
+	_float m_fScale = 0.2f;
 	_float m_fTranslation = 0.0f;
 
 private:
