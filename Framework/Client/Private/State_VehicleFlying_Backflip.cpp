@@ -36,6 +36,9 @@ void CState_VehicleFlying_Backflip::Enter_State(void* pArg)
     CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
     if (nullptr != pFollowCam)
     {
+        /* 수정시 카메라 담당한테 이야기 해주세요 */
+        pFollowCam->Reset_WideView_To_DefaultView(true);
+        pFollowCam->Set_Default_Position();
         pFollowCam->Set_DampingBackLimitRad(XMConvertToRadians(90.f));
         pFollowCam->Set_CanInput(true);
         pFollowCam->Set_MinMaxLimitY(0.7f, 2.1f);

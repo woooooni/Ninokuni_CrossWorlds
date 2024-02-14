@@ -578,7 +578,7 @@ void CUIMinigame_Manager::End_Grandprix()
 		Vec4(-78.6f, -7.4f, -45.8f, 1.f));
 	pCharacter->Get_ControllerCom()->Set_EnterLevel_Position(Vec4(-78.6f, -7.4f, -45.8f, 1.f));
 
-	/* 팔로우 카메라 세팅 초기화 */
+	/* 팔로우 카메라 세팅 초기화 (수정시 카메라 담당한테 이야기 해주세요) */
 	{
 		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 
@@ -588,8 +588,11 @@ void CUIMinigame_Manager::End_Grandprix()
 		pFollowCam->Finish_LockOn(pCharacter);
 		pFollowCam->Reset_MinMaxLimitY();
 		pFollowCam->Reset_DampingBackLimitRad();
+
+		pFollowCam->Reset_WideView_To_DefaultView(true);
 		pFollowCam->Set_Default_Position();
 	}
+
 	Vec3 vScale = pCharacterTransform->Get_Scale();
 	pCharacterTransform->Set_Right(XMVectorSet(1.f, 0.f, 0.f, 0.f));
 	pCharacterTransform->Set_Up(XMVectorSet(0.f, 1.f, 0.f, 0.f));
