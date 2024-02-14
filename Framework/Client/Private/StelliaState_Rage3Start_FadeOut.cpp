@@ -39,6 +39,20 @@ void CStelliaState_Rage3Start_FadeOut::Enter_State(void* pArg)
 	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Roar"), m_pTransformCom->Get_WorldMatrix(), m_pStellia, &pVfxEffect);
 	if (nullptr != pVfxEffect)
 		pVfxEffect->Set_OwnerStateIndex((_int)CStellia::STELLIA_RAGE3START_FADEOUT);
+
+	CRenderer::FOG_DESC desc;
+	::ZeroMemory(&desc, sizeof(desc));
+	{
+		desc.fFogDistanceValue = 0.3f;
+		desc.fFogHeightValue = 0.14f;
+		desc.fFogStartDepth = -0.650f;
+		desc.fFogStartDistance = 1.470f;
+		//desc.fFogHeightDensity = 0.110f;
+		desc.fFogDistanceDensity = 0.1f;
+		desc.fFogHeightDensity = 0.66f;
+	}
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogDesc(desc);
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogColor(Vec4(0.33, -0.12f, -0.19f, 1.0f));
 }
 
 void CStelliaState_Rage3Start_FadeOut::Tick_State(_float fTimeDelta)

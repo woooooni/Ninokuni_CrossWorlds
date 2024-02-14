@@ -21,13 +21,23 @@ cbuffer SkyBuffer
 struct VS_IN
 {
     float3 vPosition : POSITION;
+    float3 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
+    float3 vTangent : TANGENT;
 };
 
 struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
+    float3 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
+    float4 vProjPos : TEXCOORD1;
+    float3 vTangent : TANGENT;
+    float3 vBinormal : BINORMAL;
+    float4 vWorldPosition : TEXCOORD2;
+    
+    float3 vViewNormal : NORMAL1;
+    float3 vPositionView : POSITION;
 };
 
 VS_OUT SkyPlaneVertexShader(VS_IN input)
@@ -48,7 +58,15 @@ VS_OUT SkyPlaneVertexShader(VS_IN input)
 struct PS_IN
 {
     float4 vPosition : SV_POSITION;
+    float3 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
+    float4 vProjPos : TEXCOORD1;
+    float3 vTangent : TANGENT;
+    float3 vBinormal : BINORMAL;
+    float4 vWorldPosition : TEXCOORD2;
+    
+    float3 vViewNormal : NORMAL1;
+    float3 vPositionView : POSITION;
 };
 
 struct PS_OUT
@@ -59,6 +77,15 @@ struct PS_OUT
 Texture2D cloudTexture : register(t0);
 Texture2D perturbTexture : register(t1);
 
+
+SamplerState ClampState
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = CLAMP;
+    AddressV = CLAMP;
+    AddressW = CLAMP;
+};
+
 PS_OUT SkyPlanePixelShader(PS_IN input)
 {
     PS_OUT output = (PS_OUT) 0;
@@ -68,18 +95,18 @@ PS_OUT SkyPlanePixelShader(PS_IN input)
     
     input.vTexcoord.x = input.vTexcoord.x + fTranslation;
     
-    perturbValue = perturbTexture.Sample(LinearSampler, input.vTexcoord);
+    perturbValue = perturbTexture.Sample(LinearSampler, input.vTexcoord * 2);
     
     perturbValue = perturbValue * fScale;
     
-    perturbValue.xy = perturbValue.xy + input.vTexcoord.xy + fTranslation;
+    perturbValue.xy = perturbValue.xy + input.vTexcoord.xy;
     
-    cloudColor = cloudTexture.Sample(LinearSampler, perturbValue.xy);
+    cloudColor = cloudTexture.Sample(LinearSampler, input.vTexcoord * 2);
     
     cloudColor = cloudColor * fbrightness;
     
     output.vColor = cloudColor;
-    
+    //output.vColor = perturbValue;
     return output;
 }
 
@@ -95,17 +122,7 @@ PS_OUT WinterSkyPlanePixelShader(PS_IN input)
     float4 cloudColor;
     float4 cloudColor2;
     
-    //input.vTexcoord.x = input.vTexcoord.x + fTranslation;
-    
-    //perturbValue = perturbTexture.Sample(LinearSampler, input.vTexcoord);
-    
-    //perturbValue = perturbValue * fScale;
-    
-    //perturbValue.xy = perturbValue.xy + input.vTexcoord.xy + fTranslation;
-    
-  
-    // PerturbValue로 Aurora.
-    //cloudColor = WinterNoiseTexture.Sample(LinearSampler, input.vTexcoord * 2.0f);
+
     float noiseValue = WinterNoiseTexture2.Sample(LinearSampler, input.vTexcoord * 12.0).r;
     
    if(noiseValue > 0.9)
@@ -118,10 +135,10 @@ PS_OUT WinterSkyPlanePixelShader(PS_IN input)
 
 RasterizerState RS_SkyPlane
 {
-    FillMode = Solid;
+    FillMode = SOLID;
 
 	/* 앞면을 컬링하겠다. == 후면을 보여주겠다. */
-    CullMode = back;
+    CullMode = Back;
 
 	/* 앞면을 시계방향으로 쓰겠다. */
     FrontCounterClockwise = false;
@@ -143,7 +160,7 @@ technique11 CloudDefault
 {
     pass SkyPlane
     {
-        SetRasterizerState(RS_SkyPlane);
+        SetRasterizerState(RS_NoneCull);
         SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 

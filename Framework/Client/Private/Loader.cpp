@@ -1790,6 +1790,8 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SkySun", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/SkyDom/", L"Sun")))
 		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SkyPlane", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/SkyDom/", L"SkyPlane")))
+		return E_FAIL;
 #pragma endregion Sky
 
 #pragma region MiniGameMap_ProtoType

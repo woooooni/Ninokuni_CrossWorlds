@@ -58,6 +58,7 @@ float g_fRadialPower = 0.1f;
 
 // JunYeop
 Texture2DArray CascadeShadowMapTexture;
+Texture2D CascadeLightDepthMap;
 SamplerComparisonState PCFSampler
 {
     Filter = MIN_MAG_MIP_LINEAR;
@@ -96,6 +97,18 @@ cbuffer cbSpotLightConstants
     float fSpotCosOuterCone;
     float3 vSpotColor;
     float fSpotCosInnerConeRcp;
+};
+
+static const int CASCADE_SHADOW_NUM = 3;
+static const int PCF_KERNEL_COUNT = CASCADE_SHADOW_NUM * CASCADE_SHADOW_NUM;
+
+SamplerState clampPointSample
+{
+    Filter = MIN_MAG_MIP_POINT;
+    AddressU = CLAMP;
+    AddressV = CLAMP;
+    AddressW = CLAMP;
+    ComparisonFunc = ALWAYS;
 };
 
 struct VS_IN
@@ -246,6 +259,94 @@ float CalcCascadeShadowFactor(int cascadeIndex, float4 lightSpacePos)
     return shadow;
 }
 
+float2 texSize(Texture2D tex)
+{
+    float texWidth, texHeight;
+    tex.GetDimensions(texWidth, texHeight);
+    return float2(texWidth, texHeight);
+}
+
+float4 PS_CASCADE_TEST(float4 position)
+{
+    float4 color;
+    int nCascadeindex = 0;
+    int nCascadeFound = 0;
+    
+    float2 pcf_kernel[PCF_KERNEL_COUNT] =
+    {
+        float2(-1, -1), float2(0, -1), float2(1, -1),
+		float2(-1, 0), float2(0, 0), float2(1, 0),
+		float2(-1, 1), float2(0, 1), float2(1, 1),
+    };
+    
+    float2 lightDepthMapTexSize = 1.0 / texSize(CascadeLightDepthMap);
+    float2 lightDepthUV = float2(0.0, 0.0);
+    float4 lightSpaceWSPos;
+    float xyBiggerTexSize = max(lightDepthMapTexSize.x, lightDepthMapTexSize.y);
+    
+    for (int index = 0; index < CASCADE_SHADOW_NUM && 0 == nCascadeFound; ++index)
+    {
+        lightSpaceWSPos = mul(position, lightPV[index]);
+        lightDepthUV = (lightSpaceWSPos.xy / lightSpaceWSPos.w) * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+        
+        if(min(lightDepthUV.x, lightDepthUV.y) > xyBiggerTexSize && max(lightDepthUV.x, lightDepthUV.y) < 1.0f - xyBiggerTexSize)
+        {
+            nCascadeindex = index;
+            nCascadeFound = 1;
+        }
+    }
+    
+    for (int nKernelIndex = 0; nKernelIndex < PCF_KERNEL_COUNT; ++nKernelIndex)
+    {
+        float2 uv = float2(((lightDepthUV.x + (float) nCascadeindex) / (float) CASCADE_SHADOW_NUM), lightDepthUV.y)
+		+ pcf_kernel[nKernelIndex] * lightDepthMapTexSize;
+        float nearestDepth = CascadeLightDepthMap.SampleLevel(clampPointSample, uv, 0).r;
+        float z = lightSpaceWSPos.z / lightSpaceWSPos.w;
+        bool isShadowed = z > (nearestDepth + 0.003);
+        color += isShadowed ? float4(0.0, 0.0, 0.0, 1.0) : float4(1.0, 1.0, 1.0, 1.0);
+    }
+
+    color /= (float) PCF_KERNEL_COUNT;
+    return color;
+}
+
+float CalcShadowFactor(float4 position)
+{
+    for (int i = 0; i < 3; ++i)
+    {
+        float4 shadowPosH = mul(position, lightPV[i]);
+
+        shadowPosH.x = shadowPosH.x * 0.5f + 0.5f;
+        shadowPosH.y = shadowPosH.y * -0.5f + 0.5f;
+
+        if (shadowPosH.x < 0 || shadowPosH.x > 1 || shadowPosH.y < 0 || shadowPosH.y > 1)
+            continue;
+
+        shadowPosH.xyz /= shadowPosH.w;
+
+        float currentDepth = shadowPosH.z;
+        float bias = 0.01f;
+        float shadow = 0.0f;
+    
+        float3 samplePos = shadowPosH.xyz;
+        samplePos.z = i;
+        [unroll]
+        for (int x = -1; x <= 1; ++x)
+        {
+            for (int y = -1; y <= 1; ++y)
+            {
+                shadow += CascadeShadowMapTexture.SampleCmpLevelZero(PCFSampler, samplePos, currentDepth - bias, int2(x, y));
+            }
+        }
+    
+        shadow /= 9.0f;
+    
+        return shadow;
+    }
+    
+    return 1.0f;
+}
+
 float4 CascadeShadowPS(PS_IN input) : SV_Target
 {
     PS_OUT_LIGHT output = (PS_OUT_LIGHT) 0;
@@ -266,23 +367,25 @@ float4 CascadeShadowPS(PS_IN input) : SV_Target
     vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
     vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
     
-    //float4 cascadeLightPos[3];
+    float4 cascadeLightPos[3];
     float ShadowFactor = 0.0f;
     
-    //[unroll]
-    //for (int i = 0; i < 3; ++i)
-    //    cascadeLightPos[i] = mul(vWorldPos, lightPV[i]);
+    [unroll]
+    for (int i = 0; i < 3; ++i)
+        cascadeLightPos[i] = mul(vWorldPos, lightPV[i]);
     
-    //[unroll]
-    //for (int j = 0; j < 3; ++j)
-    //{
-    //    if (vDepthDesc.x <= cascadeEndClipSpace[j])
-    //    {
-    //        ShadowFactor = CalcCascadeShadowFactor(j, cascadeLightPos[j]);
-    //        break;
-    //    }
-    //}
-    ShadowFactor = CascadeShadow(vWorldPos.xyz);
+    [unroll]
+    for (int j = 0; j < 3; ++j)
+    {
+        if (vDepthDesc.x <= cascadeEndClipSpace[j])
+        {
+            ShadowFactor = CalcCascadeShadowFactor(j, cascadeLightPos[j]);
+            break;
+        }
+    }
+    //ShadowFactor = CascadeShadow(vWorldPos.xyz);
+    
+    //ShadowFactor = CalcShadowFactor(vWorldPos);
     
     return float4(ShadowFactor, ShadowFactor, ShadowFactor, 1.0f);
 }

@@ -14,7 +14,7 @@
 #include "Camera_Manager.h"
 #include "Light.h"
 #include "Item_Manager.h"
-#include "Skill_Manager.h"
+#include "Skill_Manager.h" 
 #include "UIDamage_Manager.h"
 #include "Grandprix_Manager.h"
 #include "Quest_Manager.h"
@@ -68,7 +68,7 @@ HRESULT CMainApp::Initialize()
 	
 	// Set Start Type
 	{
-		g_eStartLevel = LEVELID::LEVEL_LOGO;					/* 시작 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_TOOL;					/* 시작 레벨 타입 */
 
 		g_iStartQuestLevel = QUEST_LEVEL::QL_3_ICELAND;	/* 시작 퀘스트 레벨 */
 
@@ -410,7 +410,7 @@ HRESULT CMainApp::Ready_Prototype_Component()
 
 	/* For. Prototype_Component_Shader_SkyPlane */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Plane"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_SkyPlane.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements))))
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_SkyPlane.hlsl"), VTXMODEL_DECLARATION::Elements, VTXMODEL_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 	/* For. Prototype_Component_Shader_SkySun */
@@ -538,10 +538,10 @@ HRESULT CMainApp::Ready_Prototype_Component()
 
 	/* For.Prototype_Component_Sky */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Cloud"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/Cloud3.dds")))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/Cloud3.png")))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Cloud2"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/Cloud4.dds")))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/Cloud4.png")))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Aurora"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/aurora.png")))))

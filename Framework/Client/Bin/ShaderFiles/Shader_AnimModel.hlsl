@@ -763,8 +763,8 @@ VS_CASCADE_OUT VS_CASCADE(VS_IN input)
 
     vector vPosition = mul(vector(input.vPosition, 1.f), BoneMatrix);
     
-    //Out.vPosition = mul(vPosition, g_WorldMatrix);
-    Out.vPosition = vPosition;
+    Out.vPosition = mul(vPosition, g_WorldMatrix);
+    //Out.vPosition = vPosition;
     
     return Out;
 }

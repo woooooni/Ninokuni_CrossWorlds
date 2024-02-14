@@ -81,7 +81,9 @@ HRESULT CSkyPlane::Render()
 		if (FAILED(m_pTextureCom[PLANE_TEX::CLOUDE_PERT]->Bind_ShaderResource(m_pShaderCom, "perturbTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Begin(0)))
+	/*	if (FAILED(m_pShaderCom->Begin(0)))
+			return E_FAIL;*/
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, 0)))
 			return E_FAIL;
 	}
 	else if (m_strObjectTag == TEXT("Sky_Plane2"))
@@ -98,13 +100,15 @@ HRESULT CSkyPlane::Render()
 		if (FAILED(m_pTextureCom[PLANE_TEX::CLOUDE_AURA]->Bind_ShaderResource(m_pShaderCom, "WinterAuraTexture", 0)))
 			return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Begin(1)))
+		/*if (FAILED(m_pShaderCom->Begin(1)))
+			return E_FAIL;*/
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, 1)))
 			return E_FAIL;
 	}
 
 	
-	if (FAILED(m_pSkyPlaneCom->Render()))
-		return E_FAIL;
+	//if (FAILED(m_pSkyPlaneCom->Render()))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -123,8 +127,12 @@ HRESULT CSkyPlane::Ready_Components()
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Sky_Plane"),
-		TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pSkyPlaneCom))))
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Sky_Plane"),
+	//	TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pSkyPlaneCom))))
+	//	return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_SkyPlane"),
+		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
 	if (m_strObjectTag == TEXT("Sky_Plane"))
