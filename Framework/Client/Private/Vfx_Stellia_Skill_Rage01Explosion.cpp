@@ -29,13 +29,13 @@ HRESULT CVfx_Stellia_Skill_Rage01Explosion::Initialize_Prototype()
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
 	m_pFrameTriger[TYPE_E_PULL] = 4;
-	m_pPositionOffset[TYPE_E_PULL] = _float3(0.f, 1.1f, 0.f);
+	m_pPositionOffset[TYPE_E_PULL] = _float3(0.f, 0.f, 0.f);
 	m_pScaleOffset[TYPE_E_PULL] = _float3(20.f, 1.f, 20.f);
 	m_pRotationOffset[TYPE_E_PULL] = _float3(0.f, 0.f, 0.f);
 
 	/* 0. Warning Decal */
 	m_pFrameTriger[TYPE_D_DECAL_00] = 0;
-	m_pPositionOffset[TYPE_D_DECAL_00] = _float3(0.f, 0.f, 0.f);
+	m_pPositionOffset[TYPE_D_DECAL_00] = _float3(0.f, 0.25f, 0.f);
 	m_pScaleOffset[TYPE_D_DECAL_00] = _float3(100.f, 1.f, 100.f);
 	m_pRotationOffset[TYPE_D_DECAL_00] = _float3(0.f, 0.f, 0.f);
 
@@ -46,7 +46,7 @@ HRESULT CVfx_Stellia_Skill_Rage01Explosion::Initialize_Prototype()
 
 	/* 1. SafeZone Decal */
 	m_pFrameTriger[TYPE_D_DECAL_01] = 1;
-	m_pPositionOffset[TYPE_D_DECAL_01] = _float3(0.26f, 0.f, 0.f);
+	m_pPositionOffset[TYPE_D_DECAL_01] = _float3(0.26f, 0.3f, 0.f);
 	m_pScaleOffset[TYPE_D_DECAL_01] = _float3(20.f, 2.f, 19.5f);
 	m_pRotationOffset[TYPE_D_DECAL_01] = _float3(0.f, -90.f, 0.f);
 

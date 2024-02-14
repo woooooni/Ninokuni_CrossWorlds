@@ -13,6 +13,12 @@ protected:
 	virtual ~CUI_Stellia_GaugeBar() = default;
 
 public:
+	void Set_MaxGauge(_int iMaxGauge = 30) {
+		m_iMaxGauge = iMaxGauge;
+		m_iCurGauge = 0;
+
+		Set_Active(true);
+	}
 	void Set_CurGauge(_int iGauge) { m_iCurGauge = iGauge; }
 
 public:

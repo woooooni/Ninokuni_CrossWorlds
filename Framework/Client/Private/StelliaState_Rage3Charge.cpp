@@ -15,6 +15,8 @@
 #include "Particle_Manager.h"
 #include "Particle.h"
 
+#include "UI_Stellia_GaugeBar.h"
+
 CStelliaState_Rage3Charge::CStelliaState_Rage3Charge(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -25,6 +27,7 @@ HRESULT CStelliaState_Rage3Charge::Initialize(const list<wstring>& AnimationList
 	__super::Initialize(AnimationList);
 
 	m_fSlepTime = 0.05f;
+	m_fDecreaseTime = 0.4f;
 
 	m_fLimitTime = 6.f;
 	m_fShakeTime = 0.5f;
@@ -40,6 +43,7 @@ void CStelliaState_Rage3Charge::Enter_State(void* pArg)
 	m_fAccSlepTime = 0.f;
 	m_fAccClickTime = 0.f;
 	m_fAccShakeTime = 0.5f;
+	m_fAccDecreaseTime = 0.f;
 
 	m_bIsStartEvent = false;
 	m_bIsTimeSlep = false;
@@ -85,6 +89,9 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 					GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 1.f);
 
 					m_pStellia->Get_TargetDesc().pTragetTransform->Set_Position(m_pTransformCom->Get_Position() + m_pTransformCom->Get_Look() * 3.f);
+					
+					// ui 띄우기
+					m_pStellia->Get_StelliaGaugeBar()->Set_MaxGauge(30);
 				}
 			}
 		}
@@ -108,6 +115,9 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		// 파훼 실패(시간 초과)
 		if (m_fAccClickTime >= m_fLimitTime) // 막고있는 상태 해제
 		{
+			// ui 지우기
+			m_pStellia->Get_StelliaGaugeBar()->Set_Active(false);
+
 			Delete_GuardEffect();
 			Create_ResultEffect(false);
 
@@ -149,6 +159,9 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		// 파훼 성공
 		if (m_iClickPower >= m_iClickDest) // 막고있는 상태 해제 // 클릭 횟수
 		{
+			// ui 지우기
+			m_pStellia->Get_StelliaGaugeBar()->Set_Active(false);
+
 			Delete_GuardEffect();
 			Create_ResultEffect(true);
 
@@ -171,6 +184,9 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		// 파훼 실패(중간에 가드 해제)
 		else if (m_pPlayer->Get_CharacterStateCom()->Get_CurrState() != CCharacter::BATTLE_GUARD) // 막고있는 상태 해제
 		{
+			// ui 지우기
+			m_pStellia->Get_StelliaGaugeBar()->Set_Active(false);
+
 			Delete_GuardEffect();
 			Create_ResultEffect(false);
 
@@ -190,6 +206,19 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 			CSound_Manager::GetInstance()->Play_Sound(TEXT("Impact_Metal_Bell_1_1.ogg"), CHANNELID::SOUND_UI2, 1.f, true);
 			m_iClickPower += 1;
 		}
+
+		m_fAccDecreaseTime += fTimeDelta;
+		if (m_fAccDecreaseTime >= m_fDecreaseTime)
+		{
+			if (m_iClickPower > 0)
+			{
+				m_iClickPower -= 1;
+				m_fAccDecreaseTime = m_fDecreaseTime - m_fAccDecreaseTime;
+			}
+		}
+
+		// ui
+		m_pStellia->Get_StelliaGaugeBar()->Set_CurGauge(m_iClickPower);
 	}
 	//else
 		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRage3AroundSpeed, fTimeDelta);
@@ -234,17 +263,22 @@ void CStelliaState_Rage3Charge::Create_GuardEffect()
 	WorldMatrix.r[CTransform::STATE_UP] = vUp * vScale.y;
 	WorldMatrix.r[CTransform::STATE_LOOK] = vLook * vScale.z;
 
+	CGameObject* pPlayer = m_pStellia->Get_TargetDesc().pTarget;
+
+	if (pPlayer == nullptr)
+		return;
+
 	if (nullptr == m_pPlayerGuard)
 	{
 		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_Skill_Rage03Charge_FrontLine_Player"),
-			WorldMatrix, _float3(0.f, 0.1f, -0.1f), _float3(10.f, 10.f, 15.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pPlayerGuard, false);
+			WorldMatrix, _float3(0.f, 0.1f, -0.1f), _float3(10.f, 10.f, 15.f), _float3(0.f, 0.f, 0.f), pPlayer, &m_pPlayerGuard, false);
 		Safe_AddRef(m_pPlayerGuard);
 	}
 
 	if (nullptr == m_pSpark_Player)
 	{
 		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Rage03Charge_FrontLine_Player_Circle"),
-			WorldMatrix, _float3(0.f, 1.1f, 2.2f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pSpark_Player, false);
+			WorldMatrix, _float3(0.f, 1.1f, 2.2f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), pPlayer, &m_pSpark_Player, false);
 		Safe_AddRef(m_pSpark_Player);
 	}
 
@@ -259,7 +293,7 @@ void CStelliaState_Rage3Charge::Create_GuardEffect()
 		WorldMatrix.r[CTransform::STATE_LOOK] = -vLook * vScale.z;
 
 		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Rage03Charge_FrontLine_Stellia_Circle"),
-			WorldMatrix, _float3(0.f, 1.1f, -1.8f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pSpark_Monster, false);
+			WorldMatrix, _float3(0.f, 1.1f, -1.8f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), pPlayer, &m_pSpark_Monster, false);
 		Safe_AddRef(m_pSpark_Monster);
 	}
 }

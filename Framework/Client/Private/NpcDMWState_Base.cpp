@@ -9,6 +9,8 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Particle_Manager.h"
+
 _uint CNpcDMWState_Base::m_iAtkIndex = 0;
 
 CNpcDMWState_Base::CNpcDMWState_Base(CStateMachine* pStateMachine)
@@ -32,6 +34,7 @@ HRESULT CNpcDMWState_Base::Initialize(const list<wstring>& AnimationList)
 	m_vecAtkState.push_back(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
 	// m_vecAtkState.push_back(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_LASER);
 
+	m_fCreateParticleTime = 0.1f;
 
 	return S_OK;
 }
@@ -43,6 +46,11 @@ void CNpcDMWState_Base::Enter_State(void* pArg)
 
 void CNpcDMWState_Base::Tick_State(_float fTimeDelta)
 {
+	if (m_pWitch != nullptr)
+	{
+		GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fCreateParticleTime, CUtils::Random_Float(0.2f, 0.4f), fTimeDelta, TEXT("Particle_Witch_IdleSparkle"), m_pWitch, _float3(CUtils::Random_Float(-0.1f, 0.1f), CUtils::Random_Float(0.2f, 0.4f), CUtils::Random_Float(-0.1f, 0.1f)));
+	}
+
 	if (m_pStellia == nullptr)
 	{
 		m_pStellia = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, TEXT("Stellia"));

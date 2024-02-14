@@ -57,6 +57,7 @@ protected:
 
 private:
 	_float m_fTime = 0.f;
+	_float m_fCreateParticleTime = 0.f;
 
 public:
 	virtual void Free() override;

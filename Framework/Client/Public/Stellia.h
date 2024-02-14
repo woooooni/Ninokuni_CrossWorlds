@@ -61,6 +61,10 @@ public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo) override;
 	virtual void Set_SkillTree() override;
 
+	/* 레이지1 패턴 */
+	void Set_Rage01_UI(_bool IsTrue);
+
+
 	/* 레이지2 패턴 */
 	void Clear_CrystalBingoCount() { m_iCrystalBingoCount = 0; }
 
@@ -90,14 +94,17 @@ public:
 	HRESULT Create_Crystals();
 	HRESULT Clear_Crystals();
 
+	class CUI_Stellia_Timer* Get_StelliaTimer() { return m_pUI_Timer; }
+	class CStellia_Crystal_Controller* Get_CrystalController() const { return m_pCrystalController; }
+	void Set_CrystalTurnData();
+
 	// 레이지 3
 	_bool Get_IsPlayerGuardEvent() { return m_bIsPlayerGuardEvent; }
 	void  Set_IsPlayerGuardEvent(_bool bIsGuardEvent) { m_bIsPlayerGuardEvent = bIsGuardEvent; }
 	
 	Vec4 Get_Rage3StartPos() { return m_vRage3StartPos; }
 
-	class CStellia_Crystal_Controller* Get_CrystalController() const { return m_pCrystalController; }
-	void Set_CrystalTurnData();
+	class CUI_Stellia_GaugeBar* Get_StelliaGaugeBar() { return m_pUI_GaugeBar; }
 
 	// 스텔리아 무적 
 	_bool Get_IsStelliaHit() { return m_bIsStelliaHit; }
@@ -110,6 +117,7 @@ public:
 
 	// 스텔리아 텍스쳐
 	void SetTexture_Berserk() { m_eTextureType = STELLIA_TEXTURE_BERSERK; }
+	
 
 private:
 	class CTexture* m_pTextureCom = nullptr;
@@ -137,6 +145,11 @@ private:
 
 	// 텍스처
 	STELLIA_TEXTURE m_eTextureType = STELLIA_TEXTURE_NORMAL;
+
+	// UI
+	class CUI_Stellia_DamageBar* m_pUI_DamageBar = nullptr;
+	class CUI_Stellia_Timer* m_pUI_Timer = nullptr;
+	class CUI_Stellia_GaugeBar* m_pUI_GaugeBar = nullptr;
 
 public:
 	static CStellia* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);
