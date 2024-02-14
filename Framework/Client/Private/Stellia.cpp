@@ -182,8 +182,8 @@ HRESULT CStellia::Initialize(void* pArg)
 
 
 	// WH : Gauge가 필요한 State의 Start에 넣어줌. (클릭 이벤트)
-		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Stellia_GaugeBar"))))
-			return E_FAIL;
+//		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Stellia_GaugeBar"))))
+//			return E_FAIL;
 
 	return S_OK;
 }
