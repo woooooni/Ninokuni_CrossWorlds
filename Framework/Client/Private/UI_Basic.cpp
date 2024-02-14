@@ -119,6 +119,8 @@ HRESULT CUI_Basic::Initialize(void* pArg)
 	if (UILOBBY_DICE == m_eType || UIQUEST_ACCEPT == m_eType || UIQUEST_FINISH == m_eType)
 		m_bUseMouse = true;
 
+	m_iTextureIndex = 0;
+
 	return S_OK;
 }
 
@@ -212,6 +214,8 @@ void CUI_Basic::Tick(_float fTimeDelta)
 				}
 			}
 		}
+		else if (m_eType == WORLDMAP_ICON)
+			Set_WorldmapIcon();
 
 		__super::Tick(fTimeDelta);
 	}
@@ -523,7 +527,7 @@ HRESULT CUI_Basic::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
 		return E_FAIL;
 
 	return S_OK;
