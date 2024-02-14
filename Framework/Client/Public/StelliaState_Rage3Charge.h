@@ -32,13 +32,15 @@ private:
 	_float m_fAccSlepTime = 0.f;
 	_float m_fSlepTime = 0.f;
 
-
 	// 클릭 액션
 	_int m_iClickPower = 0;
 	_int m_iClickDest = 0;
 
 	_float m_fAccClickTime = 0.f;
 	_float m_fLimitTime = 0.f;
+
+	_float m_fAccDecreaseTime = 0.f;
+	_float m_fDecreaseTime = 0.f;
 
 	// 클릭 액션 시 사용할 카메라 쉐이크 시간
 	_float m_fAccShakeTime = 0.f;

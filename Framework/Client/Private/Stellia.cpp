@@ -88,6 +88,8 @@
 #include "Player.h"
 
 #include "UI_Stellia_Timer.h"
+#include "UI_Stellia_DamageBar.h"
+#include "UI_Stellia_GaugeBar.h"
 
 CStellia::CStellia(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CBoss(pDevice, pContext, strObjectTag, tStat)
@@ -152,15 +154,36 @@ HRESULT CStellia::Initialize(void* pArg)
 //		return E_FAIL;
 	// fMaxSec를 초과하면 Set_Dead 처리됩니다. 시간이 다 지나기 전 Timer가 더 이상 필요 없을때는 Set_Dead 처리하세요.
 
-	// WH : Damage가 필요한 State의 Start에 넣어줌.
-//		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Stellia_DamageBar"))))
-//			return E_FAIL;
-	// Damage가 다 자면 1초 후에 삭제되는 옵션을 넣어두었습니다.
-	// Max Damage와 관계 없이 원하는 때에 삭제하고 싶다면 Clone GameObject하여 사용하세요.
+	// WH : Damage가 필요한 State의 Start에 넣어줌.m_pUI_DamageBar
+	CGameObject* pDamage = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Stellia_DamageBar"), LAYER_UI);
+	if (nullptr == pDamage)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Stellia_DamageBar*>(pDamage))
+		return E_FAIL;
+	m_pUI_DamageBar = dynamic_cast<CUI_Stellia_DamageBar*>(pDamage);
+	
+	// Timer
+	CUI_Stellia_Timer::TIMER_DESC TimerDesc = {};
+	TimerDesc.fMaxSec = 30.f; // 최대 초
+	CGameObject* pTimer = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Stellia_Timer"), LAYER_UI, &TimerDesc);
+	if (nullptr == pTimer)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Stellia_Timer*>(pTimer))
+		return E_FAIL;
+	m_pUI_Timer = dynamic_cast<CUI_Stellia_Timer*>(pTimer);
+
+	// ButtonUI
+	CGameObject* pGauge = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Stellia_GaugeBar"), LAYER_UI);
+	if (nullptr == pGauge)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Stellia_GaugeBar*>(pGauge))
+		return E_FAIL;
+	m_pUI_GaugeBar = dynamic_cast<CUI_Stellia_GaugeBar*>(pGauge);
+
 
 	// WH : Gauge가 필요한 State의 Start에 넣어줌. (클릭 이벤트)
-//	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Stellia_GaugeBar"))))
-//		return E_FAIL;
+	//	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Stellia_GaugeBar"))))
+	//		return E_FAIL;
 
 	return S_OK;
 }
@@ -171,7 +194,7 @@ void CStellia::Tick(_float fTimeDelta)
 	m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
 
 	// 보스가 살아있는 동안은 미니맵을 끈다.
-	CUI_Manager::GetInstance()->OnOff_MiniMap(false);
+	// CUI_Manager::GetInstance()->OnOff_MiniMap(false);
 
 	/* 최초 등장 대기 시간 */
 	//if (!m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_INTRO])
@@ -217,6 +240,13 @@ void CStellia::Tick(_float fTimeDelta)
 
 	if (nullptr != m_pCrystalController)
 		m_pCrystalController->Tick(fTimeDelta);
+
+	if(m_pUI_DamageBar != nullptr)
+		m_pUI_DamageBar->Tick(fTimeDelta);
+	if (m_pUI_Timer != nullptr)
+		m_pUI_Timer->Tick(fTimeDelta);
+	if (m_pUI_GaugeBar != nullptr)
+		m_pUI_GaugeBar->Tick(fTimeDelta);
 }
 
 void CStellia::LateTick(_float fTimeDelta)
@@ -226,6 +256,13 @@ void CStellia::LateTick(_float fTimeDelta)
 #endif
 
 	__super::LateTick(fTimeDelta);
+
+	if (m_pUI_DamageBar != nullptr)
+		m_pUI_DamageBar->LateTick(fTimeDelta);
+	if (m_pUI_Timer != nullptr)
+		m_pUI_Timer->LateTick(fTimeDelta);
+	if (m_pUI_GaugeBar != nullptr)
+		m_pUI_GaugeBar->LateTick(fTimeDelta);
 }
 
 HRESULT CStellia::Render()
@@ -429,7 +466,11 @@ void CStellia::On_Damaged(const COLLISION_INFO& tInfo)
 
 	// 레이지 1 상태일 때 누적 데미지 증가하기.
 	if (m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_RAGE])
+	{
 		m_iAccDamage += iCurHp - m_tStat.fHp;
+		if(m_pUI_DamageBar != nullptr && true == m_pUI_DamageBar->Get_Active())
+			m_pUI_DamageBar->Set_CurDamage(m_iAccDamage); // 데미지값을 전해준다.
+	}
 }
 
 void CStellia::Set_SkillTree()
@@ -440,6 +481,14 @@ void CStellia::Set_SkillTree()
 	{
 		dynamic_cast<CStelliaState_Base*>(iter.second)->Init_Pattern();
 	}
+}
+
+void CStellia::Set_Rage01_UI(_bool IsTrue)
+{
+	if(IsTrue)
+		m_pUI_DamageBar->Set_Active(true);
+	else
+		m_pUI_DamageBar->Set_Active(false);
 }
 
 HRESULT CStellia::Ready_Components()
@@ -774,7 +823,7 @@ HRESULT CStellia::Ready_States()
 	m_pStateCom->Add_State(STELLIA_DEAD, CStelliaState_Dead::Create(m_pStateCom, strAnimationName));
 
 	m_pStateCom->Change_State(STELLIA_SPAWN);
-	// m_pStateCom->Change_State(STELLIA_COMBATIDLE);
+	//m_pStateCom->Change_State(STELLIA_COMBATIDLE);
 
 	return S_OK;
 }
@@ -901,8 +950,12 @@ CGameObject* CStellia::Clone(void* pArg)
 void CStellia::Free()
 {
 	__super::Free();
-
 	Safe_Release(m_pTextureCom);
+
 	Safe_Delete(m_pCrystalController);
+
+	Safe_Release(m_pUI_DamageBar);
+	Safe_Release(m_pUI_Timer);
+
 }
 

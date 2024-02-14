@@ -8,6 +8,8 @@
 #include "Stellia_Crystal_Destructible.h"
 #include "Effect.h"
 
+#include "UI_Stellia_Timer.h"
+
 CStellia_Crystal_Controller::CStellia_Crystal_Controller()
 {
 	m_fRespawnTime = 3.f;
@@ -36,6 +38,8 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 			m_fAccLimitTime += fTimeDelta;
 			if (m_fAccLimitTime >= m_fLimitTime)
 			{
+				m_pStellia->Get_StelliaTimer()->Set_Active(false);
+
 				m_pStellia->Set_CrystalFailCount(1);
 				m_pStellia->Clear_CrystalBingoCount();
 				Clear_Crystals();
@@ -45,6 +49,8 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 
 		if (m_pStellia->Get_CrystalBingoCount() >= 2)
 		{
+			m_pStellia->Get_StelliaTimer()->Set_Active(false);
+
 			// 타임 슬립 시작.
 			//if (!m_bIsTimeSlep)
 			//{
@@ -75,6 +81,8 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 
 		if (m_pStellia->Get_CrystalSuccessCount() == 3)
 		{
+			m_pStellia->Get_StelliaTimer()->Set_Active(false);
+
 			if (m_pOriginalCrystal != nullptr)
 				Safe_Release(m_pOriginalCrystal);
 
@@ -93,6 +101,8 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 		}
 		else if (m_pStellia->Get_CrystalFailCount() == 3)
 		{
+			m_pStellia->Get_StelliaTimer()->Set_Active(false);
+
 			if (m_pOriginalCrystal != nullptr)
 				Safe_Release(m_pOriginalCrystal);
 
@@ -129,7 +139,7 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 
 HRESULT CStellia_Crystal_Controller::Create_Crystals(CStellia* pStellia)
 {
-	CSound_Manager::GetInstance()->Play_Sound(TEXT("CreateCrystal.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, .75f, true);
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("CreateCrystal.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.f, false);
 
 	m_bIsProgress = true;
 
@@ -139,6 +149,9 @@ HRESULT CStellia_Crystal_Controller::Create_Crystals(CStellia* pStellia)
 	m_iOriginalType = GI->RandomInt(CRYSTAL_AURA, CRYSTAL_GOLD);
 	m_pStellia = pStellia;
 	m_vOriginPos = m_pStellia->Get_OriginPos();
+
+	m_pStellia->Get_StelliaTimer()->Set_Timer(30.f);
+	m_pStellia->Get_StelliaTimer()->Set_Active(true);
 
 	/* 정답 크리스탈 생성 */
 	CGameObject* pGameObject = nullptr;
@@ -250,6 +263,8 @@ HRESULT CStellia_Crystal_Controller::Create_Crystals(CStellia* pStellia)
 
 HRESULT CStellia_Crystal_Controller::Clear_Crystals()
 {
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("CreateCrystal.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.f, false);
+
 	for (auto& pCrystal : m_pCrystals)
 	{
 		pCrystal->Set_Dead(true);

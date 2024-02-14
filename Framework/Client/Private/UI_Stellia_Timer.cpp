@@ -55,7 +55,7 @@ HRESULT CUI_Stellia_Timer::Initialize(void* pArg)
 	m_fMaxSecond = TimerDesc.fMaxSec;
 	m_fCurSecond = m_fMaxSecond;
 
-	m_bActive = true;
+	m_bActive = false;
 
 	return S_OK;
 }

@@ -105,6 +105,7 @@ void CStelliaState_Base::Rage1_Tick(_float fTimeDelta)
 		if (m_pStellia->Get_AccDamage() >= m_pStellia->Get_DestDamage())
 		{
 			_float fStunTime = 15.f;
+			m_pStellia->Set_Rage01_UI(false);
 			m_pStellia->Reset_RageAccDamage();
 			m_pStellia->Set_Bools(CStellia::BOSS_BOOLTYPE::BOSSBOOL_RAGE, false);
 			m_pStateMachineCom->Change_State(CStellia::STELLIA_COUNTERSTART, &fStunTime);

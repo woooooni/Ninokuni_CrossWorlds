@@ -13,9 +13,15 @@ protected:
 	virtual ~CUI_Stellia_DamageBar() = default;
 
 public:
+	virtual void Set_Active(_bool bActive) override;
 	void Add_Damage(_int iDamage) {
 		m_iCurDamage += iDamage;
 	};
+	void Set_CurDamage(_int iCurDamage) { m_iCurDamage = iCurDamage; }
+	void Set_MaxDamage(_int iMaxDamage) {
+		m_iMaxDamage = iMaxDamage;
+		m_iCurDamage = 0;
+	}
 
 public:
 	virtual HRESULT	Initialize_Prototype();

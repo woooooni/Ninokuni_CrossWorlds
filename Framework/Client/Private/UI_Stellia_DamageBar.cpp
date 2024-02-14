@@ -12,6 +12,16 @@ CUI_Stellia_DamageBar::CUI_Stellia_DamageBar(const CUI_Stellia_DamageBar& rhs)
 {
 }
 
+void CUI_Stellia_DamageBar::Set_Active(_bool bActive)
+{
+	if(true == bActive)
+	{
+		m_iCurDamage = 0;
+	}
+
+	m_bActive = bActive;
+}
+
 HRESULT CUI_Stellia_DamageBar::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -39,7 +49,7 @@ HRESULT CUI_Stellia_DamageBar::Initialize(void* pArg)
 	m_iMaxDamage = 50000;
 	m_iCurDamage = 0;
 
-	m_bActive = true;
+	m_bActive = false;
 
 	return S_OK;
 }

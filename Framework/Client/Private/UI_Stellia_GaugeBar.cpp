@@ -48,11 +48,10 @@ HRESULT CUI_Stellia_GaugeBar::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_fAlpha = 0.9f;
 	m_iMaxGauge = 30;
 	m_iCurGauge = 0;
-
-	m_bActive = true;
+	m_fAlpha = 0.8f;
+	m_bActive = false;
 
 	return S_OK;
 }
@@ -72,6 +71,12 @@ void CUI_Stellia_GaugeBar::Tick(_float fTimeDelta)
 				m_bDisappear = true;
 				Set_Active(false);
 			}
+		}
+
+		if (m_iCurGauge >= m_iMaxGauge)
+		{
+			m_iCurGauge = m_iMaxGauge;
+			Set_Active(false);
 		}
 
 		__super::Tick(fTimeDelta);

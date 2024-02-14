@@ -55,6 +55,8 @@ void CStelliaState_Rage1Start::Exit_State()
 {
 	// 방어막 생성
 	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage01Shield"), m_pTransformCom->Get_WorldMatrix(), m_pStellia);
+	
+	m_pStellia->Set_Rage01_UI(true);
 }
 
 CStelliaState_Rage1Start* CStelliaState_Rage1Start::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
