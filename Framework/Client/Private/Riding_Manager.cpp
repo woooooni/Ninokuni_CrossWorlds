@@ -14,6 +14,7 @@
 #include "Grandprix_ItemBox.h"
 
 #include "Grandprix_Engineer.h"
+#include "Particle_Manager.h"
 
 IMPLEMENT_SINGLETON(CRiding_Manager)
 
@@ -129,18 +130,26 @@ HRESULT CRiding_Manager::Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff)
 				GI->Stop_Sound(CHANNELID::SOUND_VEHICLE);
 				GI->Play_Sound(TEXT("Veh_Udadak_Hello_1.mp3"), CHANNELID::SOUND_VEHICLE,
 					GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+
+				// Å» ¶§
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Change_Ride"), pCharacter->Get_CharacterTransformCom()->Get_WorldMatrix(), 
+					_float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 			}
 		}
 		else
 		{
 			if (pCharacter == m_pUdadak->Get_Rider())
 			{
-				m_pUdadak->Set_Aboard(false);
+				m_pUdadak->Set_Aboard(false); 
 				m_bIsRiding = false;
 
 				GI->Stop_Sound(CHANNELID::SOUND_VEHICLE);
 				GI->Play_Sound(TEXT("Veh_Udadak_Bye_1.mp3"), CHANNELID::SOUND_VEHICLE,
 					GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+
+				// ³»¸± ¶§
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Change_Ride"), pCharacter->Get_CharacterTransformCom()->Get_WorldMatrix(),
+					_float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 			}
 		}
 		break;
