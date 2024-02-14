@@ -46,7 +46,7 @@ void CNpcDMWState_VulcanGun_Ready::Tick_State(_float fTimeDelta)
 		if (m_pStellia->Get_Component_Model()->Get_CurrAnimationFrame() > 45)
 		{
 			m_pStellia->Get_Component_Model()->Set_Stop_Animation(true);
-
+		
 			//m_pStellia->Get_Component_Rigidbody()->Set_Ground(true);
 			//m_pStellia->Get_Component_Rigidbody()->Set_Use_Gravity(false);
 			//m_pStellia->Get_Component<CPhysX_Controller>(TEXT("Com_Controller"))->Set_Active(false);

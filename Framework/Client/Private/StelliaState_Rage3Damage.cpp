@@ -29,6 +29,8 @@ void CStelliaState_Rage3Damage::Enter_State(void* pArg)
 	m_fTime = 0.f;
 
 	m_bIsTimeSlep = false;
+
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("Stellia_Counter.ogg"), CHANNELID::SOUND_BOSS, 1.f, false);
 }
 
 void CStelliaState_Rage3Damage::Tick_State(_float fTimeDelta)

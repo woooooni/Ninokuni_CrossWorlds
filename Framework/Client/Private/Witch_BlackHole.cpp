@@ -51,7 +51,7 @@ HRESULT CWitch_BlackHole::Initialize(void* pArg)
 
 	m_fActiveTime = 0.5f;
 
-	CSound_Manager::GetInstance()->Play_Sound(TEXT("Witch_BlackHole.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, .75f, true);
+	CSound_Manager::GetInstance()->Play_Sound(TEXT("Witch_BlackHole.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, .75f, false);
 
 	return S_OK;
 }
@@ -73,7 +73,7 @@ void CWitch_BlackHole::Tick(_float fTimeDelta)
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 			m_bIsBombCreate = true;
 
-			CSound_Manager::GetInstance()->Play_Sound(TEXT("Witch_BlackHoleBomb.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, .75f, true);
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Witch_BlackHoleBomb.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, .75f, false);
 		}
 	}
 

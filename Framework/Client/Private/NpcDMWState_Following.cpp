@@ -28,6 +28,8 @@ void CNpcDMWState_Following::Enter_State(void* pArg)
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 	m_pWitch->Set_IsFollowing(true);
 
+	m_vCurPos = m_pTransformCom->Get_Position();
+
 	m_fAccTime = 0.f;
 }
 

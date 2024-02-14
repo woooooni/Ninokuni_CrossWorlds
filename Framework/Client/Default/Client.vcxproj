@@ -449,6 +449,7 @@
     <ClInclude Include="..\Public\Vfx_Witch_Marble_Hit.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_BlackHole_Bomb.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_BlackHole_Drain.h" />
+    <ClInclude Include="..\Public\Vfx_Witch_Skill_Laser.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_Laser_Warning.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Marble.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_Rage01QuadBlackHole_Bomb.h" />
@@ -1572,6 +1573,7 @@
     <ClCompile Include="..\Private\Vfx_Witch_Marble_Hit.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_BlackHole_Bomb.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_BlackHole_Drain.cpp" />
+    <ClCompile Include="..\Private\Vfx_Witch_Skill_Laser.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_Laser_Warning.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Marble.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_Rage01QuadBlackHole_Bomb.cpp" />

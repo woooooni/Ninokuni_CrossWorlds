@@ -19,6 +19,14 @@ public:
 	virtual void Exit_State();
 
 private:
+	// 최초 충돌
+	_bool m_bIsStartEvent = false;
+	_bool m_bIsTimeSlep = false;
+	_bool m_bIsSlow = false;
+
+	_float m_fAccSlepTime = 0.f;
+	_float m_fSlepTime = 0.f;
+
 	// 클릭 액션
 	_int m_iClickPower = 0;
 	_int m_iClickDest = 0;

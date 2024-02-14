@@ -42,7 +42,7 @@ HRESULT CVfx_Witch_Skill_BlackHole_Drain::Initialize_Prototype()
 
 	// 1_2
 	m_pFrameTriger[TYPE_D_WARNING] = 0;
-	m_pPositionOffset[TYPE_D_WARNING] = _float3(0.f, -2.3f, 0.f);
+	m_pPositionOffset[TYPE_D_WARNING] = _float3(0.f, -0.5f, 0.f);
 	m_pScaleOffset[TYPE_D_WARNING] = _float3(4.f, 2.f, 4.f);
 	m_pRotationOffset[TYPE_D_WARNING] = _float3(0.f, 0.f, 0.f);
 

@@ -28,10 +28,15 @@ HRESULT CVfx_Stellia_Skill_Rage01Explosion::Initialize_Prototype()
 	m_pScaleOffset = new _float3[m_iMaxCount];
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
+	m_pFrameTriger[TYPE_E_PULL] = 4;
+	m_pPositionOffset[TYPE_E_PULL] = _float3(0.f, 1.1f, 0.f);
+	m_pScaleOffset[TYPE_E_PULL] = _float3(20.f, 1.f, 20.f);
+	m_pRotationOffset[TYPE_E_PULL] = _float3(0.f, 0.f, 0.f);
+
 	/* 0. Warning Decal */
 	m_pFrameTriger[TYPE_D_DECAL_00] = 0;
 	m_pPositionOffset[TYPE_D_DECAL_00] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_D_DECAL_00] = _float3(50.f, 1.f, 50.f);
+	m_pScaleOffset[TYPE_D_DECAL_00] = _float3(100.f, 1.f, 100.f);
 	m_pRotationOffset[TYPE_D_DECAL_00] = _float3(0.f, 0.f, 0.f);
 
 	m_pFrameTriger[TYPE_P_CIRCLES] = 0;
@@ -90,7 +95,14 @@ void CVfx_Stellia_Skill_Rage01Explosion::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
-		if (m_iCount == TYPE_D_DECAL_00 && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_DECAL_00])
+		if (m_iCount == TYPE_E_PULL && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_PULL])
+		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_BigBang_Smoke_In"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_PULL], m_pScaleOffset[TYPE_E_PULL], m_pRotationOffset[TYPE_E_PULL], nullptr, &m_pSmokeIn_01, false);
+			Safe_AddRef(m_pSmokeIn_01);
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_D_DECAL_00 && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_DECAL_00])
 		{
 			m_WorldMatrix = m_pOwnerObject->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_WorldFloat4x4();
 
@@ -210,6 +222,12 @@ CGameObject* CVfx_Stellia_Skill_Rage01Explosion::Clone(void* pArg)
 void CVfx_Stellia_Skill_Rage01Explosion::Free()
 {
 	__super::Free();
+
+	if (nullptr != m_pSmokeIn_01)
+	{
+		m_pSmokeIn_01->Set_UVLoop(1);
+		Safe_Release(m_pSmokeIn_01);
+	}
 
 	if (nullptr != m_pSpringUp)
 	{

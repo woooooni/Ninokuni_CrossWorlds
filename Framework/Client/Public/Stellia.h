@@ -5,6 +5,8 @@ BEGIN(Client)
 class CStellia final : public CBoss
 {
 public:
+	enum STELLIA_TEXTURE { STELLIA_TEXTURE_NORMAL, STELLIA_TEXTURE_BERSERK, STELLIA_TEXTURE_END };
+
 	enum STELLIA_STATE {
 		STELLIA_SPAWN, STELLIA_SPAWNIDLE, STELLIA_SPAWNSTAND,
 		STELLIA_COMBATIDLE,
@@ -105,7 +107,13 @@ public:
 	Vec4 Get_OriginLook() const { return m_vOriginLook; }
 
 	void Set_DissolveDuration(const _float fDuration) { m_fDissolveDuration = fDuration; }
+
+	// 스텔리아 텍스쳐
+	void SetTexture_Berserk() { m_eTextureType = STELLIA_TEXTURE_BERSERK; }
+
 private:
+	class CTexture* m_pTextureCom = nullptr;
+
 	// 레이지 1
 	_int m_iAccDamage = 0;
 	_int m_iDestDamage = 0;
@@ -126,6 +134,9 @@ private:
 
 	// 테스트용 애니메이션 넘기기
 	_int m_iCurAnimIndex = 0;
+
+	// 텍스처
+	STELLIA_TEXTURE m_eTextureType = STELLIA_TEXTURE_NORMAL;
 
 public:
 	static CStellia* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);

@@ -2143,6 +2143,10 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia_Crystal", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/StelliaCrystal/", L"StelliaCrystal")))
 		return E_FAIL;
 	/*Texture*/
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Stellia"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Monster/Stellia/T_Stellia%d.png"), 2))))
+		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Stellia_Crystals"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Monster/StelliaCrystal/T_GachaCommonCrystal%d_Glass.png"), 3))))
 		return E_FAIL;

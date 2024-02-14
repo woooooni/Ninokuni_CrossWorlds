@@ -39,6 +39,11 @@ void CStelliaState_Berserk::Enter_State(void* pArg)
 
 void CStelliaState_Berserk::Tick_State(_float fTimeDelta)
 {
+	if (m_pModelCom->Get_CurrAnimationFrame() >= 57)
+	{
+		m_pStellia->SetTexture_Berserk();
+	}
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		//Enter_State();
