@@ -14,7 +14,7 @@ public:
 		TARGETARROW_LEFT, TARGETARROW_RIGHT, COSTUME_INSTALL,
 		WORLDMAP_ICON,
 		UISTATIC_TITLELINE, UISTATIC_MENUDECO_L, UISTATIC_MENUDECO_R,
-		VEHICLE_FX,
+		VEHICLE_FX, UI_ENDING,
 		UIBASIC_END };
 
 protected:
@@ -53,6 +53,9 @@ private:
 	_uint m_iTextureIndex = { 0 };
 	_int m_iRandomNum = { -1 };
 	_uint m_iMaxNick = { 0 };
+
+	_bool m_bEnd = { false };
+	_float m_fTimeAcc = { 0.f };
 
 private:
 	virtual HRESULT	Ready_Components() override;

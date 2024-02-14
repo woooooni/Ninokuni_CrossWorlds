@@ -29,6 +29,8 @@ void CUI_Minigame_Basic::Set_Active(_bool bActive)
 		if (m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
 			m_eType == GRANDPRIX_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END)
 		{
+			Play_Sound();
+
 			m_fAlpha = 0.f;
 
 			m_bStart = false;
@@ -249,6 +251,10 @@ void CUI_Minigame_Basic::On_Mouse(_float fTimeDelta)
 		__super::On_Mouse(fTimeDelta);
 		if (KEY_TAP(KEY::LBTN) && m_eType == UI_MINIGAMEBASIC::TOWERDEFENCE_START)
 		{
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("ui_gmk_korsica_start_01.wav"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 			CTowerDefence_Manager::GetInstance()->Start_Defence();
 			return;
 		}
@@ -515,6 +521,28 @@ void CUI_Minigame_Basic::Tick_Count(_float fTimeDelta)
 void CUI_Minigame_Basic::LateTick_Count(_float fTimeDelta)
 {
 
+}
+
+void CUI_Minigame_Basic::Play_Sound()
+{
+	if (m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO || m_eType == GRANDPRIX_ONE)
+	{
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("Grandprix_CountDown_0.wav"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+	}
+	else if (m_eType == GRANDPRIX_START)
+	{
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("Grandprix_CountDown_1.wav"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+	}
+	else if (m_eType == GRANDPRIX_END)
+	{
+//		GI->Stop_Sound(CHANNELID::SOUND_UI);
+//		GI->Play_Sound(TEXT("sp_ie_spectra_room_teleport_whoosh_01.wav"), CHANNELID::SOUND_UI,
+//			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+	}
 }
 
 CUI_Minigame_Basic* CUI_Minigame_Basic::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MINIGAMEBASIC eType)

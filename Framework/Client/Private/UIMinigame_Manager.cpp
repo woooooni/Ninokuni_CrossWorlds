@@ -553,6 +553,8 @@ void CUIMinigame_Manager::Start_Grandprix()
 
 void CUIMinigame_Manager::End_Grandprix()
 {
+	GI->Stop_Sound(CHANNELID::SOUND_AIRPLANE);
+
 	OnOff_GrandprixGauge(false);
 	OnOff_Grandprix(false); // UI 세팅을 복구한다.
 	m_bFlying = false;
@@ -1695,7 +1697,11 @@ void CUIMinigame_Manager::Tick_Grandprix(_float fTimeDelta)
 	{
 		// Error로 레이더를 볼 수 없을 때 계속 비네트를 켠다
 		if (false == m_Vignette[CUI_Grandprix_Vignette::VIGNETTE_DAMAGED]->Get_Active())
+		{
+			GI->Play_Sound(TEXT("obj_gmk_com_warning_synth_01.wav"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 			On_DamagedVignette();
+		}
 	}
 
 	if (0 < m_IntroIcons.size())

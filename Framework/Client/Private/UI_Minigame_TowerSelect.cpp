@@ -160,6 +160,10 @@ void CUI_Minigame_TowerSelect::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("ui_gmk_korsica_sucs_01.wav"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 		Set_Click(true);
 
 		switch (m_eType)

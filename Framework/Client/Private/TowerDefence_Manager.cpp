@@ -339,6 +339,10 @@ void CTowerDefence_Manager::Tick_Defence_Prepare(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::RBTN))
 	{
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("ui_gmk_korsica_fail_01.wav"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 		Safe_Release(m_pPicked_Object);
 		m_pPicked_Object = nullptr;
 		m_pPicked_ObjectTransform = nullptr;

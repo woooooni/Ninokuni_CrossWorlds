@@ -37,10 +37,14 @@ HRESULT CUI_Stellia_GaugeBar::Initialize(void* pArg)
 		return E_FAIL;
 
 	CUI::UI_INFO UIDesc = {};
-	UIDesc.fCX = 210.f;
-	UIDesc.fCY = 210.f;
+//	UIDesc.fCX = 210.f;
+//	UIDesc.fCY = 210.f;
+//	UIDesc.fX = g_iWinSizeX * 0.5f;
+//	UIDesc.fY = g_iWinSizeY * 0.5f;
+	UIDesc.fCX = 716.f * 0.65f;
+	UIDesc.fCY = 48.f * 0.65f;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
-	UIDesc.fY = g_iWinSizeY * 0.5f;
+	UIDesc.fY = 100.f;
 
 	if (FAILED(__super::Initialize(&UIDesc)))
 		return E_FAIL;
@@ -50,8 +54,9 @@ HRESULT CUI_Stellia_GaugeBar::Initialize(void* pArg)
 
 	m_iMaxGauge = 30;
 	m_iCurGauge = 0;
-	m_fAlpha = 0.8f;
-	m_bActive = false;
+
+	// Test (* 병합할 때 false로 수정하기)
+	m_bActive = true;
 
 	return S_OK;
 }
@@ -73,10 +78,10 @@ void CUI_Stellia_GaugeBar::Tick(_float fTimeDelta)
 			}
 		}
 
-		if (m_iCurGauge >= m_iMaxGauge)
+		// TextCode
+		if (KEY_TAP(KEY::O))
 		{
-			m_iCurGauge = m_iMaxGauge;
-			Set_Active(false);
+			m_iCurGauge += 5;
 		}
 
 		__super::Tick(fTimeDelta);
@@ -109,11 +114,19 @@ HRESULT CUI_Stellia_GaugeBar::Ready_Components()
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Boss_Stellia_Gauge_Background"),
+//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Boss_Stellia_Gauge_Background"),
+//		TEXT("Com_Texture_Background"), (CComponent**)&m_pTextureCom)))
+//		return E_FAIL;
+//
+//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Boss_Stellia_Gauge_Bar"),
+//		TEXT("Com_Texture"), (CComponent**)&m_pGaugeTextureCom)))
+//		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Boss_Stellia_Gauge_Background_Re"),
 		TEXT("Com_Texture_Background"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Boss_Stellia_Gauge_Bar"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Boss_Stellia_Gauge_Bar_Re"),
 		TEXT("Com_Texture"), (CComponent**)&m_pGaugeTextureCom)))
 		return E_FAIL;
 	
@@ -141,8 +154,21 @@ HRESULT CUI_Stellia_GaugeBar::Bind_ShaderResources()
 		return E_FAIL;
 
 
-	_float fRatio = _float(m_iMaxGauge - m_iCurGauge) / _float(m_iMaxGauge); // 값이 0이면 원 전체가 그려진다.
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Ratio", &fRatio, sizeof(_float))))
+//	_float fRatio = _float(m_iMaxGauge - m_iCurGauge) / _float(m_iMaxGauge); // 값이 0이면 원 전체가 그려진다.
+//	if (FAILED(m_pShaderCom->Bind_RawValue("g_Ratio", &fRatio, sizeof(_float))))
+//		return E_FAIL;
+//
+//	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_HPGaugeTexture")))
+//		return E_FAIL;
+//	if (FAILED(m_pGaugeTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+//		return E_FAIL;
+
+	_float fCurDamage = m_iCurGauge * 1.f;
+	_float fMaxDamage = m_iMaxGauge * 1.f;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CurrentHP", &fCurDamage, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_MaxHP", &fMaxDamage, sizeof(_float))))
 		return E_FAIL;
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_HPGaugeTexture")))

@@ -55,11 +55,13 @@ HRESULT CUI_SkillSection_CoolTimeFrame::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_bActive = true; 
-	m_fCurGauge = 0.f;
 
 	m_bHide = false;
 	m_bHideFinish = false;
 	m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
+
+	m_bUsable = true;
+	m_fCurGauge = m_fMaxGauge;
 
 	return S_OK;
 }
@@ -191,7 +193,7 @@ HRESULT CUI_SkillSection_CoolTimeFrame::Ready_Skill()
 
 	m_fMaxGauge = m_pSkill->Get_CoolTime();
 	m_fCurGauge = m_pSkill->Get_CurrCoolTime();
-
+	
 	return S_OK;
 }
 

@@ -689,6 +689,9 @@ void CVehicle_Flying_Biplane::On_Damaged(const COLLISION_INFO& tInfo)
 		{
 			m_pRigidBodyCom->Set_FrictionScale(2.f);
 			m_pRigidBodyCom->Add_Velocity(vDir, 20.f, true);
+			// 사운드(돌아서)
+			GI->Stop_Sound(CHANNELID::SOUND_VEHICLE);
+			GI->Play_Sound(TEXT("npc_np0200_St07_mvmt_damage_spin_01.wav"), CHANNELID::SOUND_VEHICLE, 0.2f);
 		}
 		
 	}
@@ -706,6 +709,9 @@ void CVehicle_Flying_Biplane::On_Damaged(const COLLISION_INFO& tInfo)
 		{
 			m_pRigidBodyCom->Set_FrictionScale(2.f);
 			m_pRigidBodyCom->Add_Velocity(vDir, 30.f, true);
+			// 사운드
+			GI->Stop_Sound(CHANNELID::SOUND_VEHICLE);
+			GI->Play_Sound(TEXT("sp_ie_st07_pool_core_smash_hit_01.wav"), CHANNELID::SOUND_VEHICLE, 0.4f);
 		}
 	}
 
@@ -721,15 +727,28 @@ void CVehicle_Flying_Biplane::On_Damaged(const COLLISION_INFO& tInfo)
 		{
 			m_pRigidBodyCom->Set_FrictionScale(2.f);
 			m_pRigidBodyCom->Add_Velocity(vDir, 30.f, true);
+			// 사운드
+			GI->Stop_Sound(CHANNELID::SOUND_VEHICLE);
+			GI->Play_Sound(TEXT("sp_ie_st07_pool_core_smash_hit_01.wav"), CHANNELID::SOUND_VEHICLE, 0.4f);
 		}
 	}
 
 	CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.3f, 19.f, 0.3f);
 
-	if(m_pStateCom->Get_CurrState() != CVehicle::VEHICLE_STATE::VEHICLE_BOSS_IDLE)
+	if (m_pStateCom->Get_CurrState() != CVehicle::VEHICLE_STATE::VEHICLE_BOSS_IDLE)
+	{
 		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_DAMAGED);
+		// 사운드 돌아서
+		GI->Stop_Sound(CHANNELID::SOUND_VEHICLE);
+		GI->Play_Sound(TEXT("npc_np0200_St07_mvmt_damage_spin_01.wav"), CHANNELID::SOUND_VEHICLE, 0.4f);
+	}
 	else
+	{
 		Set_Infinite(true, 1.f);
+		// 사운드
+		GI->Stop_Sound(CHANNELID::SOUND_VEHICLE);
+		GI->Play_Sound(TEXT("sp_ie_st07_pool_core_smash_hit_01.wav"), CHANNELID::SOUND_VEHICLE, 0.4f);
+	}
 }
 
 HRESULT CVehicle_Flying_Biplane::Ready_Colliders()

@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "Camera_Manager.h"
 #include "Camera.h"
+#include "UIMinigame_Manager.h"
 
 CUI_MapName::CUI_MapName(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_MapName")
@@ -19,6 +20,9 @@ void CUI_MapName::Set_Active(_bool bActive)
 
 	if (bActive)
 	{
+		if (CAMERA_TYPE::CUTSCENE_MAP == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+			return;
+		
 		m_bSetAlpha = false;
 		m_iTextureIndex = 0;
 		m_fTimeAcc = 0.f;

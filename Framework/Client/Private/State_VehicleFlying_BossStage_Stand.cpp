@@ -269,6 +269,8 @@ void CState_VehicleFlying_BossStage_Stand::Shoot()
     if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pRightBullet)))
         MSG_BOX("Generate Bullet Failed.");
 
+    GI->Play_Sound(L"Pc_Rifle_Shot_Combo_Basic_1.mp3", CHANNELID::SOUND_ATTACK, 0.5f, true);
+
     m_bShoot = false;
 }
 

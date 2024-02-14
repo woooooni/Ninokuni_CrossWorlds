@@ -39,10 +39,13 @@ _bool CSkill_Biplane_1::Use_Skill()
 	if (true == __super::Use_Skill())
 	{
 		Generate_MuckCloud();
+		GI->Play_Sound(TEXT("amb_prop_st12_vfx_step_thunder_distance_01.wav"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 		return true;
 	}
 	else
 	{
+		GI->Play_Sound(TEXT("npc_np0900_tr_combo_fail_01.wav"), CHANNELID::SOUND_UI, 0.3f);
 		return false;
 	}
 		

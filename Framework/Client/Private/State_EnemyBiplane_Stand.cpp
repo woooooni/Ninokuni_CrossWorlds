@@ -126,19 +126,19 @@ void CState_EnemyBiplane_Stand::Tick_State(_float fTimeDelta)
             switch (m_eShootState)
             {
             case Client::CState_EnemyBiplane_Stand::NORMAL:
-                Shoot_Normal(fTimeDelta);
+                Shoot_Normal(fTimeDelta); // 그냥 일반 총알 (플레이어 일반 공격과 동일)
                 break;
             case Client::CState_EnemyBiplane_Stand::PATTERN_0:
-                Shoot_Pattern_0(fTimeDelta);
+                Shoot_Pattern_0(fTimeDelta); // 줄넘기(세로 or 가로)
                 break;
             case Client::CState_EnemyBiplane_Stand::PATTERN_1:
-                Shoot_Pattern_1(fTimeDelta);
+                Shoot_Pattern_1(fTimeDelta); // 줄넘기(세로 or 가로)
                 break;
             case Client::CState_EnemyBiplane_Stand::PATTERN_2:
-                Shoot_Pattern_2(fTimeDelta);
+                Shoot_Pattern_2(fTimeDelta); // 대각선
                 break;
             case Client::CState_EnemyBiplane_Stand::PATTERN_3:
-                Shoot_Pattern_3(fTimeDelta);
+                Shoot_Pattern_3(fTimeDelta); // 랜덤 총알
                 break;
             default:
                 break;

@@ -235,10 +235,10 @@ void CUI_Dialog_Window::Add_Text()
 		else
 			iTemp++;
 
-		if (iTemp == 2) // 부호 2개당 글자 1개로 친다
+		if (iTemp == 3) // 부호 2개당 글자 1개로 친다
 		{
 			iTemp = 0;
-			iMarks++;
+			iMarks += 2;
 		}
 
 		if ((iWords + iMarks + 1) % iMaxLength == 0) 		//if ((i + 1) % iMaxLength == 0)

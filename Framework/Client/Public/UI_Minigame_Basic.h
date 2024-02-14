@@ -62,6 +62,7 @@ private:
 private:
 	void Tick_Count(_float fTimeDelta);
 	void LateTick_Count(_float fTimeDelta);
+	void Play_Sound();
 
 private:
 	UI_MINIGAMEBASIC m_eType = { MINIGAME_END };
@@ -76,7 +77,6 @@ private:
 
 	// Grandprix Gauge¿ë º¯¼ö
 	_bool m_bResize = { false };
-
 	_float m_fTimeAcc = { 0.f };
 
 public:

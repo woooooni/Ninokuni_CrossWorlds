@@ -130,7 +130,9 @@ void CState_EnemyBiplane_Skill_0::Shoot_Missile()
         MSG_BOX("Add_GameObject Failed. : CState_EnemyBiplane_Skill_0::Shoot_Missile()");
         return;
     }
-       
+    
+    GI->Play_Sound(TEXT("Grandprix_Bullet_Default_0.wav"), CHANNELID::SOUND_VOICE_MONSTER1,
+        GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_MONSTER1));
 }
 
 

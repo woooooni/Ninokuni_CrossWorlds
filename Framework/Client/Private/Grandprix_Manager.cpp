@@ -131,6 +131,30 @@ void CGrandprix_Manager::Tick(_float fTimeDelta)
 
 void CGrandprix_Manager::LateTick(_float fTimeDelta)
 {
+	if (false == Is_GrandPrixEnd() && true == m_bGrandprixStart &&
+		true == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
+	{
+		// 그랑프리진행중에 비행기소리를 계속 낸다
+		_int iRandom = GI->RandomInt(0, 3);
+		switch (iRandom)
+		{
+		case 0:
+			GI->Play_Sound(TEXT("Grandprix_SFX_0.wav"), CHANNELID::SOUND_AIRPLANE, 0.05f);
+			break;
+
+		case 1:
+			GI->Play_Sound(TEXT("Grandprix_SFX_1.wav"), CHANNELID::SOUND_AIRPLANE, 0.05f);
+			break;
+
+		case 2:
+			GI->Play_Sound(TEXT("Grandprix_SFX_2.wav"), CHANNELID::SOUND_AIRPLANE, 0.05f);
+			break;
+
+		case 3:
+			GI->Play_Sound(TEXT("Grandprix_SFX_3.wav"), CHANNELID::SOUND_AIRPLANE, 0.05f);
+			break;
+		}
+	}
 }
 
 HRESULT CGrandprix_Manager::Ready_Grandprix_GameObjectToLayer(LEVELID eID)
@@ -205,6 +229,8 @@ void CGrandprix_Manager::Ready_Grandprix_EnemyInfo()
 			CUIMinigame_Manager::GetInstance()->Set_HPOwner(m_Botos[i], i + 1);
 		}
 	}
+
+	m_bGrandprixStart = true;
 }
 
 HRESULT CGrandprix_Manager::Prepare_Grandprix()
@@ -400,6 +426,8 @@ void CGrandprix_Manager::Finish_Grandprix()
 
 void CGrandprix_Manager::End_Grandprix()
 {
+	GI->Stop_Sound(CHANNELID::SOUND_AIRPLANE);
+
 	// 남아 있는 적이 있다면, Set_Dead 처리한다.
 	if (nullptr != m_pEnemyPlane)
 	{
@@ -470,6 +498,10 @@ void CGrandprix_Manager::Add_ItemBox(_uint iType)
 			CRiding_Manager::GetInstance()->Set_Character_BiplaneSpeed((CRiding_Manager::GetInstance()->Get_Character_BiplaneSpeed()) * 3.f);
 			// UI 연결
 			CUIMinigame_Manager::GetInstance()->On_GrandprixPopup(CGrandprix_ItemBox::ITEMBOX_TYPE::ITEMBOX_SPEEDUP);
+
+//			GI->Stop_Sound(CHANNELID::SOUND_UI);
+//			GI->Play_Sound(TEXT("UI_Fx_Result_Item_RandomEffect_Finish_1_St.mp3"), CHANNELID::SOUND_UI,
+//				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 		}
 		break;
 

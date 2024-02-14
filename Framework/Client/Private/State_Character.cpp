@@ -133,6 +133,9 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 		if (false == CRiding_Manager::GetInstance()->Can_Ride_Udadak())
 			return;
 
+		if (CHARACTER_TYPE::DESTROYER == CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType())
+			return;
+
 		m_pStateMachineCom->Change_State(CCharacter::VEHICLE_RUNSTART);
 		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::UDADAK, true);
 		return;
@@ -263,6 +266,9 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::V))
 	{
 		if (false == CRiding_Manager::GetInstance()->Can_Ride_Udadak())
+			return;
+
+		if (CHARACTER_TYPE::DESTROYER == CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType())
 			return;
 
 		m_pStateMachineCom->Change_State(CCharacter::VEHICLE_RUNSTART);

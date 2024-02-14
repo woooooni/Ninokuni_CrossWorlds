@@ -463,16 +463,37 @@ void CVehicle_Flying_EnemyBoto::On_Damaged(const COLLISION_INFO& tInfo)
 		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.3f, 17.f, 0.3f);
 	}
 
-	
-
 	m_tStat.fCurHP = max(0, m_tStat.fCurHP - iDamage);
 	if (0.f >= m_tStat.fCurHP)
 	{
+		GI->Stop_Sound(CHANNELID::SOUND_VOICE_MONSTER1);
+		GI->Play_Sound(TEXT("obj_gmk_st03_volcano_bomb_shot_01.wav"), CHANNELID::SOUND_VOICE_MONSTER1, 0.3f);
+
 		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.5f, 19.f, 0.5f);
 		m_pRider->Set_Dead(true);
 		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_DEAD);
 		Reserve_Dead(true);
 		return;
+	}
+	else
+	{
+		switch (GI->RandomInt(0, 2))
+		{
+		case 0:
+			GI->Stop_Sound(CHANNELID::SOUND_VOICE_MONSTER1);
+			GI->Play_Sound(TEXT("obj_gmk_statue_kale_hit_great_shpt_01_05.wav"), CHANNELID::SOUND_VOICE_MONSTER1, 0.1f);
+			break;
+
+		case 1:
+			GI->Stop_Sound(CHANNELID::SOUND_VOICE_MONSTER2);
+			GI->Play_Sound(TEXT("obj_gmk_statue_kale_hit_great_shpt_01_04.wav"), CHANNELID::SOUND_VOICE_MONSTER1, 0.1f);
+			break;
+
+		case 2:
+			GI->Stop_Sound(CHANNELID::SOUND_VOICE_MONSTER2);
+			GI->Play_Sound(TEXT("obj_gmk_statue_kale_hit_great_shpt_01_02.wav"), CHANNELID::SOUND_VOICE_MONSTER1, 0.1f);
+			break;
+		}
 	}
 	/*else
 	{

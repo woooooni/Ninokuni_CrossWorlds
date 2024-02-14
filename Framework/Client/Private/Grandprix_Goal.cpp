@@ -185,6 +185,10 @@ void CGrandprix_Goal::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
+//		GI->Stop_Sound(CHANNELID::SOUND_UI);
+//		GI->Play_Sound(TEXT("sp_ie_spectra_room_teleport_whoosh_01.wav"), CHANNELID::SOUND_UI,
+//			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 		// UI 복구, 남은 관련 클래스 Set Dead
 		CUIMinigame_Manager::GetInstance()->End_Grandprix();
 		Set_Dead(true);

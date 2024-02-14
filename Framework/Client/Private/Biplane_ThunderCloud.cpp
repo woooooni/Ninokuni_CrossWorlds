@@ -74,6 +74,7 @@ void CBiplane_Thunder_Cloud::Tick(_float fTimeDelta)
 				Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
 				return;
 
+			GI->Play_Sound(TEXT("Ele_Cast_Light_Thunder_4_St.mp3"), CHANNELID::SOUND_ATTACK, 0.1f);
 			m_bGenEffect = true;
 		}
 	}
