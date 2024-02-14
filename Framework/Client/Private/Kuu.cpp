@@ -71,6 +71,9 @@ HRESULT CKuu::Initialize(void* pArg)
 
 void CKuu::Tick(_float fTimeDelta)
 {
+	if (!m_bActive)
+		return;
+
 	if (CGame_Manager::GetInstance()->Get_Player()->Get_Character() != nullptr)
 	{
 		Kuu_Flying(fTimeDelta);
@@ -113,6 +116,9 @@ void CKuu::Tick(_float fTimeDelta)
 
 void CKuu::LateTick(_float fTimeDelta)
 {
+	if (!m_bActive)
+		return;
+
 //	if (nullptr != m_pBalloon)
 //		m_pBalloon->LateTick(fTimeDelta);
 
@@ -171,6 +177,14 @@ void CKuu::Set_GoalPosition()
 {
 	m_vCurPos = Get_GoalPosition();
 	m_pTransformCom->Set_Position(m_vCurPos);
+}
+
+void CKuu::Set_Active(const _bool& bActive)
+{
+	m_bActive = bActive;
+
+	if (m_bActive)
+		Set_GoalPosition();
 }
 
 

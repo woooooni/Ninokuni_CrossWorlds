@@ -30,6 +30,9 @@ public:
 	Vec4 Get_GoalPosition();
 	void Set_GoalPosition();
 
+public:
+	void Set_Active(const _bool& bActive);
+
 private:
 	virtual HRESULT Ready_Components() override;
 	virtual HRESULT Ready_States() override;
@@ -62,6 +65,8 @@ private:
 	/* Damping */
 	Vec4		 m_vCurPos = Vec4::Zero;
 	const _float m_fDampingCoefficient = 0.027f; /* (144 프레임 기준 댐핑 계수 - 0과 1사이 범위를 갖으며, 값이 클수록 빨리 따라감)*/
+
+	_bool	m_bActive = true;
 
 public:
 	static CKuu* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
