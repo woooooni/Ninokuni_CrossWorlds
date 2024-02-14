@@ -35,6 +35,7 @@ private:
 	_float2 m_vCurrentPos = _float2(0.f, 0.f);
 	_float m_fDistance = { 0.f };
 	_bool m_bGoal = { false };
+	_bool m_bRender = { false };
 
 private:
 	virtual HRESULT	Ready_Components() override;

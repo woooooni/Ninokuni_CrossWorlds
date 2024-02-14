@@ -121,18 +121,12 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 						m_vCurrentPos.x = vWindowPos.x * g_iWinSizeX * 0.5f + (g_iWinSizeX * 0.5f);
 						m_vCurrentPos.y = vWindowPos.y * -(g_iWinSizeY * 0.5f) + (g_iWinSizeY * 0.5f);
 
-						// 0 ~ 900 . 200 ~ 700
-						if (m_vCurrentPos.y <= 200.f)
-							m_vCurrentPos.y = 200.f;
-
-						if (m_vCurrentPos.y >= 700)
-							m_vCurrentPos.y = 700.f;
-
-						if (m_vCurrentPos.x <= 320.f)
-							m_vCurrentPos.x = 320.f;
-
-						if (m_vCurrentPos.x >= 1280.f)
-							m_vCurrentPos.x = 1280.f;
+						//만약 화면(1600:900) 안에 들어온다면 그린다.
+						if ((0.f + m_tInfo.fCX < m_vCurrentPos.x && _float(g_iWinSizeX) - m_tInfo.fCX > m_vCurrentPos.x) &&
+							(0.f + m_tInfo.fCY < m_vCurrentPos.y && _float(g_iWinSizeY) - m_tInfo.fCY > m_vCurrentPos.y))
+							m_bRender = true;
+						else
+							m_bRender = false;
 
 						m_tInfo.fX = m_vCurrentPos.x;
 						m_tInfo.fY = m_vCurrentPos.y;
@@ -140,30 +134,6 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 						m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 							XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 					}
-					//else
-					//{
-					//	if (m_vCurrentPos.x > g_iWinSizeX)
-					//		m_vCurrentPos.x = (g_iWinSizeX - m_tInfo.fCX);
-					//
-					//	if (m_vCurrentPos.x < 0)
-					//		m_vCurrentPos.x = (m_tInfo.fCX);
-					//
-					//	if (m_vCurrentPos.y > g_iWinSizeY)
-					//		m_vCurrentPos.y = (g_iWinSizeY - m_tInfo.fCY);
-					//	
-					//	if (m_vCurrentPos.y < 0)
-					//		m_vCurrentPos.y = (m_tInfo.fCY);
-					//
-					//	m_tInfo.fX = m_vCurrentPos.x;
-					//	m_tInfo.fY = m_vCurrentPos.y;
-					//
-					//	// Test Code
-					//	//m_tInfo.fX = g_iWinSizeX * 0.5f;
-					//	//m_tInfo.fY = g_iWinSizeY * 0.5f;
-					//
-					//	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-					//		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
-					//}
 
 					// 깃발에 미터 텍스트를 추가한다.
 					if (m_eType == UI_MILEPOST::MILEPOST_FLAG)
@@ -177,39 +147,41 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 						if (fTotarget < 3.f)
 							CUI_Manager::GetInstance()->Off_Milepost();
 
-						wstring strDistance = to_wstring(_uint(fTotarget)) + TEXT("M");
-						_int iLength = strDistance.length() - 1;
-						_float2 vFontPos = _float2(m_vCurrentPos.x - 6.8f - (iLength * (6.8f - iLength)), m_vCurrentPos.y + 4.f);
+						if (true == m_bRender)
+						{
+							wstring strDistance = to_wstring(_uint(fTotarget)) + TEXT("M");
+							_int iLength = strDistance.length() - 1;
+							_float fOffset = iLength * 3.5f;
+							_float2 vFontPos = _float2((m_vCurrentPos.x - 6.f) - fOffset, m_vCurrentPos.y + 4.f);
 
-						CRenderer::TEXT_DESC TextDesc = {};
-						TextDesc.strText = strDistance;
-						TextDesc.strFontTag = L"Default_Bold";
-						TextDesc.vScale = { 0.25f, 0.25f };
-						TextDesc.vColor = _float4(0.655f, 0.475f, 0.325f, 1.f);
-						TextDesc.vPosition = _float2(vFontPos.x - 1.f, vFontPos.y);
-						m_pRendererCom->Add_Text(TextDesc);
-						TextDesc.vPosition = _float2(vFontPos.x + 1.f, vFontPos.y);
-						m_pRendererCom->Add_Text(TextDesc);
-						TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y - 1.f);
-						m_pRendererCom->Add_Text(TextDesc);
-						TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y + 1.f);
-						m_pRendererCom->Add_Text(TextDesc);
+							CRenderer::TEXT_DESC TextDesc = {};
+							TextDesc.strText = strDistance;
+							TextDesc.strFontTag = L"Default_Bold";
+							TextDesc.vScale = { 0.25f, 0.25f };
+							TextDesc.vColor = _float4(0.655f, 0.475f, 0.325f, 1.f);
+							TextDesc.vPosition = _float2(vFontPos.x - 1.f, vFontPos.y);
+							m_pRendererCom->Add_Text(TextDesc);
+							TextDesc.vPosition = _float2(vFontPos.x + 1.f, vFontPos.y);
+							m_pRendererCom->Add_Text(TextDesc);
+							TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y - 1.f);
+							m_pRendererCom->Add_Text(TextDesc);
+							TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y + 1.f);
+							m_pRendererCom->Add_Text(TextDesc);
 
-						TextDesc.vColor = _float4(1.f, 0.973f, 0.588f, 1.f);
-						TextDesc.vPosition = _float2(m_vCurrentPos.x - 7.f - (iLength * (6.8f - iLength)), m_vCurrentPos.y + 4.f);
-						m_pRendererCom->Add_Text(TextDesc);
+							TextDesc.vColor = _float4(1.f, 0.973f, 0.588f, 1.f);
+							TextDesc.vPosition = vFontPos;
+							m_pRendererCom->Add_Text(TextDesc);
+						}
 					}
 				}
 				else // 거리가 3보다 작다면
 				{
 					CUI_Manager::GetInstance()->Off_Milepost();
-					//m_bGoal = false;
-					//m_bActive = false;
 				}
 			}
 		}
 		
-		if (true == m_bGoal)
+		if (true == m_bGoal && true == m_bRender)
 			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 
 		__super::LateTick(fTimeDelta);

@@ -13,6 +13,13 @@ protected:
 	virtual ~CUI_Stellia_GaugeBar() = default;
 
 public:
+	virtual void Set_Active(_bool bActive) override;
+	void Set_MaxGauge(_int iMaxGauge = 30) {
+		m_iMaxGauge = iMaxGauge;
+		m_iCurGauge = 0;
+
+		Set_Active(true);
+	}
 	void Set_CurGauge(_int iGauge) { m_iCurGauge = iGauge; }
 
 public:
@@ -26,6 +33,7 @@ private:
 	class CTexture* m_pGaugeTextureCom = { nullptr };
 	_uint m_iPass = { 25 };
 
+	_bool m_bDisappear = { false };
 	_float m_fTimeAcc = { 0.f };
 
 	_int m_iMaxGauge = { 0 };

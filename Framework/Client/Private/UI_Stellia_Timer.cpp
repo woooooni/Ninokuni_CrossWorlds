@@ -38,10 +38,10 @@ HRESULT CUI_Stellia_Timer::Initialize(void* pArg)
 		return E_FAIL;
 
 	CUI::UI_INFO UIDesc = {};
-	UIDesc.fCX = 355.f;
-	UIDesc.fCY = 15.f;
-	UIDesc.fX = 708.5f;
-	UIDesc.fY = 759.f;
+	UIDesc.fCX = 690.f * 0.45f;
+	UIDesc.fCY = 50.f * 0.45f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = 80.f;
 	if (FAILED(__super::Initialize(&UIDesc)))
 		return E_FAIL;
 

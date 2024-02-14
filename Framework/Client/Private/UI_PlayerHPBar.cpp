@@ -63,12 +63,18 @@ void CUI_PlayerHPBar::Tick(_float fTimeDelta)
 		}
 		else
 		{
+			// 현재 캐릭터가 지금 저장한 캐릭터와 다르다면
 			if (CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType() != m_pCharacterType)
 			{
 				m_pPlayer = nullptr;
 				m_pPlayer = CUI_Manager::GetInstance()->Get_Character();
 
 				m_pCharacterType = CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType();
+
+				CCharacter::CHARACTER_STAT StatDesc = m_pPlayer->Get_Stat();
+				m_fMaxHP = _float(StatDesc.iMaxHp);
+				m_fPreHP = _float(StatDesc.iHp);
+				m_fCurHP = m_fPreHP;
 			}
 		}
 		

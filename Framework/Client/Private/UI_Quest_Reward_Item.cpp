@@ -151,26 +151,52 @@ void CUI_Quest_Reward_Item::LateTick(_float fTimeDelta)
 			if (0 >= m_iAmount)
 				return;
 
-			m_strText = to_wstring(m_iAmount);
-			_int iLength = m_strText.length();
+			if (false == m_bIsEnding)
+			{
+				m_strText = to_wstring(m_iAmount);
+				_int iLength = m_strText.length();
 
-			CRenderer::TEXT_DESC TextDesc;
-			TextDesc.strText = m_strText;
-			TextDesc.strFontTag = L"Default_Bold";
-			TextDesc.vScale = { 0.25f, 0.25f };
-			TextDesc.vColor = _float4(0.f, 0.f, 0.f, 1.f);
-			TextDesc.vPosition = _float2((m_vTextPosition.x - iLength * 3.5f) + 1.f, m_vTextPosition.y);
-			m_pRendererCom->Add_Text(TextDesc);
-			TextDesc.vPosition = _float2((m_vTextPosition.x - iLength * 3.5f) - 1.f, m_vTextPosition.y);
-			m_pRendererCom->Add_Text(TextDesc);
-			TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y - 1.f);
-			m_pRendererCom->Add_Text(TextDesc);
-			TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y + 1.f);
-			m_pRendererCom->Add_Text(TextDesc);
+				CRenderer::TEXT_DESC TextDesc;
+				TextDesc.strText = m_strText;
+				TextDesc.strFontTag = L"Default_Bold";
+				TextDesc.vScale = { 0.25f, 0.25f };
+				TextDesc.vColor = _float4(0.f, 0.f, 0.f, 1.f);
+				TextDesc.vPosition = _float2((m_vTextPosition.x - iLength * 3.5f) + 1.f, m_vTextPosition.y);
+				m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vPosition = _float2((m_vTextPosition.x - iLength * 3.5f) - 1.f, m_vTextPosition.y);
+				m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y - 1.f);
+				m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y + 1.f);
+				m_pRendererCom->Add_Text(TextDesc);
 
-			TextDesc.vColor = _float4(0.478f, 0.541f, 0.549f, 1.f);
-			TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y);
-			m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vColor = _float4(0.478f, 0.541f, 0.549f, 1.f);
+				TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y);
+				m_pRendererCom->Add_Text(TextDesc);
+			}
+			else
+			{
+				m_strText = TEXT("1,000,000,000,000");
+				_int iLength = m_strText.length() - 3; // 쉼표 4개 -> 3을 빼서 오프셋 조정함
+
+				CRenderer::TEXT_DESC TextDesc;
+				TextDesc.strText = m_strText;
+				TextDesc.strFontTag = L"Default_Bold";
+				TextDesc.vScale = { 0.25f, 0.25f };
+				TextDesc.vColor = _float4(0.f, 0.f, 0.f, 1.f);
+				TextDesc.vPosition = _float2((m_vTextPosition.x - iLength * 3.5f) + 1.f, m_vTextPosition.y);
+				m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vPosition = _float2((m_vTextPosition.x - iLength * 3.5f) - 1.f, m_vTextPosition.y);
+				m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y - 1.f);
+				m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y + 1.f);
+				m_pRendererCom->Add_Text(TextDesc);
+
+				TextDesc.vColor = _float4(0.792f, 0.843f, 0.851f, 1.f);
+				TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 3.5f, m_vTextPosition.y);
+				m_pRendererCom->Add_Text(TextDesc);
+			}
 		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);

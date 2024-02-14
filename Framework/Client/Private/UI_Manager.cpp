@@ -682,6 +682,14 @@ _bool CUI_Manager::Is_MinimapOn()
 	return m_MinimapFrame[0]->Get_Active();
 }
 
+_bool CUI_Manager::Is_QuestRewardsOn()
+{
+	if (nullptr == m_QuestReward[0])
+		return false;
+
+	return m_QuestReward[0]->Get_Active();
+}
+
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	m_pDevice = pDevice;
@@ -3709,6 +3717,51 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pWindow);
 
+	m_SoundSlot.reserve(4);
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 461.f;
+	UIDesc.fCY = 27.f;
+	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f - 15.f;
+	UIDesc.fY = 120.f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Sound_Slot_First"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_SoundSlot.push_back(dynamic_cast<CUI_InGame_Setting_Slot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 461.f;
+	UIDesc.fCY = 55.f;
+	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f - 15.f;
+	UIDesc.fY = 180.f; // + 60.f
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Sound_Slot_Second"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_SoundSlot.push_back(dynamic_cast<CUI_InGame_Setting_Slot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	UIDesc.fY = 245.f; // + 65.f
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Sound_Slot_Third"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_SoundSlot.push_back(dynamic_cast<CUI_InGame_Setting_Slot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	UIDesc.fY = 310.f; // + 65.f
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Sound_Slot_Fourth"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_SoundSlot.push_back(dynamic_cast<CUI_InGame_Setting_Slot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
 	fOffset = 10.f;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 	UIDesc.fCX = 64.f * 0.8f;
@@ -4481,6 +4534,16 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 	}
 
 	for (auto& iter : m_CameraSlot)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_SoundSlot)
 	{
 		if (nullptr == iter)
 			return E_FAIL;
@@ -7393,6 +7456,10 @@ void CUI_Manager::OnOff_InGameSetWindow(_bool bOnOff)
 		{
 			iter->Set_Active(false);
 		}
+		for (auto& iter : m_SoundSlot)
+		{
+			iter->Set_Active(false);
+		}
 
 		m_pInGameSetting->Set_Active(false);
 		OnOff_GamePlaySetting(true);
@@ -7409,11 +7476,14 @@ void CUI_Manager::OnOff_SettingSlot(_uint iSection, _bool bOnOff)
 			for (auto& iter : m_GraphicSlot)
 			{
 				if (nullptr != iter)
-				{
 					iter->Set_Active(true);
-				}
 			}
 			for (auto& iter : m_CameraSlot)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
+			for (auto& iter : m_SoundSlot)
 			{
 				if (nullptr != iter)
 					iter->Set_Active(false);
@@ -7431,6 +7501,11 @@ void CUI_Manager::OnOff_SettingSlot(_uint iSection, _bool bOnOff)
 				if (nullptr != iter)
 					iter->Set_Active(true);
 			}
+			for (auto& iter : m_SoundSlot)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
 			break;
 
 		case 2: // 오디오
@@ -7444,6 +7519,11 @@ void CUI_Manager::OnOff_SettingSlot(_uint iSection, _bool bOnOff)
 				if (nullptr != iter)
 					iter->Set_Active(false);
 			}
+			for (auto& iter : m_SoundSlot)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
 			break;
 		}
 	}
@@ -7455,6 +7535,11 @@ void CUI_Manager::OnOff_SettingSlot(_uint iSection, _bool bOnOff)
 				iter->Set_Active(false);
 		}
 		for (auto& iter : m_CameraSlot)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SoundSlot)
 		{
 			if (nullptr != iter)
 				iter->Set_Active(false);
@@ -7855,37 +7940,46 @@ void CUI_Manager::Set_QuestRewards(void* pArg)
 	}
 
 	// iTotal은 아이템의 총 개수임. 이것을 기반으로 Position을 새로 세팅한다.
-	Update_QuestItemPosition(iTotal);
+	Update_QuestItemPosition(iTotal, ItemDesc.bIsEnding);
 }
 
-void CUI_Manager::Update_QuestItemPosition(_int iTotal)
+void CUI_Manager::Update_QuestItemPosition(_int iTotal, _bool bIsEnding)
 {
-	if (0 >= iTotal || 4 < iTotal) 	// iTotal -> Item의 개수
-		return;
-
-	switch (iTotal)
+	if (false == bIsEnding)
 	{
-	case 1:
-		m_QuestItems[0]->Set_Position(iTotal, 0);
-		break;
-		
-	case 2:
-		m_QuestItems[0]->Set_Position(iTotal, 0);
-		m_QuestItems[1]->Set_Position(iTotal, 1);
-		break;
+		if (0 >= iTotal || 4 < iTotal) 	// iTotal -> Item의 개수
+			return;
 
-	case 3:
-		m_QuestItems[0]->Set_Position(iTotal, 0);
-		m_QuestItems[1]->Set_Position(iTotal, 1);
-		m_QuestItems[2]->Set_Position(iTotal, 2);
-		break;
+		switch (iTotal)
+		{
+		case 1:
+			m_QuestItems[0]->Set_Position(iTotal, 0);
+			break;
 
-	case 4:
+		case 2:
+			m_QuestItems[0]->Set_Position(iTotal, 0);
+			m_QuestItems[1]->Set_Position(iTotal, 1);
+			break;
+
+		case 3:
+			m_QuestItems[0]->Set_Position(iTotal, 0);
+			m_QuestItems[1]->Set_Position(iTotal, 1);
+			m_QuestItems[2]->Set_Position(iTotal, 2);
+			break;
+
+		case 4:
+			m_QuestItems[0]->Set_Position(iTotal, 0);
+			m_QuestItems[1]->Set_Position(iTotal, 1);
+			m_QuestItems[2]->Set_Position(iTotal, 2);
+			m_QuestItems[3]->Set_Position(iTotal, 3);
+			break;
+		}
+	}
+	else
+	{
+		// 엔딩용 UI 자체 세팅
 		m_QuestItems[0]->Set_Position(iTotal, 0);
-		m_QuestItems[1]->Set_Position(iTotal, 1);
-		m_QuestItems[2]->Set_Position(iTotal, 2);
-		m_QuestItems[3]->Set_Position(iTotal, 3);
-		break;
+		m_QuestItems[0]->Set_EndingReward();
 	}
 }
 
@@ -8954,6 +9048,27 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_SIXTH), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Sound_Slot_First"),
+		CUI_InGame_Setting_Slot::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Slot::UI_SETTING_SECTION::SETTING_AUDIO,
+			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Sound_Slot_Second"),
+		CUI_InGame_Setting_Slot::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Slot::UI_SETTING_SECTION::SETTING_AUDIO,
+			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Sound_Slot_Third"),
+		CUI_InGame_Setting_Slot::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Slot::UI_SETTING_SECTION::SETTING_AUDIO,
+			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_THIRD), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Sound_Slot_Fourth"),
+		CUI_InGame_Setting_Slot::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Slot::UI_SETTING_SECTION::SETTING_AUDIO,
+			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_FOURTH), LAYER_UI)))
+		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_OpenBtn"),
 		CUI_InGame_Setting_OpenBtn::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
@@ -9024,16 +9139,16 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"),
-		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
-			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_PBR,
-			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"),
-		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
-			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_PBR,
-			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
-		return E_FAIL;
+//	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"),
+//		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+//			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_PBR,
+//			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
+//		return E_FAIL;
+//	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"),
+//		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+//			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_PBR,
+//			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
+//		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Camera_AxisX"),
 		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
@@ -9081,6 +9196,16 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_InGame_Setting_Slider::Create(m_pDevice, m_pContext, CUI_InGame_Setting_Slider::UI_SETTING_SLIDERTYPE::SECOND_SLIDER), LAYER_UI)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Third"),
+		CUI_InGame_Setting_Slider::Create(m_pDevice, m_pContext, CUI_InGame_Setting_Slider::UI_SETTING_SLIDERTYPE::THIRD_SLIDER), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_First"),
+		CUI_InGame_Setting_Slider::Create(m_pDevice, m_pContext, CUI_InGame_Setting_Slider::UI_SETTING_SLIDERTYPE::FIRST_SLIDER), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_Second"),
+		CUI_InGame_Setting_Slider::Create(m_pDevice, m_pContext, CUI_InGame_Setting_Slider::UI_SETTING_SLIDERTYPE::SECOND_SLIDER), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_Third"),
 		CUI_InGame_Setting_Slider::Create(m_pDevice, m_pContext, CUI_InGame_Setting_Slider::UI_SETTING_SLIDERTYPE::THIRD_SLIDER), LAYER_UI)))
 		return E_FAIL;
 
@@ -9634,6 +9759,10 @@ void CUI_Manager::Free()
 	for (auto& pSlot : m_CameraSlot)
 		Safe_Release(pSlot);
 	m_CameraSlot.clear();
+
+	for (auto& pSlot : m_SoundSlot)
+		Safe_Release(pSlot);
+	m_SoundSlot.clear();
 
 	for (auto& pSlot : m_PlayerSlot)
 		Safe_Release(pSlot);

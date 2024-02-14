@@ -116,6 +116,9 @@ void CUI_InGame_Setting_Tab::On_Mouse(_float fTimeDelta)
 		{
 			Click_TabButton();
 			CUI_Manager::GetInstance()->OnOff_SettingSlot(_uint(m_eUIType), true);
+
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 		}
 
 		__super::On_Mouse(fTimeDelta);

@@ -12,6 +12,17 @@ CUI_Stellia_GaugeBar::CUI_Stellia_GaugeBar(const CUI_Stellia_GaugeBar& rhs)
 {
 }
 
+void CUI_Stellia_GaugeBar::Set_Active(_bool bActive)
+{
+	if (true == bActive)
+	{
+		m_bDisappear = false;
+		m_fTimeAcc = 0.f;
+	}
+
+	m_bActive = bActive;
+}
+
 HRESULT CUI_Stellia_GaugeBar::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -26,23 +37,22 @@ HRESULT CUI_Stellia_GaugeBar::Initialize(void* pArg)
 		return E_FAIL;
 
 	CUI::UI_INFO UIDesc = {};
-	UIDesc.fCX = 200.f;
-	UIDesc.fCY = 200.f;
-	UIDesc.fX = 1200.f;
-//	UIDesc.fY = g_iWinSizeY * 0.5f;
-	UIDesc.fY = 650.f;
+	UIDesc.fCX = 210.f;
+	UIDesc.fCY = 210.f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+
 	if (FAILED(__super::Initialize(&UIDesc)))
 		return E_FAIL;
 
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_iMaxGauge = 100;
+	m_fAlpha = 0.9f;
+	m_iMaxGauge = 30;
 	m_iCurGauge = 0;
 
 	m_bActive = true;
-
-	m_fAlpha = 0.8f;
 
 	return S_OK;
 }
@@ -51,9 +61,18 @@ void CUI_Stellia_GaugeBar::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		//TestCode
-//		if (KEY_TAP(KEY::O))
-//			m_iCurGauge += 10;
+		if (false == m_bDisappear
+			&& m_iCurGauge >= m_iMaxGauge)
+		{
+			m_iCurGauge = m_iMaxGauge;
+			m_fTimeAcc += fTimeDelta;
+
+			if (0.5f < m_fTimeAcc)
+			{
+				m_bDisappear = true;
+				Set_Active(false);
+			}
+		}
 
 		__super::Tick(fTimeDelta);
 	}

@@ -10,6 +10,7 @@
 #include "Vehicle_Flying_Biplane.h"
 #include "Vehicle_Flying_EnemyBiplane.h" 
 #include "Vehicle_Flying_EnemyBoto.h"
+#include "Vehicle_Object_Biplane.h"
 
 #include "Grandprix_ItemBox.h"
 
@@ -66,6 +67,15 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObject(LEVELID eID)
 	m_pBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(pBiplane);
 	Safe_AddRef(m_pBiplane);
 
+	pBiplane = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prototype_GameObject_Vehicle_Biplane_Object"), &UdadakDesc, &pBiplane)))
+		return E_FAIL;
+	if (nullptr == pBiplane)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CVehicle_Object_Biplane*>(pBiplane))
+		return E_FAIL;
+	m_pObjectPlane = dynamic_cast<CVehicle_Object_Biplane*>(pBiplane);
+	Safe_AddRef(m_pObjectPlane);
 
 	return S_OK;
 }
@@ -82,10 +92,14 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObjectToLayer(LEVELID eID)
 	{
 		if (nullptr == m_pBiplane)
 			return E_FAIL;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pBiplane)))
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, m_pBiplane)))
 			return E_FAIL;
 		Safe_AddRef(m_pBiplane);
 
+		if (nullptr == m_pObjectPlane)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pObjectPlane)))
+			return E_FAIL;
 	}
 
 	return S_OK;
@@ -120,15 +134,18 @@ HRESULT CRiding_Manager::Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff)
 			return E_FAIL;
 		if (true == bOnOff)
 		{
-			if (nullptr == m_pUdadak->Get_Rider())
+			if (true == m_bCanRide)
 			{
-				m_pUdadak->Set_Aboard(true);
-				m_pUdadak->Ride(pCharacter);
-				m_bIsRiding = true;
-				
-				GI->Stop_Sound(CHANNELID::SOUND_VEHICLE);
-				GI->Play_Sound(TEXT("Veh_Udadak_Hello_1.mp3"), CHANNELID::SOUND_VEHICLE,
-					GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+				if (nullptr == m_pUdadak->Get_Rider())
+				{
+					m_pUdadak->Set_Aboard(true);
+					m_pUdadak->Ride(pCharacter);
+					m_bIsRiding = true;
+
+					GI->Stop_Sound(CHANNELID::SOUND_VEHICLE);
+					GI->Play_Sound(TEXT("Veh_Udadak_Hello_1.mp3"), CHANNELID::SOUND_VEHICLE,
+						GI->Get_ChannelVolume(CHANNELID::SOUND_VEHICLE));
+				}
 			}
 		}
 		else
@@ -181,12 +198,11 @@ void CRiding_Manager::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pObjectPlane);
 	Safe_Release(m_pUdadak);
 	Safe_Release(m_pBiplane);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
-
-
 }
 
 

@@ -243,6 +243,14 @@ void CCharacter::Tick(_float fTimeDelta)
 	//	m_pTrails[i]->Tick(fTimeDelta);
 	//}
 #pragma endregion
+
+	/* 보류된 레벨업 UI */
+	if (true == m_bReserveUI&&
+		false == CUI_Manager::GetInstance()->Is_QuestRewardsOn())
+	{
+		m_bReserveUI = false;
+		CUI_Manager::GetInstance()->OnOff_LevelUp(true, m_tStat.iLevel);
+	}
 }
 
 
@@ -811,7 +819,16 @@ void CCharacter::LevelUp()
 	m_tStat.iMaxHp += m_tStat.iLevel * 100;
 	m_tStat.iHp = m_tStat.iMaxHp;
 	m_tStat.iAtt += m_tStat.iLevel * 100;
-	CUI_Manager::GetInstance()->OnOff_LevelUp(true, m_tStat.iLevel);
+	if (false == CUI_Manager::GetInstance()->Is_QuestRewardsOn())
+	{
+		m_bReserveUI = false;
+		CUI_Manager::GetInstance()->OnOff_LevelUp(true, m_tStat.iLevel);
+	}
+	else
+	{
+		// 퀘스트 보상창이 켜져있다면 보류해둔다.
+		m_bReserveUI = true;
+	}
 
 	if (m_tStat.iExp >= m_tStat.iMaxExp)	
 		LevelUp();

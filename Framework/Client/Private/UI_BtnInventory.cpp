@@ -93,7 +93,7 @@ void CUI_BtnInventory::On_Mouse(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		Key_Input(fTimeDelta);
+		//Key_Input(fTimeDelta);
 
 		__super::On_Mouse(fTimeDelta);
 	}

@@ -46,19 +46,46 @@ HRESULT CUI_Damage_Number::Initialize(void* pArg)
 	m_tInfo.fY = m_vTargetPosition.y;
 	_float fNumSize;
 
+	// 타겟과 카메라간의 거리를 구한다.
+	_float4 vCamPos = GI->Get_CamPosition();
+	_vector vTempForDistance = m_pTargetTransform->Get_Position() - XMLoadFloat4(&vCamPos);
+	_float fDistance = XMVectorGetX(XMVector3Length(vTempForDistance));
+
 	if (true == m_FontDesc.bIsPlayer)
 		fNumSize = 112.f * 0.23f;
 	else
 	{
 		if (true == m_FontDesc.bIsBoss)
 		{
-			_float fRandom = GI->RandomFloat(0.2f, 0.32f);
-			fNumSize = 112.f * fRandom;
+			if (15.f <= fDistance)
+			{
+				if (18.f <= fDistance)
+					m_fAlpha = 0.1f;
+
+				_float fRandom = GI->RandomFloat(0.1f, 0.14f);
+				fNumSize = 112.f * fRandom;
+			}
+			else
+			{
+				_float fRandom = GI->RandomFloat(0.17f, 0.29f);
+				fNumSize = 112.f * fRandom;
+			}
 		}
 		else
 		{
-			_float fRandom = GI->RandomFloat(0.16f, 0.2f);
-			fNumSize = 112.f * fRandom;
+			if (15.f <= fDistance)
+			{
+				if (18.f <= fDistance)
+					m_fAlpha = 0.1f;
+
+				_float fRandom = GI->RandomFloat(0.09f, 0.13f);
+				fNumSize = 112.f * fRandom;
+			}
+			else
+			{
+				_float fRandom = GI->RandomFloat(0.13f, 0.17f);
+				fNumSize = 112.f * fRandom;
+			}
 		}
 	}
 
@@ -274,11 +301,11 @@ void CUI_Damage_Number::Tick_Player(_float fTimeDelta)
 
 void CUI_Damage_Number::Tick_Monster(_float fTimeDelta)
 {
-	if (!m_bFadeOut)
+	if (false == m_bFadeOut)
 	{
 		m_fFadeTimeAcc += fTimeDelta;
 
-		if (m_fFadeTimeAcc > 0.3f)
+		if (m_fFadeTimeAcc > 0.2f)
 		{
 			m_bFadeOut = true;
 			m_fFadeTimeAcc = 0.f;
@@ -286,7 +313,7 @@ void CUI_Damage_Number::Tick_Monster(_float fTimeDelta)
 	}
 	else
 	{
-		m_fAlpha -= fTimeDelta;
+		m_fAlpha -= fTimeDelta * 2.f;
 
 		if (m_fAlpha <= 0.f)
 		{

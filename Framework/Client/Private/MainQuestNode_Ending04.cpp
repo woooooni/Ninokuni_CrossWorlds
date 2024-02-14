@@ -85,12 +85,8 @@ CBTNode::NODE_STATE CMainQuestNode_Ending04::Tick(const _float& fTimeDelta)
 					pActionCam->Finish_Action_Talk();
 
 				/* 여기서 퀘스트 보상 받기.(퀘스트 보상 다 받으면 return하기.*/
-				// 엔딩 UI 추가하기
 				CUI_Quest_Reward_Item::REWARDS_DESC ItemDesc = {};
-				ItemDesc.bFirstSlot = true;
-				ItemDesc.eFirstItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN;
-				ItemDesc.iFirstAmount = 10000;
-
+				ItemDesc.bIsEnding = true; /* 엔딩용 보상은 UI에서 처리합니다. 수정X */
 				CUI_Manager::GetInstance()->Set_QuestRewards(&ItemDesc);
 				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("엔딩"));
 				m_bIsRewarding = true;

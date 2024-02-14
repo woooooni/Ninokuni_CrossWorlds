@@ -43,13 +43,17 @@ void CUI_InGame_Setting_Slot::Set_Active(_bool bActive)
 		if ((SETTING_GRAPHIC == m_eSectionType &&
 			SLOT_THIRD == m_eType) ||
 			(SETTING_CAMERA == m_eSectionType &&
-			SLOT_THIRD == m_eType))
+				SLOT_THIRD == m_eType))
 			Ready_RadioState();
 
 		if ((SETTING_GRAPHIC == m_eSectionType && SLOT_SECOND == m_eType) ||
 			(SETTING_CAMERA == m_eSectionType && SLOT_SECOND == m_eType))
 			Ready_ButtonState();
 
+//		if ((SETTING_AUDIO == m_eSectionType &&
+//			SLOT_SECOND == m_eType || SLOT_THIRD == m_eType || SLOT_FOURTH == m_eType))
+//			Ready_SliderState();
+//
 		Set_ChildActive(true);
 	}
 	else
@@ -59,6 +63,16 @@ void CUI_InGame_Setting_Slot::Set_Active(_bool bActive)
 
 		if ((SETTING_CAMERA == m_eSectionType) &&
 			(SLOT_FOURTH == m_eType || SLOT_FIFTH == m_eType || SLOT_SIXTH == m_eType))
+		{
+			for (auto& iter : m_pChild)
+			{
+				if (nullptr != dynamic_cast<CUI_InGame_Setting_Slider*>(iter))
+					dynamic_cast<CUI_InGame_Setting_Slider*>(iter)->Set_IsArrived(false);
+			}
+		}
+
+		if ((SETTING_AUDIO == m_eSectionType) &&
+			(SLOT_SECOND == m_eType || SLOT_THIRD == m_eType || SLOT_FOURTH == m_eType))
 		{
 			for (auto& iter : m_pChild)
 			{
@@ -99,6 +113,8 @@ HRESULT CUI_InGame_Setting_Slot::Initialize(void* pArg)
 
 	Ready_Slider();
 	Ready_Icons();
+
+	Ready_SliderState();
 
 	m_bActive = false;
 
@@ -165,6 +181,16 @@ void CUI_InGame_Setting_Slot::Tick(_float fTimeDelta)
 
 				if ((SETTING_CAMERA == m_eSectionType) &&
 					(SLOT_FOURTH == m_eType || SLOT_FIFTH == m_eType || SLOT_SIXTH == m_eType))
+				{
+					for (auto& iter : m_pChild)
+					{
+						if (nullptr != dynamic_cast<CUI_InGame_Setting_Slider*>(iter))
+							dynamic_cast<CUI_InGame_Setting_Slider*>(iter)->Set_IsArrived(true);
+					}
+				}
+
+				if ((SETTING_AUDIO == m_eSectionType) &&
+					(SLOT_SECOND == m_eType || SLOT_THIRD == m_eType || SLOT_FOURTH == m_eType))
 				{
 					for (auto& iter : m_pChild)
 					{
@@ -531,7 +557,7 @@ void CUI_InGame_Setting_Slot::Update_GraphicRadioBtnState(_uint iGroupType, _uin
 				pOff->Set_Click(false);
 
 				if (false == m_pRendererCom->Get_SsaoDraw())
-					m_pRendererCom->Set_BlurDraw(true);
+					m_pRendererCom->Set_SsaoDraw(true);
 			}
 			else
 			{
@@ -539,41 +565,41 @@ void CUI_InGame_Setting_Slot::Update_GraphicRadioBtnState(_uint iGroupType, _uin
 				pOff->Set_Click(true);
 
 				if (true == m_pRendererCom->Get_SsaoDraw())
-					m_pRendererCom->Set_BlurDraw(false);
+					m_pRendererCom->Set_SsaoDraw(false);
 			}
 			break;
 
 		case CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_PBR:
-			pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"));
-			if (nullptr == pOnBtn)
-				return;
-			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
-				return;
-			pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"));
-			if (nullptr == pOffBtn)
-				return;
-			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
-				return;
-
-			pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
-			pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
-
-			if (CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN == iBtnType) // 0¿œ∂ß
-			{
-				pOn->Set_Click(true);
-				pOff->Set_Click(false);
-
-				if (false == m_pRendererCom->Get_PbrDraw())
-					m_pRendererCom->Set_PbrDraw(true);
-			}
-			else
-			{
-				pOn->Set_Click(false);
-				pOff->Set_Click(true);
-
-				if (true == m_pRendererCom->Get_PbrDraw())
-					m_pRendererCom->Set_PbrDraw(false);
-			}
+//			pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"));
+//			if (nullptr == pOnBtn)
+//				return;
+//			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+//				return;
+//			pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"));
+//			if (nullptr == pOffBtn)
+//				return;
+//			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+//				return;
+//
+//			pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+//			pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+//
+//			if (CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN == iBtnType) // 0¿œ∂ß
+//			{
+//				pOn->Set_Click(true);
+//				pOff->Set_Click(false);
+//
+//				if (false == m_pRendererCom->Get_PbrDraw())
+//					m_pRendererCom->Set_PbrDraw(true);
+//			}
+//			else
+//			{
+//				pOn->Set_Click(false);
+//				pOff->Set_Click(true);
+//
+//				if (true == m_pRendererCom->Get_PbrDraw())
+//					m_pRendererCom->Set_PbrDraw(false);
+//			}
 			break;
 		}
 	}
@@ -671,9 +697,9 @@ HRESULT CUI_InGame_Setting_Slot::Ready_Components()
 		TEXT("Com_Texture2"), (CComponent**)&m_pTextureCamera)))
 		return E_FAIL;
 
-//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_InGame_Setting_Graphic_Slots"),
-//		TEXT("Com_Texture3"), (CComponent**)&m_pTextureCom)))
-//		return E_FAIL;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_InGame_Setting_Sound_Slots"),
+		TEXT("Com_Texture3"), (CComponent**)&m_pTextureSound)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -720,6 +746,8 @@ HRESULT CUI_InGame_Setting_Slot::Bind_ShaderResources()
 		break;
 
 	case UI_SETTING_SECTION::SETTING_AUDIO:
+		if (FAILED(m_pTextureSound->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_eType))))
+			return E_FAIL;
 		break;
 	}
 
@@ -810,10 +838,10 @@ void CUI_InGame_Setting_Slot::Ready_RadioGroup()
 		if (FAILED(Make_Child(95.f, 114.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_SSAO"))))
 			return;
 
-		if (FAILED(Make_Child(-55.f, 156.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"))))
-			return;
-		if (FAILED(Make_Child(95.f, 156.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"))))
-			return;
+//		if (FAILED(Make_Child(-55.f, 156.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"))))
+//			return;
+//		if (FAILED(Make_Child(95.f, 156.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"))))
+//			return;
 		break;
 
 	case UI_SETTING_SECTION::SETTING_CAMERA:
@@ -1087,44 +1115,44 @@ void CUI_InGame_Setting_Slot::Ready_RadioState()
 				pOff->Set_Click(true);
 			}
 
-			if (true == m_pRendererCom->Get_PbrDraw())
-			{
-				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"));
-				if (nullptr == pOnBtn)
-					return;
-				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
-					return;
-				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"));
-				if (nullptr == pOffBtn)
-					return;
-				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
-					return;
-
-				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
-				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
-
-				pOn->Set_Click(true);
-				pOff->Set_Click(false);
-			}
-			else
-			{
-				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"));
-				if (nullptr == pOnBtn)
-					return;
-				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
-					return;
-				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"));
-				if (nullptr == pOffBtn)
-					return;
-				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
-					return;
-
-				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
-				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
-
-				pOn->Set_Click(false);
-				pOff->Set_Click(true);
-			}
+//			if (true == m_pRendererCom->Get_PbrDraw())
+//			{
+//				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"));
+//				if (nullptr == pOnBtn)
+//					return;
+//				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+//					return;
+//				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"));
+//				if (nullptr == pOffBtn)
+//					return;
+//				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+//					return;
+//
+//				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+//				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+//
+//				pOn->Set_Click(true);
+//				pOff->Set_Click(false);
+//			}
+//			else
+//			{
+//				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"));
+//				if (nullptr == pOnBtn)
+//					return;
+//				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+//					return;
+//				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"));
+//				if (nullptr == pOffBtn)
+//					return;
+//				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+//					return;
+//
+//				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+//				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+//
+//				pOn->Set_Click(false);
+//				pOff->Set_Click(true);
+//			}
 		}
 	}
 
@@ -1257,87 +1285,158 @@ void CUI_InGame_Setting_Slot::Ready_ButtonState()
 
 void CUI_InGame_Setting_Slot::Ready_SliderState()
 {
-	if (SETTING_CAMERA != m_eSectionType)
-		return;
-	if (SLOT_FOURTH > m_eType || SLOTORDER_END == m_eType)
-		return;
-
-	CCamera_Follow* pFollowCamera =
-		dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-	if (nullptr == pFollowCamera)
-		return;
-
-	CUI* pFirstSlider = nullptr;
-	CUI* pSecondSlider = nullptr;
-	CUI* pThirdSlider = nullptr;
-
-	CUI_InGame_Setting_Slider* pFirst = nullptr;
-	CUI_InGame_Setting_Slider* pSecond = nullptr;
-	CUI_InGame_Setting_Slider* pThird = nullptr;
-
-	switch(m_eType)
+	if (SETTING_CAMERA == m_eSectionType)
 	{
-	case SLOT_FOURTH:
-		pFirstSlider = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_First"));
-		if (nullptr == pFirstSlider)
-			return;
-		if (nullptr == dynamic_cast<CUI_InGame_Setting_Slider*>(pFirstSlider))
+		if (SLOT_FOURTH > m_eType || SLOTORDER_END == m_eType)
 			return;
 
-		pFirst = dynamic_cast<CUI_InGame_Setting_Slider*>(pFirstSlider); // »ÁµÈ∏≤
-		pFirst->Set_DefaultSetting();
-		break;
-
-	case SLOT_FIFTH:
-		pSecondSlider = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Second"));
-		if (nullptr == pSecondSlider)
-			return;
-		if (nullptr == dynamic_cast<CUI_InGame_Setting_Slider*>(pSecondSlider))
+		CCamera_Follow* pFollowCamera =
+			dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr == pFollowCamera)
 			return;
 
-		pSecond = dynamic_cast<CUI_InGame_Setting_Slider*>(pSecondSlider); // ∏∂øÏΩ∫ πŒ∞®µµ
-		pSecond->Set_DefaultSetting();
-		break;
+		CUI* pFirstSlider = nullptr;
+		CUI* pSecondSlider = nullptr;
+		CUI* pThirdSlider = nullptr;
 
-	case SLOT_SIXTH:
-		pThirdSlider = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Third"));
-		if (nullptr == pThirdSlider)
-			return;
-		if (nullptr == dynamic_cast<CUI_InGame_Setting_Slider*>(pThirdSlider))
-			return;
+		CUI_InGame_Setting_Slider* pFirst = nullptr;
+		CUI_InGame_Setting_Slider* pSecond = nullptr;
+		CUI_InGame_Setting_Slider* pThird = nullptr;
 
-		pThird = dynamic_cast<CUI_InGame_Setting_Slider*>(pThirdSlider); // ¥Ô«Œ πŒ∞®µµ
-		pThird->Set_DefaultSetting();
-		break;
+		switch (m_eType)
+		{
+		case SLOT_FOURTH:
+			pFirstSlider = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_First"));
+			if (nullptr == pFirstSlider)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_Slider*>(pFirstSlider))
+				return;
+
+			pFirst = dynamic_cast<CUI_InGame_Setting_Slider*>(pFirstSlider); // »ÁµÈ∏≤
+			pFirst->Set_CameraDefaultSetting();
+			break;
+
+		case SLOT_FIFTH:
+			pSecondSlider = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Second"));
+			if (nullptr == pSecondSlider)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_Slider*>(pSecondSlider))
+				return;
+
+			pSecond = dynamic_cast<CUI_InGame_Setting_Slider*>(pSecondSlider); // ∏∂øÏΩ∫ πŒ∞®µµ
+			pSecond->Set_CameraDefaultSetting();
+			break;
+
+		case SLOT_SIXTH:
+			pThirdSlider = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Third"));
+			if (nullptr == pThirdSlider)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_Slider*>(pThirdSlider))
+				return;
+
+			pThird = dynamic_cast<CUI_InGame_Setting_Slider*>(pThirdSlider); // ¥Ô«Œ πŒ∞®µµ
+			pThird->Set_CameraDefaultSetting();
+			break;
+		}
 	}
+	if (SETTING_AUDIO == m_eSectionType)
+	{
+		CUI* pFirstSlider = nullptr;
+		CUI* pSecondSlider = nullptr;
+		CUI* pThirdSlider = nullptr;
 
+		CUI_InGame_Setting_Slider* pFirst = nullptr;
+		CUI_InGame_Setting_Slider* pSecond = nullptr;
+		CUI_InGame_Setting_Slider* pThird = nullptr;
+
+		switch (m_eType)
+		{
+		case SLOT_SECOND:
+			pFirstSlider = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_First"));
+			if (nullptr == pFirstSlider)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_Slider*>(pFirstSlider))
+				return;
+
+			pFirst = dynamic_cast<CUI_InGame_Setting_Slider*>(pFirstSlider); // ¿¸√º ∫º∑˝
+			pFirst->Set_AudioDefaultSetting();
+			break;
+
+		case SLOT_THIRD:
+			pSecondSlider = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_Second"));
+			if (nullptr == pSecondSlider)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_Slider*>(pSecondSlider))
+				return;
+
+			pSecond = dynamic_cast<CUI_InGame_Setting_Slider*>(pSecondSlider); // πË∞Ê¿Ω
+			pSecond->Set_AudioDefaultSetting();
+			break;
+
+		case SLOT_FOURTH:
+			pThirdSlider = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_Third"));
+			if (nullptr == pThirdSlider)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_Slider*>(pThirdSlider))
+				return;
+
+			pThird = dynamic_cast<CUI_InGame_Setting_Slider*>(pThirdSlider); // »ø∞˙¿Ω
+			pThird->Set_AudioDefaultSetting();
+			break;
+		}
+	}
 
 }
 
 void CUI_InGame_Setting_Slot::Ready_Slider()
 {
-	if (SETTING_CAMERA != m_eSectionType)
-		return;
+	_float fWidth = 17.f; // 12.f
 
-	if (SLOT_FOURTH > m_eType || SLOTORDER_END == m_eType)
-		return;
-
-	switch (m_eType)
+	if (SETTING_CAMERA == m_eSectionType)
 	{
-	case SLOT_FOURTH:
-		if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_First"))))
+		if (SLOT_FOURTH > m_eType || SLOTORDER_END == m_eType)
 			return;
-		break;
 
-	case SLOT_FIFTH:
-		if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Second"))))
-			return;
-		break;
+		switch (m_eType)
+		{
+		case SLOT_FOURTH:
+			if (FAILED(Make_Child(60.f, 0.f, fWidth, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_First"))))
+				return;
+			break;
 
-	case SLOT_SIXTH: // √÷¥Î 200
-		if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Third"))))
+		case SLOT_FIFTH:
+			if (FAILED(Make_Child(60.f, 0.f, fWidth, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Second"))))
+				return;
+			break;
+
+		case SLOT_SIXTH: // √÷¥Î 200
+			if (FAILED(Make_Child(60.f, 0.f, fWidth, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Third"))))
+				return;
+			break;
+		}
+	}
+	else if (SETTING_AUDIO == m_eSectionType)
+	{
+		if (!(SLOT_FIRST < m_eType && SLOT_FIFTH > m_eType))
 			return;
-		break;
+
+		switch (m_eType)
+		{
+		case SLOT_SECOND:
+			if (FAILED(Make_Child(60.f, 2.f, fWidth, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_First"))))
+				return;
+			break;
+
+		case SLOT_THIRD:
+			if (FAILED(Make_Child(60.f, 3.f, fWidth, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_Second"))))
+				return;
+			break;
+
+		case SLOT_FOURTH: // √÷¥Î 200
+			if (FAILED(Make_Child(60.f, 3.f, fWidth, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_Third"))))
+				return;
+			break;
+		}
 	}
 }
 
@@ -1479,22 +1578,22 @@ void CUI_InGame_Setting_Slot::Set_DefaultGraphicSetting()
 
 
 	// PBR
-	pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"));
-	if (nullptr == pOnBtn)
-		return;
-	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
-		return;
-	pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"));
-	if (nullptr == pOffBtn)
-		return;
-	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
-		return;
-	pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
-	pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
-
-	pOn->Set_Click(true);
-	pOff->Set_Click(false);
-	m_pRendererCom->Set_PbrDraw(true);
+//	pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"));
+//	if (nullptr == pOnBtn)
+//		return;
+//	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+//		return;
+//	pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"));
+//	if (nullptr == pOffBtn)
+//		return;
+//	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+//		return;
+//	pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+//	pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+//
+//	pOn->Set_Click(true);
+//	pOff->Set_Click(false);
+//	m_pRendererCom->Set_PbrDraw(true);
 
 	//g_bControl = false;
 }
@@ -1506,6 +1605,14 @@ void CUI_InGame_Setting_Slot::Set_DefaultCameraSetting()
 
 	Ready_RadioState();
 	Ready_ButtonState();
+	Ready_SliderState();
+}
+
+void CUI_InGame_Setting_Slot::Set_DefaultSoundSetting()
+{
+	if (SETTING_AUDIO != m_eSectionType)
+		return;
+
 	Ready_SliderState();
 }
 
@@ -1541,7 +1648,7 @@ void CUI_InGame_Setting_Slot::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pTextureAudio);
+	Safe_Release(m_pTextureSound);
 	Safe_Release(m_pTextureCamera);
 	Safe_Release(m_pTextureCom);
 }

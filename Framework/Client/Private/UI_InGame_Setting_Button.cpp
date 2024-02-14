@@ -150,6 +150,9 @@ void CUI_InGame_Setting_Button::Key_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::LBTN))
 	{
 		CUI_Manager::GetInstance()->Update_SettingButton(m_eType);
+
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Minigame_Btn_2_St.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 	}
 }
 

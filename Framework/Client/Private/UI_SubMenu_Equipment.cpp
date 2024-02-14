@@ -172,13 +172,13 @@ void CUI_SubMenu_Equipment::On_Mouse(_float fTimeDelta)
 	{
 		if (KEY_TAP(KEY::LBTN))
 		{
-			if (m_eUIType == EQUIPBTN_INVENTORY)
-			{
-				GI->Stop_Sound(CHANNELID::SOUND_UI2);
-				GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_1.mp3"), CHANNELID::SOUND_UI2, GI->Get_ChannelVolume(CHANNELID::SOUND_UI2));
-
-				CUI_Manager::GetInstance()->OnOff_Inventory(true);
-			}
+			//if (m_eUIType == EQUIPBTN_INVENTORY)
+			//{
+			//	GI->Stop_Sound(CHANNELID::SOUND_UI2);
+			//	GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_1.mp3"), CHANNELID::SOUND_UI2, GI->Get_ChannelVolume(CHANNELID::SOUND_UI2));
+			//
+			//	CUI_Manager::GetInstance()->OnOff_Inventory(true);
+			//}
 		}
 
 		__super::On_Mouse(fTimeDelta);

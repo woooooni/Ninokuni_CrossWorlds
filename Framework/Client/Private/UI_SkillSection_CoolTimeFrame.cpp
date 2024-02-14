@@ -73,8 +73,6 @@ void CUI_SkillSection_CoolTimeFrame::Tick(_float fTimeDelta)
 		if (false == m_bUsable)
 		{
 			m_iPass = 19;
-
-//			m_fCurGauge += fTimeDelta;
 			m_fCurGauge = m_pSkill->Get_CurrCoolTime();
 
 			if (m_fMaxGauge <= m_fCurGauge)
@@ -96,8 +94,15 @@ void CUI_SkillSection_CoolTimeFrame::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		// 캐릭터 태그시 쿨타임을 갱신해야한다.
+		// 현재 캐릭터가 내가 저장해 둔 캐릭터와 다르다면
+		CHARACTER_TYPE eCharacterType = CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType();
+		if (m_eCurPlayerType != eCharacterType)
+		{
+			Ready_Skill(); // 스킬을 다시 받는다
+		}
 
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
 

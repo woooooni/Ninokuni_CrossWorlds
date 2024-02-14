@@ -13,6 +13,8 @@
 #include "UI_World_NPCTag.h"
 
 #include "Character_Manager.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
 
 CDestroyer_Npc::CDestroyer_Npc(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
@@ -71,8 +73,11 @@ void CDestroyer_Npc::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	if (nullptr != m_pTag)
-		m_pTag->Tick(fTimeDelta);
+	if (CAMERA_TYPE::CAMERA_CURLING != CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+	{
+		if (nullptr != m_pTag)
+			m_pTag->Tick(fTimeDelta);
+	}
 }
 
 void CDestroyer_Npc::LateTick(_float fTimeDelta)
@@ -106,9 +111,11 @@ void CDestroyer_Npc::LateTick(_float fTimeDelta)
 	//m_pRendererCom->Add_Debug(m_pControllerCom);
 #endif // DEBUG
 
-
-	if (nullptr != m_pTag)
-		m_pTag->LateTick(fTimeDelta);
+	if (CAMERA_TYPE::CAMERA_CURLING != CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+	{
+		if (nullptr != m_pTag)
+			m_pTag->LateTick(fTimeDelta);
+	}
 
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);

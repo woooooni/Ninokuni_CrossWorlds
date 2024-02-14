@@ -38,6 +38,7 @@ public: // Get/Set
 	_bool			Is_QuestRewardWindowOff();
 	_bool			Is_LoadingDone();
 	_bool			Is_MinimapOn();
+	_bool			Is_QuestRewardsOn();
 
 	void			Set_UIClicked(_bool bClicked) { m_bEvent = bClicked; }
 	_bool			Is_UIClicked() { return m_bEvent; }
@@ -220,7 +221,7 @@ public: // Lobby
 	void OnOff_TextUI(_bool bOnOff);
 
 	void Set_QuestRewards(void* pArg);
-	void Update_QuestItemPosition(_int iTotal);
+	void Update_QuestItemPosition(_int iTota, _bool bIsEnding = false);
 	void OnOff_QuestRewards(_bool bOnOff, const wstring& strTitle = TEXT(""));
 	void Set_AlphaToItems();
 	void Show_RewardItems();
@@ -382,6 +383,7 @@ private:
 	class CUI_InGame_Setting_Window*		m_pInGameSetting = { nullptr };
 	vector <class CUI_InGame_Setting_Slot*> m_GraphicSlot;
 	vector <class CUI_InGame_Setting_Slot*> m_CameraSlot;
+	vector <class CUI_InGame_Setting_Slot*> m_SoundSlot;
 
 	list<class CUI_AddItem*>		m_ItemPopup;
 

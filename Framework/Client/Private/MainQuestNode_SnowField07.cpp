@@ -5,9 +5,10 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
-
+#include "Inventory_Manager.h"
 #include "Game_Manager.h"
 #include "Quest_Manager.h"
+#include "Player.h"
 
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
@@ -94,10 +95,26 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField07::Tick(const _float& fTimeDelta)
 				CUI_Quest_Reward_Item::REWARDS_DESC ItemDesc = {};
 				ItemDesc.bFirstSlot = true;
 				ItemDesc.eFirstItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN;
-				ItemDesc.iFirstAmount = 10000;
+				ItemDesc.iFirstAmount = 7777;
+
+				ItemDesc.bSecondSlot = true;
+				ItemDesc.eSecondItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_HPPOTION;
+				ItemDesc.iSecondAmount = 7;
+
+				ItemDesc.bThirdSlot = true;
+				ItemDesc.eThirdItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_EXP;
+				ItemDesc.iThirdAmount = 770;
 
 				CUI_Manager::GetInstance()->Set_QuestRewards(&ItemDesc);
 				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("몬스터 정리"));
+
+				CGame_Manager::GetInstance()->Get_Player()->Increase_Gold(ItemDesc.iFirstAmount);
+				for (_int i = 0; i < ItemDesc.iSecondAmount; i++)
+				{
+					CInventory_Manager::GetInstance()->Prepare_Item(ITEM_TYPE::CONSUMPSION, ITEM_CODE::CONSUMPSION_HP);
+				}
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Add_Exp(ItemDesc.iThirdAmount);
+
 				m_bIsRewarding = true;
 			}
 

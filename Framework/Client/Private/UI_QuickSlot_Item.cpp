@@ -299,6 +299,10 @@ void CUI_QuickSlot_Item::Use_Item()
 		if (QUICKITEM_FIRST == m_eType)
 		{
 			CInventory_Manager::GetInstance()->Use_Item(m_eCode);
+
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_Comm_Potion_HP_1_St.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 		}
 	}
 }

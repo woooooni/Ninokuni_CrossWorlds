@@ -36,6 +36,12 @@ HRESULT CUI_InGame_Setting_Icons::Initialize(void* pArg)
 
 	m_bUseMouse = true;
 
+	if (CAMERA_DEFAULT == m_eType)
+	{
+		m_vOriginSize = _float2(m_tInfo.fCX, m_tInfo.fCY);
+		m_vMaxSize = _float2(m_tInfo.fCX * 1.2f, m_tInfo.fCY * 1.2f);
+	}
+
 	return S_OK;
 }
 
@@ -74,11 +80,21 @@ HRESULT CUI_InGame_Setting_Icons::Render()
 
 void CUI_InGame_Setting_Icons::On_MouseEnter(_float fTimeDelta)
 {
+	if (true == m_bActive)
+	{
+		if (m_eType == CAMERA_DEFAULT)
+		{
+			m_tInfo.fCX = m_vMaxSize.x;
+			m_tInfo.fCY = m_vMaxSize.y;
+
+			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+		}
+	}
 }
 
 void CUI_InGame_Setting_Icons::On_Mouse(_float fTimeDelta)
 {
-	if (m_bActive)
+	if (true == m_bActive)
 	{
 		Key_Input(fTimeDelta);
 
@@ -88,8 +104,16 @@ void CUI_InGame_Setting_Icons::On_Mouse(_float fTimeDelta)
 
 void CUI_InGame_Setting_Icons::On_MouseExit(_float fTimeDelta)
 {
-	if (m_bActive)
+	if (true == m_bActive)
 	{
+		if (m_eType == CAMERA_DEFAULT)
+		{
+			m_tInfo.fCX = m_vOriginSize.x;
+			m_tInfo.fCY = m_vOriginSize.y;
+
+			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+		}
+
 		__super::On_MouseExit(fTimeDelta);
 	}
 }
