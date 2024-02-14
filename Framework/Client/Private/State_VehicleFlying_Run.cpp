@@ -38,12 +38,12 @@ void CState_VehicleFlying_Run::Enter_State(void* pArg)
 	m_iCurrAnimIndex = m_AnimIndices[0];
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 
-	if (nullptr != m_pFollowCamera)
-	{
-		m_pFollowCamera->Set_DampingBackLimitRad(XMConvertToRadians(180.f));
-		m_pFollowCamera->Set_CanInput(true);
-		m_pFollowCamera->Set_MinMaxLimitY(0.4f, 2.5f);
-	}
+	//if (nullptr != m_pFollowCamera && CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
+	//{
+	//	m_pFollowCamera->Set_DampingBackLimitRad(XMConvertToRadians(180.f));
+	//	m_pFollowCamera->Set_CanInput(true);
+	//	m_pFollowCamera->Set_MinMaxLimitY(0.4f, 2.5f);
+	//}
 	
 
 	CVehicle_Flying_Biplane* pBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(m_pVehicle);
