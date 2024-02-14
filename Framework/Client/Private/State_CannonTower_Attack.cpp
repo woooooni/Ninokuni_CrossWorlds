@@ -75,6 +75,10 @@ void CState_CannonTower_Attack::Fire()
     }
 
     CParticle_Manager::GetInstance()->Generate_Particle(L"Particle_Defence_CannonTower_Fire_0", pTransform->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+
+    wstring strSoundKey = L"Obj_CannonTower_Shot_" + to_wstring(GI->RandomInt(1, 3)) + L".mp3";
+    GI->Play_Sound(strSoundKey, CHANNELID::SOUND_AIRPLANE, 0.5f);
+    
 }
 
 CState_CannonTower_Attack* CState_CannonTower_Attack::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

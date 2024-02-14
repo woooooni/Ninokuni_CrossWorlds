@@ -26,6 +26,9 @@ void CState_CrystalTower_Attack::Enter_State(void* pArg)
 {
     m_pModelCom->Set_Animation(m_AnimIndices[0], MIN_TWEEN_DURATION);
     m_bShoot = false;
+
+    wstring strSoundKey = L"Obj_FrozenCrystalTower_Cast_" + to_wstring(GI->RandomInt(1, 3)) + L".mp3";
+    GI->Play_Sound(strSoundKey, CHANNELID::SOUND_AIRPLANE, 0.5f);
 }
 
 void CState_CrystalTower_Attack::Tick_State(_float fTimeDelta)
@@ -77,6 +80,9 @@ void CState_CrystalTower_Attack::Fire()
             MSG_BOX("Add_GameObject Failed : CState_CrystalTower_Attack::Fire");
             return;
         }
+
+        wstring strSoundKey = L"Obj_FrozenCrystalTower_Shot_" + to_wstring(GI->RandomInt(1, 3)) + L".mp3";
+        GI->Play_Sound(strSoundKey, CHANNELID::SOUND_SHAKE, 0.5f);
     }
 
 }
