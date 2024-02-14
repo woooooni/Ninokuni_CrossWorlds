@@ -14,6 +14,7 @@ public:
 	void Init(int iShadowMapSize);
 	void Tick(const Vec3& vDirectionalDir);
 
+	void SubdivisionFrustum(const Vec3& vDirectinoalLight);
 
 	static const int m_iTotalCascades = 3;
 public:
@@ -23,10 +24,9 @@ public:
 	const Vec4 GetToCascadeOffsetY() const { return m_vToCascadeOffsetY; }
 	const Vec4 GetToCascadeScale() const { return m_vToCascadeScale; }
 
-
 public:
-	Matrix Get_LightOrthoMatrix(_int i) { return m_ArrayLightOrthoMatrix[i]; }
-	void TestTick();
+	const _float Get_CascadeEnd(_int index) const { return m_fCascadeEnd[index]; }
+	const Matrix Get_ShadowOrthoProj(_int index) const { return m_shadowOrthoProj[index]; }
 
 private:
 	void ExtractFrustumPoints(_float fNear, _float fFar, Vec3* arrFrustumCorners);
@@ -52,10 +52,9 @@ private:
 
 	_bool m_bAntiFlickerOn = true;
 
-
 private:
-	Matrix m_ArrayLightOrthoMatrix[m_iTotalCascades];
-
+	_float m_fCascadeEnd[4] = {};
+	Matrix m_shadowOrthoProj[3];
 public:
 	virtual void Free() override;
 };

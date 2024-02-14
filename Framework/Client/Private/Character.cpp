@@ -497,6 +497,17 @@ HRESULT CCharacter::Render_Cascade_Depth(const Matrix mCascadeShadowGenMat[3])
 	if (FAILED(m_pShaderCom->Bind_Matrices("CascadeViewProj", mCascadeShadowGenMat, 3)))
 		return E_FAIL;
 
+	Matrix World = m_pTransformCom->Get_WorldFloat4x4();
+	Matrix View = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+	Matrix proj = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
+
+	Matrix WV, WVP;
+	WV = World * View;
+	WVP = WV * proj;
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("WorldViewProjMatrix", &WVP)))
+		return E_FAIL;
+
 	for (size_t i = 0; i < PART_TYPE::PART_END; i++)
 	{
 		if (nullptr == m_pCharacterPartModels[i])

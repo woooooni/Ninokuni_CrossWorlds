@@ -51,7 +51,7 @@ bool   g_bSsaoDraw;
 bool   g_bOutLineDraw;
 
 float  g_fBias = 0.2f;
-
+ 
 // 라디알 블러
 float g_fQuality = 16.f;
 float g_fRadialPower = 0.1f;
@@ -65,7 +65,7 @@ SamplerComparisonState PCFSampler
     AddressV = CLAMP;
     AddressW = CLAMP;
     MaxAnisotropy = 1;
-    ComparisonFunc = LESS_EQUAL;
+    ComparisonFunc = NEVER;
     MaxLOD = 3.402823466e+38f;
 };
 
@@ -157,6 +157,12 @@ struct PS_OUT_LIGHT
     float4  vShadow : SV_TARGET2;
 };
 
+cbuffer LightTransform
+{
+    matrix lightPV[3];
+    float cascadeEndClipSpace[3];
+};
+
 float CascadeShadow(float3 position)
 {
     float4 posShadowSpace = mul(float4(position, 1.0f), ToShadowSpace);
@@ -189,7 +195,99 @@ float CascadeShadow(float3 position)
     return shadow;
 }
 
-void CaclDirectional(float3 position, float3 normal, float3 ambientColor, inout PS_OUT_LIGHT output)
+float4 CascadeShadowDebugPS(float3 position)
+{
+	// Transform the world position to shadow space
+    float4 posShadowSpace = mul(float4(position, 1.0), ToShadowSpace);
+
+	// Transform the shadow space position into each cascade position
+    float4 posCascadeSpaceX = (ToCascadeOffsetX + posShadowSpace.xxxx) * ToCascadeScale;
+    float4 posCascadeSpaceY = (ToCascadeOffsetY + posShadowSpace.yyyy) * ToCascadeScale;
+
+	// Check which cascade we are in
+    float4 inCascadeX = abs(posCascadeSpaceX) <= 1.0;
+    float4 inCascadeY = abs(posCascadeSpaceY) <= 1.0;
+    float4 inCascade = inCascadeX * inCascadeY;
+
+	// Prepare a mask for the highest quality cascade the position is in
+    float4 bestCascadeMask = inCascade;
+    bestCascadeMask.yzw = (1.0 - bestCascadeMask.x) * bestCascadeMask.yzw;
+    bestCascadeMask.zw = (1.0 - bestCascadeMask.y) * bestCascadeMask.zw;
+    bestCascadeMask.w = (1.0 - bestCascadeMask.z) * bestCascadeMask.w;
+
+    return 0.5 * bestCascadeMask;
+}
+
+float CalcCascadeShadowFactor(int cascadeIndex, float4 lightSpacePos)
+{
+    float3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
+    projCoords.x = projCoords.x * 0.5f + 0.5f;
+    projCoords.y = projCoords.y * -0.5f + 0.5f;
+    if(projCoords.z >= 1.0f)
+        return 1.f;
+    
+    float currentDepth = projCoords.z;
+    float bias = 0.01f;
+    float shadow = 0.0f;
+    
+    float3 samplePos = projCoords;
+    samplePos.z = cascadeIndex;
+    [unroll]
+    for (int x = -1; x <= 1; ++x)
+    {
+        for (int y = -1; y <= 1; ++y)
+        {
+            shadow += CascadeShadowMapTexture.SampleCmpLevelZero(PCFSampler, samplePos, currentDepth - bias, int2(x, y));
+        }
+    }
+    
+    shadow /= 9.0f;
+    
+    return shadow;
+}
+
+float4 CascadeShadowPS(PS_IN input) : SV_Target
+{
+    PS_OUT_LIGHT output = (PS_OUT_LIGHT) 0;
+
+    float4 vNormalDesc = g_NormalTarget.Sample(PointSampler, input.vTexcoord);
+    float4 vDepthDesc = g_DepthTarget.Sample(PointSampler, input.vTexcoord);
+    float fViewZ = vDepthDesc.y * 1000.0f;
+	
+    float3 vNormal = float3(vNormalDesc.xyz * 2.0f - 1.0f);
+	
+    float4 vWorldPos;
+    vWorldPos.x = input.vTexcoord.x * 2.0f - 1.0f;
+    vWorldPos.y = input.vTexcoord.y * -2.0f + 1.0f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.0f;
+	
+    vWorldPos = vWorldPos * fViewZ;
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    
+    //float4 cascadeLightPos[3];
+    float ShadowFactor = 0.0f;
+    
+    //[unroll]
+    //for (int i = 0; i < 3; ++i)
+    //    cascadeLightPos[i] = mul(vWorldPos, lightPV[i]);
+    
+    //[unroll]
+    //for (int j = 0; j < 3; ++j)
+    //{
+    //    if (vDepthDesc.x <= cascadeEndClipSpace[j])
+    //    {
+    //        ShadowFactor = CalcCascadeShadowFactor(j, cascadeLightPos[j]);
+    //        break;
+    //    }
+    //}
+    ShadowFactor = CascadeShadow(vWorldPos.xyz);
+    
+    return float4(ShadowFactor, ShadowFactor, ShadowFactor, 1.0f);
+}
+
+void CaclDirectional(float3 position, float3 normal, float3 ambientColor, inout PS_OUT_LIGHT output, float vClipZ)
 {
 	// Phong Diffuse
     float NDotL = dot(vDirToLight, normal);
@@ -202,10 +300,7 @@ void CaclDirectional(float3 position, float3 normal, float3 ambientColor, inout 
     float NDotH = saturate(dot(HalfWay, normal));
 	// Pow -> (NDotH, specPow) * SpecIntensity(SpecularMap Sampling)
     output.vSpecular = float4(vDirLightColor.rgb * pow(NDotH, 10.0f) * 1.0f, 1.0f);
-    
-    float shadowAtt;
-    shadowAtt = CascadeShadow(position);
-    output.vShadow = float4(shadowAtt, shadowAtt, shadowAtt, 1.0f);
+
 }
 
 float3 CaclAmbient(float3 normal)
@@ -298,7 +393,7 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN input)
     vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
 	
     float3 ambientColor = CaclAmbient(vNormal);
-    CaclDirectional(vWorldPos.xyz, vNormal, ambientColor, output);
+    CaclDirectional(vWorldPos.xyz, vNormal, ambientColor, output, vDepthDesc.x);
 	
     return output;
 }
@@ -644,6 +739,37 @@ PS_OUT PS_DISTORTION(PS_IN In)
     return Out;
 }
 
+DepthStencilState DSS_ShadowMapGen
+{
+    DepthEnable = true;
+    DepthWriteMask = ZERO;
+    DepthFunc = LESS;
+    StencilEnable = true;
+    StencilReadMask = 0xff;
+    StencilWriteMask = 0xff;
+    FrontFaceStencilFail = KEEP;
+    FrontFaceStencilDepthFail = KEEP;
+    FrontFaceStencilPass = KEEP;
+    FrontFaceStencilFunc = EQUAL;
+
+    BackFaceStencilFail = KEEP;
+    BackFaceStencilDepthFail = KEEP;
+    BackFaceStencilPass = KEEP;
+    BackFaceStencilFunc = EQUAL;
+};
+
+BlendState BS_Cascade
+{
+    AlphaToCoverageEnable = false;
+    BlendEnable[0] = true;
+    SrcBlend = One;
+    DestBlend = One;
+    BlendOp = Add;
+    SrcBlendAlpha = One;
+    DestBlendAlpha = One;
+    BlendOpAlpha = Add;
+    //RenderTargetWriteMask = 15;
+};
 
 technique11 DefaultTechnique
 {
@@ -793,5 +919,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_DEFERRED_UI();
+    }
+
+    // 11
+    pass CascadeShadow
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 CascadeShadowPS();
     }
 }

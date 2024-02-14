@@ -723,7 +723,6 @@ PS_OUT_SHADOW_DEPTH PS_SHADOW_DEPTH(PS_IN In)
 struct VS_CASCADE_OUT
 {
     float4 vPosition : SV_POSITION;
-    float2 vTexcoord : TEXCOORD0;
 };
 
 struct PS_OUT_PICKING
@@ -743,6 +742,7 @@ PS_OUT_PICKING PS_PICKING(PS_IN In)
 cbuffer LightTransform
 {
     matrix CascadeViewProj[3];
+    matrix WorldViewProjMatrix;
 };
 
 struct GS_IN
@@ -763,6 +763,7 @@ VS_CASCADE_OUT VS_CASCADE(VS_IN input)
 
     vector vPosition = mul(vector(input.vPosition, 1.f), BoneMatrix);
     
+    //Out.vPosition = mul(vPosition, g_WorldMatrix);
     Out.vPosition = vPosition;
     
     return Out;
@@ -818,6 +819,46 @@ DepthStencilState DrawReflectionDSS
     FrontFaceStencilDepthFail = KEEP;
     FrontFaceStencilPass = KEEP;
     FrontFaceStencilFunc = EQUAL;
+};
+
+RasterizerState RS_WireFrame
+{
+    FillMode = WireFrame;
+    CullMode = Back;
+    FrontCounterClockwise = false;
+};
+
+RasterizerState RS_CascadeGen
+{
+    FillMode = SOLID;
+    CullMode = FRONT;
+    FrontCounterClockwise = false;
+    DepthBias = 0;
+    DepthBiasClamp = 0.0f;
+    SlopeScaledDepthBias = 0.0f;
+    DepthClipEnable = true;
+    ScissorEnable = false;
+    MultisampleEnable = false;
+    AntialiasedLineEnable = false;
+};
+
+DepthStencilState DSS_ShadowMapGen
+{
+    DepthEnable = true;
+    DepthWriteMask = ALL;
+    DepthFunc = LESS;
+    StencilEnable = false;
+    StencilReadMask = 0xff;
+    StencilWriteMask = 0xff;
+    FrontFaceStencilFail = KEEP;
+    FrontFaceStencilDepthFail = KEEP;
+    FrontFaceStencilPass = KEEP;
+    FrontFaceStencilFunc = EQUAL;
+
+    BackFaceStencilFail = KEEP;
+    BackFaceStencilDepthFail = KEEP;
+    BackFaceStencilPass = KEEP;
+    BackFaceStencilFunc = EQUAL;
 };
 
 technique11 DefaultTechnique

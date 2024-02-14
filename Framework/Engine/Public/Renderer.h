@@ -261,7 +261,7 @@ private:
 	HRESULT Render_Shadow_Caculation();
 
 	HRESULT Render_Cascade_Shadow();
-	//HRESULT Render_Cascade_Caculation();
+	HRESULT Render_Cascade_Caculation();
 
 	HRESULT Render_NonBlend();
 	HRESULT Render_Lights();

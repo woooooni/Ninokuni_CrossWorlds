@@ -892,7 +892,7 @@ VS_CASCADE_OUT VS_CASCADE(VS_IN input)
 
     vector vPosition = float4(input.vPosition, 1.0f);
     
-    Out.vPosition = vPosition;
+    Out.vPosition = mul(vPosition, g_WorldMatrix);
     
     return Out;
 }

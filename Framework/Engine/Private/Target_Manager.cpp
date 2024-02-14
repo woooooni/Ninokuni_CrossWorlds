@@ -399,7 +399,7 @@ HRESULT CTarget_Manager::Begin_Cascade_MRT(ID3D11DeviceContext* pContext, const 
 
 	// 매트릭스 업데이트
 	m_pCascadeMatrixSet->Tick(vDirectionalDir);
-
+	//m_pCascadeMatrixSet->SubdivisionFrustum(vDirectionalDir);
 
 	return S_OK;
 }

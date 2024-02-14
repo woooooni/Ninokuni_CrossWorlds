@@ -13,8 +13,8 @@ void CCascadeMatrixSet::Init(int iShadowMapSize)
 
 	//Set the range values
 	m_arrCascadeRanges[0] = 0.2f;
-	m_arrCascadeRanges[1] = 10.0f;
-	m_arrCascadeRanges[2] = 25.0f;
+	m_arrCascadeRanges[1] = 8.0f;
+	m_arrCascadeRanges[2] = 16.0f;
 	m_arrCascadeRanges[3] = 1000.0f;
 
 	for (int i = 0; i < m_iTotalCascades; i++)
@@ -35,19 +35,81 @@ void CCascadeMatrixSet::Tick(const Vec3& vDirectionalDir)
 	if (nullptr == pCamera)
 		return;
 
-	Vec3 vCamLook = Vec3(pCamera->Get_Transform()->Get_Look());
-	Vec3 vCamEye = Vec3(pCamera->Get_Transform()->Get_Position());
-	_float fCurFar = pCamera->Get_ProjDesc().fFar;
+	//Vec3 vCamLook = Vec3(pCamera->Get_Transform()->Get_Look());
+	//Vec3 vCamEye = Vec3(pCamera->Get_Transform()->Get_Position());
+	//_float fCurFar = pCamera->Get_ProjDesc().fFar;
 
-	Vec3 vWorldCenter = vCamEye + vCamLook * m_fCascadeTotalRange * 0.5f;
-	Vec3 vPos = vWorldCenter;
-	Vec3 vLookAt = vWorldCenter + vDirectionalDir * fCurFar;
-	Vec3 vUp;
-	Vec3 vRight = Vec3(1.0f, 0.0f, 0.0f);
-	vUp = vDirectionalDir.Cross(vRight);
-	vUp.Normalize();
-	Matrix mShadowView;
-	mShadowView = ::XMMatrixLookAtLH(vPos, vLookAt, vUp);
+	//Vec3 vWorldCenter = vCamEye + vCamLook * m_fCascadeTotalRange * 0.5f;
+	//Vec3 vPos = vWorldCenter;
+	//Vec3 vLookAt = vWorldCenter + vDirectionalDir * fCurFar;
+	//Vec3 vUp;
+	//Vec3 vRight = Vec3(1.0f, 0.0f, 0.0f);
+	//vUp = vDirectionalDir.Cross(vRight);
+	//vUp.Normalize();
+	//Matrix mShadowView;
+	//mShadowView = ::XMMatrixLookAtLH(vPos, vLookAt, vUp);
+
+	Matrix mCameraViewInv = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+	const _float fFov = pCamera->Get_Fov();
+	const _float fAspect = pCamera->Get_ProjDesc().fAspect;
+	const _float fFar = pCamera->Get_ProjDesc().fFar;
+	const _float fNear = pCamera->Get_ProjDesc().fNear;
+
+	//_float fTanHalfVerticalFov = ::tanf(XMConvertToRadians(fFov * 0.5f));
+	//_float fTanHalfHorizonFov = fTanHalfVerticalFov * fAspect;
+
+	//m_fCascadeEnd[0] = fNear;
+	//m_fCascadeEnd[1] = 6.0f;
+	//m_fCascadeEnd[2] = 25.0f;
+	//m_fCascadeEnd[3] = fFar;
+
+	//for (_uint i = 0; i < 3; ++i)
+	//{
+	//	_float xn = m_fCascadeEnd[i] * fTanHalfHorizonFov;
+	//	_float xf = m_fCascadeEnd[i + 1] * fTanHalfHorizonFov;
+
+	//	_float yn = m_fCascadeEnd[i] * fTanHalfVerticalFov;
+	//	_float yf = m_fCascadeEnd[i + 1] * fTanHalfVerticalFov;
+
+	//	Vec4 vFrustumCorners[8] =
+	//	{
+	//		{xn, yn, m_fCascadeEnd[i], 1.0f},
+	//		{-xn, yn, m_fCascadeEnd[i], 1.0f},
+	//		{xn, -yn, m_fCascadeEnd[i], 1.0f},
+	//		{-xn, -yn, m_fCascadeEnd[i], 1.0f},
+
+	//		{xf, yf, m_fCascadeEnd[i + 1], 1.0f},
+	//		{-xf, yf, m_fCascadeEnd[i + 1], 1.0f},
+	//		{xf, -yf, m_fCascadeEnd[i + 1], 1.0f},
+	//		{-xf, -yf, m_fCascadeEnd[i + 1], 1.0f}
+	//	};
+
+	//	Vec4 vCenterPos;
+	//	for (_uint j = 0; j < 8; ++j)
+	//	{
+	//		vFrustumCorners[j] = Vec4::Transform(vFrustumCorners[j], mCameraViewInv);
+	//		vCenterPos += vFrustumCorners[j];
+	//	}
+
+	//	vCenterPos /= 8.0f;
+	//	_float fRadius = 0.0f;
+	//	for (_uint j = 0; j < 8; ++j)
+	//	{
+	//		Vec4 vDistanceVector = vFrustumCorners[j] - vCenterPos;
+	//		_float fDistance = vDistanceVector.Length();
+	//		fRadius = max(fRadius, fDistance);
+	//	}
+
+	//	fRadius = ceil(fRadius * 16.0f) / 16.0f;
+	//	Vec3 vMaxExtents = Vec3(fRadius, fRadius, fRadius);
+	//	Vec3 vMinExtents = -vMaxExtents;
+	//	Vec3 vShadowCamPos = Vec3(vCenterPos) + (vLightDirectional * vMinExtents.z);
+	//	Matrix lightMatrix = ::XMMatrixLookAtLH(vShadowCamPos, Vec3(vCenterPos), Vec3::Up);
+	//	Vec3 vCascadeExtents = vMaxExtents - vMinExtents;
+
+	//	Matrix lightOrthoMatrix;
+	//	m_shadowOrthoProj[i] = ::XMMatrixMultiply(lightMatrix, ::XMMatrixOrthographicOffCenterLH(vMinExtents.x, vMaxExtents.x, vMinExtents.y, vMaxExtents.y,
+	//		0.0f, vCascadeExtents.z));
 
 	// Get the bounds for the shadow space
 	_float fRadius;
@@ -163,7 +225,7 @@ void CCascadeMatrixSet::Tick(const Vec3& vDirectionalDir)
 	}
 }
 
-void CCascadeMatrixSet::TestTick()
+void CCascadeMatrixSet::SubdivisionFrustum(const Vec3& vLightDirectional)
 {
 	CCamera_Manager* pCameraManager = GET_INSTANCE(CCamera_Manager);
 	if (nullptr == pCameraManager)
@@ -173,102 +235,94 @@ void CCascadeMatrixSet::TestTick()
 	if (nullptr == pCamera)
 		return;
 
+	// 카메라의 역행렬과 시야각, 화면비, Far, Near
+	Matrix mCameraViewInv = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+	const _float fFov = pCamera->Get_Fov();
+	const _float fAspect = pCamera->Get_ProjDesc().fAspect;
+	const _float fFar = pCamera->Get_ProjDesc().fFar;
+	const _float fNear = pCamera->Get_ProjDesc().fNear;
 
-	_float fFov = pCamera->Get_Fov();
-	_float fAspect = pCamera->Get_ProjDesc().fAspect;
-	const _int FRUSTUN_VERTEX_NUM = 8;
-	Vec3 frustumPoint[FRUSTUN_VERTEX_NUM];
-	Matrix mLightViewMatrix = GI->GetViewLightMatrix();
+	_float fTanHalfVerticalFov = ::tanf(XMConvertToRadians(fFov * 0.5f));
+	_float fTanHalfHorizonFov = fTanHalfVerticalFov * fAspect;
 
-	const _float CASCADE_PERCENT[m_iTotalCascades + 1] = { 0.0f, 0.05f, 0.15f, 0.6f };
-	for (int nCascadeindex = 0; nCascadeindex < m_iTotalCascades; ++nCascadeindex)
+	m_fCascadeEnd[0] = fNear;
+	m_fCascadeEnd[1] = 6.0f;
+	m_fCascadeEnd[2] = 25.0f;
+	m_fCascadeEnd[3] = fFar;
+
+	for (_uint i = 0; i < 3; ++i)
 	{
+		_float xn = m_fCascadeEnd[i] * fTanHalfHorizonFov;
+		_float xf = m_fCascadeEnd[i + 1] * fTanHalfHorizonFov;
 
-		_float fNearPlane = 0;
-		_float fFarPlane = pCamera->Get_ProjDesc().fFar * CASCADE_PERCENT[nCascadeindex + 1];
-		_float fFarY = tan(fFov / 2.0f) * fFarPlane;
-		_float fFarX = fFarY / fAspect;
+		_float yn = m_fCascadeEnd[i] * fTanHalfVerticalFov;
+		_float yf = m_fCascadeEnd[i + 1] * fTanHalfVerticalFov;
 
-		frustumPoint[0] = XMVectorSet(fNearPlane, fNearPlane, fNearPlane, 1.0f); 
-		frustumPoint[1] = XMVectorSet(fNearPlane, fNearPlane, fNearPlane, 1.0f); 
-		frustumPoint[2] = XMVectorSet(fNearPlane, fNearPlane, fNearPlane, 1.0f); 
-		frustumPoint[3] = XMVectorSet(fNearPlane, fNearPlane, fNearPlane, 1.0f); 
-		frustumPoint[4] = XMVectorSet(fFarX, fFarY, fFarPlane, 1.0f);
-		frustumPoint[5] = XMVectorSet(fFarX, -fFarY, fFarPlane, 1.0f);
-		frustumPoint[6] = XMVectorSet(-fFarX, fFarY, fFarPlane, 1.0f);
-		frustumPoint[7] = XMVectorSet(-fFarX, -fFarY, fFarPlane, 1.0f); 
-
-
-		Matrix mCamviewMatrix = GI->Get_TransformMatrix(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-		Matrix invenseViewMatrix = mCamviewMatrix.Invert();
-		XMVECTOR lightVsSceneAABBMax = XMVectorSet(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN);
-		XMVECTOR lightVsSceneAABBMin = XMVectorSet(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
-		Vec3 tempFrustumPoint;
-
-		for (_int nFrustumindex = 0; nFrustumindex < FRUSTUN_VERTEX_NUM; ++nFrustumindex)
+		Vec4 vFrustumCorners[8] =
 		{
-			// 절두체를 월드로 변환.
-			frustumPoint[nFrustumindex] = Vec3::Transform(frustumPoint[nFrustumindex], invenseViewMatrix);
-			//frustumPoint[nFrustumindex] = XMVector3TransformCoord(frustumPoint[nFrustumindex], invenseViewMatrix);
+			{xn, yn, m_fCascadeEnd[i], 1.0f},
+			{-xn, yn, m_fCascadeEnd[i], 1.0f},
+			{xn, -yn, m_fCascadeEnd[i], 1.0f},
+			{-xn, -yn, m_fCascadeEnd[i], 1.0f},
+
+			{xf, yf, m_fCascadeEnd[i + 1], 1.0f},
+			{-xf, yf, m_fCascadeEnd[i + 1], 1.0f},
+			{xf, -yf, m_fCascadeEnd[i + 1], 1.0f},
+			{-xf, -yf, m_fCascadeEnd[i + 1], 1.0f}
+		};
+
+		Vec4 vCenterPos;
+		for (_uint j = 0; j < 8; ++j)
+		{
+			vFrustumCorners[j] = Vec4::Transform(vFrustumCorners[j], mCameraViewInv);
+			vCenterPos += vFrustumCorners[j];
 		}
 
-		for (_int nFrustumindex = 0; nFrustumindex < FRUSTUN_VERTEX_NUM; ++nFrustumindex)
+		vCenterPos /= 8.0f;
+		_float fRadius = 0.0f;
+		for (_uint j = 0; j < 8; ++j)
 		{
-			// 절두체를 월드에서 라이트 뷰 매트릭스로 변환.
-			tempFrustumPoint = Vec3::Transform(frustumPoint[nFrustumindex], mLightViewMatrix);
-			//tempFrustumPoint = XMVector3TransformCoord(frustumPoint[nFrustumindex], mLightViewMatrix);
-			lightVsSceneAABBMax = XMVectorMax(lightVsSceneAABBMax, tempFrustumPoint);
-			lightVsSceneAABBMin = XMVectorMin(lightVsSceneAABBMin, tempFrustumPoint);
+			Vec4 vDistanceVector = vFrustumCorners[j] - vCenterPos;
+			_float fDistance = vDistanceVector.Length();
+			fRadius = max(fRadius, fDistance);
 		}
 
-		_float fLightVsSceneAABBMinZ = XMVectorGetZ(lightVsSceneAABBMin);
-		_float fLightVsSceneAABBMaxZ = XMVectorGetZ(lightVsSceneAABBMax);
+		fRadius = ceil(fRadius * 16.0f) / 16.0f;
+		Vec3 vMaxExtents = Vec3(fRadius, fRadius, fRadius);
+		Vec3 vMinExtents = -vMaxExtents;
+		Vec3 vShadowCamPos = Vec3(vCenterPos) + (vLightDirectional * vMinExtents.z);
+		Matrix lightMatrix = ::XMMatrixLookAtLH(vShadowCamPos, Vec3(vCenterPos), Vec3::Up);
+		Vec3 vCascadeExtents = vMaxExtents - vMinExtents;
 
-		XMVECTOR vDiagonal = frustumPoint[0] - frustumPoint[7];
-		vDiagonal = XMVector3Length(vDiagonal);
-		_float fCascadeDiagonal = XMVectorGetX(vDiagonal);
-		Vec4 vBorderoffset = (vDiagonal - (lightVsSceneAABBMax - lightVsSceneAABBMin)) * XMVectorSet(0.5f,0.5f,0.0f,0.0f);
+		Matrix lightOrthoMatrix;
+		m_shadowOrthoProj[i] = ::XMMatrixMultiply(lightMatrix, ::XMMatrixOrthographicOffCenterLH(vMinExtents.x, vMaxExtents.x, vMinExtents.y, vMaxExtents.y,
+			0.0f, vCascadeExtents.z));
 
-		lightVsSceneAABBMax += vBorderoffset;
-		lightVsSceneAABBMin -= vBorderoffset;
+		//Vec4 vShadowOrigin = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		//vShadowOrigin = Vec4::Transform(vShadowOrigin, (lightOrthoMatrix * lightMatrix));
+		//vShadowOrigin = vShadowOrigin * (1024.0f / 2.0f);
+		//
+		//Vec4 vRoundedOrigin;
+		//vRoundedOrigin.x = ::roundf(vShadowOrigin.x);
+		//vRoundedOrigin.y = ::roundf(vShadowOrigin.y);
+		//vRoundedOrigin.z = ::roundf(vShadowOrigin.z);
+		//vRoundedOrigin.w = ::roundf(vShadowOrigin.w);
 
+		//Vec4 vRoundOffset = vRoundedOrigin - vShadowOrigin;
 
-		//lightVsSceneAABBMax lightVsSceneAABBMin
-		//(1)OrthoViewFrustum ShadowMap
-		//fWorldUnitPerTexel -->OrthoViewFrustum ShadowMap
-		_float fWorldUnitPerTexel = fCascadeDiagonal / static_cast<_float>(1024.0f);
-		Vec4 vWorldUnitPerTexel = Vec4(fWorldUnitPerTexel, fWorldUnitPerTexel, 0.0f, 0.0f);
-		//Vec4 vWorldUnitPerTexel = XMVectorSet(fWorldUnitPerTexel, fWorldUnitPerTexel, 0, 0);
+		//vRoundOffset = vRoundOffset * 2.0f / 1024.0f;
+		//vRoundOffset.z = 0.0f;
+		//vRoundOffset.w = 0.0f;
 
-		//(2)lightVsSceneAABBMax lightVsSceneAABBMin fWorldUnitPerTexel
-		//(1)(2)ightVsSceneAABBMax lightVsSceneAABBMin
-		
-		lightVsSceneAABBMin /= vWorldUnitPerTexel;
-		lightVsSceneAABBMin = XMVectorFloor(lightVsSceneAABBMin);
-		lightVsSceneAABBMin *= vWorldUnitPerTexel;
+		//lightOrthoMatrix._41 += vRoundOffset.x;
+		//lightOrthoMatrix._42 += vRoundOffset.y;
+		//lightOrthoMatrix._43 += vRoundOffset.z;
+		//lightOrthoMatrix._44 += vRoundOffset.w;
 
-		lightVsSceneAABBMax /= vWorldUnitPerTexel;
-		lightVsSceneAABBMax = XMVectorFloor(lightVsSceneAABBMax);
-		lightVsSceneAABBMax *= vWorldUnitPerTexel;
-
-
-		Vec3 f3LightVsSceneAABBMax;
-		Vec3 f3LightVsSceneAABBMin;
-		f3LightVsSceneAABBMax = lightVsSceneAABBMax;
-		f3LightVsSceneAABBMin = lightVsSceneAABBMin;
-		//XMStoreFloat3(&f3LightVsSceneAABBMax, lightVsSceneAABBMax);
-		//XMStoreFloat3(&f3LightVsSceneAABBMin, lightVsSceneAABBMin);
-
-		//GCamera->mFarPlane * 0.5f
-		//GCamera->mFarPlane * 0.15 Othrho ZBuffer 1.0
-		m_ArrayLightOrthoMatrix[nCascadeindex] = XMMatrixOrthographicOffCenterLH
-		(
-			f3LightVsSceneAABBMin.x, f3LightVsSceneAABBMax.x,
-			f3LightVsSceneAABBMin.y, f3LightVsSceneAABBMax.y,
-			fLightVsSceneAABBMinZ - pCamera->Get_ProjDesc().fFar * 0.5f, fLightVsSceneAABBMaxZ + pCamera->Get_ProjDesc().fFar * 0.15f
-		);
+		//m_shadowOrthoProj[i] = lightOrthoMatrix * lightMatrix;
 	}
 }
+
 
 void CCascadeMatrixSet::ExtractFrustumPoints(_float fNear, _float fFar, Vec3* arrFrustumCorners)
 {
