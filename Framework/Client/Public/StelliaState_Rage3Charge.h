@@ -19,6 +19,11 @@ public:
 	virtual void Exit_State();
 
 private:
+	void Create_GuardEffect();
+	void Delete_GuardEffect();
+	void Create_ResultEffect(_bool bSuccess);
+
+private:
 	// 최초 충돌
 	_bool m_bIsStartEvent = false;
 	_bool m_bIsTimeSlep = false;
@@ -26,6 +31,7 @@ private:
 
 	_float m_fAccSlepTime = 0.f;
 	_float m_fSlepTime = 0.f;
+
 
 	// 클릭 액션
 	_int m_iClickPower = 0;
@@ -45,7 +51,10 @@ private:
 	_float m_fCurChargeLength = 0.f;
 	_float m_fMinChargeLength = 0.f;
 
-	class CEffect* m_pPlayerGuard = nullptr;
+	_bool m_bGuardEffect = false;
+	class CEffect*   m_pPlayerGuard = nullptr;
+	class CParticle* m_pSpark_Player = nullptr;
+	class CParticle* m_pSpark_Monster = nullptr;
 
 public:
 	static CStelliaState_Rage3Charge* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);

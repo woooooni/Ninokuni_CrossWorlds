@@ -124,7 +124,7 @@ void CVfx_Glanix_Skill_HandDown::Tick(_float fTimeDelta)
 			if (false == m_bRadialBlur)
 			{
 				// 레디얼 블러 활성화
-				CGame_Manager::GetInstance()->Set_RadialBlur(true, 16.f, 0.02f);
+				CGame_Manager::GetInstance()->Lerp_RadialBlur(true, true, 0.f, -0.02f, 0.1f, 16.f);
 				m_bRadialBlur = true;
 			}
 
@@ -171,7 +171,8 @@ void CVfx_Glanix_Skill_HandDown::Tick(_float fTimeDelta)
 			m_pWarningDecal->Set_Dead(true);
 			Safe_Release(m_pWarningDecal);
 
-			CGame_Manager::GetInstance()->Set_RadialBlur(false);
+			// 레디얼 블러 비활성화
+			CGame_Manager::GetInstance()->Lerp_RadialBlur(false, false, -0.02f, 0.f, 0.05f, 16.f);
 
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_HandDown_Crack"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_ATTACK_CRACK], m_pScaleOffset[TYPE_D_ATTACK_CRACK], m_pRotationOffset[TYPE_D_ATTACK_CRACK]);
@@ -352,9 +353,5 @@ void CVfx_Glanix_Skill_HandDown::Free()
 		Safe_Delete_Array(m_pPositionOffset);
 		Safe_Delete_Array(m_pScaleOffset);
 		Safe_Delete_Array(m_pRotationOffset);
-	}
-	else
-	{
-		CGame_Manager::GetInstance()->Set_RadialBlur(false);
 	}
 }

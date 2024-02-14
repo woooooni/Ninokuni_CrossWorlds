@@ -103,8 +103,12 @@ void CVfx_Stellia_Skill_Rage03Charge::Tick(_float fTimeDelta)
 			{
 				m_fTimeAcc = 0.f;
 
-				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_Skill_Rage03Charge_TrailLine"),
-					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_CIRCLE], m_pScaleOffset[TYPE_ET2_E_CIRCLE], m_pRotationOffset[TYPE_ET2_E_CIRCLE]);
+				CTransform* pOwnerTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
+				if (nullptr != pOwnerTransform)
+				{
+					GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_Skill_Rage03Charge_TrailLine"),
+						pOwnerTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET2_E_CIRCLE], m_pScaleOffset[TYPE_ET2_E_CIRCLE], m_pRotationOffset[TYPE_ET2_E_CIRCLE]);
+				}
 			}
 		}
 	}

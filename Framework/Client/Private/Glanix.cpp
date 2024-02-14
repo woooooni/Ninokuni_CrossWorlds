@@ -163,7 +163,8 @@ void CGlanix::Tick(_float fTimeDelta)
 	//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE, true);
 
 	// 보스가 살아있는 동안은 미니맵을 끈다.
-	CUI_Manager::GetInstance()->OnOff_MiniMap(false);
+	if(LEVEL_TOOL != GI->Get_CurrentLevel())
+		CUI_Manager::GetInstance()->OnOff_MiniMap(false);
 }
 
 void CGlanix::LateTick(_float fTimeDelta)

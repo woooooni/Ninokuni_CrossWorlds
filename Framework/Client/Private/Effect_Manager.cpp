@@ -728,6 +728,21 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_UI()
 		CVfx_UI_MouseClick::Create(m_pDevice, m_pContext, TEXT("Particles_MouseClick")), LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
+	// Prototype_Vfx_UI_SkillUse
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_UI_SkillUse"),
+		CVfx_UI_SkillUse::Create(m_pDevice, m_pContext, TEXT("Particles_UI_SkillUse")), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
+
+	// Prototype_Vfx_UI_WeaponSet
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_UI_WeaponSet"),
+		CVfx_UI_WeaponSet::Create(m_pDevice, m_pContext, TEXT("Particles_UI_WeaponSet")), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
+
+	// Prototype_Vfx_UI_Quest
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_UI_Quest"),
+		CVfx_UI_Quest::Create(m_pDevice, m_pContext, TEXT("Particles_UI_Quest")), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
+
 	// Prototype_Vfx_TargetPoint(For Monster)
 //	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_TargetMonsterPoint"),
 //		CVfx_TargetPoint::Create(m_pDevice, m_pContext, TEXT("Decal_TargetPoint")), LAYER_TYPE::LAYER_EFFECT)))

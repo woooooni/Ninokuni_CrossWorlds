@@ -445,6 +445,9 @@
     <ClInclude Include="..\Public\State_CurlingGame_Launch_Stone.h" />
     <ClInclude Include="..\Public\State_CurlingGame_Move_Character.h" />
     <ClInclude Include="..\Public\Manager_State.h" />
+    <ClInclude Include="..\Public\Vfx_UI_Quest.h" />
+    <ClInclude Include="..\Public\Vfx_UI_SkillUse.h" />
+    <ClInclude Include="..\Public\Vfx_UI_WeaponSet.h" />
     <ClInclude Include="..\Public\Vfx_Whale_Jump.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Marble_Hit.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_BlackHole_Bomb.h" />
@@ -1569,6 +1572,9 @@
     <ClCompile Include="..\Private\State_CurlingGame_Launch_Stone.cpp" />
     <ClCompile Include="..\Private\State_CurlingGame_Move_Character.cpp" />
     <ClCompile Include="..\Private\Manager_State.cpp" />
+    <ClCompile Include="..\Private\Vfx_UI_Quest.cpp" />
+    <ClCompile Include="..\Private\Vfx_UI_SkillUse.cpp" />
+    <ClCompile Include="..\Private\Vfx_UI_WeaponSet.cpp" />
     <ClCompile Include="..\Private\Vfx_Whale_Jump.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Marble_Hit.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_BlackHole_Bomb.cpp" />

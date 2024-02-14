@@ -93,7 +93,7 @@ void CVfx_Glanix_Skill_Spawn::Tick(_float fTimeDelta)
 			if (false == m_bRadialBlur)
 			{
 				// 레디얼 블러 활성화
-				CGame_Manager::GetInstance()->Set_RadialBlur(true, 16.f, 0.1f);
+				CGame_Manager::GetInstance()->Lerp_RadialBlur(true, true, 0.f, -0.1f, 0.6f, 16.f);
 				m_bRadialBlur = true;
 			}
 
@@ -105,7 +105,11 @@ void CVfx_Glanix_Skill_Spawn::Tick(_float fTimeDelta)
 		}
 
 		else if (m_iCount == TYPE_END)
+		{
+			// 레디얼 블러 비활성화
+			CGame_Manager::GetInstance()->Lerp_RadialBlur(false, false, -0.1f, 0.f, 0.3f, 16.f);
 			m_bFinish = true;
+		}
 	}
 }
 
@@ -160,9 +164,5 @@ void CVfx_Glanix_Skill_Spawn::Free()
 		Safe_Delete_Array(m_pPositionOffset);
 		Safe_Delete_Array(m_pScaleOffset);
 		Safe_Delete_Array(m_pRotationOffset);
-	}
-	else
-	{
-		CGame_Manager::GetInstance()->Set_RadialBlur(false);
 	}
 }

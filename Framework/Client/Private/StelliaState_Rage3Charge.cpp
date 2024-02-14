@@ -12,6 +12,8 @@
 
 #include "Effect_Manager.h"
 #include "Effect.h"
+#include "Particle_Manager.h"
+#include "Particle.h"
 
 CStelliaState_Rage3Charge::CStelliaState_Rage3Charge(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
@@ -87,32 +89,11 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 			}
 		}
 
-
-		// Effect Create ----------------------------
-		if (nullptr == m_pPlayerGuard)
+		if (false == m_bGuardEffect)
 		{
-			_matrix WorldMatrix = m_pStellia->Get_TargetDesc().pTragetTransform->Get_WorldMatrix();
-
-			// 몬스터 - 플레이어
-			Vec4 vStelliaPosition = m_pTransformCom->Get_Position();
-			Vec4 vPlayerPosition  = m_pStellia->Get_TargetDesc().pTragetTransform->Get_State(CTransform::STATE_POSITION);
-			Vec3 vLook = vStelliaPosition - vPlayerPosition;
-			vLook.Normalize();
-			Vec3 vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook);
-			vRight.Normalize();
-			Vec3 vUp = XMVector3Cross(vLook, vRight);
-			vUp.Normalize();
-
-			_float3	vScale = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Scale();
-			WorldMatrix.r[CTransform::STATE_RIGHT] = vRight * vScale.x;
-			WorldMatrix.r[CTransform::STATE_UP]    = vUp    * vScale.y;
-			WorldMatrix.r[CTransform::STATE_LOOK]  = vLook  * vScale.z;
-
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_Skill_Rage03Charge_FrontLine_Player"),
-				WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(10.f, 10.f, 10.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pPlayerGuard, false);
-			Safe_AddRef(m_pPlayerGuard);
+			Create_GuardEffect();
+			m_bGuardEffect = true;
 		}
-		// ---------------------------- Effect Create
 
 		m_pStellia->Get_TargetDesc().pTragetTransform->LookAt_ForLandObject(m_pTransformCom->Get_Position());
 
@@ -127,11 +108,8 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		// 파훼 실패(시간 초과)
 		if (m_fAccClickTime >= m_fLimitTime) // 막고있는 상태 해제
 		{
-			if (nullptr != m_pPlayerGuard)
-			{
-				m_pPlayerGuard->Set_Dead(true);
-				Safe_Release(m_pPlayerGuard);
-			}
+			Delete_GuardEffect();
+			Create_ResultEffect(false);
 
 			m_pPlayer->Get_CharacterStateCom()->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
 			
@@ -169,13 +147,10 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		}
 
 		// 파훼 성공
-		if (m_iClickPower >= m_iClickDest) // 막고있는 상태 해제
+		if (m_iClickPower >= m_iClickDest) // 막고있는 상태 해제 // 클릭 횟수
 		{
-			if (nullptr != m_pPlayerGuard)
-			{
-				m_pPlayerGuard->Set_Dead(true);
-				Safe_Release(m_pPlayerGuard);
-			}
+			Delete_GuardEffect();
+			Create_ResultEffect(true);
 
 			if (m_iBreakCount < 1)
 			{
@@ -196,11 +171,8 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		// 파훼 실패(중간에 가드 해제)
 		else if (m_pPlayer->Get_CharacterStateCom()->Get_CurrState() != CCharacter::BATTLE_GUARD) // 막고있는 상태 해제
 		{
-			if (nullptr != m_pPlayerGuard)
-			{
-				m_pPlayerGuard->Set_Dead(true);
-				Safe_Release(m_pPlayerGuard);
-			}
+			Delete_GuardEffect();
+			Create_ResultEffect(false);
 
 			dynamic_cast<CCharacter*>(m_pStellia->Get_TargetDesc().pTarget)->Get_CharacterStateCom()->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
 			m_pStellia->Get_TargetDesc().pTarget->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
@@ -237,10 +209,124 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 
 void CStelliaState_Rage3Charge::Exit_State()
 {
+	Delete_GuardEffect();
+}
+
+void CStelliaState_Rage3Charge::Create_GuardEffect()
+{
+	// 레디얼 블러 활성화
+	CGame_Manager::GetInstance()->Lerp_RadialBlur(true, true, 0.f, -0.1f, 0.6f, 16.f);
+
+	_matrix WorldMatrix = m_pStellia->Get_TargetDesc().pTragetTransform->Get_WorldMatrix();
+
+	Vec4 vStelliaPosition = m_pTransformCom->Get_Position();
+	vStelliaPosition.y += 5.f;
+	Vec4 vPlayerPosition = m_pStellia->Get_TargetDesc().pTragetTransform->Get_State(CTransform::STATE_POSITION);
+	Vec3 vLook = vStelliaPosition - vPlayerPosition;
+	vLook.Normalize();
+	Vec3 vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook);
+	vRight.Normalize();
+	Vec3 vUp = XMVector3Cross(vLook, vRight);
+	vUp.Normalize();
+
+	_float3	vScale = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Scale();
+	WorldMatrix.r[CTransform::STATE_RIGHT] = vRight * vScale.x;
+	WorldMatrix.r[CTransform::STATE_UP] = vUp * vScale.y;
+	WorldMatrix.r[CTransform::STATE_LOOK] = vLook * vScale.z;
+
+	if (nullptr == m_pPlayerGuard)
+	{
+		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Stellia_Skill_Rage03Charge_FrontLine_Player"),
+			WorldMatrix, _float3(0.f, 0.1f, -0.1f), _float3(10.f, 10.f, 15.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pPlayerGuard, false);
+		Safe_AddRef(m_pPlayerGuard);
+	}
+
+	if (nullptr == m_pSpark_Player)
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Rage03Charge_FrontLine_Player_Circle"),
+			WorldMatrix, _float3(0.f, 1.1f, 2.2f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pSpark_Player, false);
+		Safe_AddRef(m_pSpark_Player);
+	}
+
+	if (nullptr == m_pSpark_Monster)
+	{
+		vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), -vLook);
+		vRight.Normalize();
+		vUp = XMVector3Cross(-vLook, vRight);
+		vUp.Normalize();
+		WorldMatrix.r[CTransform::STATE_RIGHT] = vRight * vScale.x;
+		WorldMatrix.r[CTransform::STATE_UP] = vUp * vScale.y;
+		WorldMatrix.r[CTransform::STATE_LOOK] = -vLook * vScale.z;
+
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Rage03Charge_FrontLine_Stellia_Circle"),
+			WorldMatrix, _float3(0.f, 1.1f, -1.8f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pSpark_Monster, false);
+		Safe_AddRef(m_pSpark_Monster);
+	}
+}
+
+void CStelliaState_Rage3Charge::Delete_GuardEffect()
+{
+	// 레디얼 블러 비활성화
+	if (true == m_bGuardEffect)
+	{
+		CGame_Manager::GetInstance()->Lerp_RadialBlur(false, false, -0.1f, 0.f, 0.3f, 16.f);
+		m_bGuardEffect = false;
+	}
+
 	if (nullptr != m_pPlayerGuard)
 	{
 		m_pPlayerGuard->Set_Dead(true);
 		Safe_Release(m_pPlayerGuard);
+	}
+	if (nullptr != m_pSpark_Player)
+	{
+		m_pSpark_Player->Set_Dead(true);
+		Safe_Release(m_pSpark_Player);
+	}
+	if (nullptr != m_pSpark_Monster)
+	{
+		m_pSpark_Monster->Set_Dead(true);
+		Safe_Release(m_pSpark_Monster);
+	}
+}
+
+void CStelliaState_Rage3Charge::Create_ResultEffect(_bool bSuccess)
+{
+	// 레디얼 블러 비활성화
+	if (true == m_bGuardEffect)
+	{
+		CGame_Manager::GetInstance()->Lerp_RadialBlur(false, false, -0.1f, 0.f, 0.3f, 16.f);
+		m_bGuardEffect = false;
+	}
+
+	_matrix WorldMatrix = m_pStellia->Get_TargetDesc().pTragetTransform->Get_WorldMatrix();
+
+	Vec4 vStelliaPosition = m_pTransformCom->Get_Position();
+	vStelliaPosition.y += 5.f;
+	Vec4 vPlayerPosition = m_pStellia->Get_TargetDesc().pTragetTransform->Get_State(CTransform::STATE_POSITION);
+	Vec3 vLook = vStelliaPosition - vPlayerPosition;
+	vLook.Normalize();
+	Vec3 vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook);
+	vRight.Normalize();
+	Vec3 vUp = XMVector3Cross(vLook, vRight);
+	vUp.Normalize();
+
+	_float3	vScale = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Scale();
+	WorldMatrix.r[CTransform::STATE_RIGHT] = vRight * vScale.x;
+	WorldMatrix.r[CTransform::STATE_UP] = vUp * vScale.y;
+	WorldMatrix.r[CTransform::STATE_LOOK] = vLook * vScale.z;
+
+	// 성공
+	if (bSuccess)
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Rage03Charge_Success"),
+			WorldMatrix, _float3(0.f, 1.1f, 0.2f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+	}
+	// 실패
+	else
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Stellia_Skill_Rage03Charge_Fail"),
+			WorldMatrix, _float3(0.f, 1.1f, 0.2f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 	}
 }
 
@@ -265,5 +351,15 @@ void CStelliaState_Rage3Charge::Free()
 	{
 		m_pPlayerGuard->Set_Dead(true);
 		Safe_Release(m_pPlayerGuard);
+	}
+	if (nullptr != m_pSpark_Player)
+	{
+		m_pSpark_Player->Set_Dead(true);
+		Safe_Release(m_pSpark_Player);
+	}
+	if (nullptr != m_pSpark_Monster)
+	{
+		m_pSpark_Monster->Set_Dead(true);
+		Safe_Release(m_pSpark_Monster);
 	}
 }
