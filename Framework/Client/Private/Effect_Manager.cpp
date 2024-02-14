@@ -723,6 +723,11 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx()
 		CVfx_FireCracker::Create(m_pDevice, m_pContext, TEXT("FireCracker")), LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
+	// Prototype_Vfx_Explosion
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Explosion"),
+		CVfx_Explosion::Create(m_pDevice, m_pContext, TEXT("EffectExplosion")), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
+
 	return S_OK;
 }
 

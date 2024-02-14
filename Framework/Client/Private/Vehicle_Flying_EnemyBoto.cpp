@@ -18,6 +18,8 @@
 #include "UI_Minigame_Aim.h"
 #include "UI_Grandprix_RaderIcon.h"
 
+#include "Effect_Manager.h"
+
 CVehicle_Flying_EnemyBoto::CVehicle_Flying_EnemyBoto(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CVehicle_Flying(pDevice, pContext, L"Vehicle_Flying_EnemyBoto", OBJ_TYPE::OBJ_GRANDPRIX_ENEMY)
 {
@@ -468,6 +470,9 @@ void CVehicle_Flying_EnemyBoto::On_Damaged(const COLLISION_INFO& tInfo)
 	m_tStat.fCurHP = max(0, m_tStat.fCurHP - iDamage);
 	if (0.f >= m_tStat.fCurHP)
 	{
+		// Effect Create
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Explosion"), m_pTransformCom->Get_WorldMatrix(), this);
+
 		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.5f, 19.f, 0.5f);
 		m_pRider->Set_Dead(true);
 		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_DEAD);

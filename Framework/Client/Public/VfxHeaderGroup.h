@@ -102,4 +102,5 @@
 #include "Vfx_TargetPoint.h"
 #include "Vfx_Smoke.h"
 #include "Vfx_FireCracker.h"
+#include "Vfx_Explosion.h"
 // -------------------------------------------------
