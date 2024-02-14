@@ -31,17 +31,17 @@ void CVfx_UI_SkillUse::Tick(_float fTimeDelta)
 		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_SkillUse_Main"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 		m_iCount++;
 	}
-	else if (m_iCount == 1 && m_fTimeAcc > 0.1f)
+	else if (m_iCount == 1 && m_fTimeAcc > 0.2f)
 	{
 		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_SkillUse_CircleLine"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 		m_iCount++;
 	}
-	else if (m_iCount == 2 && m_fTimeAcc > 0.25f)
+	else if (m_iCount == 2 && m_fTimeAcc > 0.45f)
 	{
 		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_SkillUse_Circle"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 		m_iCount++;
 	}
-	else if (m_iCount == 3 && m_fTimeAcc > 0.35f)
+	else if (m_iCount == 3 && m_fTimeAcc > 0.55f)
 	{
 		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_SkillUse_Twinkle"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 		m_iCount++;

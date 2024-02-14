@@ -2,6 +2,7 @@
 #include "UI_Quest_Reward.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Effect_Manager.h"
 
 CUI_Quest_Reward::CUI_Quest_Reward(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_QUESTREWARD eType)
 	: CUI(pDevice, pContext, L"UI_Quest_Reward")
@@ -53,6 +54,16 @@ void CUI_Quest_Reward::Set_Active(_bool bActive)
 			GI->Stop_Sound(CHANNELID::SOUND_UI);
 			GI->Play_Sound(TEXT("UI_Fx_Quest_Complete_Popup_1_St.mp3"), CHANNELID::SOUND_UI,
 				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
+			// Effect Create
+			_matrix WorldMatrix = XMMatrixIdentity();
+			_float4x4 Worldfloat4x4;
+			XMStoreFloat4x4(&Worldfloat4x4, WorldMatrix);
+			Worldfloat4x4.m[3][0] = m_tInfo.fX;
+			Worldfloat4x4.m[3][1] = m_tInfo.fY + 90.f;
+			Worldfloat4x4.m[3][2] = 0.f;
+			WorldMatrix = XMLoadFloat4x4(&Worldfloat4x4);
+			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_UI_Quest"), WorldMatrix);
 		}
 
 		m_bActive = bActive;

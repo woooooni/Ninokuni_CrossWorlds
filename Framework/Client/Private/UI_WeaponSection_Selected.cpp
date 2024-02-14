@@ -6,6 +6,7 @@
 #include "Weapon_Manager.h"
 #include "Player.h"
 #include "Weapon.h"
+#include "Effect_Manager.h"
 
 CUI_WeaponSection_Selected::CUI_WeaponSection_Selected(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_SkillSection_Selected")
@@ -149,6 +150,16 @@ void CUI_WeaponSection_Selected::Update_Position(_uint iSlotNum)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+
+	// Effect Create
+	_matrix WorldMatrix = XMMatrixIdentity();
+	_float4x4 Worldfloat4x4;
+	XMStoreFloat4x4(&Worldfloat4x4, WorldMatrix);
+	Worldfloat4x4.m[3][0] = m_tInfo.fX;
+	Worldfloat4x4.m[3][1] = m_tInfo.fY;
+	Worldfloat4x4.m[3][2] = 0.f;
+	WorldMatrix = XMLoadFloat4x4(&Worldfloat4x4);
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_UI_WeaponSet"), WorldMatrix);
 }
 
 void CUI_WeaponSection_Selected::Change_Weapon(_uint iSlotNum)
