@@ -15,6 +15,8 @@
 
 #include "Utils.h"
 
+#include "Riding_Manager.h"
+
 CCamera_Action::CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
 {
@@ -319,8 +321,20 @@ HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pNpc, const _bool& bFinal
 
 		/* 플레이어 상태, 인풋 변경 */
 		{
+			/* 이마젠을 타고 있다면 이마젠 지운다. */
+			const _uint iCurState = pPlayer->Get_Component_StateMachine()->Get_CurrState();
+			if (iCurState == CCharacter::STATE::VEHICLE_STAND
+				|| iCurState == CCharacter::STATE::VEHICLE_RUN
+				|| iCurState == CCharacter::STATE::VEHICLE_WALK)
+			{
+				CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::UDADAK, false);
+			}
+
+			/* 플레이어 아이들 상태로 변경 */
+			pPlayer->Get_Component_StateMachine()->Change_State(CCharacter::NEUTRAL_IDLE);
+
+			/* 인풋 막기 */
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
-			pPlayer->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CCharacter::NEUTRAL_IDLE);
 
 			m_tActionTalkDesc.pTransform_Player = pPlayer->Get_Component<CTransform>(L"Com_Transform");
 			if (nullptr == m_tActionTalkDesc.pTransform_Player)

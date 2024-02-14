@@ -26,7 +26,7 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_BERSERK);
 		return;
 	}
-
+	
 	// 레이지1 패턴
 	if (!m_bIsRageInit && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.75f)
 	{

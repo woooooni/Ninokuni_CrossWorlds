@@ -240,7 +240,7 @@ void CCamera_Follow::Set_Blending(const _bool& bBlending)
 			if (CCamera_Action::CAMERA_ACTION_TYPE::DOOR == pActionCam->Get_Camera_ActionType())
 			{
 				/* 이전 카메라가 도어 액션이었다면 모든 인풋을 열어준다. */
-				//CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 			}
 
 			if (CCamera_Action::CAMERA_ACTION_TYPE::TALK == pActionCam->Get_Camera_ActionType())
