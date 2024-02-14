@@ -12,6 +12,7 @@
 #include "Camera_Group.h"
 
 #include "Building.h"
+#include "Game_Manager.h"
 
 CSubQuestNode_Windmill11::CSubQuestNode_Windmill11()
 {
@@ -35,6 +36,7 @@ HRESULT CSubQuestNode_Windmill11::Initialize()
 void CSubQuestNode_Windmill11::Start()
 {
 	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 2.f);
+	CGame_Manager::GetInstance()->Get_Renderer()->Set_RenderSwitch(CRenderer::GODRAY_SWITCH, false);
 }
 
 CBTNode::NODE_STATE CSubQuestNode_Windmill11::Tick(const _float& fTimeDelta)
@@ -73,6 +75,7 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill11::Tick(const _float& fTimeDelta)
 		{
 			if (CCamera_Action::CAMERA_ACTION_TYPE::WINDMILL != pActionCam->Get_Camera_ActionType())
 			{
+				CGame_Manager::GetInstance()->Get_Renderer()->Set_RenderSwitch(CRenderer::GODRAY_SWITCH, true);
 				CUI_PopupQuest::QUEST_INFO QuestDesc = {};
 				QuestDesc.strType = m_strNextQuestTag;
 				QuestDesc.strTitle = m_strNextQuestName;

@@ -72,6 +72,18 @@ void CGame_Manager::LateTick(_float fTimeDelta)
 	}
 }
 
+CRenderer* CGame_Manager::Get_Renderer()
+{
+	if (nullptr == m_pPlayer)
+		return nullptr;
+
+	CCharacter* pCharacter = m_pPlayer->Get_Character();
+	if (nullptr == pCharacter)
+		return nullptr;
+
+	return pCharacter->Get_RendererCom();
+}
+
 void CGame_Manager::Set_RadialBlur(_bool bSet, _float fQuality, _float fRadialBlurPower)
 {
 	if (nullptr == m_pPlayer)

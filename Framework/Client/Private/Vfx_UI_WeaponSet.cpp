@@ -28,22 +28,13 @@ void CVfx_UI_WeaponSet::Tick(_float fTimeDelta)
 	m_fTimeAcc += fTimeDelta;
 	if (m_iCount == 0 && m_fTimeAcc > 0.f)
 	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Mouse_Circle"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_WeaponSet_Main"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 		m_iCount++;
 	}
 	else if (m_iCount == 1 && m_fTimeAcc > 0.1f)
 	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Mouse_CircleLine"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
-		m_iCount++;
-	}
-	else if (m_iCount == 2 && m_fTimeAcc > 0.25f)
-	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Mouse_Leaf"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
-		m_iCount++;
-	}
-	else if (m_iCount == 3 && m_fTimeAcc > 0.35f)
-	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Mouse_Twinkle"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_WeaponSet_Twinkle_01"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_WeaponSet_Twinkle_02"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 		m_iCount++;
 
 		Set_Dead(true);

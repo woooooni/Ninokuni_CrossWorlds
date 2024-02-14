@@ -4,6 +4,7 @@
 #include "UI_Manager.h"
 #include "Skill_Manager.h"
 #include "Skill.h"
+#include "Effect_Manager.h"
 
 CUI_SkillSection_SpecialSkill::CUI_SkillSection_SpecialSkill(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_SPECIALSKILL eType)
 	: CUI(pDevice, pContext, L"UI_SkillSection_SpecialSkill")
@@ -32,6 +33,16 @@ void CUI_SkillSection_SpecialSkill::Set_Clicked(_bool bClick)
 	}
 
 	m_bClicked = bClick;
+
+	// Effect Create
+	_matrix WorldMatrix = XMMatrixIdentity();
+	_float4x4 Worldfloat4x4;
+	XMStoreFloat4x4(&Worldfloat4x4, WorldMatrix);
+	Worldfloat4x4.m[3][0] = m_tInfo.fX;
+	Worldfloat4x4.m[3][1] = m_tInfo.fY;
+	Worldfloat4x4.m[3][2] = 0.f;
+	WorldMatrix = XMLoadFloat4x4(&Worldfloat4x4);
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_UI_SkillUse"), WorldMatrix);
 }
 
 HRESULT CUI_SkillSection_SpecialSkill::Initialize_Prototype()
