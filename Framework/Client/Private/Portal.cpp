@@ -94,11 +94,11 @@ void CPortal::Tick(_float fTimeDelta)
 		{
 			m_bActivate = false;
 
-			if (FAILED(GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel, L""))))
-				MSG_BOX("Portal Failde Activate");
-
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_EnterLevelPosition(m_vNextPos, &m_vRotation);
+
+			if (FAILED(GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel, L""))))
+				MSG_BOX("Portal Failde Activate");
 		}
 	}
 	else

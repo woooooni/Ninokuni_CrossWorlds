@@ -134,17 +134,6 @@ void CCharacter_SwordMan::Tick(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(-44.f, 1.6f, 315.f, 1.f));
 	}
 
-	if (true == m_bScreenEffect)
-	{
-		m_fAccRadial += fTimeDelta;
-		if (m_fAccRadial >= m_fRadialTime)
-		{
-			m_fAccRadial = 0.f;
-			m_bScreenEffect = false;
-			m_pRendererCom->Set_RadialBlur(false, 16.f);
-		}
-	}
-
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 	

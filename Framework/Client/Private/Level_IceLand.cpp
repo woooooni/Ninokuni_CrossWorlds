@@ -166,6 +166,7 @@ HRESULT CLevel_IceLand::Enter_Level()
 
 HRESULT CLevel_IceLand::Exit_Level()
 {
+	GI->Clear_PhysX_Ground();
 	return S_OK;
 }
 

@@ -133,6 +133,7 @@ HRESULT CLevel_Kingdom::Enter_Level()
 
 HRESULT CLevel_Kingdom::Exit_Level()
 {
+	GI->Clear_PhysX_Ground();
 	return S_OK;
 }
 

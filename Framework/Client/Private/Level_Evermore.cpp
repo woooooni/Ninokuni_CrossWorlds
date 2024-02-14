@@ -212,7 +212,6 @@ HRESULT CLevel_Evermore::LateTick(_float fTimeDelta)
 
 HRESULT CLevel_Evermore::Render_Debug()
 {
-
 	return S_OK;
 }
 
@@ -224,6 +223,7 @@ HRESULT CLevel_Evermore::Enter_Level()
 
 HRESULT CLevel_Evermore::Exit_Level()
 {
+	GI->Clear_PhysX_Ground();
 	return S_OK;
 }
 

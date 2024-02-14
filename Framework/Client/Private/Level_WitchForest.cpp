@@ -150,6 +150,7 @@ HRESULT CLevel_WitchForest::Enter_Level()
 
 HRESULT CLevel_WitchForest::Exit_Level()
 {
+	GI->Clear_PhysX_Ground();
 	return S_OK;
 }
 

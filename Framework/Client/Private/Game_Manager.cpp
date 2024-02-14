@@ -41,17 +41,13 @@ HRESULT CGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContex
 
 void CGame_Manager::Tick(_float fTimeDelta)
 {
-	if (nullptr != m_pPlayer && GI->Get_CurrentLevel() != LEVELID::LEVEL_LOADING)
-	{
+	if (nullptr != m_pPlayer && GI->Get_CurrentLevel() != LEVELID::LEVEL_LOADING)	
 		m_pPlayer->Tick(fTimeDelta);
-	}
 
 	CSkill_Manager::GetInstance()->Tick(fTimeDelta);
 
-	if (nullptr != m_pKuu && GI->Get_CurrentLevel() != LEVELID::LEVEL_LOADING)
-	{
+	if (nullptr != m_pKuu && GI->Get_CurrentLevel() != LEVELID::LEVEL_LOADING)	
 		m_pKuu->Tick(fTimeDelta);
-	}
 
 	if(m_bRadialBlurIn || m_bRadialBlurOut)
 		Tick_RadialBlur(fTimeDelta);

@@ -80,6 +80,7 @@ HRESULT CLevel_Lobby::Enter_Level()
 
 HRESULT CLevel_Lobby::Exit_Level()
 {
+	GI->Clear_PhysX_Ground();
 	return S_OK;
 }
 

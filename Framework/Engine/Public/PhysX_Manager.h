@@ -20,17 +20,9 @@ public:
 	void Tick(_float fTimeDelta);
 	void LateTick(_float fTimeDelta);
 
-#ifdef _DEBUG
-public:
-	HRESULT Render();
-#endif
 
 
 public:
-	//PxRigidStatic* Add_Static_Actor(const PHYSX_INIT_DESC& Desc);
-	//PxRigidDynamic* Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc);
-	//HRESULT Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidStatic*>& refOut);
-	//HRESULT Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidDynamic*>& refOut);
 	HRESULT Add_Ground(class CGameObject* pGameObject, class CModel* pModel, Matrix WorldMatrix, const wstring& strCollisionTag);
 	HRESULT Add_Building(class CGameObject* pGameObject, class CModel* pModel, Matrix WorldMatrix, const wstring& strCollisionTag);
 	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float3 vOffsetPos, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack);
@@ -47,7 +39,7 @@ public:
 	HRESULT Remove_Actor(class CGameObject* pGameObject);
 	
 public:
-	_bool Is_Valid_Scene() { return m_bSimulating == false; }
+	void Is_Valid_Scene();
 
 	
 
@@ -68,45 +60,7 @@ public:
 	// PxControllerFilterCallback을(를) 통해 상속됨
 	_bool Check_Push(_uint iLeftObjType, _uint iRightObjType);
 	virtual bool filter(const PxController& a, const PxController& b) override;
-	  //PxParticleSystem* Get_ParticleSystem()			{ return m_pParticleSystem; }
-	  //PxParticleClothBuffer* Get_ClothBuffer()			{ return m_pClothBuffer; }
-	  //PxCudaContext* Get_CudaContext()					{ return m_pCudaContextManager->getCudaContext(); }
-	  //PxCudaContextManager* Get_CudaContext_Manager()	{ return m_pCudaContextManager; }
 
-#pragma region No_Used
-//private:
-//	PxRigidDynamic* Create_Dynamic_Box(const PHYSX_INIT_DESC& Desc);
-//	PxRigidDynamic* Create_Dynamic_Sphere(const PHYSX_INIT_DESC& Desc);
-//	HRESULT Create_Dynamic_Mesh(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidDynamic*>& refOut);
-//
-//	PxRigidStatic* Create_Static_Box(const PHYSX_INIT_DESC& Desc);
-//	PxRigidStatic* Create_Static_Sphere(const PHYSX_INIT_DESC& Desc);
-//	HRESULT Create_Static_Mesh(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidStatic*>& refOut);
-
-//private:
-//	// HRESULT Ready_ParticleSystem();
-//	HRESULT Create_Cloth(class CVIBuffer* pBufferCom);
-//	HRESULT Create_Cloth(class CMesh* pMesh);
-
-
-//private:
-//	HRESULT Init_Cloth(const PxU32 numX, const PxU32 numZ, const PxVec3& position = PxVec3(0, 0, 0), const PxReal particleSpacing = 0.2f, const PxReal totalClothMass = 10.f);
-#pragma endregion
-
-
-
-	
-
-
-#ifdef _DEBUG
-private:
-	PrimitiveBatch<VertexPositionColor>* m_pBatch = nullptr;
-	BasicEffect* m_pEffect = nullptr;
-	ID3D11InputLayout* m_pInputLayout = nullptr;
-#endif
-
-private:
-	_bool m_bSimulating = false;
 
 private:
 	PxDefaultAllocator			m_Allocator;			// 메모리 관리용..?
@@ -122,25 +76,8 @@ private:
 	PxMaterial* m_WorldMaterial = nullptr;		// 객체의 재질
 	PxControllerManager* m_pController_Manager = nullptr; // 컨트롤러 매니저
 
-	//// PxCloth.
-	PxCudaContextManager*       m_pCudaContextManager = nullptr;
-	/*PxPBDParticleSystem*		m_pParticleSystem = nullptr;
-	PxParticleClothBuffer*		m_pClothBuffer = nullptr;
-	PxPartitionedParticleCloth	m_Cloth = {};*/
-
-	_bool m_bCudaGraphics = false;
-
-	PxPvd*						m_pPvd = nullptr; // 서버
-	PxPvdTransport*				m_pTransport = nullptr;
-	string						m_strIPAddress = "127.0.0.1";
-	int							m_iPortNumber = 5425;
-	int							m_iTimeOutSeconds = 100;
-
 private:
 	map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_GroundObjects;
-	/*map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_StaticObjects;
-	map<_uint, vector<PHYSX_DYNAMIC_OBJECT_DESC>> m_DynamicObjects;
-	*/
 	vector<OBJ_TYPE> m_eObjectTypes;
 
 private:
