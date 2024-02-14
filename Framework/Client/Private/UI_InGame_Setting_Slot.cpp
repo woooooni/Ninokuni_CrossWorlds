@@ -43,13 +43,17 @@ void CUI_InGame_Setting_Slot::Set_Active(_bool bActive)
 		if ((SETTING_GRAPHIC == m_eSectionType &&
 			SLOT_THIRD == m_eType) ||
 			(SETTING_CAMERA == m_eSectionType &&
-			SLOT_THIRD == m_eType))
+				SLOT_THIRD == m_eType))
 			Ready_RadioState();
 
 		if ((SETTING_GRAPHIC == m_eSectionType && SLOT_SECOND == m_eType) ||
 			(SETTING_CAMERA == m_eSectionType && SLOT_SECOND == m_eType))
 			Ready_ButtonState();
 
+//		if ((SETTING_AUDIO == m_eSectionType &&
+//			SLOT_SECOND == m_eType || SLOT_THIRD == m_eType || SLOT_FOURTH == m_eType))
+//			Ready_SliderState();
+//
 		Set_ChildActive(true);
 	}
 	else
@@ -109,6 +113,8 @@ HRESULT CUI_InGame_Setting_Slot::Initialize(void* pArg)
 
 	Ready_Slider();
 	Ready_Icons();
+
+	Ready_SliderState();
 
 	m_bActive = false;
 
@@ -1333,11 +1339,8 @@ void CUI_InGame_Setting_Slot::Ready_SliderState()
 			break;
 		}
 	}
-	else if (SETTING_AUDIO == m_eSectionType)
+	if (SETTING_AUDIO == m_eSectionType)
 	{
-		if (!(SLOT_FIRST < m_eType && SLOT_FIFTH > m_eType))
-			return;
-
 		CUI* pFirstSlider = nullptr;
 		CUI* pSecondSlider = nullptr;
 		CUI* pThirdSlider = nullptr;
@@ -1387,6 +1390,8 @@ void CUI_InGame_Setting_Slot::Ready_SliderState()
 
 void CUI_InGame_Setting_Slot::Ready_Slider()
 {
+	_float fWidth = 17.f; // 12.f
+
 	if (SETTING_CAMERA == m_eSectionType)
 	{
 		if (SLOT_FOURTH > m_eType || SLOTORDER_END == m_eType)
@@ -1395,17 +1400,17 @@ void CUI_InGame_Setting_Slot::Ready_Slider()
 		switch (m_eType)
 		{
 		case SLOT_FOURTH:
-			if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_First"))))
+			if (FAILED(Make_Child(60.f, 0.f, fWidth, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_First"))))
 				return;
 			break;
 
 		case SLOT_FIFTH:
-			if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Second"))))
+			if (FAILED(Make_Child(60.f, 0.f, fWidth, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Second"))))
 				return;
 			break;
 
 		case SLOT_SIXTH: // 최대 200
-			if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Third"))))
+			if (FAILED(Make_Child(60.f, 0.f, fWidth, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Third"))))
 				return;
 			break;
 		}
@@ -1418,17 +1423,17 @@ void CUI_InGame_Setting_Slot::Ready_Slider()
 		switch (m_eType)
 		{
 		case SLOT_SECOND:
-			if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_First"))))
+			if (FAILED(Make_Child(60.f, 2.f, fWidth, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_First"))))
 				return;
 			break;
 
 		case SLOT_THIRD:
-			if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_Second"))))
+			if (FAILED(Make_Child(60.f, 3.f, fWidth, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_Second"))))
 				return;
 			break;
 
 		case SLOT_FOURTH: // 최대 200
-			if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_Third"))))
+			if (FAILED(Make_Child(60.f, 3.f, fWidth, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Audio_Third"))))
 				return;
 			break;
 		}

@@ -256,8 +256,7 @@ void CUI_BtnChangeCamera::Update_CameraMode()
 			m_iTextureIndex = 1;
 
 			GI->Stop_Sound(CHANNELID::SOUND_UI);
-			GI->Play_Sound(TEXT("UI_Fx_MainHud_Btn_Camera_1.mp3"), CHANNELID::SOUND_UI,
-				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+			GI->Play_Sound(TEXT("UI_Fx_MainHud_Btn_Camera_1.mp3"), CHANNELID::SOUND_UI, 0.3f);
 		}
 	}
 

@@ -87,6 +87,9 @@ void CUI_InGame_Setting_RadioBtn::On_Mouse(_float fTimeDelta)
 		if (KEY_TAP(KEY::LBTN))
 		{
 			CUI_Manager::GetInstance()->Update_SettingGraphicRadio(m_eGroupType, m_eBtnType);
+
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_Minigame_Btn_1_St.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 		}
 
 		__super::On_Mouse(fTimeDelta);

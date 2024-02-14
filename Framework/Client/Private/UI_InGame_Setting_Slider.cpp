@@ -59,34 +59,36 @@ void CUI_InGame_Setting_Slider::Set_Active(_bool bActive)
 		}
 		else
 		{
-			_int iVolume = 0;
-
-			switch (m_eType)
-			{
-			case FIRST_SLIDER: // 전체 볼륨
-				iVolume = GI->Get_AllChannelVolume(); // -의 값이 들어있음.
-				m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
-				m_iPercent = iVolume * 100.f;
-				break;
-
-			case SECOND_SLIDER: // 배경음
-				iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
-				m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
-				m_iPercent = iVolume * 100.f;
-				break;
-
-			case THIRD_SLIDER: // 효과음
-				iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_UI);
-				m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
-				m_iPercent = iVolume * 100.f;
-			}
+//			m_fLength = fabs(m_fMaxX - m_fMinX);
+//			_int iVolume = 0;
+//
+//			switch (m_eType)
+//			{
+//			case FIRST_SLIDER: // 전체 볼륨
+//				iVolume = GI->Get_AllChannelVolume(); // -의 값이 들어있음.
+//				m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
+//				m_iPercent = iVolume * 100.f;
+//				break;
+//
+//			case SECOND_SLIDER: // 배경음
+//				iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
+//				m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
+//				m_iPercent = iVolume * 100.f;
+//				break;
+//
+//			case THIRD_SLIDER: // 효과음
+//				iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_UI);
+//				m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
+//				m_iPercent = iVolume * 100.f;
+//			}
 		}
+
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 
 		m_bDrag = false;
 	}
-
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 
 	m_bActive = bActive;
 }
@@ -136,6 +138,7 @@ void CUI_InGame_Setting_Slider::Set_AudioDefaultSetting()
 	if (m_eType == SLIDERTYPE_END)
 		return;
 
+	m_fLength = fabs(m_fMaxX - m_fMinX);
 	_int iVolume = 0;
 
 	switch (m_eType)
@@ -240,9 +243,12 @@ void CUI_InGame_Setting_Slider::Tick(_float fTimeDelta)
 		}
 		else
 		{
+			_float fTemp = 0.f;
+
 			switch (m_eType)
 			{
 			case UI_SETTING_SLIDERTYPE::FIRST_SLIDER:
+				fTemp = fCurPosX / m_fLength;
 				GI->Set_AllChannelVolume(fCurPosX / m_fLength);
 				break;
 

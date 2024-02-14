@@ -91,9 +91,56 @@ void CUI_Emoticon_Button::On_Mouse(_float fTimeDelta)
 			CUI_Manager::GetInstance()->Set_EmoticonType(_uint(m_eType));
 			CUI_Manager::GetInstance()->OnOff_EmoticonBalloon(true);
 
-			GI->Stop_Sound(CHANNELID::SOUND_UI);
-			GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_1.mp3"), CHANNELID::SOUND_UI,
-				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+			switch (m_eType)
+			{
+			case EMOTIONBTN_FIRST:
+				GI->Stop_Sound(CHANNELID::SOUND_UI);
+				GI->Play_Sound(TEXT("Funya_V_Worry_1.mp3"), CHANNELID::SOUND_UI,
+					GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+				break;
+
+			case EMOTIONBTN_SECOND:
+				GI->Stop_Sound(CHANNELID::SOUND_UI);
+				GI->Play_Sound(TEXT("Funya_V_Emo_Happy_3.mp3"), CHANNELID::SOUND_UI,
+					GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+				break;
+
+			case EMOTIONBTN_THIRD:
+				GI->Stop_Sound(CHANNELID::SOUND_UI);
+				GI->Play_Sound(TEXT("Funya_V_Emo_Angry_2.mp3"), CHANNELID::SOUND_UI,
+					GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+				break;
+
+			case EMOTIONBTN_FOURTH:
+				GI->Stop_Sound(CHANNELID::SOUND_UI);
+				GI->Play_Sound(TEXT("Funya_V_Emo_Laugh_2.mp3"), CHANNELID::SOUND_UI,
+					GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+				break;
+
+			case EMOTIONBTN_FIFTH:
+				GI->Stop_Sound(CHANNELID::SOUND_UI);
+				GI->Play_Sound(TEXT("Funya_V_Emo_Sad_5_2.mp3"), CHANNELID::SOUND_UI,
+					GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+				break;
+
+			case EMOTIONBTN_SIXTH:
+				GI->Stop_Sound(CHANNELID::SOUND_UI);
+				GI->Play_Sound(TEXT("Funya_V_Emo_Answer_2.mp3"), CHANNELID::SOUND_UI,
+					GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+				break;
+
+			case EMOTIONBTN_SEVENTH:
+				GI->Stop_Sound(CHANNELID::SOUND_UI);
+				GI->Play_Sound(TEXT("Funya_V_Emo_Cast_2.mp3"), CHANNELID::SOUND_UI,
+					GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+				break;
+
+			case EMOTIONBTN_EIGHTH:
+				GI->Stop_Sound(CHANNELID::SOUND_UI);
+				GI->Play_Sound(TEXT("Funya_V_Emo_Surprise_1.mp3"), CHANNELID::SOUND_UI,
+					GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+				break;
+			}
 		}
 
 		__super::On_Mouse(fTimeDelta);

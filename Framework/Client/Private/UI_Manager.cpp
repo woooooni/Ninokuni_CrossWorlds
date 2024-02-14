@@ -682,6 +682,14 @@ _bool CUI_Manager::Is_MinimapOn()
 	return m_MinimapFrame[0]->Get_Active();
 }
 
+_bool CUI_Manager::Is_QuestRewardsOn()
+{
+	if (nullptr == m_QuestReward[0])
+		return false;
+
+	return m_QuestReward[0]->Get_Active();
+}
+
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	m_pDevice = pDevice;

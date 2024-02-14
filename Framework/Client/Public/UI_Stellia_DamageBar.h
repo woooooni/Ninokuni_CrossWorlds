@@ -36,9 +36,9 @@ private:
 	_int m_iCurDamage = { 0 };
 
 	_float2 m_vTextScale = _float2(0.4f, 0.4f);
-	_float2 m_vCurTextPos = _float2(765.f, 80.f); // y 90.f -> 80.f
-	_float2 m_vSeparatorPos = _float2(g_iWinSizeX * 0.5f, 80.f);
-	_float2 m_vMaxTextPos = _float2(830.f, 80.f);
+	_float2 m_vCurTextPos = _float2(765.f, 70.f); // y 90.f -> 80.f
+	_float2 m_vSeparatorPos = _float2(g_iWinSizeX * 0.5f, 70.f);
+	_float2 m_vMaxTextPos = _float2(830.f, 70.f);
 
 	_int m_iTextureIndex = { 0 };
 	_float m_fTextureAcc = { 0.f };

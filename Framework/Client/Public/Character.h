@@ -359,6 +359,7 @@ protected:
 	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
 
 	_bool m_bUseable = true;
+	_bool m_bReserveUI = false;
 
 protected:
 	_float m_fDefaultWalkSpeed = 3.f;

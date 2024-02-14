@@ -767,8 +767,13 @@ void CUI_Costume_ItemSlot::Key_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::LBTN))
 	{
 		if (!m_bClicked && m_bArrived)
+		{
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_MainHud_Btn_Chat_1.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 			CUI_Manager::GetInstance()->Update_ClothSlotState(m_eSectionType, m_eType);
-		// UIManager를 통해서 m_bClicked = true; 를 행한다.
+		}
 	}
 }
 

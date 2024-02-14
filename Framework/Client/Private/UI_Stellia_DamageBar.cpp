@@ -26,10 +26,10 @@ HRESULT CUI_Stellia_DamageBar::Initialize(void* pArg)
 		return E_FAIL;
 
 	CUI::UI_INFO UIDesc = {};
-	UIDesc.fCX = 690.f * 0.45f; // 0.8f -> 0.45f
-	UIDesc.fCY = 50.f * 0.45f;
+	UIDesc.fCX = 690.f * 0.6f;
+	UIDesc.fCY = 50.f * 0.6f;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
-	UIDesc.fY = 70.f; // 130.f -> 70.f
+	UIDesc.fY = 80.f;
 	if (FAILED(__super::Initialize(&UIDesc)))
 		return E_FAIL;
 
@@ -116,7 +116,7 @@ void CUI_Stellia_DamageBar::LateTick(_float fTimeDelta)
 		CurDesc.vPosition = _float2(m_vCurTextPos.x - fOffsetX, m_vCurTextPos.y + 1.f);
 		m_pRendererCom->Add_Text(CurDesc);
 
-		CurDesc.vColor = vGray;
+		CurDesc.vColor = vWhite;
 		CurDesc.vPosition = _float2(m_vCurTextPos.x - fOffsetX, m_vCurTextPos.y);
 		m_pRendererCom->Add_Text(CurDesc);
 
@@ -136,7 +136,7 @@ void CUI_Stellia_DamageBar::LateTick(_float fTimeDelta)
 		SeparatorDesc.vPosition = _float2(m_vSeparatorPos.x, m_vSeparatorPos.y + 1.f);
 		m_pRendererCom->Add_Text(SeparatorDesc);
 
-		SeparatorDesc.vColor = vGray;
+		SeparatorDesc.vColor = vWhite;
 		SeparatorDesc.vPosition = m_vSeparatorPos;
 		m_pRendererCom->Add_Text(SeparatorDesc);
 		
@@ -156,13 +156,9 @@ void CUI_Stellia_DamageBar::LateTick(_float fTimeDelta)
 		MaxDesc.vPosition = _float2(m_vMaxTextPos.x, m_vMaxTextPos.y + 1.f);
 		m_pRendererCom->Add_Text(MaxDesc);
 
-		MaxDesc.vColor = vGray;
+		MaxDesc.vColor = vWhite;
 		MaxDesc.vPosition = m_vMaxTextPos;
 		m_pRendererCom->Add_Text(MaxDesc);
-		
-		// TestCode
-		if (KEY_TAP(KEY::O))
-			Add_Damage(500);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}

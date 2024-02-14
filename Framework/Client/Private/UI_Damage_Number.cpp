@@ -59,6 +59,9 @@ HRESULT CUI_Damage_Number::Initialize(void* pArg)
 		{
 			if (15.f <= fDistance)
 			{
+				if (18.f <= fDistance)
+					m_fAlpha = 0.1f;
+
 				_float fRandom = GI->RandomFloat(0.1f, 0.14f);
 				fNumSize = 112.f * fRandom;
 			}
@@ -72,7 +75,10 @@ HRESULT CUI_Damage_Number::Initialize(void* pArg)
 		{
 			if (15.f <= fDistance)
 			{
-				_float fRandom = GI->RandomFloat(0.06f, 0.1f);
+				if (18.f <= fDistance)
+					m_fAlpha = 0.1f;
+
+				_float fRandom = GI->RandomFloat(0.09f, 0.13f);
 				fNumSize = 112.f * fRandom;
 			}
 			else

@@ -648,8 +648,8 @@ PS_OUT PS_QUARTER_PROGRESS(PS_IN In)
 	Out.vColor = saturate(vGaugeColor);
 	Out.vColor.a *= g_Alpha;
 
-	if (Out.vColor.a < 0.1f)
-		discard;
+	if (Out.vColor.a < 0.001f)
+		discard;  
 
 	// 픽셀좌표와 중심점의 방향벡터를 구한다.
 	float2 vDir = In.vTexUV - float2(0.5f, 0.5f);
@@ -671,7 +671,7 @@ PS_OUT PS_QUARTER_PROGRESS(PS_IN In)
 	if (fDotRatio < fDot)
 	{
 		Out.vColor.rgb = vBackColor.rgb; //lerp(vBackColor.rgb, float3(0.0f, 0.0f, 0.0f), 0.5f);
-		Out.vColor.a = 1.0f;
+		Out.vColor.a = g_Alpha;
 	}
 
 	Out.vColor.a *= g_Alpha;

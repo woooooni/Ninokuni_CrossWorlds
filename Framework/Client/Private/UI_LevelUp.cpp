@@ -137,7 +137,7 @@ void CUI_LevelUp::LateTick(_float fTimeDelta)
 				TextDesc.strText = m_strText;
 				TextDesc.strFontTag = L"Default_Bold";
 				TextDesc.vScale = { 0.65f, 0.65f };
-				TextDesc.vPosition = _float2(m_tInfo.fX - 4.5f - (iLength * 5.f), m_tInfo.fY - 40.f);
+				TextDesc.vPosition = _float2(m_tInfo.fX - 4.8f - (iLength * 5.f), m_tInfo.fY - 40.f);
 				TextDesc.vColor = { 0.82f, 0.773f, 0.627f, 1.f };
 				m_pRendererCom->Add_Text(TextDesc);
 			}

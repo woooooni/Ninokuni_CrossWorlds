@@ -118,6 +118,21 @@ void CUI_Default_Background::Tick(_float fTimeDelta)
 		else
 			m_pEffect->Tick(fTimeDelta);
 
+		// Tick 돌아가는동안 인풋을 계속 막아버리자
+		CPlayer* pPlayer = nullptr;
+		pPlayer = CGame_Manager::GetInstance()->Get_Player();
+		if (nullptr == pPlayer)
+			return;
+
+		CCharacter* pCharacter = nullptr;
+		pCharacter = pPlayer->Get_Character();
+		if (nullptr == pCharacter)
+			return;
+
+		pCharacter->Set_Skill_Input(false);
+		pCharacter->Set_Attack_Input(false);
+		pCharacter->Set_Move_Input(false);
+
 		
 		__super::Tick(fTimeDelta);
 	}

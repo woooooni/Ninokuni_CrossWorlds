@@ -6,12 +6,14 @@
 
 #include "UI_Manager.h"
 #include "Game_Manager.h"
+#include "Player.h"
 
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
 
 #include "Building.h"
 #include "UI_Quest_Reward_Item.h"
+#include "Inventory_Manager.h"
 
 CSubQuestNode_Windmill12::CSubQuestNode_Windmill12()
 {
@@ -82,10 +84,26 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill12::Tick(const _float& fTimeDelta)
 				CUI_Quest_Reward_Item::REWARDS_DESC ItemDesc = {};
 				ItemDesc.bFirstSlot = true;
 				ItemDesc.eFirstItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN;
-				ItemDesc.iFirstAmount = 10000;
+				ItemDesc.iFirstAmount = 1000;
+
+				ItemDesc.bSecondSlot = true;
+				ItemDesc.eSecondItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_EXP;
+				ItemDesc.iSecondAmount = 600;
+
+				ItemDesc.bThirdSlot = true;
+				ItemDesc.eThirdItem = CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_HPPOTION;
+				ItemDesc.iThirdAmount = 3;
 
 				CUI_Manager::GetInstance()->Set_QuestRewards(&ItemDesc);
 				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("풍차 수리"));
+
+				CGame_Manager::GetInstance()->Get_Player()->Increase_Gold(ItemDesc.iFirstAmount);
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Add_Exp(ItemDesc.iSecondAmount);
+				for (_int i = 0; i < ItemDesc.iThirdAmount; i++)
+				{
+					CInventory_Manager::GetInstance()->Prepare_Item(ITEM_TYPE::CONSUMPSION, ITEM_CODE::CONSUMPSION_HP);
+				}
+
 				m_bIsRewarding = true;
 
 				/* 대화 카메라 종료 */

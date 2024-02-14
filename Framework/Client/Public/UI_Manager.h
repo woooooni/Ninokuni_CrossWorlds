@@ -38,6 +38,7 @@ public: // Get/Set
 	_bool			Is_QuestRewardWindowOff();
 	_bool			Is_LoadingDone();
 	_bool			Is_MinimapOn();
+	_bool			Is_QuestRewardsOn();
 
 	void			Set_UIClicked(_bool bClicked) { m_bEvent = bClicked; }
 	_bool			Is_UIClicked() { return m_bEvent; }

@@ -18,6 +18,9 @@ private:
 public: // Getter & Setter
 	_bool Is_CharacterOnBoard() { return m_bIsRiding; }
 
+	void Set_Ride_Udadak() { m_bCanRide = true; }
+	_bool Can_Ride_Udadak() { return m_bCanRide; }
+
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void Tick(_float fTimeDelta);
@@ -41,6 +44,7 @@ private:
 	class CVehicle_Object_Biplane* m_pObjectPlane = { nullptr };
 
 	_bool m_bIsRiding = { false }; // 우다닥을 탈때만 제어한다.
+	_bool m_bCanRide = { false }; // 우다닥을 얻었는지 판단한다.
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };
