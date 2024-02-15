@@ -56,7 +56,7 @@ HRESULT CUI_Stellia_GaugeBar::Initialize(void* pArg)
 	m_iCurGauge = 0;
 
 	// Test (* 병합할 때 false로 수정하기)
-	m_bActive = true;
+	m_bActive = false;
 
 	return S_OK;
 }

@@ -70,10 +70,18 @@ void CPhysX_Manager::Tick(_float fTimeDelta)
 }
 void CPhysX_Manager::LateTick(_float fTimeDelta)
 {
-	_float fStepSize = min(fTimeDelta, 1.f / 144.f);
+	_float fStepSize = 1.f / 144.f;
+	_float fDt = fTimeDelta;
 
-	m_pScene->simulate(fStepSize);
-	m_pScene->fetchResults(true);
+
+	while (0.f < fDt)
+	{
+		fDt -= fStepSize;
+		m_pScene->simulate(fStepSize);
+		m_pScene->fetchResults(true);
+	}
+
+	
 }
 
 HRESULT CPhysX_Manager::Remove_Controller(PxController* pController)
