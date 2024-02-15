@@ -330,23 +330,17 @@ HRESULT CStellia::Render()
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
-		if (i != 2)
-		{
-			if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-				return E_FAIL;
-		}
-		else
-		{
-			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_eTextureType)))
-				return E_FAIL;
-		}
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+
+		//if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_SPECULAR, "g_StelliaMaskTexture")))
+		//	iPassIndex = 0;
+		//else
+		//	iPassIndex = 14;
+
 
 		if (m_bStartDissolve || m_bReserveDead)
-			iPassIndex = 2;
-		else if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-			iPassIndex = 0;
-		else
-			iPassIndex++;
+			iPassIndex = 2; 
 
 		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;

@@ -445,6 +445,8 @@ float4 Caculation_Brightness(float4 vColor)
     return vBrightnessColor;
 }
 
+
+
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
@@ -460,6 +462,44 @@ PS_OUT PS_MAIN(PS_IN In)
     vector vRimColor = g_vRimColor * fRimPower;
 	Out.vDiffuse += vRimColor;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
+    Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    
+    if (0.f == Out.vDiffuse.a)
+        discard;
+
+    return Out;
+}
+
+Texture2D g_StelliaMaskTexture;
+
+PS_OUT PS_STELLIA_MAIN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+
+    float fRimPower = 1.f - saturate(dot(In.vNormal, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+    fRimPower = pow(fRimPower, 5.f);
+    vector vRimColor = g_vRimColor * fRimPower;
+    Out.vDiffuse += vRimColor;
+    //Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
+    float4 vMaskColor = g_StelliaMaskTexture.Sample(LinearSampler, In.vTexUV);
+
+    // b값이 metal, r값이 이빨이나 눈 부분인듯?
+    if(vMaskColor.b >= 0.3f)
+    {
+        Out.vBloom = float4(1.0f, 1.0f, 0.0f, 1.0f);
+    }
+    else if (vMaskColor.r >= 0.3f)
+    {
+        Out.vBloom = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
+    }
+    else
+        Out.vBloom = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    
     Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
     
     if (0.f == Out.vDiffuse.a)
@@ -1058,5 +1098,19 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_PICKING();
+    }
+
+    pass Stellia
+    {
+        // 14
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_STELLIA_MAIN();
     }
 };
