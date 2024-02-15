@@ -7,6 +7,8 @@
 
 #include "Ruby.h"
 #include "RubyCarriage.h"
+#include "Particle_Manager.h"
+
 CState_CarriageMove::CState_CarriageMove(CStateMachine* pMachine)
 	: CState(pMachine)
 {
@@ -42,7 +44,10 @@ void CState_CarriageMove::Tick_State(_float fTimeDelta)
 {
 	// TODO
 	// 루비의 애니메이션이 바뀌고 루비를 따라다녀야한다.
-
+	CParticle_Manager::GetInstance()->Tick_Generate_Particle_To_Matrix(&m_fTimeEffect[0], 0.5f, fTimeDelta, TEXT("Particle_Carriage_Stone"), m_pTransformCom->Get_WorldMatrix(),
+		Vec3(-1.1f, 0.0f, -2.7f), Vec3(1.0f, 1.0f, 1.0f), Vec3(0.0f, 0.0f, 0.0f));
+	CParticle_Manager::GetInstance()->Tick_Generate_Particle_To_Matrix(&m_fTimeEffect[1], 0.5f, fTimeDelta, TEXT("Particle_Carriage_Stone"), m_pTransformCom->Get_WorldMatrix(),
+		Vec3(1.1f, 0.0f, -2.7f), Vec3(1.0f, 1.0f, 1.0f), Vec3(0.0f, 0.0f, 0.0f));
 
 	if (nullptr != m_pRuby)
 	{

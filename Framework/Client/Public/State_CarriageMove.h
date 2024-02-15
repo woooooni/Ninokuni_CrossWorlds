@@ -28,6 +28,8 @@ private:
 	_bool m_bFirst = false;
 	class CRuby* m_pRuby = nullptr;
 
+	_float m_fTimeEffect[2] = { 0.0f, 0.0f };
+
 public:
 	static CState_CarriageMove* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
