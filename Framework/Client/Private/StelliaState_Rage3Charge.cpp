@@ -31,7 +31,7 @@ HRESULT CStelliaState_Rage3Charge::Initialize(const list<wstring>& AnimationList
 
 	m_fLimitTime = 6.f;
 	m_fShakeTime = 0.5f;
-	m_iClickDest = 30.f;
+	m_iClickDest = 30;
 
 	return S_OK;
 }
@@ -110,6 +110,10 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		
 			m_pStellia->Set_IsPlayerGuardEvent(false);
 			m_bIsFinishGuard = true;
+
+			/* 액션 캠 블렌딩 없이 종료 */
+			if (CAMERA_TYPE::ACTION == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+				dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION))->Finish_Action_Stellia_Guard(false);
 		}
 
 		// 파훼 성공
@@ -120,6 +124,10 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 
 			Delete_GuardEffect();
 			Create_ResultEffect(true);
+
+			/* 액션 캠 블렌딩으로 종료 */
+			if (CAMERA_TYPE::ACTION == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+				dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION))->Finish_Action_Stellia_Guard(true);
 
 			if (m_iBreakCount < 1)
 			{
@@ -150,6 +158,10 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 
 			m_pStellia->Set_IsPlayerGuardEvent(false);
 			m_bIsFinishGuard = true;
+
+			/* 액션 캠 블렌딩 없이 종료 */
+			if (CAMERA_TYPE::ACTION == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+				dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION))->Finish_Action_Stellia_Guard(false);
 		}
 
 		// 버튼 클릭
@@ -222,6 +234,10 @@ void CStelliaState_Rage3Charge::First_GuardEvent(_float fTimeDelta)
 		m_bIsTimeSlep = true;
 		m_bIsSlow = true;
 		m_bIsStartEvent = true;
+
+		// 액션캠 카메라 블렌딩 시작
+		dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION))
+			->Start_Action_Stellia_Guard(m_pStellia->Get_Component_Transform());
 	}
 
 	if (m_bIsTimeSlep)
@@ -305,7 +321,7 @@ void CStelliaState_Rage3Charge::Check_RangeOut()
 void CStelliaState_Rage3Charge::Create_GuardEffect()
 {
 	// 레디얼 블러 활성화
-	CGame_Manager::GetInstance()->Lerp_RadialBlur(true, true, 0.f, -0.025f, 0.6f, 16.f);
+	CGame_Manager::GetInstance()->Lerp_RadialBlur(true, true, 0.f, -0.07f, 0.6f, 16.f);
 
 	_matrix WorldMatrix = m_pStellia->Get_TargetDesc().pTragetTransform->Get_WorldMatrix();
 
