@@ -103,6 +103,21 @@ HRESULT CLevel_WitchForest::Initialize()
 			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 	}
 
+	CRenderer::FOG_DESC desc;
+	::ZeroMemory(&desc, sizeof(desc));
+	{
+		desc.fFogDistanceValue = 30.0f;
+		desc.fFogHeightValue = 50.0f;
+		desc.fFogStartDepth = 50.0f;
+		desc.fFogStartDistance = 0.08f;
+		//desc.fFogHeightDensity = 0.110f;
+		desc.fFogDistanceDensity = 0.040f;
+		desc.fFogHeightDensity = 0.030f;
+	}
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogDesc(desc);
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogColor(Vec4(0.314f, 0.357f, 0.6f, 1.0f));
+
+
 	return S_OK;
 }
 

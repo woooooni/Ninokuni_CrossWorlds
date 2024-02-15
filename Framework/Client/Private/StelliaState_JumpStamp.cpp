@@ -44,7 +44,8 @@ void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 	}
 
 	// 공중에 고정시키기 위함(콜라이더 위로 올리기 위함)
-	if (m_pModelCom->Get_CurrAnimationFrame() == 35)
+	if (m_pModelCom->Get_CurrAnimationFrame() == 35 && !m_pModelCom->Is_Tween() &&
+		m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_Stellia.ao|Stellia_BossSkill02_New"))
 	{
 		if (!m_bIsSetY)
 		{

@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "UI_Fade.h"
 #include "UI_PopupQuest.h"
 
 #include "Utils.h"
@@ -27,6 +28,8 @@ HRESULT CMainQuestNode_Invasion04::Initialize()
 
 void CMainQuestNode_Invasion04::Start()
 {
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
+
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, CUI_Manager::MINI_DIALOG);
 	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
 	QuestDesc.strType = m_strQuestTag;

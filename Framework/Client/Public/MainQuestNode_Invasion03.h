@@ -20,6 +20,8 @@ private:
 	_float m_fAccTime = 0.f;
 	_float m_fDeleteTime = 0.f;
 
+	_bool m_bIsFadeOut = false;
+
 public:
 	static CMainQuestNode_Invasion03* Create();
 	virtual void Free() override;
