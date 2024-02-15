@@ -116,7 +116,7 @@ void CUI_Damage_Critical::Tick(_float fTimeDelta)
 					if (!m_bFadeOut)
 					{
 						m_tInfo.fY -= fTimeDelta * 200.f;
-						m_fAlpha -= fTimeDelta;
+						m_fAlpha -= fTimeDelta * 1.5f;
 
 						if (m_fAlpha <= 0.f)
 						{
