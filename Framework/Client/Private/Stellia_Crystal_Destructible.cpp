@@ -137,7 +137,8 @@ void CStellia_Crystal_Destructible::Tick(_float fTimeDelta)
 
 			// Set_Dead 하기 전에 폭발 객체 생성 및 스텔리아 페일 카운트 추가
 			GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Stellia_Crystal_Explosion"), this);
-
+			Set_Dead(true);
+			return;
 			// 굳이 늘리지 말자. 어차피 제한 시간 못 맞추면 늘어난다.
 			// m_pStellia->Set_CrystalFailCount(1);
 		}

@@ -117,7 +117,9 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02::Tick(const _float& fTimeDelta)
 			}
 			_matrix WorldMatrix = XMMatrixIdentity();
 			WorldMatrix.r[3] = XMVectorSet(0.f, 30.f, 60.f, 1.f);
-			GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_EVERMORE, TEXT("Particle_FallFire"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+			GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_EVERMORE, TEXT("Particle_FallFire_01"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+			GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_EVERMORE, TEXT("Particle_FallFire_02"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+			GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_EVERMORE, TEXT("Particle_FallFire_03"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 			// ------------------------ Effect Change
 
 			GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR, 0.f);

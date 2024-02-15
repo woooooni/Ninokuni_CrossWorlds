@@ -224,7 +224,7 @@ void CParticle::LateTick(_float fTimeDelta)
 
 	if (m_tParticleDesc.eParticleType == TYPE_PERSPECTIVE)
 	{
-		if(true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 10.f))
+		//if(true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 10.f))
 			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_EFFECT, this);
 	}
 	else if (m_tParticleDesc.eParticleType == TYPE_ORTHOGRAPHIC)

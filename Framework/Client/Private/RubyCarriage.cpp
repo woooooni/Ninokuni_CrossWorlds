@@ -10,7 +10,7 @@
 #include "Monster.h"
 #include "MonsterProjectile.h"
 #include "Decal.h"
-#include "Effect_Manager.h"
+#include "Particle_Manager.h"
 
 CRubyCarriage::CRubyCarriage(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CDynamicObject(pDevice, pContext, strObjectTag, eType)
@@ -55,11 +55,6 @@ void CRubyCarriage::Tick(_float fTimeDelta)
 {
 	if (true == m_bDead)
 		return;
-
-	//CEffect_Manager::GetInstance()->Tick_Generate_Decal(&m_fTime[0], 0.2f, fTimeDelta, TEXT("Carriage_Tire"), m_pTransformCom->Get_WorldMatrix(),
-	//	Vec3(-1.1f, 0.0f, -2.7f), Vec3(1.0f, 1.0f, 1.0f), Vec3(0.0f, 0.0f, 0.0f));
-	//CEffect_Manager::GetInstance()->Tick_Generate_Decal(&m_fTime[1], 0.2f, fTimeDelta, TEXT("Carriage_Tire"), m_pTransformCom->Get_WorldMatrix(),
-	//	Vec3(1.1f, 0.0f, -2.7f), Vec3(1.0f, 1.0f, 1.0f), Vec3(0.0f, 0.0f, 0.0f));
 
 	if (m_tStat.fHp <= 0.0f)
 	{
