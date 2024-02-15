@@ -84,6 +84,9 @@ HRESULT CLevel_Kingdom::Initialize()
 	GI->Play_BGM(TEXT("BGM_Kingdom_Default_1.OGG"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
 
 	CUI_Manager::GetInstance()->OnOff_MapName(true, TEXT("에스타바니아 왕성"));
+	GI->Stop_Sound(CHANNELID::SOUND_UI);
+	GI->Play_Sound(TEXT("UI_Fx_HideAndSeek_HSClearMachine_Spawn_1_St.mp3"), CHANNELID::SOUND_UI,
+		GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 
 	return S_OK;
 }

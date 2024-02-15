@@ -293,11 +293,13 @@ void CUI_Basic::LateTick(_float fTimeDelta)
 			// 글씨를 추가한다.
 			CRenderer::TEXT_DESC NickDesc = {};
 			NickDesc.strText = m_strText;
-			_int iLength = m_strText.length();
+			_int iTotalLength = m_strText.length();
+			_int iSpace = CUI_Manager::GetInstance()->Count_WordSpacing(m_strText);
+			_int iLength = iTotalLength - iSpace;
 
 			NickDesc.strFontTag = L"Default_Bold";
 			NickDesc.vScale = { 0.6f, 0.6f };
-			NickDesc.vPosition = _float2(m_tInfo.fX - (iLength * 11.f), m_tInfo.fY - 5.f);
+			NickDesc.vPosition = _float2(m_tInfo.fX - (iLength * 11.f + iSpace * 2.f), m_tInfo.fY - 5.f);
 			NickDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
 			m_pRendererCom->Add_Text(NickDesc);
 		}

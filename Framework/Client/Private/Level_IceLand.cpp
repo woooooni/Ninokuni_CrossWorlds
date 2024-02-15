@@ -106,6 +106,10 @@ HRESULT CLevel_IceLand::Initialize()
 		g_bFirstEnter = true;
 		CUI_Manager::GetInstance()->OnOff_MapName(true, TEXT("코에루코 설원"));
 
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_HideAndSeek_HSClearMachine_Spawn_1_St.mp3"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 		if (FAILED(CCurlingGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 			return E_FAIL;
 	}

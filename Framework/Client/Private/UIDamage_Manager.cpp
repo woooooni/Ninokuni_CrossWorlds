@@ -241,11 +241,11 @@ _float2 CUIDamage_Manager::Designate_RandomPosition(_float2 vTargetPosition, _bo
 	{
 		if (15.f < fCamDistance)
 		{
-			fRandomOffset = _float2(GI->RandomFloat(-110.f, 110.f), GI->RandomFloat(-320.f, 0.f));
+			fRandomOffset = _float2(GI->RandomFloat(-110.f, 110.f), GI->RandomFloat(-280.f, 0.f));
 		}
 		else
 		{
-			fRandomOffset = _float2(GI->RandomFloat(-150.f, 150.f), GI->RandomFloat(-400.f, 0.f));
+			fRandomOffset = _float2(GI->RandomFloat(-150.f, 150.f), GI->RandomFloat(-360.f, 0.f));
 		}
 	}
 	else

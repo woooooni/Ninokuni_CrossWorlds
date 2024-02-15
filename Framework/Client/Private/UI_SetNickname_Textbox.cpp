@@ -57,10 +57,11 @@ void CUI_SetNickname_Textbox::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-
 		CRenderer::TEXT_DESC NickDesc = {};
 		NickDesc.strText = m_strText;
-		_int iLength = m_strText.length();
+		_int iTotalLength = m_strText.length();
+		_int iSpace = CUI_Manager::GetInstance()->Count_WordSpacing(m_strText);
+		_int iLength = iTotalLength - iSpace;
 
 		NickDesc.strFontTag = L"Default_Bold";
 		NickDesc.vScale = { 0.4f, 0.4f };

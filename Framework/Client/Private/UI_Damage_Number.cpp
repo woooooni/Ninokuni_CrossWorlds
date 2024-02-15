@@ -313,7 +313,7 @@ void CUI_Damage_Number::Tick_Monster(_float fTimeDelta)
 	}
 	else
 	{
-		m_fAlpha -= fTimeDelta * 2.f;
+		m_fAlpha -= fTimeDelta * 2.5f;
 
 		if (m_fAlpha <= 0.f)
 		{

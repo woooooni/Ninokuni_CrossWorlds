@@ -104,19 +104,22 @@ void CRuby::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
-
-	if (nullptr != m_pTag)
-		m_pTag->Tick(fTimeDelta);
-
-
+	if (m_pStateCom->Get_CurrState() != NPC_UNIQUENPC_SEAT)
+	{
+		if (nullptr != m_pTag)
+			m_pTag->Tick(fTimeDelta);
+	}
 }
 
 void CRuby::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
-	if (nullptr != m_pTag)
-		m_pTag->LateTick(fTimeDelta);
+	if (m_pStateCom->Get_CurrState() != NPC_UNIQUENPC_SEAT)
+	{
+		if (nullptr != m_pTag)
+			m_pTag->LateTick(fTimeDelta);
+	}
 
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
