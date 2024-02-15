@@ -86,7 +86,7 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle08::Tick(const _float& fTimeDelta)
 
 			if (m_fTime >= 3.f)
 			{
-				CSound_Manager::GetInstance()->Play_Sound(TEXT("FinalBattle_08_01.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+				/*CSound_Manager::GetInstance()->Play_Sound(TEXT("FinalBattle_08_01.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);*/
 
 				Safe_Delete_Array(m_szpOwner);
 				Safe_Delete_Array(m_szpTalk);

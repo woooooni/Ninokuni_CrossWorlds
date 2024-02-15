@@ -89,22 +89,22 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObjectToLayer(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pUdadak);
 
-	if (eID == LEVEL_EVERMORE)
-	{
-		if (nullptr == m_pBiplane)
-			return E_FAIL;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, m_pBiplane)))
-			return E_FAIL;
+	//if (eID == LEVEL_EVERMORE)
+	//{
+	//	if (nullptr == m_pBiplane)
+	//		return E_FAIL;
+	//	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, m_pBiplane)))
+	//		return E_FAIL;
 
-		Safe_AddRef(m_pBiplane);
+	//	Safe_AddRef(m_pBiplane);
 
-		if (nullptr == m_pObjectPlane)
-			return E_FAIL;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pObjectPlane)))
-			return E_FAIL;
+	//	if (nullptr == m_pObjectPlane)
+	//		return E_FAIL;
+	//	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pObjectPlane)))
+	//		return E_FAIL;
 
-		Safe_AddRef(m_pObjectPlane);
-	}
+	//	Safe_AddRef(m_pObjectPlane);
+	//}
 
 	return S_OK;
 }

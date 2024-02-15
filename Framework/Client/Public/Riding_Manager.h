@@ -44,7 +44,7 @@ private:
 	class CVehicle_Object_Biplane* m_pObjectPlane = { nullptr };
 
 	_bool m_bIsRiding = { false }; // 우다닥을 탈때만 제어한다.
-	_bool m_bCanRide = { false }; // 우다닥을 얻었는지 판단한다.
+	_bool m_bCanRide = { true }; // 우다닥을 얻었는지 판단한다.
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

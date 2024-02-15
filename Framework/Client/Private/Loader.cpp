@@ -605,22 +605,6 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	g_bFirstLoading = true;
 	if (false == g_bLevelFirst[LEVEL_EVERMORE])
 	{
-		switch (g_ePlayCharacter)
-		{
-		case Client::SWORDMAN_CH:
-			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
-			break;
-		case Client::DESTROYER_CH:
-			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::DESTROYER, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
-			break;
-		case Client::ENGINEER_CH:
-			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::ENGINEER, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
-			break;
-		default:
-			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
-			break;
-		}
-
 		m_Threads[LOADING_THREAD::TOWER_DEFENCE_READY] = std::async(&CLoader::Loading_For_TowerDefence, this);
 
 		// 미니게임(타워 디펜스)

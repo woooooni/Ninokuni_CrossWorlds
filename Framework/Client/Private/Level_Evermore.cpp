@@ -296,6 +296,27 @@ HRESULT CLevel_Evermore::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
+
+	if (false == g_bFirstEnter)
+	{
+		switch (g_ePlayCharacter)
+		{
+		case Client::SWORDMAN_CH:
+			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
+			break;
+		case Client::DESTROYER_CH:
+			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::DESTROYER, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
+			break;
+		case Client::ENGINEER_CH:
+			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::ENGINEER, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
+			break;
+		default:
+			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
+			break;
+		}
+	}
+	
+
 	/* Set Camera */
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
 	{

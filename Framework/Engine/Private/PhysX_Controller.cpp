@@ -83,7 +83,10 @@ void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
 	
 	PxVec3 vDisp = PxVec3(vNewCenterPosition.x, vNewCenterPosition.y, vNewCenterPosition.z) - PxVec3(m_pPhysXController->getPosition().x, m_pPhysXController->getPosition().y, m_pPhysXController->getPosition().z);
 
-	m_pPhysXController->move(vDisp, 0.00001f, fTimeDelta, m_Filters);
+	Vec3 vLen = Vec3(vDisp.x, vDisp.y, vDisp.z);
+
+	if(vLen.Length() > 0.0001f)
+		m_pPhysXController->move(vDisp, 0.0001f, 1.f / 144.f, m_Filters);
 }
 
 void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)

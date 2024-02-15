@@ -110,25 +110,25 @@ HRESULT CLevel_WitchForest::Tick(_float fTimeDelta)
 {
 	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_WITCHFOREST, fTimeDelta);
 
-	if (KEY_TAP(KEY::PAGE_UP))
-	{
-		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
-	}
+	//if (KEY_TAP(KEY::PAGE_UP))
+	//{
+	//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+	//}
+	//
+	//if (KEY_TAP(KEY::PAGE_DOWN))
+	//{
+	//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+	//}
+	//
+	//if (KEY_TAP(KEY::CLOSE_SQUARE_BRACKET))
+	//{
+	//	GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_EVERMORE, //L"Evermore"));
+	//}
 
-	if (KEY_TAP(KEY::PAGE_DOWN))
-	{
-		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
-	}
-
-	if (KEY_TAP(KEY::CLOSE_SQUARE_BRACKET))
-	{
-		GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_EVERMORE, L"Evermore"));
-	}
-
-	if (KEY_TAP(KEY::F8))
-	{
-		GI->Add_GameObject(LEVEL_WITCHFOREST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Stellia"));
-	}
+	//if (KEY_TAP(KEY::F8))
+	//{
+	//	GI->Add_GameObject(LEVEL_WITCHFOREST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Stellia"));
+	//}
 
 	return S_OK;
 }

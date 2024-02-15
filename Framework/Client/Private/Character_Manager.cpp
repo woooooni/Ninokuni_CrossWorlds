@@ -212,13 +212,14 @@ HRESULT CCharacter_Manager::Ready_Characters()
 	case Client::ALL_CH:
 	{
 		// SwordMan
+		// 체력이나 기타 등등 스탯 변경은 여기.
 		{
-			StatDesc.iLevel = 1;
+			StatDesc.iLevel = 2;
 			StatDesc.iAtt = 1200;
 			StatDesc.iDef = 1;
-			StatDesc.iHp = 800;
+			StatDesc.iHp = 703;
 			StatDesc.iMaxHp = 800;
-			StatDesc.iExp = 0;
+			StatDesc.iExp = 700;
 			StatDesc.iMaxExp = 1000;
 
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_SwordMan_AuraBlade", CSwordMan_AuraBlade::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
@@ -238,9 +239,11 @@ HRESULT CCharacter_Manager::Ready_Characters()
 
 		// Engineer
 		{
+			StatDesc.iLevel = 2;
 			StatDesc.iAtt = 400;
 			StatDesc.iDef = 1;
-			StatDesc.iHp = 500;
+			StatDesc.iHp = 452 ;
+			StatDesc.iExp = 700;
 			StatDesc.iMaxHp = 500;
 
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
@@ -271,15 +274,18 @@ HRESULT CCharacter_Manager::Ready_Characters()
 			if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
 				return E_FAIL;
 
-			m_pCharacters[CHARACTER_TYPE::ENGINEER]->Set_Useable(false);
+			// m_pCharacters[CHARACTER_TYPE::ENGINEER]->Set_Useable(false);
 		}
 
 		// Destroyer
 		{
+			StatDesc.iLevel = 2;
 			StatDesc.iAtt = 1500;
 			StatDesc.iDef = 1;
-			StatDesc.iHp = 1000;
+			StatDesc.iHp = 491;
 			StatDesc.iMaxHp = 1000;
+			StatDesc.iExp = 200;
+
 
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Destroyer_FrengeCharge_Thunder", CDestroyer_FrengeCharge_Thunder::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 				return E_FAIL;
@@ -299,7 +305,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 			if (nullptr == m_pCharacters[CHARACTER_TYPE::DESTROYER])
 				return E_FAIL;
 
-			m_pCharacters[CHARACTER_TYPE::DESTROYER]->Set_Useable(false);
+			// m_pCharacters[CHARACTER_TYPE::DESTROYER]->Set_Useable(false);
 		}
 	}
 		break;

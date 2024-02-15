@@ -49,7 +49,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	SceneDesc.simulationEventCallback = this;
 	m_pScene = m_Physics->createScene(SceneDesc);
 	m_pController_Manager = PxCreateControllerManager(*m_pScene);
-	m_pController_Manager->setOverlapRecoveryModule(true);
+	// m_pController_Manager->setOverlapRecoveryModule(true);
 
 	m_WorldMaterial = m_Physics->createMaterial(0.f, 0.f, 0.f);
 	m_pDevice = pDevice;
@@ -70,18 +70,10 @@ void CPhysX_Manager::Tick(_float fTimeDelta)
 }
 void CPhysX_Manager::LateTick(_float fTimeDelta)
 {
-	_float fStepSize = 1.f / 144.f;
-	_float fDt = fTimeDelta;
+	_float fStepSize = min(fTimeDelta, 1.f / 144.f);
 
-
-	while (0.f < fDt)
-	{
-		fDt -= fStepSize;
-		m_pScene->simulate(fStepSize);
-		m_pScene->fetchResults(true);
-	}
-
-	
+	m_pScene->simulate(fStepSize);
+	m_pScene->fetchResults(true);
 }
 
 HRESULT CPhysX_Manager::Remove_Controller(PxController* pController)
@@ -127,7 +119,7 @@ PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Ma
 	CapsuleDesc.radius = fRadius;
 	CapsuleDesc.maxJumpHeight = fMaxJumpHeight;
 	CapsuleDesc.stepOffset = 0.1f;
-	CapsuleDesc.contactOffset = 0.0001f;
+	CapsuleDesc.contactOffset = 0.1f;
 	CapsuleDesc.userData = &m_eObjectTypes[pGameObject->Get_ObjectType()];
 	CapsuleDesc.reportCallback = pCallBack;
 
@@ -155,7 +147,7 @@ PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix
 	BoxDesc.halfHeight = fExtents.y / 2.f;
 	BoxDesc.halfForwardExtent = fExtents.z / 2.f;
 	BoxDesc.maxJumpHeight = fMaxJumpHeight;
-	BoxDesc.contactOffset = 0.0001f;
+	BoxDesc.contactOffset = 0.1f;
 	BoxDesc.userData = &m_eObjectTypes[pGameObject->Get_ObjectType()];
 	BoxDesc.reportCallback = pCallBack;
 

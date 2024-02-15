@@ -91,6 +91,9 @@ HRESULT CPlayer::Tag_Character(CHARACTER_TYPE eType)
 		pNextCharacter_Transform->Set_WorldMatrix(pCurrentCharacter_Transform->Get_WorldMatrix());
 
 		m_pNextCharacter = pNextCharacter;
+
+		pCurrentCharacter->Set_All_Input(true);
+		pNextCharacter->Set_All_Input(true);
 	}
 	return S_OK;
 }
