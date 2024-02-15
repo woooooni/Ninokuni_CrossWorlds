@@ -68,11 +68,11 @@ HRESULT CMainApp::Initialize()
 	
 	// Set Start Type
 	{
-		g_eStartLevel = LEVELID::LEVEL_TOOL;					/* 시작 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_LOGO;					/* 시작 레벨 타입 */
 
-		g_iStartQuestLevel = QUEST_LEVEL::QL_3_ICELAND;	/* 시작 퀘스트 레벨 */
+		g_iStartQuestLevel = QUEST_LEVEL::QL_1_INTRO_TOUR;	/* 시작 퀘스트 레벨 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;	/* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH;	/* 모델 로드할 캐릭터 타입 */
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;	/* 게임 플레이 캐릭터 타입 */
 	}
@@ -260,7 +260,7 @@ HRESULT CMainApp::Initialize_Client()
 		LIGHTDESC LightUIDesc;
 		ZeroMemory(&LightUIDesc, sizeof(LIGHTDESC));
 		LightUIDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
-		LightUIDesc.vTempDirection = Vec3(-0.45f, -0.445f, -0.745f);
+		LightUIDesc.vTempDirection = Vec3(0.45f, -0.445f, 0.745f);
 		LightUIDesc.vTempColor = Vec3(1.f, 1.f, 1.f);
 		LightUIDesc.vAmbientLowerColor = Vec3(0.5f, 0.5f, 0.5f);
 		LightUIDesc.vAmbientUpperColor = Vec3(1.0f, 1.0f, 1.0f);

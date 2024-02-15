@@ -549,6 +549,8 @@ void CUIMinigame_Manager::Start_Grandprix()
 
 	m_pStateCom->Change_State(CCharacter::FLYING_STAND);
 	CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, true);
+
+	GI->Play_BGM(TEXT("24003.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
 }
 
 void CUIMinigame_Manager::End_Grandprix()
@@ -614,6 +616,8 @@ void CUIMinigame_Manager::End_Grandprix()
 	CKuu* pKuu = CGame_Manager::GetInstance()->Get_Kuu();
 	if (nullptr != pKuu)
 		pKuu->Set_Active(true);
+
+	GI->Play_BGM(TEXT("BGM_Town_Evermore_Normal_Castle_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
 }
 
 void CUIMinigame_Manager::Use_GrandprixSkill(SKILL_TYPE eType)
