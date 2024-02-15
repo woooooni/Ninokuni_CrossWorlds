@@ -24,6 +24,8 @@ HRESULT CState_Closed::Initialize(const list<wstring>& AnimationList)
 void CState_Closed::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_AnimIndices[1]);
+
+	GI->Play_Sound(TEXT("Impact_Wood_1.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.0f, true);
 }
 
 void CState_Closed::Tick_State(_float fTimeDelta)
