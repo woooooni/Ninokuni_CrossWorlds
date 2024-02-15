@@ -30,18 +30,18 @@ void CUI_Fade::Set_Fade(const _bool& pIsFadeOut, const _float& pFadeTime, const 
 	// 24.02.07 Comment :
 	// 만약 Fade Out 후 Fade In을 사용하는데, Veil이 사라지지 않는다면 Renew_Fade 코드로 Fade In을 처리해주세요.
 
-//	if (false == m_bIsComplete)
-//		return;
-//
+	if (false == m_bIsComplete)
+		return;
+
 	// 02/06 텍스트 관련 디버깅 필요 -> 그랑프리 Intro에서 오작동
-	//CUI_Manager::GetInstance()->OnOff_TextUI(false);
+	CUI_Manager::GetInstance()->OnOff_TextUI(false);
 
-	//m_bIsFadeOut = pIsFadeOut;
-	//m_fAlpha = !(float)pIsFadeOut;
-	//m_fFadeTime = pFadeTime;
-	//m_bIsComplete = false;
+	m_bIsFadeOut = pIsFadeOut;
+	m_fAlpha = !(float)pIsFadeOut;
+	m_fFadeTime = pFadeTime;
+	m_bIsComplete = false;
 
-	//Set_White(bIsWhite);
+	Set_White(bIsWhite);
 }
 
 void CUI_Fade::Renew_Fade(const _bool& pIsFadeOut, const _float& pFadeTime, const _bool& bIsWhite)
