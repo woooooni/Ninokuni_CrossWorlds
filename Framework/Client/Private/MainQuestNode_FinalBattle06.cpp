@@ -67,9 +67,6 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle06::Tick(const _float& fTimeDelta)
 				{
 					if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 					{
-						// 레디얼 블러 비활성화
-						CGame_Manager::GetInstance()->Lerp_RadialBlur(false, false, -0.05f, 0.f, 0.15f, 16.f);
-
 						m_bIsFadeOut = true;
 						CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
 					}
@@ -79,6 +76,10 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle06::Tick(const _float& fTimeDelta)
 		
 		if (m_bIsFadeOut && CUI_Manager::GetInstance()->Is_FadeFinished())
 		{
+			// 레디얼 블러 비활성화
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(false);
+			//CGame_Manager::GetInstance()->Lerp_RadialBlur(false, false, -0.05f, 0.f, 0.15f, 16.f);
+
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 1.f);
 

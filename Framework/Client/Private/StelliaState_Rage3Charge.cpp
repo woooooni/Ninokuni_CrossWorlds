@@ -31,7 +31,7 @@ HRESULT CStelliaState_Rage3Charge::Initialize(const list<wstring>& AnimationList
 
 	m_fLimitTime = 6.f;
 	m_fShakeTime = 0.5f;
-	m_iClickDest = 30.f;
+	m_iClickDest = 30;
 
 	return S_OK;
 }
@@ -51,6 +51,12 @@ void CStelliaState_Rage3Charge::Enter_State(void* pArg)
 
 	m_iClickPower = 0;
 
+	iRealClickNum = 0;
+
+	m_bNoGuardCollision = false;
+
+	m_fAcc = 0.f;
+	m_bPlaySound = false;
 	_float fOffSet = ((Vec4)m_pTransformCom->Get_Position() - m_pStellia->Get_OriginPos()).Length();
 
 	if (fOffSet >= 30.f)
@@ -71,9 +77,30 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 	// 거리 구하기
 	_float fDist = ((Vec4)m_pTransformCom->Get_Position() - (Vec4)m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position()).Length();
 
-	//if (m_pStellia->Get_IsPlayerGuardEvent()) // 플레이어가 현재 막고있는 상태
-	if (!m_bIsFinishGuard && fDist < 10.f) // 플레이어가 현재 막고있는 상태
+	if (!m_bIsFinishGuard && fDist < 10.f && !m_bNoGuardCollision) // 충돌 발생 (거리로 측정)
 	{
+		if (!m_pStellia->Get_StelliaGaugeBar()->Get_Active())
+			m_pStellia->Get_StelliaGaugeBar()->Set_Active(true);
+
+		/* 플레이어가 가드 상태가 아니라면 */
+		if (CCharacter::BATTLE_GUARD != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component_StateMachine()->Get_CurrState())
+		{
+			Player_KnockDown();
+
+			m_bNoGuardCollision = true;
+			return;
+		}
+
+		if (!m_bPlaySound)
+		{
+			m_fAcc += fTimeDelta;
+
+			if (1.5f <= m_fAcc)
+			{
+				m_bPlaySound = true;
+				CSound_Manager::GetInstance()->Play_Sound(TEXT("Stellia_Sv_Skill_6_St.ogg"), CHANNELID::SOUND_CUTSCENE, 0.7f, true);
+			}
+		}
 		m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position());
 
 		// 처음 한 번 호출.
@@ -90,11 +117,6 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		m_fAccClickTime += fTimeDelta;
 		m_fAccShakeTime += fTimeDelta;
 
-		//if (m_fAccShakeTime >= m_fShakeTime)
-		//{
-		//	m_fAccShakeTime = m_fShakeTime - m_fAccShakeTime;
-		//}
-
 		// 파훼 실패(시간 초과)
 		if (m_fAccClickTime >= m_fLimitTime) // 막고있는 상태 해제
 		{
@@ -110,6 +132,13 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		
 			m_pStellia->Set_IsPlayerGuardEvent(false);
 			m_bIsFinishGuard = true;
+
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Impact_Ground_Crystal_1.ogg"), CHANNELID::SOUND_UI2, 1.f, true);
+
+
+			/* 액션 캠 블렌딩 없이 종료 */
+			if (CAMERA_TYPE::ACTION == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+				dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION))->Finish_Action_Stellia_Guard(false);
 		}
 
 		// 파훼 성공
@@ -120,6 +149,13 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 
 			Delete_GuardEffect();
 			Create_ResultEffect(true);
+
+			/* 액션 캠 블렌딩으로 종료 */
+			if (CAMERA_TYPE::ACTION == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+				dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION))->Finish_Action_Stellia_Guard(true);
+
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Impact_Ground_Crystal_1.ogg"), CHANNELID::SOUND_UI2, 1.f, true);
+
 
 			if (m_iBreakCount < 1)
 			{
@@ -135,9 +171,7 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 				m_pStateMachineCom->Change_State(CStellia::STELLIA_COUNTERSTART, &fStunTime);
 				return;
 			}
-		}
-
-		// 파훼 실패(중간에 가드 해제)
+		}// 파훼 실패(중간에 가드 해제)
 		else if (m_pPlayer->Get_CharacterStateCom()->Get_CurrState() != CCharacter::BATTLE_GUARD) // 막고있는 상태 해제
 		{
 			// ui 지우기
@@ -150,14 +184,23 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 
 			m_pStellia->Set_IsPlayerGuardEvent(false);
 			m_bIsFinishGuard = true;
+
+			CSound_Manager::GetInstance()->Play_Sound(TEXT("Impact_Ground_Crystal_1.ogg"), CHANNELID::SOUND_UI2, 1.f, true);
+
+			/* 액션 캠 블렌딩 없이 종료 */
+			if (CAMERA_TYPE::ACTION == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+				dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION))->Finish_Action_Stellia_Guard(false);
 		}
 
 		// 버튼 클릭
 		if (KEY_TAP(KEY::LBTN))
 		{
-			CSound_Manager::GetInstance()->Play_Sound(TEXT("Impact_Metal_Bell_1_1.ogg"), CHANNELID::SOUND_UI2, 1.f, true);
-
 			m_iClickPower += 1;
+
+			iRealClickNum += 1;
+
+			if(0 != iRealClickNum && 0 == iRealClickNum % 5)
+				CSound_Manager::GetInstance()->Play_Sound(TEXT("Stellia_Guard_Click.mp3"), CHANNELID::SOUND_UI2, 1.f, true);
 		}
 
 		m_fAccDecreaseTime += fTimeDelta;
@@ -173,7 +216,7 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		// ui
 		m_pStellia->Get_StelliaGaugeBar()->Set_CurGauge(m_iClickPower);
 	}
-	else
+	else // 충돌 발생하지 않음 (거리로 측정)
 	{
 		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRage3AroundSpeed, fTimeDelta);
 
@@ -194,7 +237,7 @@ void CStelliaState_Rage3Charge::Tick_State(_float fTimeDelta)
 		}
 	}
 
-	if (!m_bIsStartEvent)
+	if (!m_bIsStartEvent && !m_bNoGuardCollision)
 	{
 		m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position());
 	}
@@ -222,6 +265,13 @@ void CStelliaState_Rage3Charge::First_GuardEvent(_float fTimeDelta)
 		m_bIsTimeSlep = true;
 		m_bIsSlow = true;
 		m_bIsStartEvent = true;
+
+		// 액션캠 카메라 블렌딩 시작
+		dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION))
+			->Start_Action_Stellia_Guard(m_pStellia->Get_Component_Transform());
+
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("Impact_Impulse_1.mp3"), CHANNELID::SOUND_UI2, 1.f, true);
+
 	}
 
 	if (m_bIsTimeSlep)
@@ -282,6 +332,9 @@ void CStelliaState_Rage3Charge::Player_KnockDown()
 		m_pStellia->Get_TargetDesc().pTarget->Get_Component_Rigidbody()->Add_Velocity(vDir, 15.f, true);
 	}
 
+	/* 플레이어 데미지 주기 */
+	const _float fDeltaHp = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Stat().iMaxHp * 0.1f;
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Decrease_HP(fDeltaHp);
 }
 
 void CStelliaState_Rage3Charge::Check_RangeOut()
@@ -305,7 +358,7 @@ void CStelliaState_Rage3Charge::Check_RangeOut()
 void CStelliaState_Rage3Charge::Create_GuardEffect()
 {
 	// 레디얼 블러 활성화
-	CGame_Manager::GetInstance()->Lerp_RadialBlur(true, true, 0.f, -0.025f, 0.6f, 16.f);
+	CGame_Manager::GetInstance()->Lerp_RadialBlur(true, true, 0.f, -0.07f, 0.6f, 16.f);
 
 	_matrix WorldMatrix = m_pStellia->Get_TargetDesc().pTragetTransform->Get_WorldMatrix();
 

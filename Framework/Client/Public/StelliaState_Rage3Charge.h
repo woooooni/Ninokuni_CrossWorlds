@@ -64,6 +64,12 @@ private:
 	class CParticle* m_pSpark_Player = nullptr;
 	class CParticle* m_pSpark_Monster = nullptr;
 
+	_bool	m_bNoGuardCollision = false; // 플레이어가 가드가 아닌 상태로 스텔리아랑 충돌
+
+	_int iRealClickNum = 0;
+
+	_float m_fAcc = 0.f;
+	_bool m_bPlaySound = false;
 public:
 	static CStelliaState_Rage3Charge* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

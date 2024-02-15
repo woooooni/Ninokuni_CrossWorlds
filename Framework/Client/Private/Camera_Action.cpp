@@ -60,7 +60,7 @@ void CCamera_Action::Tick(_float fTimeDelta)
 	if (!m_bActive)
 		return;
 
-	__super::Tick(fTimeDelta);
+ 	__super::Tick(fTimeDelta);
 
 	/* Check Blending */
 	if (m_bBlending)
@@ -204,6 +204,19 @@ void CCamera_Action::Set_NpcTransformByBackupDesc(class CTransform* pNpcTransfor
 	pNpcTransform->LookAt(m_tActionTalkBackUpDesc.vOriginLookAt);
 
 	pNpcTransform->Set_Position(m_tActionTalkBackUpDesc.vOriginPosition);
+}
+
+void CCamera_Action::Set_Blending(const _bool& bBlending)
+{
+	__super::Set_Blending(bBlending);
+
+	if (CCamera_Action::STELLIA_GUARD == m_eCurActionType)
+	{
+		if (!bBlending)
+		{
+			m_tActionStelliaGuardDesc.bFinishBlending = true;
+		}
+	}
 }
 
 HRESULT CCamera_Action::Ready_Action_Witch_Invasion(CGameObject* pGameObject)
@@ -727,6 +740,17 @@ HRESULT CCamera_Action::Start_Action_Witch_Away(CGameObject* pGameObject)
 
 void CCamera_Action::Tick_Blending(const _float fDeltaTime)
 {
+	if (m_bAction)
+	{
+		switch (m_eCurActionType)
+		{
+		case CCamera_Action::STELLIA_GUARD:
+			Tick_Stellia_Guard(fDeltaTime);
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 void CCamera_Action::Test(_float fTimeDelta)
@@ -1361,32 +1385,33 @@ void CCamera_Action::Tick_Glanix_Dead(_float fTimeDelta)
 void CCamera_Action::Tick_Stellia_Guard(_float fTimeDelta)
 {
 	/* Blending In */
-	if (CCamera_Manager::GetInstance()->Is_Blending_Camera())
+	if (m_bBlending)
 	{
 		const Vec4 vCamPosition = CCamera_Manager::GetInstance()->Get_BlendingPosition();
 
 		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPosition);
 
-		m_tActionStelliaGuardDesc.vPrevLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
+		m_tActionStelliaGuardDesc.vOriginLookAt = m_tActionStelliaGuardDesc.vPrevLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
 
 		m_pTransformCom->LookAt(m_tActionStelliaGuardDesc.vPrevLookAt);
 	}
 
-	/* Shake */
+
+	if(m_tActionStelliaGuardDesc.bFinishBlending)
 	{
-		/* 스텔리아 쪽에서 관리하지 않고 여기서 관리 */
-		if (!m_bBlending)
+		
+		/* Shake */
+		if (Is_Shake())
 		{
-			//if (Is_Shake())
-			//{
-			//	const _float fShakeMag = 1.f;
-			//
-			//	Vec4 vLookAt = m_pTransformCom->Get_LookAt() + Vec4(Get_ShakeLocalPos() * fShakeMag);
-			//
-			//	m_pTransformCom->LookAt(vLookAt.OneW());
-			//}
-			//else
-			//	Start_Shake(0.1f, 17.f, 0.3f);
+			const _float fShakeMag = 1.f;
+
+			m_tActionStelliaGuardDesc.vPrevLookAt = m_tActionStelliaGuardDesc.vOriginLookAt + Vec4(Get_ShakeLocalPos() * fShakeMag);
+
+			m_pTransformCom->LookAt(m_tActionStelliaGuardDesc.vPrevLookAt.OneW());
+		}
+		else
+		{
+			Start_Shake(0.1f, 20.f, 0.3f);
 		}
 	}
 }
@@ -1834,7 +1859,6 @@ HRESULT CCamera_Action::Start_Action_Stellia_Guard(CTransform* pStelliaTransform
 		const Vec4 vLeftDir				= vRightDir * -1.f;
 
 		Vec4 vCenterPos			= (vStelliaPos + vPlayerPos) * 0.5f;
-		vCenterPos				+= vPlayerToStelliaDir * -10.f; /* 조금 더 플레이어 쪽으로 당긴다. */
 
 		switch (m_tActionStelliaGuardDesc.eCurViewType)
 		{
@@ -1842,46 +1866,27 @@ HRESULT CCamera_Action::Start_Action_Stellia_Guard(CTransform* pStelliaTransform
 		{
 			/* Pos */
 			{
-				vCamPosition = vCenterPos + (vRightDir * m_tActionStelliaGuardDesc.fDist) + m_tTargetOffset.vCurVec;
+				vCamPosition = (vCenterPos + vPlayerToStelliaDir * -8.5f) + (vRightDir * m_tActionStelliaGuardDesc.fDist) + m_tTargetOffset.vCurVec;
 			}
 			
 			/* LookAt */
 			{
-				vLookAt = vCenterPos + m_tLookAtOffset.vCurVec;
+				vLookAt = (vCenterPos + vPlayerToStelliaDir * -4.f) + m_tLookAtOffset.vCurVec;
 			}
 
-			m_tActionStelliaGuardDesc.eCurViewType = ACTION_STELLIA_GUARD_DESC::VIEW_TYPE::EAST_SOUTH;
+			m_tActionStelliaGuardDesc.eCurViewType = ACTION_STELLIA_GUARD_DESC::VIEW_TYPE::WEST;
 		}
 		break;
-		case ACTION_STELLIA_GUARD_DESC::VIEW_TYPE::EAST_SOUTH:
+		case ACTION_STELLIA_GUARD_DESC::VIEW_TYPE::WEST:
 		{
 			/* Pos */
 			{
-				vCamPosition = vCenterPos + (vRightDir * m_tActionStelliaGuardDesc.fDist) + m_tTargetOffset.vCurVec;
-
-				vCamPosition += vPlayerToStelliaDir * m_tActionStelliaGuardDesc.fDist * -3.f;
+				vCamPosition = (vCenterPos + vPlayerToStelliaDir * -8.5f) + (vLeftDir * m_tActionStelliaGuardDesc.fDist) + m_tTargetOffset.vCurVec;
 			}
 
 			/* LookAt */
 			{
-				vLookAt = vCenterPos + m_tLookAtOffset.vCurVec;
-			}
-
-			m_tActionStelliaGuardDesc.eCurViewType = ACTION_STELLIA_GUARD_DESC::VIEW_TYPE::WEST_SOUTH;
-		}
-		break;
-		case ACTION_STELLIA_GUARD_DESC::VIEW_TYPE::WEST_SOUTH:
-		{
-			/* Pos */
-			{
-				vCamPosition = vCenterPos + (vLeftDir * m_tActionStelliaGuardDesc.fDist) + m_tTargetOffset.vCurVec;
-
-				vCamPosition += vPlayerToStelliaDir * m_tActionStelliaGuardDesc.fDist * -3.f;
-			}
-
-			/* LookAt */
-			{
-				vLookAt = vCenterPos + m_tLookAtOffset.vCurVec;
+				vLookAt = (vCenterPos + vPlayerToStelliaDir * -4.f) + m_tLookAtOffset.vCurVec;
 			}
 
 			m_tActionStelliaGuardDesc.eCurViewType = ACTION_STELLIA_GUARD_DESC::VIEW_TYPE::EAST;
@@ -1899,7 +1904,7 @@ HRESULT CCamera_Action::Start_Action_Stellia_Guard(CTransform* pStelliaTransform
 	
 	/* Change */
 	{
-		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
+		CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::ACTION);
 	}
 
 	return S_OK;
@@ -1907,21 +1912,25 @@ HRESULT CCamera_Action::Start_Action_Stellia_Guard(CTransform* pStelliaTransform
 
 HRESULT CCamera_Action::Finish_Action_Stellia_Guard(const _bool& bBlending)
 {
+	if (Is_Shake())
+		Stop_Shake();
+
 	if (bBlending) /* 가드 성공 - 스텔리아 뒤로 밀려남 -> 팔로우 카메라로 블렌딩 */
 	{
-		/* 플레이어 인풋 막기 */
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		pFollowCam->Set_Default_Position();
+
+		CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
+
 		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 
-		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
-
-		//CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW, 2.f);
 		m_tActionStelliaGuardDesc.Clear();
 	}
 	else /* 가드 실패 - 플레이어 날라감 -> 블렌딩 없이 바로 팔로우 카메라 세팅 */
 	{
 		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
 
-		//CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Start_Shake(0.1f, 17.f, 0.3f);
+		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Start_Shake(0.1f, 17.f, 0.3f);
 		
 		m_tActionStelliaGuardDesc.Clear();
 	}
