@@ -101,7 +101,7 @@ CBTNode::NODE_STATE CSubQuestNode_FindCat05::Tick(const _float& fTimeDelta)
 				ItemDesc.iSecondAmount = 700;
 
 				CUI_Manager::GetInstance()->Set_QuestRewards(&ItemDesc);
-				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("클로이의 고양이 찾기"));
+				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("클로이의 감귤이 찾기"));
 
 				CRiding_Manager::GetInstance()->Set_Ride_Udadak();
 				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Add_Exp(ItemDesc.iSecondAmount);

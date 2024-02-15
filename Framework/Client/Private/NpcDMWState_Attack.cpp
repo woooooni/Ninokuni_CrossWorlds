@@ -10,6 +10,10 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Effect_Manager.h"
+#include "Vfx.h"
+#include "Vfx_Witch_Attack.h"
+
 CNpcDMWState_Attack::CNpcDMWState_Attack(CStateMachine* pStateMachine)
 	: CNpcDMWState_Base(pStateMachine)
 {
@@ -37,6 +41,13 @@ void CNpcDMWState_Attack::Enter_State(void* pArg)
 	m_bIsAttack = false;
 	m_fAccTime = 0.f;
 	m_iCurCount = 0;
+
+	// Effect Create
+	CVfx* pVfxEffect = nullptr;
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Attack"), m_pTransformCom->Get_WorldMatrix(), m_pWitch, &pVfxEffect);
+	if (nullptr != pVfxEffect)
+		pVfxEffect->Set_OwnerStateIndex((_int)CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
+
 }
 
 void CNpcDMWState_Attack::Tick_State(_float fTimeDelta)
@@ -46,17 +57,20 @@ void CNpcDMWState_Attack::Tick_State(_float fTimeDelta)
 	if (CGame_Manager::GetInstance()->Get_Player()->Get_Character() != nullptr)
 	{
 		/* 우선 순위 스킬들 */
-		// 스텔리아가 점프 스탬프라면
-		if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_JUMPSTAMP &&
-			m_pStellia->Get_Component_Model()->Get_CurrAnimationFrame() < 10)
+		if (m_pStellia != nullptr)
 		{
-			m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_VULCAN_READY);
-		}
-		// 스텔리아가 차지 레디 상태라면
-		if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_CHARGE &&
-			m_pStellia->Get_Component_Model()->Get_CurrAnimationFrame() < 10)
-		{
-			m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_CHARGE_READY);
+			// 스텔리아가 점프 스탬프라면
+			if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_JUMPSTAMP &&
+				m_pStellia->Get_Component_Model()->Get_CurrAnimationFrame() < 10)
+			{
+				m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_VULCAN_READY);
+			}
+			// 스텔리아가 차지 레디 상태라면
+			if (m_pStellia->Get_Component_StateMachine()->Get_CurrState() == CStellia::STELLIA_CHARGE &&
+				m_pStellia->Get_Component_Model()->Get_CurrAnimationFrame() < 10)
+			{
+				m_pStateMachineCom->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_CHARGE_READY);
+			}
 		}
 
 		/* 우선 순위 스킬이 아니라면 */

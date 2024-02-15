@@ -133,11 +133,7 @@ void CDreamMazeWitch_Npc::Tick(_float fTimeDelta)
 				m_pSparkle->Set_LoopParticle(true);
 			}
 		}
-
-
 	}
-
-
 
 	m_pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 
@@ -348,8 +344,8 @@ HRESULT CDreamMazeWitch_Npc::Ready_States()
 
 
 	// Åø¿ë
-	//m_pStateCom->Change_State(WITCHSTATE_BATTLE_FOLLOWING);
-	//m_bIsBattle = true;
+	// m_pStateCom->Change_State(WITCHSTATE_BATTLE_FOLLOWING);
+	// m_bIsBattle = true;
 	//
 
 

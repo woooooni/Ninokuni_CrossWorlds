@@ -10,6 +10,10 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Effect_Manager.h"
+#include "Vfx.h"
+#include "Vfx_Witch_Attack.h"
+
 CNpcDMWState_Rage03Laser::CNpcDMWState_Rage03Laser(CStateMachine* pStateMachine)
 	: CNpcDMWState_Base(pStateMachine)
 {
@@ -37,6 +41,13 @@ void CNpcDMWState_Rage03Laser::Enter_State(void* pArg)
 	m_bIsAttack = false;
 	m_fAccTime = 0.f;
 	m_iCurCount = 0;
+
+	// Effect Create
+	CVfx* pVfxEffect = nullptr;
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Attack"), m_pTransformCom->Get_WorldMatrix(), m_pWitch, &pVfxEffect);
+	if (nullptr != pVfxEffect)
+		pVfxEffect->Set_OwnerStateIndex((_int)CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_RAGE3_LASER);
+
 }
 
 void CNpcDMWState_Rage03Laser::Tick_State(_float fTimeDelta)

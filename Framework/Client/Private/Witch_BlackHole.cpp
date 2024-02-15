@@ -35,8 +35,8 @@ HRESULT CWitch_BlackHole::Initialize_Prototype()
 HRESULT CWitch_BlackHole::Initialize(void* pArg)
 {
 	// 테스트 끝나면 풀자.
-	if (pArg == nullptr)
-		return E_FAIL;
+	//if (pArg == nullptr)
+	//	return E_FAIL;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;

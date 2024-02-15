@@ -80,6 +80,8 @@
 #include "Vfx_Stellia_Skill_Rage03Charge.h"
 
 /* Witch */
+#include "Vfx_Witch_Attack.h"
+
 #include "Vfx_Witch_Marble.h"
 #include "Vfx_Witch_Marble_Hit.h"
 
@@ -103,4 +105,5 @@
 #include "Vfx_Smoke.h"
 #include "Vfx_FireCracker.h"
 #include "Vfx_Explosion.h"
+#include "Vfx_GrandPrix_BlackHole.h"
 // -------------------------------------------------

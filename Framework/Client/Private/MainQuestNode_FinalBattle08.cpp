@@ -36,6 +36,8 @@ HRESULT CMainQuestNode_FinalBattle08::Initialize()
 
 void CMainQuestNode_FinalBattle08::Start()
 {
+	CUI_Manager::GetInstance()->OnOff_BossHP(false);
+
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pWitch = GI->Find_GameObject(LEVELID::LEVEL_WITCHFOREST, LAYER_NPC, TEXT("DreamMazeWitch"));
 
@@ -84,6 +86,8 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle08::Tick(const _float& fTimeDelta)
 
 			if (m_fTime >= 3.f)
 			{
+				CSound_Manager::GetInstance()->Play_Sound(TEXT("FinalBattle_08_01.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+
 				Safe_Delete_Array(m_szpOwner);
 				Safe_Delete_Array(m_szpTalk);
 
