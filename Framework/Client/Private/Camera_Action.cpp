@@ -731,10 +731,10 @@ void CCamera_Action::Tick_Blending(const _float fDeltaTime)
 
 void CCamera_Action::Test(_float fTimeDelta)
 {
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
-	{
-		Start_Action_WindMill(true);
-	}
+	//if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
+	//{
+	//	Start_Action_WindMill(true);
+	//}
 }
 
 void CCamera_Action::Tick_Stadium(_float fTimeDelta)

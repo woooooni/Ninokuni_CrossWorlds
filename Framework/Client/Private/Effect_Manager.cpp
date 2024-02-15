@@ -1062,6 +1062,11 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 
 	// Witch
 	{
+		// Prototype_Vfx_Witch_Attack
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Witch_Attack"),
+			CVfx_Witch_Attack::Create(m_pDevice, m_pContext, TEXT("Witch_Attack")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
 		// Prototype_Vfx_Witch_Marble
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Witch_Marble"),
 			CVfx_Witch_Marble::Create(m_pDevice, m_pContext, TEXT("Witch_Marble")), LAYER_TYPE::LAYER_EFFECT)))
@@ -1107,6 +1112,14 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 			CVfx_Witch_Skill_Rage01QuadBlackHole_Bomb::Create(m_pDevice, m_pContext, TEXT("Witch_Skill_Rage01QuadBlackHole_Bomb")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
 	}
+
+	// GrandPrix
+	{
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_GrandPrix_BlackHole"),
+			CVfx_GrandPrix_BlackHole::Create(m_pDevice, m_pContext, TEXT("GrandPrix_BlackHole")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+	}
+
 
 	return S_OK;
 }

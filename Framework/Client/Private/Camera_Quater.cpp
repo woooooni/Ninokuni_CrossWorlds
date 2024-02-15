@@ -374,16 +374,16 @@ void CCamera_Quater::Tick_Rotation(const _float fDeltaTime)
 
 void CCamera_Quater::Test(_float fTimeDelta)
 {
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
-	{
-		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-		if (nullptr != pFollowCam)
-		{
-			pFollowCam->Reset_WideView_To_DefaultView(true);
-			pFollowCam->Set_Default_Position();
-			CCamera_Manager::GetInstance()->Set_CurCamera(pFollowCam->Get_Key());
-		}
-	}
+	//if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
+	//{
+	//	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	//	if (nullptr != pFollowCam)
+	//	{
+	//		pFollowCam->Reset_WideView_To_DefaultView(true);
+	//		pFollowCam->Set_Default_Position();
+	//		CCamera_Manager::GetInstance()->Set_CurCamera(pFollowCam->Get_Key());
+	//	}
+	//}
 }
 
 const _float& CCamera_Quater::Calculate_CamHeightFromDistance()

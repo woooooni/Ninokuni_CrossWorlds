@@ -192,10 +192,10 @@ HRESULT CLevel_Evermore::Tick(_float fTimeDelta)
 		GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_KINGDOMHALL, L"Kingdom"));
 	}
 
-	if (KEY_TAP(KEY::F8))
-	{
-		GI->Add_GameObject(LEVEL_EVERMORE, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Stellia"));
-	}
+	//if (KEY_TAP(KEY::F8))
+	//{
+	//	GI->Add_GameObject(LEVEL_EVERMORE, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Stellia"));
+	//}
 
 	return S_OK;
 }

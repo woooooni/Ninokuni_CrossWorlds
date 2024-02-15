@@ -144,8 +144,8 @@ void CGlanix::Tick(_float fTimeDelta)
 	}
 
 	/* юс╫ц */
-	if (KEY_TAP(KEY::X))
-		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
+	//if (KEY_TAP(KEY::X))
+	//	m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
 
 	//#ifdef _DEBUG
 	//	if (KEY_TAP(KEY::C))

@@ -50,26 +50,32 @@ HRESULT CBiplane_BlackHole::Initialize(void* pArg)
 	m_fDeletionTime = 5.f;
 
 
-	if (FAILED(CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_GrandPrix_BlackHole_Sphere", m_pTransformCom->Get_WorldMatrix(),
-		Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
-		return E_FAIL;
-
-	if (FAILED(CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_GrandPrix_AccretionDisk", m_pTransformCom->Get_WorldMatrix(),
-		Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
-		return E_FAIL;
-
-	if (FAILED(CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_GrandPrix_AccretionDisk_Distortion", m_pTransformCom->Get_WorldMatrix(),
-		Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
-		return E_FAIL;
-
-	if (FAILED(CParticle_Manager::GetInstance()->Generate_Particle(L"Particle_BlackHole", m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
-		return E_FAIL;
+	//if (FAILED(CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_GrandPrix_BlackHole_Sphere", m_pTransformCom->Get_WorldMatrix(),
+	//	Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
+	//	return E_FAIL;
+	//
+	//if (FAILED(CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_GrandPrix_AccretionDisk", m_pTransformCom->Get_WorldMatrix(),
+	//	Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
+	//	return E_FAIL;
+	//
+	//if (FAILED(CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_GrandPrix_AccretionDisk_Distortion", m_pTransformCom->Get_WorldMatrix(),
+	//	Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
+	//	return E_FAIL;
+	//
+	//if (FAILED(CParticle_Manager::GetInstance()->Generate_Particle(L"Particle_BlackHole", m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), this)))
+	//	return E_FAIL;
 
 	return S_OK;
 }
 
 void CBiplane_BlackHole::Tick(_float fTimeDelta)
 {
+
+	if (m_pBlackHole == nullptr)
+	{
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_GrandPrix_BlackHole"), m_pTransformCom->Get_WorldMatrix(), this, &m_pBlackHole);
+	}
+
 	if (true == m_bArrive)
 	{
 		__super::Tick(fTimeDelta);
@@ -89,13 +95,13 @@ void CBiplane_BlackHole::Tick(_float fTimeDelta)
 			m_bArrive = true;
 			m_fAccArrive = 0.f;
 			m_fAccDeletionTime = 0.f;
-
+		
 			for (auto& pBodyCollider : Get_Collider(CCollider::DETECTION_TYPE::BODY))			
 				pBodyCollider->Set_Radius(50.f);
-
+		
 			for (auto& pAttackCollider : Get_Collider(CCollider::DETECTION_TYPE::ATTACK))
 				pAttackCollider->Set_Radius(50.f);
-
+		
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 		}
 		else
@@ -159,8 +165,8 @@ HRESULT CBiplane_BlackHole::Ready_Components()
 
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
 		return E_FAIL;
-
-
+	
+	
 	SphereDesc.tSphere.Radius = 30.f;
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &SphereDesc)))
 		return E_FAIL;

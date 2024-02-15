@@ -423,6 +423,7 @@
     <ClInclude Include="..\Public\Vfx_FireCracker.h" />
     <ClInclude Include="..\Public\Vfx_Glanix_Skill_RageStamp.h" />
     <ClInclude Include="..\Public\Vfx_Glanix_Skill_Spawn.h" />
+    <ClInclude Include="..\Public\Vfx_GrandPrix_BlackHole.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_BigBang.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_Charge.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_ChaseJumpStamp.h" />
@@ -453,6 +454,7 @@
     <ClInclude Include="..\Public\Vfx_UI_SkillUse.h" />
     <ClInclude Include="..\Public\Vfx_UI_WeaponSet.h" />
     <ClInclude Include="..\Public\Vfx_Whale_Jump.h" />
+    <ClInclude Include="..\Public\Vfx_Witch_Attack.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Marble_Hit.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_BlackHole_Bomb.h" />
     <ClInclude Include="..\Public\Vfx_Witch_Skill_BlackHole_Drain.h" />
@@ -1553,6 +1555,7 @@
     <ClCompile Include="..\Private\Vfx_FireCracker.cpp" />
     <ClCompile Include="..\Private\Vfx_Glanix_Skill_RageStamp.cpp" />
     <ClCompile Include="..\Private\Vfx_Glanix_Skill_Spawn.cpp" />
+    <ClCompile Include="..\Private\Vfx_GrandPrix_BlackHole.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_BigBang.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_Charge.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_ChaseJumpStamp.cpp" />
@@ -1583,6 +1586,7 @@
     <ClCompile Include="..\Private\Vfx_UI_SkillUse.cpp" />
     <ClCompile Include="..\Private\Vfx_UI_WeaponSet.cpp" />
     <ClCompile Include="..\Private\Vfx_Whale_Jump.cpp" />
+    <ClCompile Include="..\Private\Vfx_Witch_Attack.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Marble_Hit.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_BlackHole_Bomb.cpp" />
     <ClCompile Include="..\Private\Vfx_Witch_Skill_BlackHole_Drain.cpp" />

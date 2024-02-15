@@ -39,6 +39,7 @@ private:
 
 	_float m_fGravityForce = 10.f;
 
+	class CVfx* m_pBlackHole = nullptr;
 
 public:
 	static CBiplane_BlackHole* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

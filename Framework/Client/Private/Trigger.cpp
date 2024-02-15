@@ -161,6 +161,7 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 			}
 			else
 			{
+				Set_Dead(true);
 				for (auto& pObj : pGameObjects)
 				{
 					if (pObj->Get_ObjectTag() == TEXT("Witch_Wood_Wall"))
