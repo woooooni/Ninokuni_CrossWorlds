@@ -78,6 +78,8 @@ void CSkill_Biplane_Burst::Shoot_BlackHole()
 	pBlackHoleTransform->Set_WorldMatrix(pBiplaneTransform->Get_WorldMatrix());
 	pBlackHoleTransform->Set_Scale(vBlackHoleScale);
 
+	pBlackHoleTransform->Set_Position(pBlackHoleTransform->Get_Position() + (ProjectileDesc.pOwner->Get_RiderTransform()->Get_Look() * 10.f));
+
 	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pBlackHole)))
 	{
 		MSG_BOX("Add GameObject Failed. : CCSkill_Biplane_Burst::Shoot_BlackHole");
