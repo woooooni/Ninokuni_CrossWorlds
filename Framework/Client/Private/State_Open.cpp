@@ -6,6 +6,7 @@
 #include "WitchWood.h"
 
 #include "Quest_Manager.h"
+#include "Camera_Group.h"
 
 CState_Open::CState_Open(CStateMachine* pMachine)
 	: CState(pMachine)
@@ -23,15 +24,32 @@ HRESULT CState_Open::Initialize(const list<wstring>& AnimationList)
 
 void CState_Open::Enter_State(void* pArg)
 {
+	CCamera* pCamera = CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW);
+	if (nullptr == pCamera)
+		return;
+
+	Vec4 vCamPos = CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Get_Transform()->Get_Position();
+	Vec4 vPos = m_pTransformCom->Get_Position();
+	Vec4 vDistance = vPos - vCamPos;
+	_float fDistance = vDistance.Length();
+
 	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_FINALBATTLE)
 	{
+		if (fDistance < 35.0f)
+		{
+			GI->Play_Sound(TEXT("Impact_Wood_1.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.0f, true);
+		}
 		m_pModelCom->Set_Animation(m_AnimIndices[1]);
-		Vec4 vPos = Vec4(m_pTransformCom->Get_Position()) - Vec4(GI->Get_CamPosition());
-		_float fDistance = vPos.Length();
-		GI->Play_Sound(TEXT("Impact_Wood_1.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.0f, true, fDistance);
 	}
 	else
+	{
+		if (fDistance < 35.0f)
+		{
+			GI->Play_Sound(TEXT("Impact_Wood_1.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.0f, true);
+		}
+
 		m_pModelCom->Set_Animation(m_AnimIndices[0]);
+	}
 }
 
 void CState_Open::Tick_State(_float fTimeDelta)
