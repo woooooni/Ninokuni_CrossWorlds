@@ -6,6 +6,7 @@
 #include "WitchWood.h"
 
 #include "Quest_Manager.h"
+#include "Camera_Group.h"
 
 CState_Closed::CState_Closed(CStateMachine* pMachine)
 	: CState(pMachine)
@@ -25,7 +26,15 @@ void CState_Closed::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_AnimIndices[1]);
 
-	GI->Play_Sound(TEXT("Impact_Wood_1.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.0f, true);
+	Vec4 vCamPos = CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Get_Transform()->Get_Position();
+	Vec4 vPos = m_pTransformCom->Get_Position();
+	Vec4 vDistance = vPos - vCamPos;
+	_float fDistance = vDistance.Length();
+
+	if (fDistance < 35.0f)
+	{
+		GI->Play_Sound(TEXT("Impact_Wood_1.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.0f, true);
+	}
 }
 
 void CState_Closed::Tick_State(_float fTimeDelta)
