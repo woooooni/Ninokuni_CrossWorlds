@@ -4,7 +4,9 @@
 #include "GameInstance.h"
 #include "Utils.h"
 
+
 #include "UI_Manager.h"
+#include "UI_Fade.h"
 #include "UI_PopupQuest.h"
 
 #include "Game_Manager.h"
@@ -48,13 +50,23 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion03::Tick(const _float& fTimeDelta)
 		}
 	}
 
-	if (CTowerDefence_Manager::GetInstance()->Get_CurrentPhase() == CTowerDefence_Manager::TOWER_DEFENCE_PHASE::DEFENCE_FINISH)
+	if (!m_bIsFadeOut && CTowerDefence_Manager::GetInstance()->Get_CurrentPhase() == CTowerDefence_Manager::TOWER_DEFENCE_PHASE::DEFENCE_FINISH)
 	{
-		m_bIsClear = true;
-		CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
-
-		return NODE_STATE::NODE_FAIL;
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 1.f);
+		m_bIsFadeOut = true;
 	}
+
+	if (m_bIsFadeOut)
+	{
+		if (CUI_Manager::GetInstance()->Is_FadeFinished())
+		{
+			CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
+			m_bIsClear = true;
+
+			return NODE_STATE::NODE_FAIL;
+		}
+	}
+
 
 	return NODE_STATE::NODE_RUNNING;
 }
