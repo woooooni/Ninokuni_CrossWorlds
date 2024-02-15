@@ -110,15 +110,15 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 {
 	if (true == m_bOnBoard)
 	{
-		if (false == m_bInfinite && KEY_TAP(KEY::Z))
-		{
-			m_tStat.fCurHP -= 10000;
-			m_tStat.fCurHP = max(m_tStat.fCurHP, 0);
-			if (0 >= m_tStat.fCurHP)
-			{
-				m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK);
-			}
-		}
+		//if (false == m_bInfinite && KEY_TAP(KEY::Z))
+		//{
+		//	m_tStat.fCurHP -= 10000;
+		//	m_tStat.fCurHP = max(m_tStat.fCurHP, 0);
+		//	if (0 >= m_tStat.fCurHP)
+		//	{
+		//		m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENGINEER_FINISH_ATTACK);
+		//	}
+		//}
 
 		if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::Z))
 		{
@@ -127,8 +127,7 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 				if (pObject->Get_ObjectTag() == L"Vehicle_Flying_EnemyBiplane")
 					continue;
 
-				pObject->Set_Dead(true);
-			}
+				pObject->Set_Dead(true);			}
 		}
 
 		Check_Use_Skill();

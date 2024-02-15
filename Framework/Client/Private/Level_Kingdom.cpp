@@ -96,20 +96,20 @@ HRESULT CLevel_Kingdom::Tick(_float fTimeDelta)
 	CUI_Manager::GetInstance()->Tick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_KINGDOMHALL, fTimeDelta);
 
-	if (KEY_TAP(KEY::PAGE_UP))
-	{
-		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
-	}
+	//if (KEY_TAP(KEY::PAGE_UP))
+	//{
+	//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+	//}
 
-	if (KEY_TAP(KEY::PAGE_DOWN))
-	{
-		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
-	}
+	//if (KEY_TAP(KEY::PAGE_DOWN))
+	//{
+	//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+	//}
 
-	if (KEY_TAP(KEY::OPEN_SQUARE_BRACKET))
-	{
-		GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_EVERMORE, L"Evermore"));
-	}
+	//if (KEY_TAP(KEY::OPEN_SQUARE_BRACKET))
+	//{
+	//	GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_EVERMORE, L"Evermore"));
+	//}
 
 	return S_OK;
 }
