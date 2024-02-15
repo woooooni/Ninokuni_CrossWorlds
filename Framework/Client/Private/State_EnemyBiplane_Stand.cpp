@@ -233,6 +233,7 @@ void CState_EnemyBiplane_Stand::Shoot_Normal(_float fTimeDelta)
     if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, pRightBullet)))
         MSG_BOX("Generate Bullet Failed.");
 
+    GI->Play_Sound(L"Grandprix_Bullet_Default_2.wav", CHANNELID::SOUND_CLOTH, 1.f, true);
 
     m_iShootCounts[SHOOT_STATE::NORMAL] += 1;
 }
@@ -316,6 +317,7 @@ void CState_EnemyBiplane_Stand::Shoot_Pattern_1(_float fTimeDelta)
             MSG_BOX("Generate Bullet Failed.");
     }
 
+    GI->Play_Sound(L"Grandprix_Bullet_Default_2.wav", CHANNELID::SOUND_CLOTH, 1.f, true);
 
     m_iShootCounts[SHOOT_STATE::PATTERN_1] += 1;
 }
@@ -362,7 +364,7 @@ void CState_EnemyBiplane_Stand::Shoot_Pattern_2(_float fTimeDelta)
 
     m_iShootCounts[SHOOT_STATE::PATTERN_2] += 1;
     
-
+    GI->Play_Sound(L"Grandprix_Bullet_Default_2.wav", CHANNELID::SOUND_CLOTH, 1.f, true);
 }
 
 void CState_EnemyBiplane_Stand::Shoot_Pattern_3(_float fTimeDelta)
@@ -401,6 +403,8 @@ void CState_EnemyBiplane_Stand::Shoot_Pattern_3(_float fTimeDelta)
         if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, pBullet)))
             MSG_BOX("Generate Bullet Failed.");
     }
+
+    GI->Play_Sound(L"Grandprix_Bullet_Default_2.wav", CHANNELID::SOUND_CLOTH, 1.f, true);
 
     m_iShootCounts[SHOOT_STATE::PATTERN_3] += 1;
 }

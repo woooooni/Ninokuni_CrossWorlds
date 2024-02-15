@@ -555,8 +555,6 @@ void CUIMinigame_Manager::Start_Grandprix()
 
 void CUIMinigame_Manager::End_Grandprix()
 {
-	GI->Stop_Sound(CHANNELID::SOUND_AIRPLANE);
-
 	OnOff_GrandprixGauge(false);
 	OnOff_Grandprix(false); // UI 세팅을 복구한다.
 	m_bFlying = false;

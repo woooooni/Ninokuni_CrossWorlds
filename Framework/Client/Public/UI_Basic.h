@@ -14,7 +14,7 @@ public:
 		TARGETARROW_LEFT, TARGETARROW_RIGHT, COSTUME_INSTALL,
 		WORLDMAP_ICON,
 		UISTATIC_TITLELINE, UISTATIC_MENUDECO_L, UISTATIC_MENUDECO_R,
-		VEHICLE_FX, UI_ENDING,
+		VEHICLE_FX, UI_ENDING, WORLDMAP_BACKCOLOR,
 		UIBASIC_END };
 
 protected:
@@ -23,6 +23,7 @@ protected:
 	virtual ~CUI_Basic() = default;
 
 public:
+	virtual void Set_Active(_bool bActive) override;
 	void Set_UIPass(_uint iPass) { m_iPass = iPass; }
 	void Set_Alpha(_float fAlpha) { m_fAlpha = fAlpha; }
 	_bool Get_Active() { return m_bActive; }

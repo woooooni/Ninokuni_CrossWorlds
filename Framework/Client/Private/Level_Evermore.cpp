@@ -134,6 +134,10 @@ HRESULT CLevel_Evermore::Initialize()
 		{
 			g_bFirstEnter = true;
 			CUI_Manager::GetInstance()->OnOff_MapName(true, TEXT("³²¹® ±¤Àå"));
+
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_HideAndSeek_HSClearMachine_Spawn_1_St.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 		}
 	}
 

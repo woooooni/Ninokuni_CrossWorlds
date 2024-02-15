@@ -1942,8 +1942,25 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 
 #pragma endregion
 
-	// WorldMap Background 생성
+	// WorldMap BackColor생성
 	CGameObject* pBackground = nullptr;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = g_iWinSizeX;
+	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WorldMap_BackColor"), &UIDesc, &pBackground)))
+		return E_FAIL;
+
+	m_pWorldMapBC = dynamic_cast<CUI_Basic*>(pBackground);
+	if (nullptr == m_pWorldMapBC)
+		return E_FAIL;
+	Safe_AddRef(m_pWorldMapBC);
+
+	// WorldMap Background 생성
+	pBackground = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
 	UIDesc.fCX = 2240.f;
@@ -4069,6 +4086,12 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 			return E_FAIL;
 		Safe_AddRef(iter);
 	}
+
+	if (nullptr == m_pWorldMapBC)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pWorldMapBC)))
+		return E_FAIL;
+	Safe_AddRef(m_pWorldMapBC);
 
 	if (nullptr == m_pWorldMapBG)
 		return E_FAIL;
@@ -7109,6 +7132,7 @@ HRESULT CUI_Manager::OnOff_WorldMap(_bool bOnOff)
 			// 기본 세팅을 끄고 WorldMap을 켠다
 			OnOff_GamePlaySetting(false);
 
+			m_pWorldMapBC->Set_Active(true);
 			m_pWorldMapBG->Set_Active(true);
 			m_pTabMenuTitle->Set_TextType(CUI_Text_TabMenu::UI_MENUTITLE::TITLE_WORLDMAP);
 			m_pTabMenuTitle->Set_Active(true);
@@ -7119,6 +7143,7 @@ HRESULT CUI_Manager::OnOff_WorldMap(_bool bOnOff)
 		if (m_pWorldMapBG->Get_Active())
 		{
 			// WorldMap을 끄고 기본 세팅을 켠다
+			m_pWorldMapBC->Set_Active(false);
 			m_pWorldMapBG->Set_Active(false);
 			m_pTabMenuTitle->Set_Active(false);
 
@@ -8350,6 +8375,9 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 			CUI_SubMenu_Shop::UI_SUBSHOP_TYPE::SHOPBTN_TOKEN), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WorldMap_BackColor"),
+		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Worldmap_BackColor", CUI_Basic::WORLDMAP_BACKCOLOR), LAYER_UI)))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WorldMap_Background"),
 		CUI_WindowWorldMap::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
@@ -9572,6 +9600,7 @@ void CUI_Manager::Free()
 	Safe_Release(m_pMainBG);
 	Safe_Release(m_pWindowQuest);
 
+	Safe_Release(m_pWorldMapBC);
 	Safe_Release(m_pWorldMapBG);
 	Safe_Release(m_pSkillBG);
 	Safe_Release(m_pImajinnBG);

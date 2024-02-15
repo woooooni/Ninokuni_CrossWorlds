@@ -332,6 +332,7 @@ private:
 	vector<class CUI_SubMenu_Shop*>			m_SubMenuShop;
 
 	// For World Map
+	class CUI_Basic*						m_pWorldMapBC = { nullptr };
 	class CUI_WindowWorldMap*				m_pWorldMapBG = { nullptr };
 	// For Skill Section
 	class CUI_SkillSection_Background*		m_pSkillBG = { nullptr };

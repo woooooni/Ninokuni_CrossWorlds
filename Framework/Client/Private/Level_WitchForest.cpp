@@ -97,6 +97,10 @@ HRESULT CLevel_WitchForest::Initialize()
 	{
 		g_bFirstEnter = true;
 		CUI_Manager::GetInstance()->OnOff_MapName(true, TEXT("½£ÀÇ ÀÔ±¸"));
+
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_HideAndSeek_HSClearMachine_Spawn_1_St.mp3"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 	}
 
 	return S_OK;

@@ -129,7 +129,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 		StatDesc.iHp = 800;
 		StatDesc.iMaxHp = 800;
 		StatDesc.iExp = 0;
-		StatDesc.iMaxExp = 100;
+		StatDesc.iMaxExp = 1000;
 
 		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_SwordMan_AuraBlade", CSwordMan_AuraBlade::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 			return E_FAIL;
@@ -219,7 +219,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 			StatDesc.iHp = 800;
 			StatDesc.iMaxHp = 800;
 			StatDesc.iExp = 0;
-			StatDesc.iMaxExp = 100;
+			StatDesc.iMaxExp = 1000;
 
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_SwordMan_AuraBlade", CSwordMan_AuraBlade::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 				return E_FAIL;
@@ -271,7 +271,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 			if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
 				return E_FAIL;
 
-			m_pCharacters[CHARACTER_TYPE::ENGINEER]->Set_Useable(false);
+//			m_pCharacters[CHARACTER_TYPE::ENGINEER]->Set_Useable(false);
 		}
 
 		// Destroyer
@@ -299,7 +299,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 			if (nullptr == m_pCharacters[CHARACTER_TYPE::DESTROYER])
 				return E_FAIL;
 
-			m_pCharacters[CHARACTER_TYPE::DESTROYER]->Set_Useable(false);
+//			m_pCharacters[CHARACTER_TYPE::DESTROYER]->Set_Useable(false);
 		}
 	}
 		break;

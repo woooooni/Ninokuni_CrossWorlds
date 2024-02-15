@@ -79,6 +79,7 @@ void CUI_WindowWorldMap::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		// 플레이어의 인풋은 막는다
 
 		if (m_bMove)
 			m_fTimeAcc += fTimeDelta;
@@ -164,11 +165,10 @@ void CUI_WindowWorldMap::On_MouseDrag(_float fTimeDelta)
 
 		if (!m_bMove)
 		{
-			if (m_tInfo.fX > (m_tInfo.fCX * 0.5f + 100.f))
+			if (m_tInfo.fX > (m_tInfo.fCX * 0.5f))
 			{
-				m_tInfo.fX = m_tInfo.fCX * 0.5f;
+				m_tInfo.fX = m_tInfo.fCX * 0.5;
 				m_bMove = true;
-
 				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 			}
@@ -177,7 +177,22 @@ void CUI_WindowWorldMap::On_MouseDrag(_float fTimeDelta)
 			{
 				m_tInfo.fX = 490.f;
 				m_bMove = true;
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+			}
 
+			if (m_tInfo.fY > (m_tInfo.fCY * 0.5f + 50.f))
+			{
+				m_tInfo.fY = m_tInfo.fCY * 0.5f + 50.f;
+				m_bMove = true;
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+			}
+
+			if (m_tInfo.fY < (m_tInfo.fCY * 0.5f - 100.f))
+			{
+				m_tInfo.fY = (m_tInfo.fCY * 0.5f - 100.f);
+				m_bMove = true;
 				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 			}

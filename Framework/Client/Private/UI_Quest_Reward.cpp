@@ -51,9 +51,9 @@ void CUI_Quest_Reward::Set_Active(_bool bActive)
 
 		if (REWARD_TOP == m_eType)
 		{
-			GI->Stop_Sound(CHANNELID::SOUND_UI);
-			GI->Play_Sound(TEXT("UI_Fx_Quest_Complete_Popup_1_St.mp3"), CHANNELID::SOUND_UI,
-				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+			GI->Stop_Sound(CHANNELID::SOUND_UI2);
+			GI->Play_Sound(TEXT("UI_Fx_Quest_Complete_Popup_1_St.mp3"), CHANNELID::SOUND_UI2,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI2));
 
 			// Effect Create
 			_matrix WorldMatrix = XMMatrixIdentity();

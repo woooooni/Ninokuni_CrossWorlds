@@ -95,7 +95,7 @@ void CState_EnemyBiplane_Skill_2::Shoot_Feathers()
         
     }
 
-    GI->Play_Sound(TEXT("UI_Fx_Quest_Reward_Item_1.mp3"), CHANNELID::SOUND_VOICE_MONSTER3,
+    GI->Play_Sound(TEXT("UI_Fx_Imajinn_AwakenFail_1_St.mp3"), CHANNELID::SOUND_VOICE_MONSTER3,
         GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_MONSTER3));
 }
 

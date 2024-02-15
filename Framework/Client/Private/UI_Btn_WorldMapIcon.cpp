@@ -148,7 +148,8 @@ void CUI_Btn_WorldMapIcon::LateTick(_float fTimeDelta)
 		switch (m_eIconType) // 내 아이콘 타입
 		{
 		case UI_WORLDMAP_ICONTYPE::ICON_EVERMORE:
-			if (_uint(LEVELID::LEVEL_EVERMORE) == GI->Get_CurrentLevel())
+			if (_uint(LEVELID::LEVEL_EVERMORE) == GI->Get_CurrentLevel() ||
+				_uint(LEVELID::LEVEL_KINGDOMHALL) == GI->Get_CurrentLevel())
 				m_pIcon->Set_Active(true);
 			else
 				m_pIcon->Set_Active(false);

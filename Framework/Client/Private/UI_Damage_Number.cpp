@@ -57,33 +57,33 @@ HRESULT CUI_Damage_Number::Initialize(void* pArg)
 	{
 		if (true == m_FontDesc.bIsBoss)
 		{
-			if (15.f <= fDistance)
+			if (18.f <= fDistance)
 			{
-				if (18.f <= fDistance)
+				if (12.f <= fDistance)
 					m_fAlpha = 0.1f;
 
-				_float fRandom = GI->RandomFloat(0.1f, 0.14f);
+				_float fRandom = GI->RandomFloat(0.13f, 0.17f);
 				fNumSize = 112.f * fRandom;
 			}
 			else
 			{
-				_float fRandom = GI->RandomFloat(0.17f, 0.29f);
+				_float fRandom = GI->RandomFloat(0.19f, 0.3f);
 				fNumSize = 112.f * fRandom;
 			}
 		}
 		else
 		{
-			if (15.f <= fDistance)
+			if (18.f <= fDistance)
 			{
-				if (18.f <= fDistance)
+				if (22.f <= fDistance)
 					m_fAlpha = 0.1f;
 
-				_float fRandom = GI->RandomFloat(0.09f, 0.13f);
+				_float fRandom = GI->RandomFloat(0.11f, 0.15f);
 				fNumSize = 112.f * fRandom;
 			}
 			else
 			{
-				_float fRandom = GI->RandomFloat(0.13f, 0.17f);
+				_float fRandom = GI->RandomFloat(0.15f, 0.19f);
 				fNumSize = 112.f * fRandom;
 			}
 		}
@@ -313,7 +313,8 @@ void CUI_Damage_Number::Tick_Monster(_float fTimeDelta)
 	}
 	else
 	{
-		m_fAlpha -= fTimeDelta * 2.f;
+		_float fRandom = GI->RandomFloat(2.f, 2.5f);
+		m_fAlpha -= fTimeDelta * fRandom;
 
 		if (m_fAlpha <= 0.f)
 		{

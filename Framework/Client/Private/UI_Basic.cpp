@@ -18,6 +18,37 @@ CUI_Basic::CUI_Basic(const CUI_Basic& rhs)
 {
 }
 
+void CUI_Basic::Set_Active(_bool bActive)
+{
+	if (m_eType == WORLDMAP_BACKCOLOR)
+	{
+		CPlayer* pPlayer = nullptr;
+		pPlayer = CGame_Manager::GetInstance()->Get_Player();
+		if (nullptr == pPlayer)
+			return;
+
+		CCharacter* pCharacter = nullptr;
+		pCharacter = pPlayer->Get_Character();
+		if (nullptr == pCharacter)
+			return;
+
+		if (true == bActive)
+		{
+			pCharacter->Set_Skill_Input(false);
+			pCharacter->Set_Attack_Input(false);
+			pCharacter->Set_Move_Input(false);
+		}
+		else
+		{
+			pCharacter->Set_Skill_Input(true);
+			pCharacter->Set_Attack_Input(true);
+			pCharacter->Set_Move_Input(true);
+		}
+	}
+
+	m_bActive = bActive;
+}
+
 void CUI_Basic::Set_AnnouncePosition(_float2 vBtnPos)
 {
 	if (COSTUME_INSTALL != m_eType)
@@ -216,6 +247,22 @@ void CUI_Basic::Tick(_float fTimeDelta)
 		}
 		else if (m_eType == WORLDMAP_ICON)
 			Set_WorldmapIcon();
+		else if (m_eType == WORLDMAP_BACKCOLOR)
+		{
+			CPlayer* pPlayer = nullptr;
+			pPlayer = CGame_Manager::GetInstance()->Get_Player();
+			if (nullptr == pPlayer)
+				return;
+
+			CCharacter* pCharacter = nullptr;
+			pCharacter = pPlayer->Get_Character();
+			if (nullptr == pCharacter)
+				return;
+
+			pCharacter->Set_Skill_Input(false);
+			pCharacter->Set_Attack_Input(false);
+			pCharacter->Set_Move_Input(false);
+		}
 
 		__super::Tick(fTimeDelta);
 	}
@@ -246,11 +293,13 @@ void CUI_Basic::LateTick(_float fTimeDelta)
 			// 글씨를 추가한다.
 			CRenderer::TEXT_DESC NickDesc = {};
 			NickDesc.strText = m_strText;
-			_int iLength = m_strText.length();
+			_int iTotalLength = m_strText.length();
+			_int iSpace = CUI_Manager::GetInstance()->Count_WordSpacing(m_strText);
+			_int iLength = iTotalLength - iSpace;
 
 			NickDesc.strFontTag = L"Default_Bold";
 			NickDesc.vScale = { 0.6f, 0.6f };
-			NickDesc.vPosition = _float2(m_tInfo.fX - (iLength * 11.f), m_tInfo.fY - 5.f);
+			NickDesc.vPosition = _float2(m_tInfo.fX - (iLength * 11.f + iSpace * 2.f), m_tInfo.fY - 5.f);
 			NickDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
 			m_pRendererCom->Add_Text(NickDesc);
 		}
@@ -487,6 +536,14 @@ HRESULT CUI_Basic::Ready_Components()
 		m_bActive = false;
 		m_fAlpha = 0.f;
 		m_fTimeAcc = 0.f;
+		break;
+
+	case WORLDMAP_BACKCOLOR:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WorldMap_WorldMap_BackColor"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_fAlpha = 1.f;
+		m_bActive = false;
 		break;
 
 	default:
