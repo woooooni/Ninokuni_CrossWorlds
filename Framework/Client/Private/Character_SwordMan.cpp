@@ -79,6 +79,8 @@
 
 #include "Animation.h"
 
+#include "Game_Manager.h"
+
 
 
 CCharacter_SwordMan::CCharacter_SwordMan(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
@@ -276,6 +278,7 @@ void CCharacter_SwordMan::Collision_Enter(const COLLISION_INFO& tInfo)
 			CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(Cam_Fov_Default, 0.5f);
 			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.05f, false);
 			break;
+
 		case CCharacter::STATE::BATTLE_ATTACK_3:
 			CCamera_Manager::GetInstance()->Start_Action_Shake_Default_Attack();
 			if(CAMERA_TYPE::FOLLOW == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
@@ -283,7 +286,7 @@ void CCharacter_SwordMan::Collision_Enter(const COLLISION_INFO& tInfo)
 				m_fAccRadial = 0.f;
 				m_fRadialTime = 0.5f;
 				m_bScreenEffect = true;
-				m_pRendererCom->Set_RadialBlur(true, 16.f);
+				CGame_Manager::GetInstance()->Lerp_RadialBlur(false, false, 0.1f, 0.f, 2.f);
 				GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.08f, 0.01f, true);
 			}
 			break;
