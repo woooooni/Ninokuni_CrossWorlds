@@ -55,25 +55,25 @@ HRESULT CVfx_GrandPrix_BlackHole::Initialize_Prototype()
 	// 4
 	m_pFrameTriger[TYPE_E_SPHERE_DELETE] = 0;
 	m_pPositionOffset[TYPE_E_SPHERE_DELETE] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_E_SPHERE_DELETE] = _float3(30.f, 30.f, 30.f);
+	m_pScaleOffset[TYPE_E_SPHERE_DELETE] = _float3(20.f, 20.f, 20.f);
 	m_pRotationOffset[TYPE_E_SPHERE_DELETE] = _float3(0.f, 0.f, 0.f);
 
 	// 5
 	m_pFrameTriger[TYPE_E_SPHERE_DELETE2] = 0;
 	m_pPositionOffset[TYPE_E_SPHERE_DELETE2] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_E_SPHERE_DELETE2] = _float3(30.f, 30.f, 30.f);
+	m_pScaleOffset[TYPE_E_SPHERE_DELETE2] = _float3(20.f, 20.f, 20.f);
 	m_pRotationOffset[TYPE_E_SPHERE_DELETE2] = _float3(0.f, 0.f, 0.f);
 
 	// 6
 	m_pFrameTriger[TYPE_E_SPHERE_DELETE3] = 0;
 	m_pPositionOffset[TYPE_E_SPHERE_DELETE3] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_E_SPHERE_DELETE3] = _float3(20.f, 20.f, 20.f);
+	m_pScaleOffset[TYPE_E_SPHERE_DELETE3] = _float3(12.5f, 12.5f, 12.5f);
 	m_pRotationOffset[TYPE_E_SPHERE_DELETE3] = _float3(0.f, 0.f, 0.f);
 
 	// 7
 	m_pFrameTriger[TYPE_E_SPHERE_DELETE4] = 0;
 	m_pPositionOffset[TYPE_E_SPHERE_DELETE4] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_E_SPHERE_DELETE4] = _float3(30.f, 30.f, 30.f);
+	m_pScaleOffset[TYPE_E_SPHERE_DELETE4] = _float3(20.f, 20.f, 20.f);
 	m_pRotationOffset[TYPE_E_SPHERE_DELETE4] = _float3(0.f, 0.f, 0.f);
 
 
