@@ -26,7 +26,9 @@ void CState_Open::Enter_State(void* pArg)
 	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_FINALBATTLE)
 	{
 		m_pModelCom->Set_Animation(m_AnimIndices[1]);
-		GI->Play_Sound(TEXT("Impact_Wood_1.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.0f, true);
+		Vec4 vPos = Vec4(m_pTransformCom->Get_Position()) - Vec4(GI->Get_CamPosition());
+		_float fDistance = vPos.Length();
+		GI->Play_Sound(TEXT("Impact_Wood_1.ogg"), CHANNELID::SOUND_VOICE_WITCH_QUEST, 1.0f, true, fDistance);
 	}
 	else
 		m_pModelCom->Set_Animation(m_AnimIndices[0]);
