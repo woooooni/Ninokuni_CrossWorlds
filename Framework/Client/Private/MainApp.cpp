@@ -70,9 +70,9 @@ HRESULT CMainApp::Initialize()
 	{
 		g_eStartLevel = LEVELID::LEVEL_LOGO;					/* 시작 레벨 타입 */
 
-		g_iStartQuestLevel = QUEST_LEVEL::QL_3_ICELAND;	/* 시작 퀘스트 레벨 */
+		g_iStartQuestLevel = QUEST_LEVEL::QL_4_BOSS_GLANIX;	/* 시작 퀘스트 레벨 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;	/* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH;	/* 모델 로드할 캐릭터 타입 */
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;	/* 게임 플레이 캐릭터 타입 */
 	}
@@ -747,6 +747,9 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MainMenu/UI_MainMenu_Separator.png")))))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WorldMap_WorldMap_BackColor"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Map/WorldMap/Worldmap_Background.png")))))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WorldMap_WorldMapBackground"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Map/WorldMap/WorldMapBase.png")))))
 		return E_FAIL;

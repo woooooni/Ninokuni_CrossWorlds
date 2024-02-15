@@ -28,9 +28,9 @@ void CUI_MapName::Set_Active(_bool bActive)
 		m_fTimeAcc = 0.f;
 		m_fAlpha = 0.1f;
 
-		GI->Stop_Sound(CHANNELID::SOUND_UI);
-		GI->Play_Sound(TEXT("UI_Fx_HideAndSeek_HSClearMachine_Spawn_1_St.mp3"), CHANNELID::SOUND_UI,
-			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+//		GI->Stop_Sound(CHANNELID::SOUND_UI);
+//		GI->Play_Sound(TEXT("UI_Fx_HideAndSeek_HSClearMachine_Spawn_1_St.mp3"), CHANNELID::SOUND_UI,
+//			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 	}
 
 	m_bActive = bActive;

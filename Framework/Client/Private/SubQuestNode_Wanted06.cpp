@@ -111,7 +111,6 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted06::Tick(const _float& fTimeDelta)
 			QuestDesc.strTitle = m_strNextQuestName;
 			QuestDesc.strContents = m_strNextQuestContent;
 			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
-//			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 			CQuest_Manager::GetInstance()->Clear_MonsterKillCount();
 			CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);

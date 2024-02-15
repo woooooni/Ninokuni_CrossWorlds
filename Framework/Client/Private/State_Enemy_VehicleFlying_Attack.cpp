@@ -131,7 +131,7 @@ void CState_Enemy_VehicleFlying_Attack::Shoot()
     if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, pBullet)))
         MSG_BOX("Generate Bullet Failed.");
 
-    GI->Play_Sound(L"Grandprix_Bullet_Default_2.wav", CHANNELID::SOUND_ATTACK, 0.5f, true);
+    GI->Play_Sound(L"Grandprix_Bullet_Default_2.wav", CHANNELID::SOUND_CLOTH, 1.f, true);
 
     m_bShoot = false;
 }

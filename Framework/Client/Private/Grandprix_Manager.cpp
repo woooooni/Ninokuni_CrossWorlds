@@ -131,7 +131,7 @@ void CGrandprix_Manager::Tick(_float fTimeDelta)
 
 void CGrandprix_Manager::LateTick(_float fTimeDelta)
 {
-	if (false == Is_GrandPrixEnd() && true == m_bGrandprixStart &&
+	if (false == m_bGrandPrixEnd && true == m_bGrandprixStart &&
 		true == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
 	{
 		// 그랑프리진행중에 비행기소리를 계속 낸다
@@ -139,21 +139,26 @@ void CGrandprix_Manager::LateTick(_float fTimeDelta)
 		switch (iRandom)
 		{
 		case 0:
-			GI->Play_Sound(TEXT("Grandprix_SFX_0.wav"), CHANNELID::SOUND_AIRPLANE, 0.05f);
-			break;
-
-		case 1:
-			GI->Play_Sound(TEXT("Grandprix_SFX_1.wav"), CHANNELID::SOUND_AIRPLANE, 0.05f);
-			break;
-
-		case 2:
-			GI->Play_Sound(TEXT("Grandprix_SFX_2.wav"), CHANNELID::SOUND_AIRPLANE, 0.05f);
-			break;
-
-		case 3:
-			GI->Play_Sound(TEXT("Grandprix_SFX_3.wav"), CHANNELID::SOUND_AIRPLANE, 0.05f);
+			GI->Play_Sound(TEXT("Grandprix_SFX_0.wav"), CHANNELID::SOUND_AIRPLANE, 0.07f);
+			break;																	 
+																					 
+		case 1:																		 
+			GI->Play_Sound(TEXT("Grandprix_SFX_1.wav"), CHANNELID::SOUND_AIRPLANE, 0.07);
+			break;																	
+																					
+		case 2:																		
+			GI->Play_Sound(TEXT("Grandprix_SFX_2.wav"), CHANNELID::SOUND_AIRPLANE, 0.07f);
+			break;																	
+																					
+		case 3:																		
+			GI->Play_Sound(TEXT("Grandprix_SFX_3.wav"), CHANNELID::SOUND_AIRPLANE, 0.07f);
 			break;
 		}
+	}
+
+	if (true == m_bGrandPrixEnd)
+	{
+    	GI->Stop_Sound(CHANNELID::SOUND_AIRPLANE);
 	}
 }
 
@@ -426,8 +431,6 @@ void CGrandprix_Manager::Finish_Grandprix()
 
 void CGrandprix_Manager::End_Grandprix()
 {
-	GI->Stop_Sound(CHANNELID::SOUND_AIRPLANE);
-
 	// 남아 있는 적이 있다면, Set_Dead 처리한다.
 	if (nullptr != m_pEnemyPlane)
 	{
@@ -478,6 +481,7 @@ void CGrandprix_Manager::End_Grandprix()
 	}
 
 	m_bGrandPrixEnd = true;
+
 	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(true, 16.f, 0.1f);
 	GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 3.f, 0.2f, true);
 	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 0.1f, true);

@@ -37,6 +37,9 @@ void CSkill_Biplane_3::LateTick(_float fTimeDelta)
 
 _bool CSkill_Biplane_3::Use_Skill()
 {
+	if (nullptr == CRiding_Manager::GetInstance()->Get_Character_Biplane()->Get_Target())
+		return false;
+
 	if (true == __super::Use_Skill())
 	{
 		Shoot_GuidedMissile();
@@ -44,7 +47,7 @@ _bool CSkill_Biplane_3::Use_Skill()
 	}
 	else
 	{
-		GI->Play_Sound(TEXT("npc_np0900_tr_combo_fail_01.wav"), CHANNELID::SOUND_UI,
+		GI->Play_Sound(TEXT("npc_np0900_tr_combo_fail_01.wav"), CHANNELID::SOUND_BOSS,
 			0.3f);
 		return false;
 	}
@@ -111,8 +114,8 @@ void CSkill_Biplane_3::Shoot_GuidedMissile()
 		}
 	}
 
-	GI->Play_Sound(TEXT("sp_mng_st12_last_atk_blow_partner_01_2.wav"), CHANNELID::SOUND_ATTACK,
-		GI->Get_ChannelVolume(CHANNELID::SOUND_ATTACK));
+	GI->Play_Sound(TEXT("sp_mng_st12_last_atk_blow_partner_01_2.wav"), CHANNELID::SOUND_BOSS,
+		GI->Get_ChannelVolume(CHANNELID::SOUND_BOSS));
 }
 
 
