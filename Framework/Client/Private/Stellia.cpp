@@ -584,6 +584,7 @@ HRESULT CStellia::Ready_States()
 	m_tStat.fHp = 700000;
 	m_tStat.iAtk = 200;
 	m_tStat.iDef = 120;
+	m_tStat.eElementType = ELEMENTAL_TYPE::FIRE;
 
 	list<wstring> strAnimationName;
 

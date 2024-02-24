@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_Damage_Critical.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 CUI_Damage_Critical::CUI_Damage_Critical(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_Damage_Critiacal")
@@ -34,13 +35,17 @@ HRESULT CUI_Damage_Critical::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	m_vTargetPosition = m_FontDesc.vPosition;
-	m_tInfo.fX = m_vTargetPosition.x - 10.f;
-	m_tInfo.fY = m_vTargetPosition.y - 16.f;
+	m_pTargetTransform = m_FontDesc.pTransform;
+	m_vTargetPosition = CUI_Manager::GetInstance()->Get_ProjectionPosition(m_pTargetTransform);
+	m_vOffset = m_FontDesc.vOffset;
+
+	// 길이에 따른 X값 조정도 하면 좋을 듯
+	m_tInfo.fX = (m_vTargetPosition.x + m_vOffset.x) - 10.f;
+	m_tInfo.fY = (m_vTargetPosition.y + m_vOffset.y) - 16.f;
 	m_eFontType = m_FontDesc.eType;
 
-	//_float fRandom = GI->RandomFloat(0.2f, 0.4f);
-	_float fRandom = 0.2f;
+	_float fRandom = GI->RandomFloat(0.2f, 0.4f);
+	//_float fRandom = 0.2f;
 	_float2 fNumSize = _float2(256.f * fRandom, 57.f * fRandom);
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
@@ -62,7 +67,6 @@ HRESULT CUI_Damage_Critical::Initialize(void* pArg)
 
 	m_bFadeOut = false;
 	m_bResize = false;
-//	m_bSetPosition = false;
 	m_fAlpha = 1.f;
 
 	m_tInfo.fCX = m_fMaxScale.x;
@@ -151,6 +155,8 @@ void CUI_Damage_Critical::LateTick(_float fTimeDelta)
 		if (Is_Dead())
 			return;
 
+		Update_Position();
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
@@ -206,6 +212,15 @@ HRESULT CUI_Damage_Critical::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CUI_Damage_Critical::Update_Position()
+{
+	// 현재 윈도우 좌표 기준으로 UI의 포지션을 갱신한다.
+	m_vTargetPosition = CUI_Manager::GetInstance()->Get_ProjectionPosition(m_pTargetTransform);
+
+	m_tInfo.fX = (m_vTargetPosition.x + m_vOffset.x) - 10.f;
+	m_tInfo.fY = (m_vTargetPosition.y + m_vOffset.y) - 16.f;
 }
 
 CUI_Damage_Critical* CUI_Damage_Critical::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

@@ -75,11 +75,6 @@ HRESULT CUIDamage_Manager::Ready_DamageNumberPrototypes()
 		CUI_Damage_Critical::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
-	// General -> 확인 필요
-//	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DamageNumber_General"),
-//		CUI_Damage_General::Create(m_pDevice, m_pContext, CUI_Damage_General::UI_DMG_FONTTYPE::DMG_GENERALATTACK), LAYER_UI)))
-//		return E_FAIL;
-
 	// Miss
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DamageNumber_Miss"),
 		CUI_Damage_General::Create(m_pDevice, m_pContext, CUI_Damage_General::UI_DMG_FONTTYPE::DMG_MISS), LAYER_UI)))
@@ -102,7 +97,7 @@ HRESULT CUIDamage_Manager::Create_PlayerDamageNumber(CTransform* pTransformCom, 
 	DamageDesc.iDamage = iDamage;
 	_float2 vPlayerPosition = CUI_Manager::GetInstance()->Get_ProjectionPosition(pTransformCom);
 	vPlayerPosition.y -= 200.f;
-	DamageDesc.vTargetPosition = vPlayerPosition;
+	DamageDesc.vTargetPosition = vPlayerPosition; // 오프셋은 따로 전달하지 않는다.
 	DamageDesc.bIsPlayer = true;
 
 	CGameObject* pNumber = nullptr;
@@ -132,16 +127,17 @@ HRESULT CUIDamage_Manager::Create_MonsterDamageNumber(CTransform* pTransformCom,
 
 	DamageDesc.pTargetTransform = pTransformCom;
 	DamageDesc.iDamage = iDamage;
-	_float2 vRandomPosition = Designate_RandomPosition(CUI_Manager::GetInstance()->Get_ProjectionPosition(pTransformCom), bIsBoss, fDistance);
-	if (vRandomPosition.x == -9999.f)
+	DamageDesc.vTargetPosition = CUI_Manager::GetInstance()->Get_ProjectionPosition(pTransformCom);
+	_float2 vOffset = Get_Offset(DamageDesc.vTargetPosition, bIsBoss, fDistance);
+	if (vOffset.x == -9999.f)
 		return E_FAIL;
-	DamageDesc.vTargetPosition = vRandomPosition;
+	DamageDesc.vOffset = vOffset;
 	DamageDesc.bIsBoss = bIsBoss;
 
 	if (0 == iDamage)
 	{
-		if (FAILED(Create_Miss(pTransformCom, bIsBoss)))
-			return E_FAIL;
+		//if (FAILED(Create_Miss(pTransformCom, bIsBoss)))
+		//	return E_FAIL;
 
 		return S_OK;
 	}
@@ -161,7 +157,7 @@ HRESULT CUIDamage_Manager::Create_MonsterDamageNumber(CTransform* pTransformCom,
 				TEXT("Prototype_GameObject_UI_DamageNumber_WhiteGold"), &DamageDesc, &pNumber)))
 				return E_FAIL;
 			//+ Critical
-			Create_Critical(UI_DAMAGETYPE::NONE, DamageDesc.vTargetPosition);
+			Create_Critical(UI_DAMAGETYPE::NONE, DamageDesc.pTargetTransform, DamageDesc.vOffset);
 		}
 		else
 		{
@@ -178,7 +174,7 @@ HRESULT CUIDamage_Manager::Create_MonsterDamageNumber(CTransform* pTransformCom,
 				TEXT("Prototype_GameObject_UI_DamageNumber_GoldWithRed"), &DamageDesc, &pNumber)))
 				return E_FAIL;
 			//+ Critical
-			Create_Critical(UI_DAMAGETYPE::STRENGTH, DamageDesc.vTargetPosition);
+			Create_Critical(UI_DAMAGETYPE::STRENGTH, DamageDesc.pTargetTransform, DamageDesc.vOffset);
 		}
 		else
 		{
@@ -192,7 +188,7 @@ HRESULT CUIDamage_Manager::Create_MonsterDamageNumber(CTransform* pTransformCom,
 	return S_OK;
 }
 
-HRESULT CUIDamage_Manager::Create_Critical(UI_DAMAGETYPE eType, _float2 vPosition)
+HRESULT CUIDamage_Manager::Create_Critical(UI_DAMAGETYPE eType, class CTransform* pTransformCom, _float2 vOffset)
 {
 	if (UI_DAMAGETYPE::DAMAGETYPE_END <= eType)
 		return E_FAIL;
@@ -219,7 +215,8 @@ HRESULT CUIDamage_Manager::Create_Critical(UI_DAMAGETYPE eType, _float2 vPositio
 	CUI_Damage_Critical::CRITICAL_DESC CriticalDesc = {};
 	ZeroMemory(&CriticalDesc, sizeof(CUI_Damage_Critical::CRITICAL_DESC));
 
-	CriticalDesc.vPosition = vPosition;
+	CriticalDesc.pTransform = pTransformCom;
+	CriticalDesc.vOffset = vOffset;
 	CriticalDesc.eType = eCriticalColor;
 
 	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
@@ -267,6 +264,40 @@ _float2 CUIDamage_Manager::Designate_RandomPosition(_float2 vTargetPosition, _bo
 	vResultPosition.y = vTargetPosition.y;
 
 	return vResultPosition;
+}
+
+_float2 CUIDamage_Manager::Get_Offset(_float2 vTargetPosition, _bool bIsBoss, _float fCamDistance)
+{
+	if (0.f > vTargetPosition.x || 1600.f < vTargetPosition.x ||
+		0.f > vTargetPosition.y || 900.f < vTargetPosition.y)
+		return _float2(-9999.f, -9999.f);
+
+	_float2 fRandomOffset = _float2(0.f, 0.f);
+
+	if (bIsBoss)
+	{
+		if (15.f < fCamDistance)
+		{
+			fRandomOffset = _float2(GI->RandomFloat(-110.f, 110.f), GI->RandomFloat(-280.f, 0.f));
+		}
+		else
+		{
+			fRandomOffset = _float2(GI->RandomFloat(-150.f, 150.f), GI->RandomFloat(-360.f, 0.f));
+		}
+	}
+	else
+	{
+		if (15.f < fCamDistance)
+		{
+			fRandomOffset = _float2(GI->RandomFloat(-80.f, 80.f), GI->RandomFloat(-170.f, 0.f));
+		}
+		else
+		{
+			fRandomOffset = _float2(GI->RandomFloat(-100.f, 100.f), GI->RandomFloat(-200.f, -10.f));
+		}
+	}
+
+	return fRandomOffset;
 }
 
 HRESULT CUIDamage_Manager::Create_Miss(CTransform* pTransformCom, _bool bIsBoss)

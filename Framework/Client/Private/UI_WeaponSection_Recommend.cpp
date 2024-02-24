@@ -82,7 +82,7 @@ void CUI_WeaponSection_Recommend::Tick(_float fTimeDelta)
 		CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
 		ELEMENTAL_TYPE ePlayerElemental = pCharacter->Get_ElementalType();
 
-		if (m_ePosition == ePlayerElemental)
+		if (_uint(m_ePosition) == _uint(ePlayerElemental))
 		{
 			Set_Active(false);
 		}
