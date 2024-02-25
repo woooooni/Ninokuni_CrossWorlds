@@ -45,6 +45,13 @@ HRESULT CUI_WeaponSection_Recommend::Initialize(void* pArg)
 
 void CUI_WeaponSection_Recommend::Tick(_float fTimeDelta)
 {
+	// 타겟이 크리스탈이라면 return;
+	CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
+	CGameObject* pTarget = nullptr;
+	pTarget = pCharacter->Get_Target();
+	if (TEXT("Stellia_Crystal_Destructible") == pTarget->Get_ObjectTag())
+		return;
+
 	Decide_WeaponElemental();
 
 	if (m_bActive)
@@ -82,82 +89,25 @@ void CUI_WeaponSection_Recommend::Tick(_float fTimeDelta)
 		CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
 		ELEMENTAL_TYPE ePlayerElemental = pCharacter->Get_ElementalType();
 
-		if (m_ePosition == ePlayerElemental)
+		if (_uint(m_ePosition) == _uint(ePlayerElemental))
 		{
 			Set_Active(false);
 		}
 
 		__super::Tick(fTimeDelta);
 	}
-
-//		switch (ePlayerElemental)
-//		{
-//		case ELEMENTAL_TYPE::FIRE:
-//			if (ELEMENTAL_TYPE::FIRE == eMonsterElemental || ELEMENTAL_TYPE::WATER == eMonsterElemental)
-//			{
-//				if (m_iCurIndex != 2)
-//				{
-//					// 3번째로 옮긴다 (WOOD가 이기는 무기)
-//					Update_Position(2);
-//					Set_Active(true);
-//				}
-//			}
-//			else
-//			{
-//				if (ELEMENTAL_TYPE::WOOD == eMonsterElemental)
-//				{
-//					if (true == Get_Active())
-//						Set_Active(false);
-//				}
-//			}
-//			break;
-//
-//		case ELEMENTAL_TYPE::WATER:
-//			if (ELEMENTAL_TYPE::WATER == eMonsterElemental || ELEMENTAL_TYPE::WOOD == eMonsterElemental)
-//			{
-//				if (m_iCurIndex != 0)
-//				{
-//					// 1번째로 옮긴다 (FIRE가 이기는 무기)
-//					Update_Position(0);
-//					Set_Active(true);
-//				}
-//			}
-//			else
-//			{
-//				if (ELEMENTAL_TYPE::FIRE == eMonsterElemental)
-//				{
-//					if (true == Get_Active())
-//						Set_Active(false);
-//				}
-//			}
-//			break;
-//
-//		case ELEMENTAL_TYPE::WOOD:
-//			if (ELEMENTAL_TYPE::WOOD == eMonsterElemental || ELEMENTAL_TYPE::FIRE == eMonsterElemental)
-//			{
-//				if (m_iCurIndex != 1)
-//				{
-//					// 2번째로 옮긴다 (Water가 이기는 무기)
-//					Update_Position(1);
-//					Set_Active(true);
-//				}
-//			}
-//			else
-//			{
-//				if (ELEMENTAL_TYPE::WATER == eMonsterElemental)
-//				{
-//					if (true == Get_Active())
-//						Set_Active(false);
-//				}
-//			}
-//			break;
-//		}
 }
 
 void CUI_WeaponSection_Recommend::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		// 타겟이 크리스탈이라면 return;
+		CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
+		CGameObject* pTarget = nullptr;
+		pTarget = pCharacter->Get_Target();
+		if (TEXT("Stellia_Crystal_Destructible") == pTarget->Get_ObjectTag())
+			return;
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
@@ -186,24 +136,48 @@ void CUI_WeaponSection_Recommend::Update_Position(_uint iSlotNum)
 	switch (iSlotNum)
 	{
 	case 0:
-		m_tInfo.fX = m_vPosition[0].x;
-		m_tInfo.fY = m_vPosition[0].y;
-		m_iCurIndex = 0;
-		m_ePosition = ELEMENTAL_TYPE::FIRE;
+		if (m_iCurIndex != 0)
+		{
+			m_tInfo.fX = m_vPosition[0].x;
+			m_tInfo.fY = m_vPosition[0].y;
+			m_iCurIndex = 0;
+			m_ePosition = ELEMENTAL_TYPE::FIRE;
+		}
+		else
+		{
+			Set_Active(false);
+			return;
+		}
 		break;
 
 	case 1:
-		m_tInfo.fX = m_vPosition[1].x;
-		m_tInfo.fY = m_vPosition[1].y;
-		m_iCurIndex = 1;
-		m_ePosition = ELEMENTAL_TYPE::WATER;
+		if (m_iCurIndex != 1)
+		{
+			m_tInfo.fX = m_vPosition[1].x;
+			m_tInfo.fY = m_vPosition[1].y;
+			m_iCurIndex = 1;
+			m_ePosition = ELEMENTAL_TYPE::WATER;
+		}
+		else
+		{
+			Set_Active(false);
+			return;
+		}
 		break;
 
 	case 2:
-		m_tInfo.fX = m_vPosition[2].x;
-		m_tInfo.fY = m_vPosition[2].y;
-		m_iCurIndex = 2;
-		m_ePosition = ELEMENTAL_TYPE::WOOD;
+		if (m_iCurIndex != 2)
+		{
+			m_tInfo.fX = m_vPosition[2].x;
+			m_tInfo.fY = m_vPosition[2].y;
+			m_iCurIndex = 2;
+			m_ePosition = ELEMENTAL_TYPE::WOOD;
+		}
+		else
+		{
+			Set_Active(false);
+			return;
+		}
 		break;
 	}
 

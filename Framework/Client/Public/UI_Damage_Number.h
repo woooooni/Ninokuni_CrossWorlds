@@ -18,6 +18,7 @@ public:
 		CTransform* pTargetTransform = nullptr;
 		_uint iDamage = 0;
 		_float2 vTargetPosition = _float2(g_iWinSizeX * 0.5f, g_iWinSizeY * 0.5f);
+		_float2 vOffset = _float2(0.f, 0.f);
 		_bool bIsPlayer = false;
 		_bool bIsBoss = false;
 
@@ -38,8 +39,8 @@ public:
 	void Tick_Player(_float fTimeDelta);
 	void Tick_Monster(_float fTimeDelta);
 
-	void LateTick_Player(_float fTimeDelta);
-	void LateTick_Monster(_float fTimeDelta);
+	HRESULT Render_Player();
+	HRESULT Render_Monster();
 
 public:
 	void Resize_Scale();
@@ -53,6 +54,7 @@ private:
 	_uint m_iTextNum = { 0 }; // 숫자 한자리
 	_uint m_iDamage = { 0 }; // Setting된 Damage값을 저장
 	_float2 m_vTargetPosition = _float2(0.f, 0.f);
+	_float2 m_vOffset = _float2(0.f, 0.f);
 
 	_bool m_bFadeOut = { false }; // FadeOut을 시작할 것인가?
 	_float m_fFadeTimeAcc = { 0.f };

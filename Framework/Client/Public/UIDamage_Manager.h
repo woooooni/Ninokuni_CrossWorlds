@@ -35,10 +35,12 @@ public:
 	HRESULT Create_PlayerDamageNumber(class CTransform* pTransformCom, _int iDamage); // ColorRed
 	HRESULT Create_MonsterDamageNumber(class CTransform* pTransformCom, _bool bIsBoss, UI_DAMAGETYPE eType, _int iDamage);
 
+	_float2 Get_Offset(_float2 vTargetPosition, _bool bIsBoss, _float fCamDistance); // 오프셋만 return
+
 private:
-	_float2 Designate_RandomPosition(_float2 vTargetPosition, _bool bIsBoss, _float fCamDistance);
+	_float2 Designate_RandomPosition(_float2 vTargetPosition, _bool bIsBoss, _float fCamDistance); // 좌표계산을 마친 결과
 	HRESULT Create_Miss(class CTransform* pTransformCom, _bool bIsBoss);
-	HRESULT Create_Critical(UI_DAMAGETYPE eType, _float2 vPosition);
+	HRESULT Create_Critical(UI_DAMAGETYPE eType, class CTransform* pTransformCom, _float2 vOffset);
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

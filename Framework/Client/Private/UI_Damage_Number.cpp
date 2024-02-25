@@ -2,6 +2,8 @@
 #include "UI_Damage_Number.h"
 #include "GameInstance.h"
 #include "UIDamage_Manager.h"
+#include "UI_Manager.h"
+#include "Character.h"
 
 CUI_Damage_Number::CUI_Damage_Number(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_DAMAGEFONT eType)
 	: CUI(pDevice, pContext, L"UI_Damage_Skill")
@@ -36,25 +38,58 @@ HRESULT CUI_Damage_Number::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+	// 데미지 넘버를 띄울 타겟의 Transform
 	m_pTargetTransform = m_FontDesc.pTargetTransform;
-	m_iDamage = m_FontDesc.iDamage;
 	if (nullptr == m_pTargetTransform)
 		return E_FAIL;
-	m_vTargetPosition = m_FontDesc.vTargetPosition;
+	// 데미지
+	m_iDamage = m_FontDesc.iDamage;
+	// 데미지 넘버 오프셋 포지션
+	m_vOffset = m_FontDesc.vOffset; // 플레이어의 경우 0.f, 0.f가 들어옴
 
-	m_tInfo.fX = m_vTargetPosition.x;
-	m_tInfo.fY = m_vTargetPosition.y;
-	_float fNumSize;
-
-	// 타겟과 카메라간의 거리를 구한다.
+	// 카메라와의 거리(폰트의 사이즈를 조절하기 위함)
 	_float4 vCamPos = GI->Get_CamPosition();
 	_vector vTempForDistance = m_pTargetTransform->Get_Position() - XMLoadFloat4(&vCamPos);
 	_float fDistance = XMVectorGetX(XMVector3Length(vTempForDistance));
 
+	_float fNumSize;
 	if (true == m_FontDesc.bIsPlayer)
+	{
+		CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
+		if (nullptr == pCharacter)
+			return E_FAIL;
+		switch (pCharacter->Get_CharacterType())
+		{
+		case CHARACTER_TYPE::SWORD_MAN:
+			m_tInfo.fY = m_FontDesc.vTargetPosition.y;
+			break;
+
+		case CHARACTER_TYPE::ENGINEER:
+			m_tInfo.fY = m_FontDesc.vTargetPosition.y - 110.f;
+			break;
+
+		case CHARACTER_TYPE::DESTROYER:
+			m_tInfo.fY = m_FontDesc.vTargetPosition.y;
+			break;
+
+		default:
+			m_tInfo.fY = m_FontDesc.vTargetPosition.y;
+			break;
+		}
+
 		fNumSize = 112.f * 0.23f;
+		m_tInfo.fX = m_FontDesc.vTargetPosition.x;
+		m_vTargetPosition = _float2(m_tInfo.fX, m_tInfo.fY);
+		m_fArrivedPosY = m_tInfo.fY - 200.f;
+	}
 	else
 	{
+		// 타겟의 직교 좌표 -> 갱신 필요함
+		m_vTargetPosition = CUI_Manager::GetInstance()->Get_ProjectionPosition(m_pTargetTransform);
+
+		m_tInfo.fX = m_vTargetPosition.x + m_vOffset.x;
+		m_tInfo.fY = m_vTargetPosition.y + m_vOffset.y;
+
 		if (true == m_FontDesc.bIsBoss)
 		{
 			if (18.f <= fDistance)
@@ -94,7 +129,6 @@ HRESULT CUI_Damage_Number::Initialize(void* pArg)
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
 	m_fOffsetX = fNumSize * 0.6f;
-	m_fArrivedPosY = m_vTargetPosition.y - 200.f;
 
 	CUI::UI_INFO UIDesc = {};
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
@@ -118,7 +152,7 @@ void CUI_Damage_Number::Tick(_float fTimeDelta)
 	{
 		if (!Is_Dead())
 		{
-			if (m_FontDesc.bIsPlayer)
+			if (true == m_FontDesc.bIsPlayer)
 				Tick_Player(fTimeDelta);
 			else
 				Tick_Monster(fTimeDelta);
@@ -139,8 +173,11 @@ void CUI_Damage_Number::LateTick(_float fTimeDelta)
 		if (0 == m_iDamage || 999999 < m_iDamage)
 			return;
 
-		if (m_tInfo.fY == m_fArrivedPosY)
-			Set_Dead(true);
+		if (true == m_FontDesc.bIsPlayer)
+		{
+			if (m_tInfo.fY == m_fArrivedPosY)
+				Set_Dead(true);
+		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
@@ -154,116 +191,11 @@ HRESULT CUI_Damage_Number::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	if (100000 <= m_iDamage) // 6 자리
-	{
-		m_iTextNum = (_uint)m_iDamage / 100000;
+	if (true == m_FontDesc.bIsPlayer)
+		Render_Player();
+	else
+		Render_Monster();
 
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-
-		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
-			return E_FAIL;
-		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
-			return E_FAIL;
-
-		m_pShaderCom->Begin(m_iPass);
-		m_pVIBufferCom->Render();
-	}
-
-	if (10000 <= m_iDamage) // 5자리
-	{
-		m_iTextNum = ((m_iDamage % 100000) / 10000);
-		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX;
-		if (!m_FontDesc.bIsPlayer)
-			m_tInfo.fY = m_vTargetPosition.y;
-
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-
-		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
-			return E_FAIL;
-		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
-			return E_FAIL;
-
-		m_pShaderCom->Begin(m_iPass);
-		m_pVIBufferCom->Render();
-	}
-
-	if (1000 <= m_iDamage) // 4자리
-	{
-		m_iTextNum = ((m_iDamage % 10000) / 1000);
-		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 2.f;
-		if (!m_FontDesc.bIsPlayer)
-			m_tInfo.fY = m_vTargetPosition.y;
-
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-
-		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
-			return E_FAIL;
-		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
-			return E_FAIL;
-
-		m_pShaderCom->Begin(m_iPass);
-		m_pVIBufferCom->Render();
-	}
-
-	if (100 <= m_iDamage)
-	{
-		m_iTextNum = ((m_iDamage % 1000) / 100);
-		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 3.f;
-		if (!m_FontDesc.bIsPlayer)
-			m_tInfo.fY = m_vTargetPosition.y;
-
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-
-		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
-			return E_FAIL;
-		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
-			return E_FAIL;
-
-		m_pShaderCom->Begin(m_iPass);
-		m_pVIBufferCom->Render();
-	}
-
-	if (10 <= m_iDamage)
-	{
-		m_iTextNum = ((m_iDamage % 100) / 10);
-		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 4.f;
-		if (!m_FontDesc.bIsPlayer)
-			m_tInfo.fY = m_vTargetPosition.y;
-
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-
-		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
-			return E_FAIL;
-		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
-			return E_FAIL;
-
-		m_pShaderCom->Begin(m_iPass);
-		m_pVIBufferCom->Render();
-	}
-
-	if (0 < m_iDamage)
-	{
-		m_iTextNum = (m_iDamage % 10);
-		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 5.f;
-		if (!m_FontDesc.bIsPlayer)
-			m_tInfo.fY = m_vTargetPosition.y;
-
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-
-		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
-			return E_FAIL;
-		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
-			return E_FAIL;
-
-		m_pShaderCom->Begin(m_iPass);
-		m_pVIBufferCom->Render();
-	}
 	return S_OK;
 }
 
@@ -291,7 +223,7 @@ void CUI_Damage_Number::Tick_Player(_float fTimeDelta)
 		}
 		else
 		{
-			m_tInfo.fY -= fTimeDelta * 200.f;
+			m_tInfo.fY -= fTimeDelta * 250.f;
 
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
@@ -334,12 +266,215 @@ void CUI_Damage_Number::Tick_Monster(_float fTimeDelta)
 	}
 }
 
-void CUI_Damage_Number::LateTick_Player(_float fTimeDelta)
+HRESULT CUI_Damage_Number::Render_Player()
 {
+	if (100000 <= m_iDamage) // 6자리
+	{
+		m_iTextNum = (_uint)m_iDamage / 100000;
+		m_tInfo.fX = m_vTargetPosition.x;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
+			return E_FAIL;
+
+		m_pShaderCom->Begin(m_iPass);
+		m_pVIBufferCom->Render();
+	}
+
+	if (10000 <= m_iDamage) // 5자리
+	{
+		m_iTextNum = ((m_iDamage % 100000) / 10000);
+		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
+			return E_FAIL;
+
+		m_pShaderCom->Begin(m_iPass);
+		m_pVIBufferCom->Render();
+	}
+
+	if (1000 <= m_iDamage) // 4자리
+	{
+		m_iTextNum = ((m_iDamage % 10000) / 1000);
+		m_tInfo.fX = m_vTargetPosition.x + (m_fOffsetX * 2.f);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
+			return E_FAIL;
+
+		m_pShaderCom->Begin(m_iPass);
+		m_pVIBufferCom->Render();
+	}
+
+	if (100 <= m_iDamage)
+	{
+		m_iTextNum = ((m_iDamage % 1000) / 100);
+		m_tInfo.fX = m_vTargetPosition.x + (m_fOffsetX * 3.f);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
+			return E_FAIL;
+
+		m_pShaderCom->Begin(m_iPass);
+		m_pVIBufferCom->Render();
+	}
+
+	if (10 <= m_iDamage)
+	{
+		m_iTextNum = ((m_iDamage % 100) / 10);
+		m_tInfo.fX = m_vTargetPosition.x + (m_fOffsetX * 4.f);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
+			return E_FAIL;
+
+		m_pShaderCom->Begin(m_iPass);
+		m_pVIBufferCom->Render();
+	}
+
+	if (0 < m_iDamage)
+	{
+		m_iTextNum = (m_iDamage % 10);
+		m_tInfo.fX = m_vTargetPosition.x + (m_fOffsetX * 5.f);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
+			return E_FAIL;
+
+		m_pShaderCom->Begin(m_iPass);
+		m_pVIBufferCom->Render();
+	}
+
+	return S_OK;
 }
 
-void CUI_Damage_Number::LateTick_Monster(_float fTimeDelta)
+HRESULT CUI_Damage_Number::Render_Monster()
 {
+	// TargetPosition 갱신 -> Font가 따라간다
+	m_vTargetPosition = CUI_Manager::GetInstance()->Get_ProjectionPosition(m_pTargetTransform);
+
+	if (100000 <= m_iDamage) // 6자리
+	{
+		m_iTextNum = (_uint)m_iDamage / 100000;
+		m_tInfo.fX = m_vTargetPosition.x + m_vOffset.x;
+		m_tInfo.fY = m_vTargetPosition.y + m_vOffset.y;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
+			return E_FAIL;
+
+		m_pShaderCom->Begin(m_iPass);
+		m_pVIBufferCom->Render();
+	}
+
+	if (10000 <= m_iDamage) // 5자리
+	{
+		m_iTextNum = ((m_iDamage % 100000) / 10000);
+		m_tInfo.fX = m_vTargetPosition.x + m_vOffset.x + m_fOffsetX;
+		m_tInfo.fY = m_vTargetPosition.y + m_vOffset.y;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
+			return E_FAIL;
+
+		m_pShaderCom->Begin(m_iPass);
+		m_pVIBufferCom->Render();
+	}
+
+	if (1000 <= m_iDamage) // 4자리
+	{
+		m_iTextNum = ((m_iDamage % 10000) / 1000);
+		m_tInfo.fX = m_vTargetPosition.x + m_vOffset.x + (m_fOffsetX * 2.f);
+		m_tInfo.fY = m_vTargetPosition.y + m_vOffset.y;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
+			return E_FAIL;
+
+		m_pShaderCom->Begin(m_iPass);
+		m_pVIBufferCom->Render();
+	}
+
+	if (100 <= m_iDamage)
+	{
+		m_iTextNum = ((m_iDamage % 1000) / 100);
+		m_tInfo.fX = m_vTargetPosition.x + m_vOffset.x + (m_fOffsetX * 3.f);
+		m_tInfo.fY = m_vTargetPosition.y + m_vOffset.y;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
+			return E_FAIL;
+
+		m_pShaderCom->Begin(m_iPass);
+		m_pVIBufferCom->Render();
+	}
+
+	if (10 <= m_iDamage)
+	{
+		m_iTextNum = ((m_iDamage % 100) / 10);
+		m_tInfo.fX = m_vTargetPosition.x + m_vOffset.x + (m_fOffsetX * 4.f);
+		m_tInfo.fY = m_vTargetPosition.y + m_vOffset.y;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
+			return E_FAIL;
+
+		m_pShaderCom->Begin(m_iPass);
+		m_pVIBufferCom->Render();
+	}
+
+	if (0 < m_iDamage)
+	{
+		m_iTextNum = (m_iDamage % 10);
+		m_tInfo.fX = m_vTargetPosition.x + m_vOffset.x + (m_fOffsetX * 5.f);
+		m_tInfo.fY = m_vTargetPosition.y + m_vOffset.y;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
+			return E_FAIL;
+
+		m_pShaderCom->Begin(m_iPass);
+		m_pVIBufferCom->Render();
+	}
+
+	return S_OK;
 }
 
 void CUI_Damage_Number::Resize_Scale()
@@ -433,9 +568,6 @@ HRESULT CUI_Damage_Number::Bind_ShaderResources()
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
-
-//	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
-//		return E_FAIL;
 
 	return S_OK;
 }

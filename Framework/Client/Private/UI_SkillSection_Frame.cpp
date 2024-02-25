@@ -2,6 +2,7 @@
 #include "UI_SkillSection_Frame.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Character.h"
 
 CUI_SkillSection_Frame::CUI_SkillSection_Frame(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	UI_SKILLFRAME_TYPE eType, UI_SPECIALSKILL_TYPE eNumType)
@@ -79,9 +80,12 @@ void CUI_SkillSection_Frame::LateTick(_float fTimeDelta)
 		if (m_vColor.x == 1.f && m_vColor.y == 1.f && m_vColor.z == 1.f && m_vColor.w == 1.f)
 			return;
 
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		// ElementalType을 갱신한다.
+		CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
+		m_eElementalType = pCharacter->Get_ElementalType();
+		Set_ClassicFrameColor();
 
-		//__super::LateTick(fTimeDelta);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
 
