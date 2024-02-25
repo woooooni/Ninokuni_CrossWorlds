@@ -295,7 +295,7 @@ HRESULT CClown_Wizard::Ready_States()
 
 	strKorName = TEXT("Çã¼ö±úºñ");
 	strSubName = TEXT("¸¶³àÀÇ ½£");
-	m_tStat.eElementType = ELEMENTAL_TYPE::LIGHT;
+	m_tStat.eElementType = ELEMENTAL_TYPE::WATER;
 
 	m_tStat.iLv = 11;
 	m_tStat.fMaxHp = 17000;
