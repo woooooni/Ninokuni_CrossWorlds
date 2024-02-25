@@ -86,7 +86,7 @@ void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
 	Vec3 vLen = Vec3(vDisp.x, vDisp.y, vDisp.z);
 
 	if(vLen.Length() > 0.0001f)
-		m_pPhysXController->move(vDisp, 0.0001f, 1.f / 144.f, m_Filters);
+		m_pPhysXController->move(vDisp, 0.0001f, min((1.f / 144.f), fTimeDelta), m_Filters);
 }
 
 void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)

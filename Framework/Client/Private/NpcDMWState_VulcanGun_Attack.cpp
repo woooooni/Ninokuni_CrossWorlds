@@ -60,22 +60,22 @@ void CNpcDMWState_VulcanGun_Attack::Tick_State(_float fTimeDelta)
 			pBulletTransform->Set_Position(vBulletPos);
 			pBulletTransform->Set_Look(vBulletLook);
 
-			// ½½·Î¿ì ºÒ¸´(Left)
-			Vec4 vSlowLeftBulletPos = m_pTransformCom->Get_Position();
-			Vec3 vSlowLeftBulletLook = XMVector3Rotate(m_pTransformCom->Get_Look(), XMQuaternionRotationRollPitchYaw(0.0f, XMConvertToRadians((m_iAtkCount * -30.f) + 15.f), 0.0f));
-
-			CGameObject* pSlowLeftBullet = nullptr;
-
-			if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, L"Prorotype_GameObject_Witch_VulcanBullet_Slow", m_pStellia, &pSlowLeftBullet)))
-			{
-				MSG_BOX("Add VulcanBullet_Slow Failed.");
-				return;
-			}
-
-			CTransform* pSlowLeftBulletTransform = pSlowLeftBullet->Get_Component_Transform();
-			vSlowLeftBulletPos.y += .5f;
-			pSlowLeftBulletTransform->Set_Position(vSlowLeftBulletPos);
-			pSlowLeftBulletTransform->Set_Look(vSlowLeftBulletLook);
+			//// ½½·Î¿ì ºÒ¸´(Left)
+			//Vec4 vSlowLeftBulletPos = m_pTransformCom->Get_Position();
+			//Vec3 vSlowLeftBulletLook = XMVector3Rotate(m_pTransformCom->Get_Look(), XMQuaternionRotationRollPitchYaw/(0.0f, /XMConvertToRadians((m_iAtkCount * -30.f) + 15.f), 0.0f));
+			//
+			//CGameObject* pSlowLeftBullet = nullptr;
+			//
+			//if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, //L"Prorotype_GameObject_Witch_VulcanBullet_Slow", m_pStellia, &pSlowLeftBullet)))
+			//{
+			//	MSG_BOX("Add VulcanBullet_Slow Failed.");
+			//	return;
+			//}
+			//
+			//CTransform* pSlowLeftBulletTransform = pSlowLeftBullet->Get_Component_Transform();
+			//vSlowLeftBulletPos.y += .5f;
+			//pSlowLeftBulletTransform->Set_Position(vSlowLeftBulletPos);
+			//pSlowLeftBulletTransform->Set_Look(vSlowLeftBulletLook);
 
 			// ½½·Î¿ì ºÒ¸´(Right)
 			Vec4 vSlowRightBulletPos = m_pTransformCom->Get_Position();

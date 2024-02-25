@@ -122,12 +122,10 @@ HRESULT CCharacter_Engineer::Initialize(void* pArg)
 void CCharacter_Engineer::Tick(_float fTimeDelta)
 {
 	m_pStateCom->Tick_State(fTimeDelta);
-
-	if (false == m_bControllCharacter)
-		return;
-
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-	m_pControllerCom->Tick_Controller(fTimeDelta);
+
+	if (true == m_bControllCharacter)
+		m_pControllerCom->Tick_Controller(fTimeDelta);
 
 	if (m_pWeapon != nullptr)
 		m_pWeapon->Set_SocketWorld(m_pModelCom->Get_SocketLocalMatrix(0) * m_pTransformCom->Get_WorldMatrix());

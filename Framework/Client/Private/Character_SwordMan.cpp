@@ -137,7 +137,9 @@ void CCharacter_SwordMan::Tick(_float fTimeDelta)
 	}*/
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-	m_pControllerCom->Tick_Controller(fTimeDelta);
+
+	if(true == m_bControllCharacter)
+		m_pControllerCom->Tick_Controller(fTimeDelta);
 	
 	if (m_pWeapon != nullptr)
 	{

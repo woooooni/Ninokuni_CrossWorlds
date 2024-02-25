@@ -228,7 +228,11 @@ void CVfx_Stellia_Skill_Rage01Explosion::Free()
 		m_pSmokeIn_01->Set_UVLoop(1);
 		Safe_Release(m_pSmokeIn_01);
 	}
-
+	if (nullptr != m_pCircles)
+	{
+		m_pCircles->Set_LoopParticle(false);
+		Safe_Release(m_pCircles);
+	}
 	if (nullptr != m_pSpringUp)
 	{
 		m_pSpringUp->Start_Dissolve(73,       // Index

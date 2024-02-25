@@ -66,14 +66,14 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 }
 void CPhysX_Manager::Tick(_float fTimeDelta)
 {
-	
-}
-void CPhysX_Manager::LateTick(_float fTimeDelta)
-{
 	_float fStepSize = min(fTimeDelta, 1.f / 144.f);
-
 	m_pScene->simulate(fStepSize);
 	m_pScene->fetchResults(true);
+}
+
+void CPhysX_Manager::LateTick(_float fTimeDelta)
+{
+	
 }
 
 HRESULT CPhysX_Manager::Remove_Controller(PxController* pController)
@@ -432,6 +432,13 @@ _bool CPhysX_Manager::Check_Push(_uint iLeftObjType, _uint iRightObjType)
 // ControllerFilterCallBack
 bool CPhysX_Manager::filter(const PxController& a, const PxController& b)
 {
+	if (nullptr == a.getActor() || nullptr == b.getActor())
+		return false;
+
+	if (true == a.getActor()->getActorFlags().isSet(PxActorFlag::eDISABLE_SIMULATION)
+		|| true == b.getActor()->getActorFlags().isSet(PxActorFlag::eDISABLE_SIMULATION))
+		return false;
+
 	OBJ_TYPE* pLeftObjType = static_cast<OBJ_TYPE*>(a.getUserData());
 	OBJ_TYPE* pRightObjType = static_cast<OBJ_TYPE*>(b.getUserData());
 	
