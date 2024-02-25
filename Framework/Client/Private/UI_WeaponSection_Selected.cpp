@@ -52,6 +52,7 @@ HRESULT CUI_WeaponSection_Selected::Initialize(void* pArg)
 	CCharacter* pCharacter = pPlayer->Get_Character();
 	if (nullptr == pCharacter)
 		return E_FAIL;
+	m_ePreCharacter = pCharacter->Get_CharacterType();
 	ELEMENTAL_TYPE eElemental = pCharacter->Get_ElementalType();
 	m_eElementalType = eElemental;
 	if (ELEMENTAL_TYPE::LIGHT <= eElemental)
@@ -106,9 +107,11 @@ void CUI_WeaponSection_Selected::LateTick(_float fTimeDelta)
 	if (m_bActive)
 	{
 		CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
+		// 캐릭터가 UI가 알고있는 것과 다르다면 속성 갱신을 해야한다.
 		ELEMENTAL_TYPE eElemental = pCharacter->Get_ElementalType();
 
-		Update_Position(eElemental);
+		if (m_ePreCharacter != eElemental)
+			Update_Position(eElemental);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
