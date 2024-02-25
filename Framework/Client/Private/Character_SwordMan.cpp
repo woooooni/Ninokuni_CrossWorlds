@@ -268,11 +268,13 @@ void CCharacter_SwordMan::Collision_Enter(const COLLISION_INFO& tInfo)
 			CCamera_Manager::GetInstance()->Start_Action_Shake_Default_Attack();
 			CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(XMConvertToRadians(50.f));
 			CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(Cam_Fov_Default, 0.5f);
+			CGame_Manager::GetInstance()->Lerp_RadialBlur(true, false, 0.f, -0.1f, 0.6f, 16.f);
 			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.05f, false);
 			break;
 		case CCharacter::STATE::BATTLE_ATTACK_1:
 			CCamera_Manager::GetInstance()->Start_Action_Shake_Default_Attack();
 			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.05f, false);
+			CGame_Manager::GetInstance()->Set_RadialBlur(false);
 			break;
 		case CCharacter::STATE::BATTLE_ATTACK_2:
 			CCamera_Manager::GetInstance()->Start_Action_Shake_Default_Attack();
@@ -288,7 +290,7 @@ void CCharacter_SwordMan::Collision_Enter(const COLLISION_INFO& tInfo)
 				m_fAccRadial = 0.f;
 				m_fRadialTime = 0.5f;
 				m_bScreenEffect = true;
-				CGame_Manager::GetInstance()->Lerp_RadialBlur(false, false, 0.1f, 0.f, 2.f);
+				CGame_Manager::GetInstance()->Lerp_RadialBlur(true, false, 0.f, -0.1f, 0.6f, 16.f);
 				GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.08f, 0.01f, true);
 			}
 			break;

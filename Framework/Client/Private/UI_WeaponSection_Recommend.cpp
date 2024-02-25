@@ -107,8 +107,14 @@ void CUI_WeaponSection_Recommend::LateTick(_float fTimeDelta)
 	{
 		// Å¸°ÙÀÌ Å©¸®½ºÅ»ÀÌ¶ó¸é return;
 		CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
+		if (nullptr == pCharacter)
+			return;
+
 		CGameObject* pTarget = nullptr;
 		pTarget = pCharacter->Get_Target();
+		if (nullptr == pTarget)
+			return;
+
 		if (TEXT("Stellia_Crystal_Destructible") == pTarget->Get_ObjectTag())
 			return;
 
