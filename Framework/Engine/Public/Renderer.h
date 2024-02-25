@@ -8,7 +8,7 @@ class CVIBuffer_Instancing;
 
 class ENGINE_DLL CRenderer final : public CComponent
 {
-public:
+public: // enum
 	enum RENDERGROUP {
 		RENDER_PRIORITY, RENDER_AURORA, RENDER_NONLIGHT,
 		RENDER_SHADOW, RENDER_NONBLEND,	RENDER_STENCIL_ONLY, RENDER_MIRROR, RENDER_REFLECT,
@@ -37,7 +37,7 @@ public:
 
 	enum RENDER_SWITCH { GODRAY_SWITCH, UIMESH_SWITCH, SWITCH_END};
 
-public:
+public: // struct
 	typedef struct tagEffectInstancingDesc
 	{
 		_float2	g_fUVIndex;  // 8
@@ -99,7 +99,7 @@ public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize(void* pArg) override;
 
-public:
+public: // RenderSwitch
 	const _bool& Get_RenderSwitch(_uint iIndex) const { return m_bRenderSwitch[iIndex]; }
 	void Set_RenderSwitch(uint32 iIndex, _bool onoff)
 	{
@@ -109,7 +109,7 @@ public:
 		m_bRenderSwitch[iIndex] = onoff;
 	}
 
-public:
+public: // Fog
 	void Set_Fog(_float4 vFogColor, _float fFogStart, _float fFogEnd)
 	{
 		m_vFogColor = vFogColor;
@@ -122,13 +122,13 @@ public:
 	void Set_FogDesc(const FOG_DESC& FogDesc) { m_FogDesc = FogDesc; }
 	const FOG_DESC& Get_FogDesc() { return m_FogDesc; }
 
-public:
+public: // Line
 	void Set_LineColor(_float4 vLineColor)
 	{
 		m_vLineColor = vLineColor;
 	}
 
-public:
+public: // Radial
 	_bool Get_RadialBlur() { return m_bRadialBlurDraw; }
 
 	// Quality : 얼마나 샘플할 건지, Power : 얼마나 뭉갤건지.
@@ -139,7 +139,7 @@ public:
 		m_bRadialBlurDraw = bSet;
 	}
 
-public:
+public: // ScreenEffect
 	SCREEN_EFFECT Get_Current_ScreenEffect() { return m_eCurrentScreenEffect; }
 	void Set_ScreenEffect(SCREEN_EFFECT eScreenEffect) { 
 		if (eScreenEffect == SCREENEFFECT_END)
@@ -161,12 +161,12 @@ public:
 	void Set_ScreenEffectAcc(const Vec2& vEffectAcc) { m_vScreenEffectAcc = vEffectAcc; }
 	void Add_ScreenEffectAcc(const Vec2& vEffectAcc) { m_vScreenEffectAcc += vEffectAcc; }
 
-public:
+public: // Minimap
 	void Set_MinimapView(_float4x4 matView) { m_MinimapView = matView; }
 	_float4x4 Get_MinimapView() { return m_MinimapView; }
 	_float4x4 Get_MinimapProj() { return m_MinimapProj; }
 
-public: // UI Setting Option을 위한 Get/Set
+public: // UI Setting Option
 	_bool Get_NatrualDraw() { return m_bNaturalDraw; }
 	void Set_NaturalDraw(_bool bSet) 
 	{ 
@@ -216,7 +216,7 @@ public: // UI Setting Option을 위한 Get/Set
 		Check_Option();
 	}
 
-public:
+public: // Add
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pGameObject);
 	HRESULT Add_RenderGroup_Instancing(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix);
 	HRESULT Add_RenderGroup_AnimInstancing(RENDERGROUP eRenderGroup, class CGameObject* pGameObject, _float4x4 WorldMatrix, const TweenDesc& TweenInstanceDesc, const ANIMODEL_INSTANCE_DESC& AnimModelInstanceDesc);
@@ -237,7 +237,7 @@ public:
 	void Set_PlayerPosition(_vector vPosition) { XMStoreFloat4(&m_vPlayerPosition, vPosition); }
 #endif
 
-public:
+public: // Draw
 	HRESULT Draw();
 
 private:
@@ -315,7 +315,6 @@ private:
 #ifdef _DEBUG
 private:
 	HRESULT Input_Key();
-
 	HRESULT Render_Debug();
 	HRESULT Render_Debug_Target();
 #endif // DEBUG
@@ -323,14 +322,14 @@ private:
 private:
 	HRESULT Check_Option();
 
-	// SSAO
+private: // SSAO
 	void BuildFrustumFarCorners();
 	void BuildOffsetVectors();
 
 	HRESULT InitializeScreenQuad();
 	HRESULT RenderScreenQuad();
 
-private:
+private: // Initialize
 	HRESULT Create_Buffer();
 	HRESULT Create_Shader();
 	HRESULT Create_Target();
@@ -374,9 +373,10 @@ private:
 	_bool  m_bRenderSwitch[RENDER_SWITCH::SWITCH_END] = { true, false };
 
 	_bool	m_bDebugDraw   = false;
+	_bool	m_bTargetDraw  = false;
 	_bool   m_bOption      = false;
 
-	// On/Off_Option
+	// On/ Off_Option
 	_bool   m_bNaturalDraw = true;
 	_bool   m_bShadowDraw  = true;
 	_bool   m_bSsaoDraw    = true;
@@ -428,7 +428,6 @@ public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
-
 };
 
 END
