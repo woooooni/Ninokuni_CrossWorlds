@@ -169,16 +169,18 @@ void CParticle::Tick(_float fTimeDelta)
 
 	if (m_bParticleDelete)
 	{
-		if (m_pVIBufferCom->Get_Finished())
+		if (nullptr == m_pVIBufferCom || m_pVIBufferCom->Get_Finished())
 		{
 			m_bParticleDie = true;
 			if (GI->Get_CurrentLevel() != LEVEL_TOOL)
 				Set_Dead(true);
+
 			return;
 		}
 	}
 
-	m_pVIBufferCom->Tick(fTimeDelta);
+	if(nullptr != m_pVIBufferCom)
+		m_pVIBufferCom->Tick(fTimeDelta);
 }
 
 void CParticle::LateTick(_float fTimeDelta)

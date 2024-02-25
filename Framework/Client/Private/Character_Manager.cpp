@@ -214,12 +214,12 @@ HRESULT CCharacter_Manager::Ready_Characters()
 		// SwordMan
 		// 체력이나 기타 등등 스탯 변경은 여기.
 		{
-			StatDesc.iLevel = 2;
+			StatDesc.iLevel = 1;
 			StatDesc.iAtt = 1200;
 			StatDesc.iDef = 1;
-			StatDesc.iHp = 703;
+			StatDesc.iHp = 668;
 			StatDesc.iMaxHp = 800;
-			StatDesc.iExp = 700;
+			StatDesc.iExp = 600;
 			StatDesc.iMaxExp = 1000;
 
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_SwordMan_AuraBlade", CSwordMan_AuraBlade::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
@@ -239,11 +239,11 @@ HRESULT CCharacter_Manager::Ready_Characters()
 
 		// Engineer
 		{
-			StatDesc.iLevel = 2;
+			StatDesc.iLevel = 1;
 			StatDesc.iAtt = 400;
 			StatDesc.iDef = 1;
 			StatDesc.iHp = 452 ;
-			StatDesc.iExp = 700;
+			StatDesc.iExp = 300;
 			StatDesc.iMaxHp = 500;
 
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
@@ -279,12 +279,12 @@ HRESULT CCharacter_Manager::Ready_Characters()
 
 		// Destroyer
 		{
-			StatDesc.iLevel = 2;
+			StatDesc.iLevel = 1;
 			StatDesc.iAtt = 1500;
 			StatDesc.iDef = 1;
-			StatDesc.iHp = 491;
+			StatDesc.iHp = 565;
 			StatDesc.iMaxHp = 1000;
-			StatDesc.iExp = 200;
+			StatDesc.iExp = 300;
 
 
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Destroyer_FrengeCharge_Thunder", CDestroyer_FrengeCharge_Thunder::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))

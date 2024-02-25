@@ -102,10 +102,10 @@ void CVfx_Witch_Marble::Tick(_float fTimeDelta)
 
 				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Witch_Marble_Back"),
 					pMarbleTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET1_P_BACK], m_pScaleOffset[TYPE_ET1_P_BACK], m_pRotationOffset[TYPE_ET1_P_BACK]);
-				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Witch_Marble_Back_Circle"),
+				/*GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Witch_Marble_Back_Circle"),
 					pMarbleTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET1_P_BACK], m_pScaleOffset[TYPE_ET1_P_BACK], m_pRotationOffset[TYPE_ET1_P_BACK]);
 				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Witch_Marble_Back_Circle_02"),
-					pMarbleTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET1_P_BACK], m_pScaleOffset[TYPE_ET1_P_BACK], m_pRotationOffset[TYPE_ET1_P_BACK]);
+					pMarbleTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_ET1_P_BACK], m_pScaleOffset[TYPE_ET1_P_BACK], m_pRotationOffset[TYPE_ET1_P_BACK]);*/
 			}
 		}
 	}

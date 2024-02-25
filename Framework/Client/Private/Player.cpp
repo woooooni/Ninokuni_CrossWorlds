@@ -92,8 +92,12 @@ HRESULT CPlayer::Tag_Character(CHARACTER_TYPE eType)
 
 		m_pNextCharacter = pNextCharacter;
 
-		pCurrentCharacter->Set_All_Input(true);
-		pNextCharacter->Set_All_Input(true);
+		for (_uint i = 0; i < CHARACTER_TYPE::CHARACTER_END; ++i)
+		{
+			CCharacter* pCharacter = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE(i));
+			if (nullptr != pCharacter)
+				pCharacter->Set_All_Input(true);
+		}
 	}
 	return S_OK;
 }

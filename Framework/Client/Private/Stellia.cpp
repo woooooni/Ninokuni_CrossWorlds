@@ -221,10 +221,10 @@ void CStellia::Tick(_float fTimeDelta)
 	//{
 	//	m_pStateCom->Change_State(STELLIA_RAGE3TURN_AROUND);
 	//}
-	//if (KEY_TAP(KEY::X))
-	//{
-	//	m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
-	//}
+	if (KEY_TAP(KEY::X))
+	{
+		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
+	}
 
 	//#ifdef _DEBUG
 	//	if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel() && KEY_TAP(KEY::L))

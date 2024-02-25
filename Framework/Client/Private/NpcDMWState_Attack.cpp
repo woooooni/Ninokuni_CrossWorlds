@@ -43,10 +43,10 @@ void CNpcDMWState_Attack::Enter_State(void* pArg)
 	m_iCurCount = 0;
 
 	// Effect Create
-	CVfx* pVfxEffect = nullptr;
-	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Attack"), m_pTransformCom->Get_WorldMatrix(), m_pWitch, &pVfxEffect);
-	if (nullptr != pVfxEffect)
-		pVfxEffect->Set_OwnerStateIndex((_int)CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
+	//CVfx* pVfxEffect = nullptr;
+	//GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Witch_Attack"), m_pTransformCom->Get_WorldMatrix(), m_pWitch, //&pVfxEffect);
+	//if (nullptr != pVfxEffect)
+	//	pVfxEffect->Set_OwnerStateIndex((_int)CDreamMazeWitch_Npc::WITCHSTATE_BATTLE_ATTACK);
 
 }
 

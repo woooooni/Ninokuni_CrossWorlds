@@ -113,19 +113,19 @@ void CCharacter::Tick(_float fTimeDelta)
 	if (KEY_TAP(KEY::F8))	
 		Add_Exp(100);
 
-	//if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::G))
-	//{
-	//	if (m_tStat.fSpeedWeight >= 10.f)
-	//		m_tStat.fSpeedWeight = 1.f;
-	//	else
-	//		m_tStat.fSpeedWeight = 10.f;
-	//}
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::G))
+	{
+		if (m_tStat.fSpeedWeight >= 10.f)
+			m_tStat.fSpeedWeight = 1.f;
+		else
+			m_tStat.fSpeedWeight = 10.f;
+	}
 
-	//if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::END_KEY))
-	//{
-	//	//Set_InitialPosition(Vec4(111.f, -0.785f, 8.f, 1.f));
-	//	Set_InitialPosition(Vec4(161.5f, 2.311f, 147.5f, 1.f));
-	//}
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::END_KEY))
+	{
+		//Set_InitialPosition(Vec4(111.f, -0.785f, 8.f, 1.f));
+		Set_InitialPosition(Vec4(161.5f, 2.311f, 147.5f, 1.f));
+	}
 
 	//if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
 	//{
