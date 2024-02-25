@@ -49,6 +49,9 @@ void CUI_WeaponSection_Recommend::Tick(_float fTimeDelta)
 	CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
 	CGameObject* pTarget = nullptr;
 	pTarget = pCharacter->Get_Target();
+	if (nullptr == pTarget)
+		return;
+
 	if (TEXT("Stellia_Crystal_Destructible") == pTarget->Get_ObjectTag())
 		return;
 

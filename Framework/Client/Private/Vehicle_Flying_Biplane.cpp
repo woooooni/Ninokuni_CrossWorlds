@@ -548,13 +548,17 @@ void CVehicle_Flying_Biplane::Decide_Target()
 		if (nullptr == pTargetTransform)
 			continue;
 		
-		Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
-		_float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vDir), XMVector3Normalize(m_pTransformCom->Get_Look())));
-		if (fMinDistance > vDir.Length() && 0.f <= fDot)
+		if (true == GI->Intersect_Frustum_World(pTargetTransform->Get_Position()))
 		{
-			pDecidedTarget = pTarget;
-			fMinDistance = vDir.Length();
+			Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+			_float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vDir), XMVector3Normalize(m_pTransformCom->Get_Look())));
+			if (fMinDistance > vDir.Length() && 0.f <= fDot)
+			{
+				pDecidedTarget = pTarget;
+				fMinDistance = vDir.Length();
+			}
 		}
+		
 	}
 
 	if (nullptr == pDecidedTarget)
@@ -613,6 +617,14 @@ void CVehicle_Flying_Biplane::Tick_Target()
 		m_pTarget = nullptr;
 		return;
 	}
+
+	if (false == GI->Intersect_Frustum_World(pTargetTransform->Get_Position()))
+	{
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+		return;
+	}
+		
 
 	Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
 	

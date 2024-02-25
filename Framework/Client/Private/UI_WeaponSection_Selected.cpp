@@ -105,6 +105,10 @@ void CUI_WeaponSection_Selected::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
+		ELEMENTAL_TYPE eElemental = pCharacter->Get_ElementalType();
+
+		Update_Position(eElemental);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
