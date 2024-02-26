@@ -38,9 +38,9 @@ public:
 public:
     void LateTick_Collider(_float fTimeDelta) override;
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
     HRESULT Render() override;
-#endif
+//#endif
 
 public:
     const BoundingSphere& Get_Sphere() { return m_tBoundingSphere; }

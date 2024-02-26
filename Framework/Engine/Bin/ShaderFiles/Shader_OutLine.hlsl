@@ -74,6 +74,11 @@ PS_OUT PS_OUTLINE(PS_IN In)
 	
     float4 lineColor = g_vLineColor;
     Out.vColor = float4(lerp(lineColor.rgb, float3(gray, gray, gray), saturate(gray)), 1.0) / g_fDivier;
+    if (Out.vColor.r > 0.7f || Out.vColor.g > 0.7f || Out.vColor.b > 0.7f || Out.vColor.a < 0.7f)
+    {
+        Out.vColor.rgb = float3(1.f, 1.f, 1.f);
+
+    }
 
     return Out;
 }

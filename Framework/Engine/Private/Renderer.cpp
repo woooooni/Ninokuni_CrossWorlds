@@ -42,10 +42,10 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(Set_TargetsMrt()))
 		return E_FAIL;
 
-#ifdef _DEBUG // Set_Debug
+//#ifdef _DEBUG // Set_Debug
 	if (FAILED(Set_Debug()))
 		return E_FAIL;
-#endif // DEBUG
+//#endif // DEBUG
 
 	// Ready_Textures
 	if (FAILED(Ready_Textures()))
@@ -200,9 +200,9 @@ HRESULT CRenderer::Add_Text(const TEXT_DESC& TextDesc)
 #pragma region Draw
 HRESULT CRenderer::Draw()
 {
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	Input_Key();
-#endif // DEBUG
+//#endif // DEBUG
 
 	if (FAILED(Draw_BackGround()))
 		return E_FAIL;
@@ -219,10 +219,10 @@ HRESULT CRenderer::Draw()
 			return E_FAIL;
 	}
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	if (FAILED(Render_Debug()))
 		return E_FAIL;
-#endif // DEBUG
+//#endif // DEBUG
 
 	if (FAILED(Render_Final()))
 		return E_FAIL;
@@ -230,10 +230,10 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_Cursor()))
 		return E_FAIL;
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	if (FAILED(Render_Debug_Target()))
 		return E_FAIL;
-#endif // DEBUG
+//#endif // DEBUG
 
 	return S_OK;
 }
@@ -1935,7 +1935,7 @@ HRESULT CRenderer::Render_Cursor()
 }
 
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 HRESULT CRenderer::Render_Debug()
 {
 	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Blend"), false)))
@@ -2073,7 +2073,7 @@ HRESULT CRenderer::Render_Debug_Target()
 
 	return S_OK;
 }
-#endif // DEBUG
+//#endif // DEBUG
 #pragma endregion
 
 #pragma region Blur
@@ -2995,7 +2995,7 @@ HRESULT CRenderer::Initialize_SSAO()
 	return S_OK;
 }
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 HRESULT CRenderer::Set_Debug()
 {
 	_float fSizeX = 160.f; // X 10
@@ -3135,11 +3135,11 @@ HRESULT CRenderer::Set_Debug()
 
 	return S_OK;
 }
-#endif // DEBUG
+//#endif // DEBUG
 #pragma endregion
 
 #pragma region Etc
-#ifdef _DEBUG
+//#ifdef _DEBUG
 HRESULT CRenderer::Input_Key()
 {
 	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::F2))
@@ -3164,7 +3164,7 @@ HRESULT CRenderer::Input_Key()
 
 	return S_OK;
 }
-#endif // DEBUG
+//#endif // DEBUG
 
 HRESULT CRenderer::Check_Option()
 {

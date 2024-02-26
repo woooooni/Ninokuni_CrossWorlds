@@ -471,7 +471,7 @@ ID3D11Texture2D* CTarget_Manager::Get_Texture_FromRenderTarget(const wstring& st
 	return pRenderTarget->Get_Texture();
 }
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 HRESULT CTarget_Manager::Ready_Debug(const wstring & strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
 {
 	CRenderTarget*		pRenderTarget = Find_RenderTarget(strTargetTag);
@@ -496,7 +496,7 @@ HRESULT CTarget_Manager::Render(const wstring & strMRTTag, CShader * pShader, CV
 	return S_OK;
 }
 
-#endif
+//#endif
 
 
 CRenderTarget * CTarget_Manager::Find_RenderTarget(const wstring & strTargetTag)

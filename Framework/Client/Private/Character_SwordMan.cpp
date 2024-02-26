@@ -157,9 +157,9 @@ void CCharacter_SwordMan::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 
 	//m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_REFLECT, this);
-#ifdef DEBUG
+//#ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
-#endif // DEBUG
+//#endif // DEBUG/
 
 	
 }

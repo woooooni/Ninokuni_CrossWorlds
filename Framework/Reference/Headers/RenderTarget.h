@@ -24,11 +24,11 @@ public:
 	
 public:
 	ID3D11Texture2D* Get_Texture() { return m_pTexture2D; }
-#ifdef _DEBUG
+//#ifdef _DEBUG
 public:
 	HRESULT Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pBuffer);
-#endif
+//#endif
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -41,10 +41,10 @@ private:
 private:
 	_float4						m_vColor;
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 private:
 	_float4x4					m_WorldMatrix;
-#endif
+//#endif
 
 public:
 	static CRenderTarget* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor, _uint iArraySize);

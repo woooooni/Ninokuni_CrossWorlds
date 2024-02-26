@@ -25,10 +25,10 @@ public:
 	void Set_PrototypeTag(const wstring& strPrototypeTag) { m_strPrototypeTag = strPrototypeTag; }
 	const wstring& Get_PrototypeTag() { return m_strPrototypeTag; }
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 public:
 	virtual HRESULT Render() { return S_OK; }
-#endif // DEBUG
+//#endif // DEBUG
 
 
 protected:

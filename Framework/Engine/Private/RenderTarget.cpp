@@ -55,7 +55,7 @@ HRESULT CRenderTarget::Bind_SRV(CShader * pShader, const _char * pConstantName)
 }
 
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 
 HRESULT CRenderTarget::Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
 {
@@ -96,7 +96,7 @@ HRESULT CRenderTarget::Render(CShader * pShader, CVIBuffer_Rect * pBuffer)
 }
 
 
-#endif
+//#endif
 
 
 CRenderTarget * CRenderTarget::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor, _uint iArraySize)

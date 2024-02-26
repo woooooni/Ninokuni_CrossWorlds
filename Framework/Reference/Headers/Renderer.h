@@ -223,7 +223,7 @@ public: // Add
 	HRESULT Add_RenderGroup_Instancing_Effect(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix, const EFFECT_INSTANCE_DESC& EffectInstanceDesc);
 	HRESULT Add_Text(const TEXT_DESC& TextDesc);
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 public:
 	HRESULT Add_Debug(class CComponent* pDebug) {
 		if (nullptr == pDebug)
@@ -235,7 +235,7 @@ public:
 	}
 
 	void Set_PlayerPosition(_vector vPosition) { XMStoreFloat4(&m_vPlayerPosition, vPosition); }
-#endif
+//#endif
 
 public: // Draw
 	HRESULT Draw();
@@ -312,12 +312,12 @@ private:
 	// Clear
 	HRESULT Render_ClearTarget(const wstring& strStartTargetTag);
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 private:
 	HRESULT Input_Key();
 	HRESULT Render_Debug();
 	HRESULT Render_Debug_Target();
-#endif // DEBUG
+//#endif // DEBUG
 
 private:
 	HRESULT Check_Option();
@@ -337,9 +337,9 @@ private: // Initialize
 	HRESULT Ready_Textures();
 	HRESULT Initialize_SSAO();
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	HRESULT Set_Debug();
-#endif // DEBUG
+//#endif // DEBUG
 
 private:
 	list<class CGameObject*> m_RenderObjects[RENDER_END];

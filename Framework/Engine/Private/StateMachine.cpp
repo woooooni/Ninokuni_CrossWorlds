@@ -21,7 +21,7 @@ HRESULT CStateMachine::Initialize(void* pArg)
     return S_OK;
 }
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 HRESULT CStateMachine::Render()
 {
 	if (FAILED(m_pCurrState->Render()))
@@ -29,7 +29,7 @@ HRESULT CStateMachine::Render()
 
 	return S_OK;
 }
-#endif
+//#endif
 
 void CStateMachine::Tick_State(_float fTimeDelta)
 {
