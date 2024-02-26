@@ -136,6 +136,9 @@ void CMonster::Tick(_float fTimeDelta)
 					{
 						CInventory_Manager::GetInstance()->Add_Gold(GI->RandomInt(15, 40));
 					}
+
+					_int iRandomExp = GI->RandomInt(10, 30);
+					CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Add_Exp(iRandomExp);
 				}
 			}
 			else if (m_fDissolveWeight >= m_fDissolveTotal)

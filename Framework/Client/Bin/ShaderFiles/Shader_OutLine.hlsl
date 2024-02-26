@@ -13,7 +13,7 @@ float  g_fMask[9] = {
 float  g_fCoord[3] = { -1, 0, +1 };
 float  g_fDivier = 1;
 
-float g_fBias = 0.5f;
+float g_fOutLineBias = 0.5f;
 
 struct VS_IN
 {
@@ -64,12 +64,12 @@ PS_OUT PS_OUTLINE(PS_IN In)
 	
     for (int i = 0; i < 9; i++)
     {
-        vector vNormalDesc = g_NormalTarget.Sample(PointSampler, In.vTexcoord + float2(g_fCoord[i % 3] / 1600.f, g_fCoord[i % 3] / 900.f) * g_fBias);
+        vector vNormalDesc = g_NormalTarget.Sample(PointSampler, In.vTexcoord + float2(g_fCoord[i % 3] / 1600.f, g_fCoord[i % 3] / 900.f) * g_fOutLineBias);
         vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
         Color += g_fMask[i] * vNormal;
     }
 	
-    float gray = 1 - (Color.r * 0.3 + Color.g * 0.59 + Color.b * 0.11);
+    float gray = 1.f - (Color.r * 0.3f + Color.g * 0.59f + Color.b * 0.11f);
     //Out.vColor = float4(gray, gray, gray, 1.f) / g_fDivier;
 	
     float4 lineColor = g_vLineColor;
