@@ -346,6 +346,30 @@ HRESULT CCurlingGame_Stone::Calculate_ElasticCollision(CGameObject* pOther)
 
 		// 충돌 후의 속도 갱신
 		vNewVelocity = vMyDir - (1.0f + fRestitutionCoefficient) * XMVectorGetX(XMVector3Dot(XMLoadFloat3(&vRelativeVelocity), XMLoadFloat3(&vColDir))) * vColDir;
+
+		
+		/* 
+			Vec3 CalculateElasticCollision(const Vec3 & v1, const Vec3 & v2, const Vec3 & pos1, const Vec3 & pos2, float restitutionCoefficient) 
+			{
+				// 충돌 방향 계산
+				Vec3 collisionDir = (pos2 - pos1).Normalize();
+
+				// 상대 속도 계산
+				Vec3 relativeVelocity = v2 - v1;
+
+				// 충돌 후의 상대 속도의 충돌 방향 성분 계산
+				float dotProduct = relativeVelocity.Dot(collisionDir);
+
+				// 반발력 계산
+				float impulse = (1.0f + restitutionCoefficient) * dotProduct;
+
+				// 충돌 후의 속도 갱신
+				Vec3 newVelocity1 = v1 + impulse * collisionDir;
+				Vec3 newVelocity2 = v2 - impulse * collisionDir;
+
+				return newVelocity1;
+			}
+		*/
 	}
 
 	m_tElasticColDesc.Set(vNewVelocity);
