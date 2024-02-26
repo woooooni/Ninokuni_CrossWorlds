@@ -588,7 +588,7 @@ float PCF_ShadowCaculation(float4 vLightPos, float3 vLightDir)
 
 	float fShadow = 0.0f;
 	float2 texelSize = float2(1.f / 1600.f, 1.f / 900.f);
-	texelSize /= 3.f;
+	texelSize /= 8.f;
 
 	[unroll]
 	for (int x = -1; x <= 1; ++x)

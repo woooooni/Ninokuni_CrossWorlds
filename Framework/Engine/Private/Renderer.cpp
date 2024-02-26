@@ -2430,7 +2430,7 @@ HRESULT CRenderer::Create_Target()
 #pragma region MRT_Shadow : Target_ShadowDepth
 	/* For.Target_ShadowDepth */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_ShadowDepth"),
-		ViewportDesc.Width * 3.f, ViewportDesc.Height * 3.f, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f))))
+		ViewportDesc.Width * 8.f, ViewportDesc.Height * 8.f, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f))))
 		return E_FAIL;
 #pragma endregion
 
