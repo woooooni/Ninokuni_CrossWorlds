@@ -76,7 +76,7 @@ void CCollider_Sphere::LateTick_Collider(_float fTimeDelta)
 	XMStoreFloat3(&m_tBoundingSphere.Center, XMLoadFloat4x4(&m_FinalMatrix).r[CTransform::STATE_POSITION]);
 }
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 HRESULT CCollider_Sphere::Render()
 {
 	/*if (m_bActive && m_eDetectionType != CCollider::BOUNDARY)
@@ -121,7 +121,7 @@ HRESULT CCollider_Sphere::Render()
 	return S_OK;
 }
 
-#endif // DEBUG
+//#endif // DEBUG
 
 void CCollider_Sphere::Collision_Enter(CCollider* pCollider)
 {

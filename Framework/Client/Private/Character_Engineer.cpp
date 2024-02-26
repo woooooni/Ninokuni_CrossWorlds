@@ -147,9 +147,9 @@ void CCharacter_Engineer::LateTick(_float fTimeDelta)
 		m_pControllerCom->Set_EnterLevel_Position(Vec4(0.f, 2.f, 0.f, 1.f));
 	}
 
-	m_pRendererCom->Add_Debug(m_pControllerCom);
-#endif // DEBUG
 
+#endif // DEBUG
+	m_pRendererCom->Add_Debug(m_pControllerCom);
 	
 }
 

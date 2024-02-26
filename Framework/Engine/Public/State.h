@@ -19,9 +19,9 @@ public:
 	virtual void Tick_State(_float fTimeDelta) PURE;
 	virtual void Exit_State() PURE;
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	virtual HRESULT Render() { return S_OK; }
-#endif
+//#endif
 
 protected:
 	vector<_uint> m_AnimIndices;

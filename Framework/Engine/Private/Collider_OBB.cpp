@@ -85,7 +85,7 @@ void CCollider_OBB::LateTick_Collider(_float fTimeDelta)
 	m_tOriginOBB.Transform(m_tBoundingBox, XMLoadFloat4x4(&m_FinalMatrix));
 }
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 
 HRESULT CCollider_OBB::Render()
 {
@@ -108,7 +108,7 @@ HRESULT CCollider_OBB::Render()
 
 	return S_OK;
 }
-#endif // DEBUG
+//#endif // DEBUG
 
 void CCollider_OBB::Collision_Enter(CCollider* pCollider)
 {
