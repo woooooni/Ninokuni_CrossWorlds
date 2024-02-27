@@ -53,7 +53,7 @@ void CEngineer_BurstCall_Missile::LateTick(_float fTimeDelta)
 	LateUpdate_Collider(fTimeDelta);
 	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 	{
 		for (auto& pCollider : m_Colliders[i])

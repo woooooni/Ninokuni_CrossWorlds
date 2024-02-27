@@ -52,6 +52,9 @@ void CState_Character_Vehicle_Run::Tick_State(_float fTimeDelta)
         break;
     }
     */
+    m_pRigidBodyCom->Set_Use_Gravity(false);
+    m_pRigidBodyCom->Set_Ground(true);
+
     __super::OnBoard_Input(fTimeDelta);
 }
 

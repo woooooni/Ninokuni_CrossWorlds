@@ -66,7 +66,7 @@ void CVehicle::LateTick(_float fTimeDelta)
 	if(nullptr != m_pTransformCom)
 		Compute_CamZ(m_pTransformCom->Get_Position());
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 	{
 		for (auto& pCollider : m_Colliders[i])
@@ -214,9 +214,7 @@ void CVehicle::Update_Rider(_float fTimeDelta)
 	else
 	{
 		if (nullptr != m_pRiderTransform)
-		{
 			m_pRiderTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
-		}
 	}
 }
 

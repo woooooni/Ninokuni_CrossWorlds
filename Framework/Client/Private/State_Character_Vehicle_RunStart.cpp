@@ -28,6 +28,9 @@ void CState_Character_Vehicle_RunStart::Enter_State(void* pArg)
 
 void CState_Character_Vehicle_RunStart::Tick_State(_float fTimeDelta)
 {
+    m_pRigidBodyCom->Set_Use_Gravity(false);
+    m_pRigidBodyCom->Set_Ground(true);
+
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::VEHICLE_STAND);
 

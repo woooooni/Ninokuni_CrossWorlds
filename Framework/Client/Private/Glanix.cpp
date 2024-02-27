@@ -400,6 +400,7 @@ HRESULT CGlanix::Ready_States()
 	m_tStat.fHp = 500000;
 	m_tStat.iAtk = 100;
 	m_tStat.iDef = 150;
+	m_tStat.eElementType = ELEMENTAL_TYPE::WATER;
 
 	list<wstring> strAnimationName;
 	

@@ -80,7 +80,7 @@ void CCurlingGame_Prop::LateTick(_float fTimeDelta)
 	{
 		for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 		{
-	#ifdef _DEBUG
+	#ifdef NDEBUG
 			for (auto& pCollider : m_Colliders[i])
 				m_pRendererCom->Add_Debug(pCollider);
 	#endif

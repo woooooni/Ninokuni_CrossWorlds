@@ -96,7 +96,7 @@ void CQuest_DestSpot::LateTick(_float fTimeDelta)
 		if (nullptr != m_pMinimapIcon)
 			m_pMinimapIcon->LateTick(fTimeDelta);
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 		for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 		{
 			for (auto& pCollider : m_Colliders[i])

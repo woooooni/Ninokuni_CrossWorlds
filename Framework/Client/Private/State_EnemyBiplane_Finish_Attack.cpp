@@ -37,7 +37,7 @@ HRESULT CState_EnemyBiplane_Finish_Attack::Initialize(const list<wstring>& Anima
 //    ID3DBlob* pComputeShaderBlob = nullptr;
 //    ID3DBlob* pErrBlob = nullptr;
 //    _int iFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-//#ifdef _DEBUG
+//#ifdef NDEBUG
 //    iFlags |= D3DCOMPILE_DEBUG;
 //#endif // _DEBUG
 //

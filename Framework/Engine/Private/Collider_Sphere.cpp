@@ -105,12 +105,10 @@ HRESULT CCollider_Sphere::Render()
 	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
 	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
 
-
-	m_pEffect->Apply(m_pContext);
-
 	m_pContext->IASetInputLayout(m_pInputLayout);
 
-
+	m_pEffect->Apply(m_pContext);
+	
 	m_pBatch->Begin();
 
 	DX::Draw(m_pBatch, m_tBoundingSphere, XMLoadFloat4(&m_vColor));

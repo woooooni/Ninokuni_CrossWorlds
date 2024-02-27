@@ -27,6 +27,8 @@ void CState_Character_Vehicle_Stand::Enter_State(void* pArg)
 
 void CState_Character_Vehicle_Stand::Tick_State(_float fTimeDelta)
 {
+    m_pRigidBodyCom->Set_Use_Gravity(false);
+    m_pRigidBodyCom->Set_Ground(true);
     __super::OnBoard_Input(fTimeDelta);
 }
 

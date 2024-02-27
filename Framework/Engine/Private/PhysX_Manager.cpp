@@ -66,7 +66,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 }
 void CPhysX_Manager::Tick(_float fTimeDelta)
 {
-	_float fStepSize = min(fTimeDelta, 1.f / 144.f);
+	_float fStepSize = 1.f / 144.f;
 	m_pScene->simulate(fStepSize);
 	m_pScene->fetchResults(true);
 }

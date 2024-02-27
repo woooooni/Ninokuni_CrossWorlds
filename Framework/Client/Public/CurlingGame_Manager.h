@@ -181,7 +181,7 @@ private:
 	_bool					m_bPlayerWin = false;
 	_bool					m_bFadeOut = false;
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 	const _bool	m_bDebugRender						= false;
 	BasicEffect* m_pEffect							= nullptr;
 	BoundingSphere* m_pSphere						= nullptr;

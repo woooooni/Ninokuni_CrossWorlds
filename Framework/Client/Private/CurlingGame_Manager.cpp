@@ -50,7 +50,7 @@ HRESULT CCurlingGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11Devic
 	if (FAILED(Ready_AiPathQueue()))
 		return E_FAIL;
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 	if (m_bDebugRender && FAILED(Ready_DebugDraw()))
 		return E_FAIL;
 #endif
@@ -101,7 +101,7 @@ void CCurlingGame_Manager::Render_Debug()
 	if (m_bPlaying)
 		m_pManagerStateMachineCom->Render();
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 	if(m_bDebugRender)
 		Render_DebugDraw();
 #endif
@@ -712,7 +712,7 @@ void CCurlingGame_Manager::Debug()
 {
 
 }
-#ifdef _DEBUG
+#ifdef NDEBUG
 HRESULT CCurlingGame_Manager::Ready_DebugDraw()
 {
 	m_pBatch = new PrimitiveBatch<VertexPositionColor>(GI->Get_Context());
@@ -739,7 +739,7 @@ HRESULT CCurlingGame_Manager::Ready_DebugDraw()
 }
 #endif
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 HRESULT CCurlingGame_Manager::Render_DebugDraw()
 {
 	m_pEffect->SetWorld(XMMatrixIdentity());
@@ -773,7 +773,7 @@ void CCurlingGame_Manager::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 	Safe_Delete(m_pBatch);
 	Safe_Delete(m_pEffect);
 	Safe_Delete(m_pSphere);

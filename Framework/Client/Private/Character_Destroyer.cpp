@@ -151,7 +151,7 @@ void CCharacter_Destroyer::LateTick(_float fTimeDelta)
 
 	__super::LateTick(fTimeDelta);
 
-//#ifdef _DEBUG
+//#ifdef NDEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
 //#endif // DEBUG
 

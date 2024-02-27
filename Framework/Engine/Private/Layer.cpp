@@ -28,12 +28,15 @@ void CLayer::Priority_Tick(_float fTimeDelta)
 		if ((*iter) == nullptr)
 		{
 			iter = m_GameObjects.erase(iter);
+			continue;
 		}
 
 		else if ((*iter)->Is_Dead())
 		{
-			Safe_Release((*iter));
+			CGameObject* pGameObject = *iter;
+			Safe_Release(pGameObject);
 			iter = m_GameObjects.erase(iter);
+			continue;
 		}
 
 		else

@@ -101,7 +101,7 @@ void CDestroyer_Npc::LateTick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	}
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 	//m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	//for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 	//{

@@ -379,14 +379,12 @@ void CCharacter::LateTick(_float fTimeDelta)
 
 
 
-#ifdef _DEBUG
-	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+#ifdef NDEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 	{
 		for (auto& pCollider : m_Colliders[i])
 			m_pRendererCom->Add_Debug(pCollider);
 	}
-
 #endif
 }
 
@@ -667,6 +665,8 @@ void CCharacter::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 void CCharacter::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Continue(tInfo);
+	m_pRigidBodyCom->Set_Ground(true);
+	m_pRigidBodyCom->Set_Use_Gravity(false);
 }
 
 void CCharacter::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)

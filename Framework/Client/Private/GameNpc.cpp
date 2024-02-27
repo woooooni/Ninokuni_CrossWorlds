@@ -97,14 +97,12 @@ void CGameNpc::LateTick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
 	}
 
-#ifdef _DEBUG
-	//m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-	//for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
-	//{
-	//	for (auto& pCollider : m_Colliders[i])
-	//		m_pRendererCom->Add_Debug(pCollider);
-	//}
-	//m_pRendererCom->Add_Debug(m_pControllerCom);
+#ifdef NDEBUG	
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
 #endif // DEBUG
 }
 

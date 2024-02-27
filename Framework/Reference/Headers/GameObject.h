@@ -69,6 +69,9 @@ public:
 	template<typename T>
 	T* Get_Component(const wstring& strComponentTag)
 	{
+		if (0 >= m_Components.size())
+			return nullptr;
+
 		auto iter = m_Components.find(strComponentTag);
 
 		if (iter == m_Components.end())

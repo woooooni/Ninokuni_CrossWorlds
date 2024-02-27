@@ -235,6 +235,8 @@ HRESULT CRenderer::Draw()
 		return E_FAIL;
 //#endif // DEBUG
 
+	
+
 	return S_OK;
 }
 

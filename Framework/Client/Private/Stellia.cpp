@@ -226,7 +226,7 @@ void CStellia::Tick(_float fTimeDelta)
 		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
 	}
 
-	//#ifdef _DEBUG
+	//#ifdef NDEBUG
 	//	if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel() && KEY_TAP(KEY::L))
 	//		m_pStateCom->Change_State(GLANIX_SPINBOMBBOMB);
 	//#endif // DEBUG
@@ -254,7 +254,7 @@ void CStellia::Tick(_float fTimeDelta)
 
 void CStellia::LateTick(_float fTimeDelta)
 {
-#ifdef _DEBUG
+#ifdef NDEBUG
 	m_pRendererCom->Add_Debug(m_pStateCom);
 #endif
 

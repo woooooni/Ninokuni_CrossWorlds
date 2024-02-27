@@ -36,26 +36,26 @@ void CState_Vehicle_Jump::Enter_State(void* pArg)
 void CState_Vehicle_Jump::Tick_State(_float fTimeDelta)
 {
     // Idle상태로 돌린다.
-    if (true == m_pRigidBodyCom->Is_Ground())
+    if (m_iCurrAnimIndex == m_AnimIndices[2] && true == m_pRigidBodyCom->Is_Ground())
     {
         m_pRigidBodyCom->Set_Velocity(_float3(0.f, 0.f, 0.f));
         m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
         return;
     }
-//    if (m_iCurrAnimIndex == m_AnimIndices[3] &&
+////    if (m_iCurrAnimIndex == m_AnimIndices[3] &&
+////        false == m_pModelCom->Is_Tween() && m_pModelCom->Is_Finish())
+////    {
+////        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
+////        return;
+////    }
+//
+//    if (m_iCurrAnimIndex == m_AnimIndices[2] &&
 //        false == m_pModelCom->Is_Tween() && m_pModelCom->Is_Finish())
 //    {
+//        m_pRigidBodyCom->Set_Velocity(_float3(0.f, 0.f, 0.f));
 //        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
 //        return;
 //    }
-
-    if (m_iCurrAnimIndex == m_AnimIndices[2] &&
-        false == m_pModelCom->Is_Tween() && m_pModelCom->Is_Finish())
-    {
-        m_pRigidBodyCom->Set_Velocity(_float3(0.f, 0.f, 0.f));
-        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
-        return;
-    }
 
     if (0.f > (m_pRigidBodyCom->Get_Velocity()).y && false == m_bJumpDown)
     {

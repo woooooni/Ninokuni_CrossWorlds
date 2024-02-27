@@ -48,16 +48,12 @@ void CBoss::LateTick(_float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
 
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 	{
 		for (auto& pCollider : m_Colliders[i])
 			m_pRendererCom->Add_Debug(pCollider);
 	}
-	m_pRendererCom->Add_Debug(m_pControllerCom);
-
-
-	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 #endif // DEBUG
 
 }

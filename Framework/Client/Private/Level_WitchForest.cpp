@@ -125,15 +125,15 @@ HRESULT CLevel_WitchForest::Tick(_float fTimeDelta)
 {
 	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_WITCHFOREST, fTimeDelta);
 
-	//if (KEY_TAP(KEY::PAGE_UP))
-	//{
-	//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
-	//}
-	//
-	//if (KEY_TAP(KEY::PAGE_DOWN))
-	//{
-	//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
-	//}
+	if (KEY_TAP(KEY::PAGE_UP))
+	{
+		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+	}
+	
+	if (KEY_TAP(KEY::PAGE_DOWN))
+	{
+		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+	}
 	//
 	//if (KEY_TAP(KEY::CLOSE_SQUARE_BRACKET))
 	//{

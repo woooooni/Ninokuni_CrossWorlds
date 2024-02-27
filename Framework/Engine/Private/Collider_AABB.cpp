@@ -85,10 +85,9 @@ HRESULT CCollider_AABB::Render()
 	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
 	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
 
-	m_pEffect->Apply(m_pContext);
-
 	m_pContext->IASetInputLayout(m_pInputLayout);
 
+	m_pEffect->Apply(m_pContext);
 
 	m_pBatch->Begin();
 

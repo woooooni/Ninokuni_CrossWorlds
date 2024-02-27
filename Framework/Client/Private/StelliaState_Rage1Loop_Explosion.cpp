@@ -25,7 +25,7 @@ HRESULT CStelliaState_Rage1Loop_Explosion::Initialize(const list<wstring>& Anima
 	m_fDist = 10.f;
 	m_fStelliaCenterOffSetDist = 5.f;
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 	if (FAILED(Ready_DebugDraw()))
 		return E_FAIL;
 #endif
@@ -89,7 +89,7 @@ void CStelliaState_Rage1Loop_Explosion::Exit_State()
 {
 }
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 HRESULT CStelliaState_Rage1Loop_Explosion::Render()
 {
 	Render_DebugDraw();
@@ -171,7 +171,7 @@ void CStelliaState_Rage1Loop_Explosion::Free()
 {
 	__super::Free();
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 	Safe_Delete(m_pBatch);
 	Safe_Delete(m_pEffect);
 	Safe_Delete(m_pSphere);

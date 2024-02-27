@@ -18,7 +18,7 @@ public:
 	virtual void Tick_State(_float fTimeDelta);
 	virtual void Exit_State();
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 public:
 	virtual HRESULT Render() override;
 

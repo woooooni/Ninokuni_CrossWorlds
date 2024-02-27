@@ -134,16 +134,6 @@ HRESULT CLevel_IceLand::Tick(_float fTimeDelta)
 		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
 	}
 
-	if (KEY_TAP(KEY::F8))
-	{
-		GI->Add_GameObject(LEVEL_ICELAND, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"));
-	}
-
-	if (KEY_TAP(KEY::CLOSE_SQUARE_BRACKET))
-	{
-		GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_EVERMORE, L"Evermore"));
-	}
-
 	return S_OK; 
 }
 

@@ -65,8 +65,8 @@ void CLensFlare::LateTick(_float fTimeDelta)
 		light_ss.w = 1.0f;
 	}
 	Vec4 vScreenSunPos = light_ss;
-	if (vScreenSunPos.x > 1.05f || vScreenSunPos.x < -0.05f
-		|| vScreenSunPos.y > 1.05f || vScreenSunPos.y < -0.05f
+	if (vScreenSunPos.x > 1.05f || vScreenSunPos.x < -1.05f
+		|| vScreenSunPos.y > 1.05f || vScreenSunPos.y < -1.05f
 		|| vScreenSunPos.z > 1.f || vScreenSunPos.z < 0.f)
 		return;
 

@@ -127,7 +127,8 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 				if (pObject->Get_ObjectTag() == L"Vehicle_Flying_EnemyBiplane")
 					continue;
 
-				pObject->Set_Dead(true);			}
+				pObject->Set_Dead(true);			
+			}
 		}
 
 		Check_Use_Skill();

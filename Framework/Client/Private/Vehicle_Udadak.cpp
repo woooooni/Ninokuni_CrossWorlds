@@ -114,16 +114,28 @@ void CVehicle_Udadak::Collision_Exit(const COLLISION_INFO& tInfo)
 void CVehicle_Udadak::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Enter(tInfo);
+	if (nullptr != m_pRigidBodyCom)
+	{
+		if (m_pRigidBodyCom->Get_Velocity().y <= 0.f)
+		{
+			m_pRigidBodyCom->Set_Ground(true);
+			m_pRigidBodyCom->Set_Use_Gravity(false);
+		}
+	}
 }
 
 void CVehicle_Udadak::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Continue(tInfo);
+	m_pRigidBodyCom->Set_Ground(true);
+	m_pRigidBodyCom->Set_Use_Gravity(false);
 }
 
 void CVehicle_Udadak::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Exit(tInfo);
+	m_pRigidBodyCom->Set_Ground(false);
+	m_pRigidBodyCom->Set_Use_Gravity(true);
 }
 
 HRESULT CVehicle_Udadak::Ready_Components()

@@ -165,7 +165,7 @@ void CGlanix_IcePillar_Controller::Tick(const _float fTimeDelta)
 
 HRESULT CGlanix_IcePillar_Controller::Create_Pillars(const _int& iNum, const _float& fRadius, const Vec4& vOriginPos, CGlanix* pGlanix)
 {
-#ifdef _DEBUG
+#ifdef NDEBUG
 	if (FAILED(Ready_DebugDraw()))
 		return E_FAIL;
 #endif
@@ -280,7 +280,7 @@ void CGlanix_IcePillar_Controller::Decelerate_PillarsSpeed()
 	}
 }
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 HRESULT CGlanix_IcePillar_Controller::Render()
 {
 	Render_DebugDraw();
@@ -351,7 +351,7 @@ HRESULT CGlanix_IcePillar_Controller::Render_DebugDraw()
 
 void CGlanix_IcePillar_Controller::PillarControllerFree()
 {
-#ifdef _DEBUG
+#ifdef NDEBUG
 	Safe_Delete(m_pBatch);
 	Safe_Delete(m_pEffect);
 	Safe_Delete(m_pSphere);

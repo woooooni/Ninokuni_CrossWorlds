@@ -56,6 +56,9 @@ void CSound_Manager::Tick(_float fTimeDelta)
 
 void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume, _bool bStop, _float fCamDistance)
 {
+	if (CHANNELID::SOUND_BGM_CURR == eID || CHANNELID::SOUND_BGM_NEXT == eID)
+		return;
+
 	map<wstring, FMOD_SOUND*>::iterator iter;
 
 	// iter = find_if(m_mapSound.begin(), m_mapSound.end(), CTag_Finder(pSoundKey));
@@ -107,6 +110,8 @@ void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume
 
 void CSound_Manager::Play_BGM(wstring pSoundKey, _float fVolume, _bool bStop, _float fFadeDuration)
 {
+	return;
+
 	/* 만약 사운드 스탑 페이드가 진행되고 있다면 false */
 	if (m_bStopBgm)
 		m_bStopBgm = false;
@@ -316,6 +321,8 @@ void CSound_Manager::Play_Foot(CHANNELID eID, _float fVolume)
 
 void CSound_Manager::Tick_BgmBlending(_float fTimeDelta)
 {		
+	return;
+
 	m_tBgmVloumeDesc.Update(fTimeDelta);
 
 	if (!m_tBgmVloumeDesc.bActive)

@@ -38,7 +38,7 @@ private:
 	void Accelerate_PillarsSpeed();
 	void Decelerate_PillarsSpeed();
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 public:
 	HRESULT Render();
 private:

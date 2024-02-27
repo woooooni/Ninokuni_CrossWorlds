@@ -78,7 +78,7 @@ void CGlanix_Icicle::LateTick(_float fTimeDelta)
 	m_pControllerCom->LateTick_Controller(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 	{
 		for (auto& pCollider : m_Colliders[i])

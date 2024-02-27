@@ -176,15 +176,15 @@ HRESULT CLevel_Evermore::Tick(_float fTimeDelta)
 	CUIMinigame_Manager::GetInstance()->Tick_Minigame(LEVELID::LEVEL_EVERMORE, fTimeDelta);
 	CGrandprix_Manager::GetInstance()->Tick(fTimeDelta);
 
-	//if (KEY_TAP(KEY::PAGE_UP))
-	//{
-	//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
-	//}
+	if (KEY_TAP(KEY::PAGE_UP))
+	{
+		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+	}
 
-	//if (KEY_TAP(KEY::PAGE_DOWN))
-	//{
-	//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
-	//}
+	if (KEY_TAP(KEY::PAGE_DOWN))
+	{
+		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+	}
 
 	//if (KEY_TAP(KEY::CLOSE_SQUARE_BRACKET))
 	//{
@@ -366,11 +366,11 @@ HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	}
 	else
 	{
-		if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_GameObjectToLayer(LEVELID::LEVEL_EVERMORE)))
-			return E_FAIL;
+		//if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_GameObjectToLayer(LEVELID::LEVEL_EVERMORE)))
+		//	return E_FAIL;
 
-		if (FAILED(CGrandprix_Manager::GetInstance()->Ready_Grandprix_GameObjectToLayer(LEVELID::LEVEL_EVERMORE)))
-			return E_FAIL;
+		//if (FAILED(CGrandprix_Manager::GetInstance()->Ready_Grandprix_GameObjectToLayer(LEVELID::LEVEL_EVERMORE)))
+		//	return E_FAIL;
 	}
 
 	return S_OK;

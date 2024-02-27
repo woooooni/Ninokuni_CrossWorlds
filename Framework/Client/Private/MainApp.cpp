@@ -68,13 +68,13 @@ HRESULT CMainApp::Initialize()
 	 
 	// Set Start Type
 	{
-		g_eStartLevel = LEVELID::LEVEL_TOOL;			/* 시작 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_LOGO;			/* 시작 레벨 타입 */
 
-		g_iStartQuestLevel = QUEST_LEVEL::QL_3_ICELAND;	/* 시작 퀘스트 레벨 */
+		g_iStartQuestLevel = QUEST_LEVEL::QL_1_INTRO_TOUR;	/* 시작 퀘스트 레벨 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;	/* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH;	/* 모델 로드할 캐릭터 타입 */
 
-		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;	/* 게임 플레이 캐릭터 타입 */
+		g_ePlayCharacter = LOAD_CHARACTER_TYPE::ALL_CH;	/* 게임 플레이 캐릭터 타입 */
 	}
 
 	// Open Level
@@ -224,7 +224,7 @@ HRESULT CMainApp::Initialize_Client()
 			if (FAILED(GI->Add_ShadowLight(LEVEL_LOBBY, vEye, vAt, vUp)))
 				return E_FAIL;
 
-			vEye = XMVectorSet(150.5f, 200.f, 275.5f, 1.f);
+			vEye = XMVectorSet(150.5f, 300.f, 275.5f, 1.f);
 			vAt = XMVectorSet(-150.5f, -15.f, -116.5f, 1.f);
 			vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 			if (FAILED(GI->Add_ShadowLight(LEVEL_EVERMORE, vEye, vAt, vUp)))
@@ -236,7 +236,7 @@ HRESULT CMainApp::Initialize_Client()
 			if (FAILED(GI->Add_ShadowLight(LEVEL_KINGDOMHALL, vEye, vAt, vUp)))
 				return E_FAIL;
 
-			vEye = XMVectorSet(-260.f, 225.f, -75.5f, 1.f);
+			vEye = XMVectorSet(-260.f, 300.f, -75.5f, 1.f);
 			vAt = XMVectorSet(125.5f, -15.f, 400.f, 1.f);
 			vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 			if (FAILED(GI->Add_ShadowLight(LEVEL_ICELAND, vEye, vAt, vUp)))
