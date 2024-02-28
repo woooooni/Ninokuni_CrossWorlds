@@ -427,6 +427,7 @@ void CGrandprix_Manager::Start_Grandprix()
 
 void CGrandprix_Manager::Finish_Grandprix()
 {
+	GI->Stop_Sound(CHANNELID::SOUND_AIRPLANE);
 }
 
 void CGrandprix_Manager::End_Grandprix()

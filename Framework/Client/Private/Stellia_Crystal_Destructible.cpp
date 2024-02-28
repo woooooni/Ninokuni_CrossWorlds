@@ -18,6 +18,8 @@
 #include "Character.h"
 #include "Player.h"
 
+#include "Particle.h"
+
 CStellia_Crystal_Destructible::CStellia_Crystal_Destructible(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
 {
@@ -166,6 +168,11 @@ void CStellia_Crystal_Destructible::Tick(_float fTimeDelta)
 		}
 		else if (m_fDissolveWeight >= m_fDissolveTotal)
 		{
+			if (nullptr != m_pDissolveObject)
+			{
+				m_pDissolveObject->Set_Dead(true);
+				m_pDissolveObject = nullptr;
+			}
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
 			Set_Dead(true);
 			return;

@@ -46,6 +46,7 @@ void CState_Character_Battle_Dash::Enter_State(void* pArg)
 
     m_bFirstRootConvert = true;
     m_pCharacter->Appear_Weapon();
+    m_pCharacter->Set_SuperArmor(true, 999.f);
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 
@@ -64,6 +65,7 @@ void CState_Character_Battle_Dash::Exit_State()
 {
     m_iCurrAnimIndex = 0;
     m_bFirstRootConvert = true;
+    m_pCharacter->Set_SuperArmor(false, 0.f);
 }
 
 

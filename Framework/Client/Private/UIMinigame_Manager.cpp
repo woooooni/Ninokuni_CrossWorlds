@@ -616,6 +616,7 @@ void CUIMinigame_Manager::End_Grandprix()
 		pKuu->Set_Active(true);
 
 	GI->Play_BGM(TEXT("BGM_Town_Evermore_Normal_Castle_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
+	GI->Stop_Sound(CHANNELID::SOUND_AIRPLANE);
 }
 
 void CUIMinigame_Manager::Use_GrandprixSkill(SKILL_TYPE eType)
