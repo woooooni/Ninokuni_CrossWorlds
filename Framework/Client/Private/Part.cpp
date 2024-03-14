@@ -2,7 +2,6 @@
 #include "..\Public\Part.h"
 
 #include "GameInstance.h"
-#include "HierarchyNode.h"
 
 CPart::CPart(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObejctTag, _uint iObjectType)
 	: CGameObject(pDevice, pContext, strObejctTag, iObjectType)
@@ -16,32 +15,19 @@ CPart::CPart(const CPart& rhs)
 
 }
 
-CHierarchyNode* CPart::Get_Socket(const wstring& strNodeName)
+
+HRESULT CPart::Set_Owner(CGameObject* pOwner)
 {
-	if (nullptr == m_pModelCom)
-		return nullptr;
+	if (nullptr == pOwner)
+		return E_FAIL;
 
-	return m_pModelCom->Get_HierarchyNode(strNodeName);
+	if (nullptr != m_pOwner)
+		Safe_Release(m_pOwner);
+
+	Safe_AddRef(m_pOwner);
+
+	return S_OK;
 }
-
-
-_float4x4 CPart::Get_SocketPivotMatrix()
-{
-	if (nullptr == m_pModelCom)
-		return _float4x4();
-
-	_float4x4 PivotMatrix;
-	XMStoreFloat4x4(&PivotMatrix, m_pModelCom->Get_PivotMatrix());
-	return PivotMatrix;
-}
-
-void CPart::Set_SocketBone(CHierarchyNode* pNode)
-{
-	Safe_Release(m_pSocketBone);
-	m_pSocketBone = pNode;
-	Safe_AddRef(m_pSocketBone);
-}
-
 
 HRESULT CPart::Initialize_Prototype()
 {
@@ -50,27 +36,24 @@ HRESULT CPart::Initialize_Prototype()
 
 HRESULT CPart::Initialize(void* pArg)
 {
-	__super::Initialize(nullptr);
-	if (nullptr != pArg)
-	{
-		PART_DESC* pPartDesc = (PART_DESC*)pArg;
-		m_pParentTransform = pPartDesc->pParentTransform;
-		m_pOwner = pPartDesc->pOwner;
-
-		m_pSocketBone = pPartDesc->pSocketBone;
-		Safe_AddRef(m_pSocketBone);
-
-		m_SocketPivotMatrix = pPartDesc->SocketPivot;
-		Safe_AddRef(m_pOwner);
-		Safe_AddRef(m_pParentTransform);
-	}
+	__super::Initialize(pArg);
 
 	return S_OK;
 }
 
+void CPart::Tick(_float fTimeDelta)
+{
+}
+
 void CPart::LateTick(_float fTimeDelta)
 {
+	if (nullptr == m_pRendererCom || nullptr == m_pModelCom)
+		return;
+
 	__super::LateTick(fTimeDelta);
+
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+	m_pModelCom->LateTick(fTimeDelta);
 
 #ifdef _DEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
@@ -84,26 +67,21 @@ void CPart::LateTick(_float fTimeDelta)
 
 HRESULT CPart::Render()
 {
-	return __super::Render();
-}
+	if (FAILED(__super::Render()))
+		return E_FAIL;
 
 
-HRESULT CPart::Compute_RenderMatrix(_matrix ChildMatrix)
-{
-	_matrix OriginRotation = XMLoadFloat4x4(&m_OriginRotationTransform);
-	m_pTransformCom->Set_WorldMatrix(OriginRotation * ChildMatrix * m_pParentTransform->Get_WorldMatrix());
 	return S_OK;
 }
-
 
 void CPart::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pParentTransform);
+	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pSocketBone);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);
+	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pOwner);
 }

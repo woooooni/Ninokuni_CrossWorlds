@@ -7,7 +7,12 @@
 #include "Dummy.h"
 #include "Terrain.h"
 #include "Camera_Manager.h"
-
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Weapon_SwordTemp.h"
+#include "LensFlare.h"
+#include "CurlingGame_Manager.h"
+#include "Trigger.h"
 
 CLevel_Tool::CLevel_Tool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -36,7 +41,7 @@ HRESULT CLevel_Tool::Initialize()
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
+		return E_FAIL; 
 
 	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
 		return E_FAIL;
@@ -47,9 +52,77 @@ HRESULT CLevel_Tool::Initialize()
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_Weapon(LAYER_TYPE::LAYER_WEAPON)))
+		return E_FAIL;
+
+	//if (FAILED(Ready_Layer_Skydome(LAYER_TYPE::LAYER_SKYBOX)))
+	//	return E_FAIL;
+
+	//if (FAILED(GI->Add_ShadowLight(LEVEL_TOOL, XMVectorSet(0.f, 10.f, 0.f, 1.f), XMVectorSet(10.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f))))
+	//	return E_FAIL;
+
+	if (FAILED(CCurlingGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+
+	//CTrigger::TRIGGER_DESC TriggerDesc;
+	//TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_WITCH_ESCORT1;
+	//TriggerDesc.vStartPosition = { 49.282f, -5.259f, -3.901f, 1.f };
+	//TriggerDesc.vExtents = { 30.f, 30.f, 30.f };
+
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
+
+	//TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_WITCH_ESCORT2;
+	//TriggerDesc.vStartPosition = { 7.889f, -6.283f, -22.237f, 1.f };
+	//TriggerDesc.vExtents = { 30.f, 30.f, 0.f };
+
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
+		// Triggers.
+	//CTrigger::TRIGGER_DESC TriggerDesc;
+	//TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
+	//TriggerDesc.strMapName = TEXT("³²¹® ±¤Àå");
+	//TriggerDesc.vStartPosition = { 0.f, -20.f, 0.f, 1.f };
+	//TriggerDesc.vExtents = { 30.f, 20.f, 30.f };
+	//TriggerDesc.vAt = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	//TriggerDesc.vEye = Vec4(7.0f, 100.0f, 0.0f, 1.0f);
+
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
+
+	//TriggerDesc.strMapName = TEXT("¼­¹® ±¤Àå");
+	//TriggerDesc.vStartPosition = { -65.841f, -20.f, 13.031f, 1.f };
+	//TriggerDesc.vExtents = { 32.5f, 15.f, 45.f };
+	//TriggerDesc.vAt = Vec4(0.0f, -574.0f, 0.0f, 1.0f);
+	//TriggerDesc.vEye = Vec4(-60.622f, 100.0f, -39.127f, 1.0f);
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
+
+
+	//TriggerDesc.vStartPosition = { -85.5f, -20.f, 60.6f, 1.f };
+	//TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
+	//TriggerDesc.vAt = Vec4(0.0f, -574.0f, 0.0f, 1.0f);
+	//TriggerDesc.vEye = Vec4(-85.0f, 100.0f, 0.0f, 1.0f);
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
 
 
 
+	//TriggerDesc.strMapName = TEXT("µ¿¹® ±¤Àå");
+	//TriggerDesc.vStartPosition = { 88.85f, -20.f, 60.6f, 1.f };
+	//TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
+
+
+
+	//CRespawn_Box::RESPAWN_DESC RespawnDesc = {};
+	//RespawnDesc.vStartPosition = Vec4(0.f, -100.f, 0.f, 1.f);
+	//RespawnDesc.vRespawnPosition = Vec4(0.f, 0.f, 0.f, 1.f);
+	//RespawnDesc.vExtents = Vec3(1000.f, 5.f, 1000.f);
+
+	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_RespawnBox"), &RespawnDesc)))
+	//	return E_FAIL;
 
 
 	return S_OK;
@@ -58,11 +131,27 @@ HRESULT CLevel_Tool::Initialize()
 HRESULT CLevel_Tool::Tick(_float fTimeDelta)
 {
 	m_pImGuiManager->Tick(fTimeDelta);
+
+	if (KEY_TAP(KEY::F8))
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"))))
+			return E_FAIL;
+
+		//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Stellia"))))
+		//	return E_FAIL;
+	}
+
+	CCurlingGame_Manager::GetInstance()->Tick(fTimeDelta);
+
 	return S_OK;
 }
 
 HRESULT CLevel_Tool::LateTick(_float fTimeDelta)
 {
+
+
+	CCurlingGame_Manager::GetInstance()->LateTick(fTimeDelta);
+
 	return S_OK;
 }
 
@@ -74,10 +163,7 @@ HRESULT CLevel_Tool::Render_Debug()
 
 HRESULT CLevel_Tool::Enter_Level()
 {
-	/*Protocol::S_ENTER_LEVEL tSendPkt;
-	tSendPkt.set_ilevelid(LEVEL_TOOL);
-	SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(tSendPkt);
-	CNetwork_Manager::GetInstance()->Send(sendBuffer);*/
+	CImGui_Manager::GetInstance()->Reserve_Manager(g_hWnd, m_pDevice, m_pContext);
 
 	return S_OK;
 }
@@ -135,7 +221,8 @@ HRESULT CLevel_Tool::Ready_Lights()
 
 HRESULT CLevel_Tool::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 {
-	CCamera_Manager::GetInstance()->Set_MainCamera(CCamera_Manager::CAMERA_TYPE::TOOL);
+	if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -144,8 +231,6 @@ HRESULT CLevel_Tool::Ready_Layer_Player(const LAYER_TYPE eLayerType)
 {
 	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(eLayerType), TEXT("Prototype_GameObject_Dummy"))))
 		return E_FAIL;
-
-
 
 	return S_OK;
 }
@@ -184,6 +269,20 @@ HRESULT CLevel_Tool::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Tool::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
 {
+	return S_OK;
+}
+
+HRESULT CLevel_Tool::Ready_Layer_Weapon(const LAYER_TYPE eLayerType)
+{
+	return S_OK;
+}
+
+HRESULT CLevel_Tool::Ready_Layer_Skydome(const LAYER_TYPE eLayerType)
+{
+	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX, TEXT("Prototype_GameObject_Skydome"))))
+		return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX, TEXT("Prototype_GameObject_SkyPlane"))))
+	//	return E_FAIL;
 
 	return S_OK;
 }

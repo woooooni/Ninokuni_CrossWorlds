@@ -7,6 +7,7 @@
 #include "Model.h"
 #include "Shader.h"
 #include "RigidBody.h"
+
 #include "Navigation.h"
 #include "StateMachine.h"
 #include "VIBuffer_Rect.h"
@@ -14,12 +15,17 @@
 #include "Collider_OBB.h"
 #include "Collider_AABB.h"
 #include "Collider_Sphere.h"
-
+#include "PhysX_Controller.h"
 
 #include "VIBuffer_Cube.h"
 #include "VIBuffer_Terrain.h"
 #include "VIBuffer_Particle.h"
 #include "VIBuffer_Instancing.h"
+#include "VIBuffer_SkyPlane.h"
+#include "VIBuffer_Grass.h"
+#include "VIBuffer_Ocean.h"
+#include "VIBuffer_LensFlare.h"
+
 
 #include "DebugDraw.h"
 
@@ -38,6 +44,7 @@ public:
     HRESULT Add_Prototype(_uint iLevelIndex, const wstring& strProtoTypeTag, class CComponent* pPrototype);
     class CComponent* Clone_Component(_uint iLevelIndex, const wstring& strProtoTypeTag, class CGameObject* pOwner = nullptr, void* pArg = nullptr);
     class CComponent* Find_Prototype_Component(_uint iLevelIndex, const wstring& strProtoTypeTag);
+    map<const wstring, class CComponent*>& Find_Prototype_Components(_uint iLevelIndex);
     HRESULT Check_Prototype(_uint iLevelIndex, const wstring& strProtoTypeTag);
 
 private:

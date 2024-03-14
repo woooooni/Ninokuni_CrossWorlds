@@ -3,6 +3,7 @@
 #include "Client_Defines.h"
 #include "GameObject.h"
 #include "Model.h"
+#include "Collider.h"
 
 BEGIN(Engine)
 
@@ -19,12 +20,10 @@ BEGIN(Client)
 
 class CDummy : public CGameObject
 {
-
 private:
 	CDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CDummy(const CDummy& rhs);
 	virtual ~CDummy() = default;
-
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -50,7 +49,16 @@ public:
 public:
 	HRESULT Export_Model_Bin(const wstring& strFilePath, const wstring& strFileName);
 	HRESULT Import_Model();
-	
+
+
+	HRESULT Add_Collider(CCollider::COLLIDER_TYPE eColliderType, CCollider::DETECTION_TYPE eDetectionType);
+
+public:
+	/* Costume */
+	_bool m_bCostumeMode = FALSE;
+
+	CModel* m_pPart[PART_TYPE::PART_END];
+
 protected:
 	CShader* m_pNonAnimShaderCom = nullptr;
 	CShader* m_pAnimShaderCom = nullptr;

@@ -12,8 +12,9 @@ CVIBuffer_Instancing::CVIBuffer_Instancing(const CVIBuffer_Instancing& rhs)
 	, m_iStrideInstance(rhs.m_iStrideInstance)
 	, m_iNumInstance(rhs.m_iNumInstance)
 	, m_pVertices(rhs.m_pVertices)
+	, m_pVBInstance(rhs.m_pVBInstance)
 {
-
+	Safe_AddRef(m_pVBInstance);
 }
 
 HRESULT CVIBuffer_Instancing::Initialize_Prototype()
@@ -24,15 +25,15 @@ HRESULT CVIBuffer_Instancing::Initialize_Prototype()
 	/* 정점버퍼와 인덱스 버퍼를 만드낟. */
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
 
-	m_BufferDesc.ByteWidth = m_iStrideInstance * 2000;
+	m_BufferDesc.ByteWidth = m_iStrideInstance * 5000;
 	m_BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	m_BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	m_BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = m_iStrideInstance;
 
-	m_pVertices = new VTXINSTANCE[2000];
-	ZeroMemory(m_pVertices, sizeof(VTXINSTANCE) * 2000);
+	m_pVertices = new VTXINSTANCE[5000];
+	ZeroMemory(m_pVertices, sizeof(VTXINSTANCE) * 5000);
 
 
 	ZeroMemory(&m_SubResourceData, sizeof m_SubResourceData);
@@ -55,10 +56,6 @@ HRESULT CVIBuffer_Instancing::Render(const vector<_float4x4>& WorldMatrices, CVI
 {
 	D3D11_MAPPED_SUBRESOURCE		SubResource = {};
 
-	m_pVB = pVIBuffer->Get_Vertex_Buffer();
-	m_pIB = pVIBuffer->Get_Index_Buffer();
-
-
 	m_iStride = pVIBuffer->Get_Stride();
 	m_eIndexFormat = pVIBuffer->Get_IndexFormat();
 	m_eTopology = pVIBuffer->Get_Topology();
@@ -72,7 +69,7 @@ HRESULT CVIBuffer_Instancing::Render(const vector<_float4x4>& WorldMatrices, CVI
 	m_pContext->Unmap(m_pVBInstance, 0);
 
 	ID3D11Buffer* pVertexBuffers[] = {
-		m_pVB,
+		pVIBuffer->Get_Vertex_Buffer(),
 		m_pVBInstance
 	};
 
@@ -92,7 +89,7 @@ HRESULT CVIBuffer_Instancing::Render(const vector<_float4x4>& WorldMatrices, CVI
 
 	/* 인덱스 버퍼를 할당한다. */
 	/* 그리고자 하는 인스턴스의 갯수만큼 확대되어있는 인덱스 버퍼. */
-	m_pContext->IASetIndexBuffer(m_pIB, m_eIndexFormat, 0);
+	m_pContext->IASetIndexBuffer(pVIBuffer->Get_Index_Buffer(), m_eIndexFormat, 0);
 
 	/* 해당 정점들을 어떤 방식으로 그릴꺼야. */
 	m_pContext->IASetPrimitiveTopology(m_eTopology);
@@ -133,7 +130,7 @@ CComponent* CVIBuffer_Instancing::Clone(void* pArg)
 void CVIBuffer_Instancing::Free()
 {
 	__super::Free();
-
+	
 	if (false == m_isCloned)
 		Safe_Delete_Array(m_pVertices);
 

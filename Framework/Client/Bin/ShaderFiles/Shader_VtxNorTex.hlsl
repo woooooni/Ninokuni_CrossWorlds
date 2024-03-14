@@ -19,7 +19,10 @@ struct VS_OUT
 {
 	/* float4 : w값을 반드시 남겨야하는 이유는 w에 뷰스페이스 상의 깊이(z)를 보관하기 위해서다. */
 	float4		vPosition : SV_POSITION;
+	float4		vNormal : NORMAL;
 	float2		vTexcoord : TEXCOORD0;
+	float4		vWorldPos : TEXCOORD1;
+	float4		vProjPos : TEXCOORD2;
 };
 
 
@@ -38,6 +41,9 @@ VS_OUT VS_MAIN(/* 정점 */VS_IN In)
 
 	Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
 	Out.vTexcoord = In.vTexcoord;
+	Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
+	Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
+	Out.vProjPos = Out.vPosition;
 
 	return Out;
 }
@@ -50,13 +56,18 @@ VS_OUT VS_MAIN(/* 정점 */VS_IN In)
 struct PS_IN
 {
 	float4		vPosition : SV_POSITION;
+	float4		vNormal : NORMAL;
 	float2		vTexcoord : TEXCOORD0;
+	float4		vWorldPos : TEXCOORD1;
+	float4		vProjPos : TEXCOORD2;
 };
 
 /* 받아온 픽셀의 정보를 바탕으로 하여 화면에 그려질 픽셀의 최종적인 색을 결정하낟. */
 struct PS_OUT
 {
-	float4	vColor : SV_TARGET0;
+	float4	vDiffuse : SV_TARGET0;
+	float4	vNormal : SV_TARGET1;
+	float4	vDepth : SV_TARGET2;
 };
 
 /* 전달받은 픽셀의 정보를 이용하여 픽셀의 최종적인 색을 결정하자. */
@@ -64,7 +75,9 @@ PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT			Out = (PS_OUT)0;
 
-	Out.vColor = g_Texture.Sample(LinearSampler, In.vTexcoord * 30.f);
+	Out.vDiffuse = g_Texture.Sample(LinearSampler, In.vTexcoord * 30.f);
+	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.0f, 0.f, 0.f);
 
 	return Out;
 }

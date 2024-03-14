@@ -9,8 +9,9 @@ class ENGINE_DLL CCollider abstract : public CComponent
 {
 public:
     enum COLLIDER_TYPE { SPHERE, AABB, OBB, TYPE_END };
-    enum DETECTION_TYPE { BOUNDARY, ATTACK, BODY, HEAD, DETECTION_END };
-    enum ATTACK_TYPE { BASIC, BLOW, BOUND, AIR_BORN, MODE_END };
+    enum DETECTION_TYPE { BOUNDARY, BODY, ATTACK, DETECTION_END };
+    enum ATTACK_TYPE { WEAK, STRONG, BOUND, AIR_BORNE, BLOW, IF_DEAD_BLOW, STUN, MODE_END };
+    
 
 protected:
     typedef struct tagColliderDesc
@@ -19,7 +20,7 @@ protected:
         class CHierarchyNode* pNode;
         class CTransform* pOwnerTransform;
 
-        _float4x4 ModePivotMatrix;
+        Matrix ModelPivotMatrix;
         _float3 vOffsetPosition = { 0.f, 0.f, 0.f };
 
     } COLLIDER_DESC;
@@ -46,6 +47,9 @@ public:
     void Set_ColliderID(_uint iColliderID) { m_iColliderID = iColliderID; }
     _uint Get_ColliderID() { return m_iColliderID; }
 
+    ELEMENTAL_TYPE Get_ElementalType() { return m_eElementalType; }
+    void Set_ElementalType(ELEMENTAL_TYPE eType) { m_eElementalType = eType; }
+
     DETECTION_TYPE Get_DetectionType() { return m_eDetectionType; }
     void Set_DetectionType(DETECTION_TYPE eType) { m_eDetectionType = eType; }
 
@@ -65,6 +69,11 @@ public:
     void Set_HitLag(_bool bHitLag) { m_bHitLag = bHitLag; }
 
     virtual _vector Get_Position() { return XMVectorSet(0.f, 0.f, 0.f, 0.f); }
+
+
+    virtual void Set_Extents(Vec3 vExtents) {};
+    virtual void Set_Radius(_float fRadius) {};
+
     virtual _float Get_Radius() { return 0.f; }
     virtual _float3 Get_Extents() { return _float3(0.f, 0.f, 0.f); }
 
@@ -81,13 +90,17 @@ public:
 #ifdef _DEBUG
     HRESULT Render() override;
 #endif
+
+protected:
+    void Compute_Final_Matrix();
     
 protected:
     static _uint g_iNextID;
     _uint m_iColliderID;
     
-    ATTACK_TYPE m_eAttackType = BASIC;
-    DETECTION_TYPE m_eDetectionType = DETECTION_END;
+    ELEMENTAL_TYPE m_eElementalType = ELEMENTAL_TYPE::BASIC;
+    ATTACK_TYPE m_eAttackType = ATTACK_TYPE::WEAK;
+    DETECTION_TYPE m_eDetectionType = DETECTION_TYPE::DETECTION_END;
     COLLIDER_TYPE m_eColliderType = COLLIDER_TYPE::TYPE_END;
 
     _float3 m_vOffsetPosition = { 0.f, 0.f, 0.f };
@@ -120,6 +133,8 @@ protected:
     _bool m_bDraw = true;
 
 #endif
+
+    
 
 public:
     virtual CComponent* Clone(void* pArg);

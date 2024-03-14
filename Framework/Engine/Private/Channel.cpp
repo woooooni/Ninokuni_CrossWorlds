@@ -74,7 +74,7 @@ HRESULT CChannel::Initialize(aiNodeAnim* pAIChannel)
 }
 
 
-_uint CChannel::Update_Transformation(_float fPlayTime, _float fTimeDelta, _uint iCurrentKeyFrame, CTransform* pTransform, CHierarchyNode* pNode, __out _float* pRatio)
+_uint CChannel::Update_Transformation(_float fPlayTime, _uint iCurrentKeyFrame, CHierarchyNode* pNode, __out _float* pRatio)
 {
 	_float3			vScale;
 	_float4			vRotation;
@@ -133,6 +133,124 @@ _uint CChannel::Update_Transformation(_float fPlayTime, _float fTimeDelta, _uint
 	return iCurrentKeyFrame;
 }
 
+_uint CChannel::Update_Transformation_NoneLerp(_uint iCurrentKeyFrame, CHierarchyNode* pNode)
+{
+	_float3			vScale;
+	_float4			vRotation;
+	_float3			vPosition;
+
+	/* 마지막 키프레임이상으로 넘어갔을때 : 마지막 키프레임 자세로 고정할 수 있도록 한다. */
+	if (iCurrentKeyFrame < m_KeyFrames.size())
+	{
+		vScale = m_KeyFrames[iCurrentKeyFrame].vScale;
+		vRotation = m_KeyFrames[iCurrentKeyFrame].vRotation;
+		vPosition = m_KeyFrames[iCurrentKeyFrame].vPosition;
+	}
+	else
+	{
+		vScale = m_KeyFrames.back().vScale;
+		vRotation = m_KeyFrames.back().vRotation;
+		vPosition = m_KeyFrames.back().vPosition;
+	}
+
+	Matrix TransformationMatrix;
+
+	// << : Shader SRT Test 
+	/*memcpy(&TransformationMatrix.m[0], &vScale, sizeof(Vec3));
+	memcpy(&TransformationMatrix.m[1], &vRotation, sizeof(Vec4));
+	memcpy(&TransformationMatrix.m[2], &vPosition, sizeof(Vec3));
+
+	if (nullptr != pNode)
+		pNode->Set_Transformation(TransformationMatrix);
+
+	return iCurrentKeyFrame;*/
+	// >> : 
+
+	/* 기존 아핀 트랜스폼 생성 함수 */
+	{
+		TransformationMatrix = XMMatrixAffineTransformation(
+			XMLoadFloat3(&vScale), 
+			XMVectorSet(0.f, 0.f, 0.f, 1.f), 
+			XMLoadFloat4(&vRotation), 
+			XMVectorSetW(XMLoadFloat3(&vPosition), 1.f)
+		);
+
+		if (nullptr != pNode)
+			pNode->Set_Transformation(TransformationMatrix);
+
+		return iCurrentKeyFrame;
+	}
+
+	/* 커스텀 아핀 트랜스폼 생성 함수 */
+	{
+		// 크기 조절 행렬 생성
+		XMMATRIX scaleMatrix = XMMatrixScalingFromVector(Vec3(vScale));
+
+		// 회전 중심을 원점으로 이동
+		XMMATRIX translationToOrigin = XMMatrixTranslationFromVector(XMVectorNegate(Vec4(0.f, 0.f, 0.f, 1.f)));
+		XMMATRIX translationBack = XMMatrixTranslationFromVector(Vec4(0.f, 0.f, 0.f, 1.f));
+
+		// 회전 행렬 생성
+		XMMATRIX rotationMatrix;
+
+		/* 기존 쿼터니언 생성 함수 */
+		{
+			//rotationMatrix = XMMatrixRotationQuaternion(Vec4(vRotation));
+		}
+
+		/* 커스텀 쿼터니언 생성 함수 */
+		{
+			// Extract quaternion components
+			float x = XMVectorGetX(Vec4(vRotation));
+			float y = XMVectorGetY(Vec4(vRotation));
+			float z = XMVectorGetZ(Vec4(vRotation));
+			float w = XMVectorGetW(Vec4(vRotation));
+
+			// Calculate rotation matrix elements
+			float xx = x * x;
+			float yy = y * y;
+			float zz = z * z;
+			float xy = x * y;
+			float xz = x * z;
+			float yz = y * z;
+			float wx = w * x;
+			float wy = w * y;
+			float wz = w * z;
+
+			rotationMatrix.r[0] = XMVectorSet(
+				1.0f - 2.0f * (yy + zz), 
+				2.0f * (xy + wz), 
+				2.0f * (xz - wy), 
+				0.0f);
+
+			rotationMatrix.r[1] = XMVectorSet(
+				2.0f * (xy - wz), 
+				1.0f - 2.0f * (xx + zz), 
+				2.0f * (yz + wx), 
+				0.0f);
+
+			rotationMatrix.r[2] = XMVectorSet(
+				2.0f * (xz + wy), 
+				2.0f * (yz - wx), 
+				1.0f - 2.0f * (xx + yy), 
+				0.0f);
+
+			rotationMatrix.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+		}
+
+		// 이동 행렬 생성
+		XMMATRIX translationMatrix = XMMatrixTranslationFromVector(Vec3(vPosition));
+
+		// 순서대로 행렬 곱셈을 수행하여 Affine 변환 행렬 생성
+		TransformationMatrix = scaleMatrix * translationBack * rotationMatrix * translationToOrigin * translationMatrix;
+	}
+
+	if (nullptr != pNode)
+		pNode->Set_Transformation(TransformationMatrix);
+
+	return iCurrentKeyFrame;
+}
+
 _uint CChannel::Interpolation(_float fPlayTime, _float fTimeDelta, CAnimation* pCurrAnimation, CAnimation* pNextAnimation, CTransform* pTransform, _uint iCurrentKeyFrame, CHierarchyNode* pNode, CModel* pModel, __out _float* pRatio)
 {
 	_float3			vScale;
@@ -144,8 +262,8 @@ _uint CChannel::Interpolation(_float fPlayTime, _float fTimeDelta, CAnimation* p
 	if (m_fInterpolationTime >= 0.2f)
 	{
 		// TODO : No Interpolation & Set Next Animation
-		if(pModel->Is_InterpolatingAnimation())
-			pModel->Complete_Interpolation();
+		//if(pModel->Is_InterpolatingAnimation())
+			//pModel->Complete_Interpolation();
 
 		m_fInterpolationTime = 0.f;
 		return iCurrentKeyFrame;

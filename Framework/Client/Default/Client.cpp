@@ -8,6 +8,7 @@
 #include "MainApp.h"
 #include "GameInstance.h"
 #include "ImGui_Manager.h"
+#include "UI_Manager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -17,6 +18,11 @@ HWND	g_hWnd;
 HINSTANCE g_hInstance;
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+
+_uint g_eStartLevel = 0;
+_uint g_ePlayCharacter = 0;
+_uint g_eLoadCharacter = 0;
+_uint g_iStartQuestLevel = 0;
 
 // 이 코드 모듈에 들어 있는 함수의 정방향 선언입니다.
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -32,9 +38,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #ifdef _DEBUG
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
-    // _CrtSetBreakAlloc(336813);
+    // _CrtSetBreakAlloc(7088364);
+
+    /* 콘솔 출력 코드 (주석 해제후 사용 -> 병합 전 다시 주석) */
+
+   //#ifdef UNICODE
+   //#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+   //#else
+   //#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+   //#endif
+
 #endif
-    
+
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -66,6 +81,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	if (FAILED(GI->Add_Timer(TIMER_TYPE::GAME_PLAY)))
 		return FALSE;
 
+    if (FAILED(GI->Add_Timer(TIMER_TYPE::UI)))
+        return FALSE;
+
 	_float		fTimeAcc = 0.f;
 
     // 기본 메시지 루프입니다.
@@ -88,6 +106,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		if (fTimeAcc >= 1.f / 144.f)
 		{
+            GI->Compute_TimeDelta(TIMER_TYPE::UI);
 			pMainApp->Tick(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
 			pMainApp->Render();
 
@@ -122,7 +141,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_CLIENT));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_CLIENT);
+    wcex.lpszMenuName   = NULL;
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -140,18 +159,18 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        주 프로그램 창을 만든 다음 표시합니다.
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
-{
-    
+{    
     hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
     RECT	rc{ 0, 0, g_iWinSizeX, g_iWinSizeY };
 
+    AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
-    AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, TRUE);
-
-    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW | WS_SYSMENU,
+    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME,
         CW_USEDEFAULT, 0,
         rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
+
+    
 
    if (!hWnd)
       return FALSE;
@@ -181,6 +200,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
         return true;
+
+    if (FAILED(CUI_Manager::GetInstance()->UI_WndProcHandler(message, wParam, lParam)))
+        return false;
 
     switch (message)
     {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include "Camera_Manager.h"
 
 BEGIN(Engine)
 
@@ -12,92 +13,141 @@ private:
 	virtual ~CAnimation() = default;
 
 public:
-	HRESULT Initialize_Prototype(aiAnimation* pAIAnimation);
-	HRESULT Initialize(class CModel* pModel);
-
-	HRESULT Play_Animation(class CTransform* pTransform, _float fTimeDelta);
-	HRESULT Play_Animation(class CModel* pModel, class CTransform* pTransform, CAnimation* pNextAnimation, _float fTimeDelta);
-	void Reset_Animation();
-
+	HRESULT Initialize_Prototype(aiAnimation* pAIAnimation); 
+	HRESULT Initialize(class CModel* pModel); 
 
 public:
-	const list<KEYFRAME> Get_Curr_KeyFrames();
-	const list<KEYFRAME> Get_First_KeyFrames();
+	void Update_Animation_Data(_float fTickPerSecond, const TWEEN_DESC& tDesc);
+	void Clear_AnimationEvent();
+	void Clear_AnimationSpeed();
 
 public:
-	class CChannel* Get_Channel(const wstring & strChannelName);
-	const vector<class CChannel*>& Get_Channels() { return m_Channels; }
 
-	_float Get_Ratio() { return m_fRatio; }
+#pragma region Prop
 	_float Get_Duration() { return m_fDuration; }
 
-	_float Get_AnimationProgress() { return min(m_fPlayTime / m_fDuration, 1.f); }
-
-	void Set_AnimationPlayTime(class CTransform* pTransform, _float fPlayTime, _float fTimeDelta);
-	_float Get_PlayTime() { return m_fPlayTime; }
-
-	void Set_TickPerSecond(_float fTickPerSecond) { m_fTickPerSecond = fTickPerSecond; }
-	_float Get_TickPerSecond() { return m_fTickPerSecond; }
-
-public:
-	_float Get_AnimationSpeed() { return m_fSpeed; }
-	void Set_AnimationSpeed(_float fSpeed) { m_fSpeed = fSpeed; }
-
-	void Set_Pause(_bool bPause) { m_bPause = bPause; }
-	_bool Is_Pause() { return m_bPause; }
+	_uint Get_MaxFrameCount() const { return _uint(m_fDuration) + 1; }
 
 	const wstring& Get_AnimationName() { return m_strName; }
 	void Set_AnimationName(const wstring& strName) { m_strName = strName; }
 
-	void Set_RootAnimation(_bool bRootAnimation) { m_bRootAnimation = bRootAnimation; }
-	_bool Is_RootAnimation() { return m_bRootAnimation; }
-	
 	void Set_Loop(_bool bLoop) { m_bLoop = bLoop; }
 	_bool Is_Loop() { return m_bLoop; }
+#pragma endregion
 
-	
-	void Set_Finished(_bool bFinished) { m_bFinished = bFinished; }
-	_bool Is_Finished() { return m_bFinished; }
+#pragma region Speed
+	/* Tick Per Second */
+	void Set_TickPerSecond(_float fTickPerSecond) { m_fTickPerSecond = fTickPerSecond; }
+	_float Get_TickPerSecond() { return m_fTickPerSecond; }
 
-	void Set_TweenAnimation(_bool bTween) { m_bTweeningAnim = bTween; }
-	_bool Is_TweenAnimation() { return m_bTweeningAnim; }
+	/* Origin Speed (프레임별 실시간 속도가 지정되지 않은 구간의 속도)*/
+	void Set_OriginSpeed(_float fSpeed) { m_fOriginSpeed = fSpeed; }
+	_float Get_OriginSpeed() { return m_fOriginSpeed; }
+
+	/* Live Speed (*프레임별 실시간 속도가 지정된 구간의 속도) */
+	_float Get_LiveSpeed();
+
+	/* Live Speed */
+	void Add_SpeedDesc(ANIM_SPEED_DESC desc);
+	void Delete_SpeedDesc(const _uint& iIndex);
+	void Delete_All_SpeedDesc() { m_SpeedDescs.clear(); m_SpeedDescs.shrink_to_fit(); }
+	void Change_SpeedDesc(const _uint& iIndex, const Vec4& vDesc);
+	void Sort_SpeedDesces();
+	vector<ANIM_SPEED_DESC> Get_SpeedDescs() const { return m_SpeedDescs; }
+#pragma endregion
+
+
+#pragma region Events
+
+	/* All */
+	void Change_EventKeyFrame(const _uint& iIndex, const _float fFrame, const ANIM_EVENT_TYPE& eEventType);
+
+	/* Sound */
+	void Add_SoundEvent(const _float& fFrame, const ANIM_EVENT_SOUND_DESC& desc);
+	void Del_SoundEvent(const _uint iIndex);
+	void Del_All_SoundEvent();
+	void Change_SoundEvent(const _uint iIndex, const ANIM_EVENT_SOUND_DESC& desc);
+	void Sort_SoundEvents();
+	const vector<pair<_float, ANIM_EVENT_SOUND_DESC>>& Get_SoundEvents() const { return m_SoundEvents; }
+
+	/* Collider */
+	void Add_ColliderEvent(const _float& fFrame, const ANIM_EVENT_COLLIDER_DESC& desc);
+	void Del_ColliderEvent(const _uint iIndex);
+	void Del_All_ColliderEvent();
+	void Change_ColliderEvent(const _uint iIndex, const ANIM_EVENT_COLLIDER_DESC& desc);
+	void Sort_ColliderEvents();
+	const vector<pair<_float, ANIM_EVENT_COLLIDER_DESC>>& Get_ColliderEvents() const { return m_ColliderEvents; }
+
+	/* Camera */
+	void Add_CameraEvent(const _float& fFrame, const CAMERA_EVENT_DESC& desc);
+	void Del_CameraEvent(const _uint iIndex);
+	void Del_All_CameraEvent();
+	void Change_CameraEvent(const _uint iIndex, const CAMERA_EVENT_DESC& desc);
+	void Sort_CameraEvents();
+	const vector<pair<_float, CAMERA_EVENT_DESC>>& Get_CameraEvents() const { return m_CameraEvents; }
+
+#pragma endregion
+
+
+#pragma region FrameWork
+public:
+	class CChannel* Get_Channel(const wstring & strChannelName);
+	const vector<class CChannel*>& Get_Channels() { return m_Channels; }
+
+public:
+	HRESULT Calculate_Animation(const _uint& iFrame);
+	HRESULT Clear_Channels();
+#pragma endregion
 
 private:
-	wstring						m_strName;
+	void Update_Animation_Speed(_float fTickPerSecond, const TWEEN_DESC& tDesc);
+	void Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC& tDesc);
 
-	/* 이 애니메이션을 구동하기위해 사용되는 뼈의 갯수. */
-	_uint						m_iNumChannels = 0;
-	vector<class CChannel*>		m_Channels;
+	const _float Calculate_LerpTime(const ANIM_SPEED_DESC tSpeedDesc, const TWEEN_DESC tTweenDesc, const _float fTickPerSecond);
 
-	/* 애니메이션 재생하는데 걸리는 전체시간. */
-	_float						m_fDuration = 0.f;
+private:
+	wstring	m_strName;
 
-	/* 애니메이션의 초당 재생 속도. */
-	_float						m_fTickPerSecond = 0.f;
-	_float						m_fPlayTime = 0.f;
-	_float						m_fSpeed = 1.f;
-	_float						m_fRatio = 0.f;
-	_float						m_fTweeningRatio = 0.f;
-
-private: /* 복제된 애니메이션 마다 따로 가진다. */
-	vector<class CHierarchyNode*>	m_HierarchyNodes;
-	vector<_uint>					m_ChannelKeyFrames;
-	vector<_uint>					m_ChannelOldKeyFrames;
-
-	_bool m_bTweeningAnim = true;
-	_bool m_bPause = false;
-	_bool m_bRootAnimation = false;
 	_bool m_bLoop = false;
-	_bool m_bFinished = false;
-	// ID3D11ShaderResourceView* m_pSRV = nullptr;
+	_float m_fDuration = 0.f; 
+
+#pragma region Speed
+private:
+	_float m_fTickPerSecond = 0.f; 
+	_float m_fOriginSpeed = 1.f;
+
+	_uint	m_iCurSpeedDescIndex = 0; /* m_SpeedDescs의 현재 필터링 인덱스*/
+	_float	m_fCurSpeedDescEndFrame = 0; /* 가장 최근에 보간 시작한 m_SpeedDescs 인덱스의 마지막 프레임 */
+
+	LERP_FLOAT_DESC m_tLiveSpeedDesc;
+	vector<ANIM_SPEED_DESC> m_SpeedDescs;
+#pragma endregion
+
+#pragma region Events
+private:
+	vector<pair<_float, ANIM_EVENT_SOUND_DESC>> m_SoundEvents;
+	vector<pair<_float, ANIM_EVENT_COLLIDER_DESC>> m_ColliderEvents;
+	vector<pair<_float, CAMERA_EVENT_DESC>> m_CameraEvents;
+
+#pragma endregion
+
+
+
+private: 
+	_uint m_iNumChannels = 0;
+	vector<class CChannel*>	m_Channels;
+	vector<_uint> m_ChannelKeyFrames;
+	vector<class CHierarchyNode*> m_HierarchyNodes;
+
+	class CModel* m_pModel = nullptr;
 
 public:
 	static CAnimation* Create(aiAnimation* pAIAnimation);
 	static CAnimation* Create_Bin();
 	CAnimation* Clone(class CModel* pModel);
-
 	virtual void Free() override;
 
+public:
 	friend class CModel_Manager;
 };
 

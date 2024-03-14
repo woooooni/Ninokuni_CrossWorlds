@@ -53,7 +53,7 @@ HRESULT CShader::Initialize_Prototype(const wstring& strShaderFilePath, const D3
 		D3DX11_PASS_DESC		PassInfo;
 
 		PassDesc.pPass->GetDesc(&PassInfo);
-
+		
 		if (FAILED(m_pDevice->CreateInputLayout(pElements, iNumElements, PassInfo.pIAInputSignature, PassInfo.IAInputSignatureSize, &PassDesc.pInputLayout)))
 			return E_FAIL;
 
@@ -184,10 +184,10 @@ void CShader::Free()
 
 	for (auto& PassDesc : m_Passes)
 	{
+		Safe_Release(PassDesc.pPass);
 		Safe_Release(PassDesc.pInputLayout);
 	}
 
 	m_Passes.clear();
-
 	Safe_Release(m_pEffect);
 }

@@ -26,9 +26,29 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 	virtual HRESULT Render_ShadowDepth();
+	virtual HRESULT Render_Reflect();
 
-	virtual HRESULT Render_Instance(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)		{ return S_OK; }
+	virtual HRESULT Render_Instance(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices) { return S_OK; }
+	virtual HRESULT Render_Instance_AnimModel(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, 
+		const vector<_float4x4>& WorldMatrices,
+		const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc) { return S_OK; }
+
+	virtual HRESULT Render_Instance_AnimModel_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer,
+		const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc) { return S_OK; }
 	virtual HRESULT Render_Instance_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices) { return S_OK; }
+
+	virtual HRESULT Render_Minimap() { return S_OK; }
+
+	// Cascade Shadow Render Temp
+	virtual HRESULT Render_Cascade_Depth(const Matrix mCascadeShadowGenMat[3]) { return S_OK; }
+	virtual HRESULT Render_Instance_AnimModel_CascadeShadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer,
+		const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc, const Matrix lightMatrix[3]) {
+		return S_OK;
+	}
+	virtual HRESULT Render_Instance_CascadeShadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const Matrix lightMatrix[3]) { return S_OK; }
+
+
+	virtual HRESULT Render_Picking() { return S_OK; }
 
 public:
 	virtual void Enter_Scene() { };
@@ -38,6 +58,12 @@ public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) {};
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) {};
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) {};
+
+
+public:
+	virtual void Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo) {};
+	virtual void Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo) {};
+	virtual void Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo) {};
 
 public:
 	template<typename T>
@@ -51,6 +77,13 @@ public:
 		return dynamic_cast<T*>(iter->second);
 	}
 
+	class CTransform*		Get_Component_Transform();		/* 'Com_Transform'으로 추가되어야 사용 가능 */
+	class CModel*			Get_Component_Model();			/* 'Com_Model'으로 추가되어야 사용 가능  */
+	class CStateMachine*	Get_Component_StateMachine();	/* 'Com_StateMachine' 으로 추가되어야 사용 가능  */
+	class CShader*			Get_Component_Shader();			/* 'Com_Shader'으로 추가되어야 사용 가능  */
+	class CRigidBody*		Get_Component_Rigidbody();		/* 'Com_Rigidbody'으로 추가되어야 사용 가능  */ 
+	class CRenderer*		Get_Component_Renderer();		/* 'Com_Renderer'으로 추가되어야 사용 가능  */ 
+
 public:
 	virtual HRESULT SetUp_State(_fmatrix StateMatrix) { return S_OK; }
 
@@ -63,6 +96,10 @@ public:
 	const wstring& Get_ObjectTag() { return m_strObjectTag; }
 	
 	void Set_ObjectID(_uint iID) { m_iObjectID = iID; }
+	
+	void Set_Enable(_bool enable) { m_bEnable = enable; }
+	const _bool& Get_Enable() const { return m_bEnable; }
+
 	_uint Get_ObjectID() { return m_iObjectID; }
 	_uint Get_ObjectType() { return m_iObjectType; }
 
@@ -75,6 +112,15 @@ public:
 	void Set_NaviObject(_bool bNaviGation) { m_bNaviObject = bNaviGation; }
 	_bool Is_NaviObject() { return m_bNaviObject; }
 
+	const _bool& IsQuestItem() const { return m_bIsQuestObject; }
+	void Set_QuestItem(_bool quest) { m_bIsQuestObject = quest; }
+
+	const _float& Get_CamDistance() const { return m_fCamDistance; }
+
+	_float Get_ObjectTimeScale() { return m_fObjectTimeScale; }
+	void Set_ObjectTimeScale(_float fTimeScale) { m_fObjectTimeScale = fTimeScale; }
+
+
 public:
 	vector<class CCollider*>& Get_Collider(_uint eDetectionType) { return m_Colliders[eDetectionType]; }
 	HRESULT Add_Collider(_uint iLevelIndex, _uint eColliderType, _uint eDetectionType, void* pArg);
@@ -82,6 +128,7 @@ public:
 
 
 	virtual HRESULT Set_Collider_AttackMode(_uint eAttackMode, _float fAirBornPower, _float fPushPower, _float fDamage, _bool bHitLag = true);
+	virtual HRESULT Set_Collider_Elemental(ELEMENTAL_TYPE eElementalType);
 
 protected:
 	void LateUpdate_Collider(_float fTimedelta);
@@ -117,10 +164,21 @@ protected:
 	_bool				m_bReserveDead = false;
 	_bool				m_bDead = false;
 
+	_bool				m_bEnable = false;
+	_bool				m_bIsQuestObject = false;
 
 protected:
 	_bool m_bNaviObject = false;
 
+
+protected:
+	Matrix m_ServerMatrix = Matrix::Identity;
+
+protected:
+	_float3 m_vBloomPower = { 0.f, 0.f, 0.f };
+
+protected:
+	_float m_fObjectTimeScale = 1.f;
 
 
 protected:

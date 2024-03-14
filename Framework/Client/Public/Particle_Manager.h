@@ -19,25 +19,39 @@ private:
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strPatriclePath);
-	void	Tick(_float fTimeDelta);
+	void Tick(_float fTimeDelta);
 
 public:
-	HRESULT Generate_Particle(const wstring& strPrototypeParticleName, _matrix TransformMatrix);
+	HRESULT AddLevel_Particle(_uint iLevelIndex, const wstring& strParticleName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CParticle** ppOut = nullptr);
 
+	HRESULT Generate_Particle(const wstring& strParticleName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CParticle** ppOut = nullptr, _bool bDelet = true);
+	HRESULT Generate_Particle_To_Position(const wstring& strParticleName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CParticle** ppOut = nullptr, _bool bDelet = true);
 
-
+	HRESULT Tick_Generate_Particle(_float* fTimeAcc, _float fCreateTime, _float fTimeDelta,
+		const wstring& strParticleName, CGameObject* pOwner,
+		_float3 vLocalPos = _float3(0.f, 0.f, 0.f), _float3 vLocalScale = _float3(1.f, 1.f, 1.f), _float3 vLocalRotation = _float3(0.f, 0.f, 0.f), _bool bOwnerSet = false);
+	HRESULT Tick_Generate_Particle_To_Matrix(_float* fTimeAcc, _float fCreateTime, _float fTimeDelta,
+		const wstring& strParticleName, _matrix WorldMatrix,
+		_float3 vLocalPos = _float3(0.f, 0.f, 0.f), _float3 vLocalScale = _float3(1.f, 1.f, 1.f), _float3 vLocalRotation = _float3(0.f, 0.f, 0.f), CGameObject* pOwner = nullptr);
 
 private:
 	ID3D11Device* m_pDevice = nullptr;
 	ID3D11DeviceContext* m_pContext = nullptr;
 
-
 private:
 	HRESULT Ready_Proto_Particles(const wstring& strParticlePath);
-
 
 public:
 	virtual void Free() override;
 };
 
 END
+
+/* Proto_Particles
+
+   Particle_Mouse_Circle
+   Particle_Mouse_CircleLine
+   Particle_Mouse_Leaf
+   Particle_Mouse_Twinkle
+
+*/

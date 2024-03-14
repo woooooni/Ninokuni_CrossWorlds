@@ -29,9 +29,12 @@ private:
 	HRESULT Ready_Layer_Terrain(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_Player(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_Character(const LAYER_TYPE eLayerType);
+	HRESULT Ready_Layer_Npc(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_Monster(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_UI(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_Effect(const LAYER_TYPE eLayerType);
+	HRESULT Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const wstring& strMapFileName);
+	HRESULT Ready_Light(const wstring& strLightFilePath);
 
 public:
 	static class CLevel_Test* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

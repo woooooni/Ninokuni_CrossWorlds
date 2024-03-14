@@ -1,7 +1,6 @@
 #pragma once
 #include "Base.h"
-
-
+#include "Utils.h"
 
 BEGIN(Engine)
 
@@ -20,6 +19,9 @@ public:
 	virtual void Tick_State(_float fTimeDelta) PURE;
 	virtual void Exit_State() PURE;
 
+#ifdef _DEBUG
+	virtual HRESULT Render() { return S_OK; }
+#endif
 
 protected:
 	vector<_uint> m_AnimIndices;
@@ -30,7 +32,6 @@ protected:
 	class CModel* m_pModelCom = nullptr;
 	class CTransform* m_pTransformCom = nullptr;
 	class CStateMachine* m_pStateMachineCom = nullptr;
-	class CNavigation* m_pNavigationCom = nullptr;
 	class CRigidBody* m_pRigidBodyCom = nullptr;
 	
 	

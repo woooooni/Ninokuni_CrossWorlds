@@ -1,5 +1,6 @@
 #include "RigidBody.h"
 #include "GameInstance.h"
+#include "GameObject.h"
 
 CRigidBody::CRigidBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CComponent(pDevice, pContext)
@@ -10,10 +11,12 @@ CRigidBody::CRigidBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 CRigidBody::CRigidBody(CRigidBody& rhs)
 	: CComponent(rhs)
 {
+
 }
 
 HRESULT CRigidBody::Initialize_Prototype()
 {
+
 	return S_OK;
 }
 
@@ -23,142 +26,89 @@ HRESULT CRigidBody::Initialize(void* pArg)
 		return E_FAIL;
 
 	RIGID_BODY_DESC* pDesc = static_cast<RIGID_BODY_DESC*>(pArg);
-	m_pNavigationCom = pDesc->pNavigation;
 	m_pTransformCom = pDesc->pTransform;
-
-
+	
 	if (nullptr == m_pTransformCom)
 		return E_FAIL;
 
-	Safe_AddRef(m_pNavigationCom);
 	Safe_AddRef(m_pTransformCom);
+
 
 	return S_OK;
 }
 
-void CRigidBody::LateTick_RigidBody(_float fTimeDelta)
+
+void CRigidBody::Update_RigidBody(_float fTimeDelta)
 {
-	if (nullptr != m_pNavigationCom)
-		m_fRefHeight = m_pNavigationCom->Compute_Height(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-
-	if (m_fRefHeight <= XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE_POSITION)))	
-		m_bIsGround = false;
-
+	if (m_pOwner->Is_Dead())
+		return;
 
 	Update_Gravity(fTimeDelta);
 	Update_Velocity(fTimeDelta);
 }
-void CRigidBody::Set_PushVelocity(_fvector vPushVelocity, _float fTimeDelta)
-{
-	_vector vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 
-	_float fPushPower = XMVectorGetX(XMVector3Length(vPushVelocity));
-
-	vPosition += XMVector3Normalize(vPushVelocity) * fPushPower;
-
-	m_pTransformCom->Set_Position(vPosition, fTimeDelta, m_pNavigationCom);
-}
-
-void CRigidBody::Add_Velocity(_fvector vVelocity)
-{
-	XMStoreFloat3(&m_vVelocity, XMVectorSet(0.f, 0.f, 0.f, 0.f));
-	XMStoreFloat3(&m_vVelocity, XMLoadFloat3(&m_vVelocity) + vVelocity);
-}
-
-void CRigidBody::Add_Velocity(_fvector vDir, _float fForce)
-{
-	XMStoreFloat3(&m_vVelocity, XMVectorSet(0.f, 0.f, 0.f, 0.f));
-	XMStoreFloat3(&m_vVelocity, XMVector3Normalize(vDir) * fForce);
-}
-
-void CRigidBody::Add_Velocity_Acc(_fvector vVelocity)
-{
-	XMStoreFloat3(&m_vVelocity, XMLoadFloat3(&m_vVelocity) + vVelocity);
-}
-
-void CRigidBody::Add_Velocity_Acc(_fvector vDir, _float fForce)
-{
-	XMStoreFloat3(&m_vVelocity, XMLoadFloat3(&m_vVelocity) + (XMVector3Normalize(vDir) * fForce));
-}
 
 
 void CRigidBody::Update_Gravity(_float fTimeDelta)
 {
-	if (!m_bIsGravity)
+	if (false == m_bUseGravity || true == m_bGround)
 		return;
 
-	_float4 vPosition;
-	XMStoreFloat4(&vPosition, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-
-	if (fabs(m_fRefHeight - vPosition.y) <= 0.01f)
-	{
-		m_bIsGround = true;
-
-		if (m_vVelocity.y > 0.f)
-			m_vVelocity.y = 0.f;
-	}
-	else
-	{
-		m_bIsGround = false;
-		m_vVelocity.y -= m_fGravity * fTimeDelta;
-	}
+	m_vVelocity += Vec3(0.f, -9.8f, 0.f) * fTimeDelta;
 }
 
 void CRigidBody::Update_Velocity(_float fTimeDelta)
 {
+	_matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix();
 
-
-	_float fVelocityScale = XMVectorGetX(XMVector3Length(XMLoadFloat3(&m_vVelocity)));
-	if (fVelocityScale > 0.0001f)
+	if (0.f < m_vVelocity.Length())
 	{
-		_vector vFrictionDir = XMVector3Normalize(XMLoadFloat3(&m_vVelocity) * -1.f);
-		_vector vFriction = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+		WorldMatrix.r[CTransform::STATE_POSITION] += m_vVelocity * fTimeDelta;
 
-		if (Is_Ground())
-			vFriction = vFrictionDir * m_fFrictionScale * fTimeDelta;
+		Vec3 vVelocity = m_vVelocity;
+		vVelocity.y = 0.f;
+
+		Vec3 vFriction = -1.f * vVelocity * m_fFrictionScale * fTimeDelta;
+
+
+		if (vFriction.Length() >= m_vVelocity.Length())
+		{
+			m_vVelocity = Vec3(0.f, 0.f, 0.f);
+		}
 		else
-			vFriction = vFrictionDir * 5.f * fTimeDelta;
-
-		if (fVelocityScale <= XMVectorGetX(XMVector3Length(vFriction)))		
-			XMStoreFloat3(&m_vVelocity, XMVectorSet(0.f, 0.f, 0.f, 0.f));
-		else		
-			XMStoreFloat3(&m_vVelocity, XMLoadFloat3(&m_vVelocity) + vFriction);
-
-		if (m_vVelocity.x >= m_vMaxVelocity.x)
-			m_vVelocity.x = m_vMaxVelocity.x;
-
-		if (m_vVelocity.y >= m_vMaxVelocity.y)
-			m_vVelocity.y = m_vMaxVelocity.y;
-
-		if (m_vVelocity.z >= m_vMaxVelocity.z)
-			m_vVelocity.z = m_vMaxVelocity.z;
-	}
-
-
-	fVelocityScale = XMVectorGetX(XMVector3Length(XMLoadFloat3(&m_vVelocity)));
-	if (fVelocityScale > 0.0001f)
-	{
-		_vector vDir = XMVector3Normalize(XMLoadFloat3(&m_vVelocity));
-
-		_vector vPosition = m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION);
-		vPosition += XMLoadFloat3(&m_vVelocity) * fTimeDelta;
-
-		if (XMVectorGetY(vPosition) <= m_fRefHeight)
 		{
-			vPosition = XMVectorSetY(vPosition, m_fRefHeight);
-			vPosition = XMVectorSetW(vPosition, 1.f);
-		}
+			if (fabs(vVelocity.x) < fabs(vFriction.x))
+				vFriction.x = vVelocity.x;
 
-		_bool bMovable = false;
-		m_pTransformCom->Set_Position(vPosition, fTimeDelta, m_pNavigationCom, &bMovable);
-		if (nullptr != m_pNavigationCom && false == bMovable)
-		{
-			m_vVelocity.x = 0.f;
-			m_vVelocity.z = 0.f;
+			if (fabs(vVelocity.y) < fabs(vFriction.y))
+				vFriction.y = vVelocity.y;
+
+			if (fabs(vVelocity.z) < fabs(vFriction.z))
+				vFriction.z = vVelocity.z;
+			m_vVelocity += vFriction;
 		}
 	}
 
+	m_pTransformCom->Set_WorldMatrix(WorldMatrix);
+}
 
+
+void CRigidBody::Add_Velocity(_vector vDir, _float fForce, _bool bClear)
+{
+	if (true == bClear)
+		m_vVelocity = { 0.f, 0.f, 0.f };
+
+	m_vVelocity += XMVector3Normalize(vDir) * fForce;
+}
+
+const _bool& CRigidBody::Check_Sleep()
+{
+	m_bSleep = (m_vVelocity.Length() < m_fSleepThreshold) ? true : false; 
+	
+	if(m_bSleep)
+		ZeroMemory(&m_vVelocity, sizeof(Vec3));
+	
+	return m_bSleep;
 }
 
 CRigidBody* CRigidBody::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -190,5 +140,5 @@ void CRigidBody::Free()
 {
 	__super::Free();
 	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pNavigationCom);
 }
+

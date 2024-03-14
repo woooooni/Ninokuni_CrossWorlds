@@ -26,12 +26,30 @@ public:
 		_float fAccGenTrail = 0.f;
 		_float fGenTrailTime = 0.01f;
 
+	
+
 		_float4 vDiffuseColor = { 0.f, 0.f, 0.f, 1.f };
+
+		_float fAlphaDiscard = 0.f;
+		_float3 vBlackDiscard = { 0.f, 0.f, 0.f };
+
+		_float2 vDistortion = { 0.f, 0.f };
+
+		_float fBlurPower = 0.f;
+		_float4 vBloomPower = { 0.f, 0.f, 0.f, 0.f };
+
 
 		_float2 vUVAcc = { 0.f, 0.f };
 		_float2 vUV_FlowSpeed = { 0.f, 0.f };
 
-		_int bUV_Cut = 1;
+		_float2 vUVFlow = { 0.f, 0.f };
+		_float2 vUVIndex = {0.f, 0.f};
+		_float2 vMaxUVCount = { 1.f, 1.f };
+
+		_int bUV_Cut = 0;
+
+
+		
 	} TRAIL_DESC;
 
 private:
@@ -61,9 +79,11 @@ public:
 	void Set_Color(_float4 vColor) { m_TrailDesc.vDiffuseColor = vColor; }
 	void Set_DiffuseTexture_Index(_int iIndex) { m_iDiffuseTextureIndex = iIndex; }
 	void Set_AlphaTexture_Index(_int iIndex) { m_iAlphaTextureIndex = iIndex; }
+	void Set_DistortionTexture_Index(_int iIndex) { m_iDistortionTextureIndex = iIndex; }
 
 	void Set_DiffuseTexture_Index(const wstring& strDiffuseTextureName);
 	void Set_AlphaTexture_Index(const wstring& strAlphaTextureName);
+	void Set_DistortionTexture_Index(const wstring& strDistortionTextureName);
 
 	const TRAIL_DESC& Get_TrailDesc() { return m_TrailDesc; }
 	void Set_TrailDesc(const TRAIL_DESC& TrailDesc) { m_TrailDesc = TrailDesc; }
@@ -77,13 +97,14 @@ private:
 
 
 private:
-	_float4x4 m_TransformMatrix;
+	Matrix m_TransformMatrix = Matrix::Identity;
 
 private:
 	class CRenderer* m_pRendererCom = nullptr;
 	class CShader* m_pShaderCom = nullptr;
 	class CTexture* m_pDiffuseTextureCom = nullptr;
 	class CTexture* m_pAlphaTextureCom = nullptr;
+	class CTexture* m_pDistortionTextureCom = nullptr;
 	class CVIBuffer_Trail* m_pVIBufferCom = nullptr;
 
 
@@ -95,6 +116,7 @@ private:
 private:
 	_int m_iDiffuseTextureIndex = -1;
 	_int m_iAlphaTextureIndex = -1;
+	_int m_iDistortionTextureIndex = 0;
 
 private:
 	// 임시 저장용.

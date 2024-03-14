@@ -8,7 +8,12 @@
 #include "Tool_Particle.h"
 #include "Tool_Navigation.h"
 #include "Tool_Terrain.h"
+#include "Tool_UI.h"
+#include "Tool_Item.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
 
 IMPLEMENT_SINGLETON(CImGui_Manager)
 
@@ -109,6 +114,13 @@ HRESULT CImGui_Manager::Reserve_Manager(HWND hWnd, ID3D11Device* pDevice, ID3D11
     if (nullptr == m_pTerrain_Tool)
         return E_FAIL;
 
+    m_pUI_Tool = CTool_UI::Create(m_pDevice, m_pContext);
+    if (nullptr == m_pUI_Tool)
+        return E_FAIL;
+
+    m_pItem_Tool = CTool_Item::Create(m_pDevice, m_pContext);
+    if (nullptr == m_pItem_Tool)
+        return E_FAIL;
 
 
     return S_OK;
@@ -147,6 +159,21 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 
     IMGUI_NEW_LINE;
 
+    /* Player Input On Off*/
+    {
+        ImGui::Checkbox("Player Input", &m_bPlayerInput);
+
+        if (nullptr != CGame_Manager::GetInstance()->Get_Player())
+        {
+            CCharacter* pCharacter = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+            if (nullptr != pCharacter)
+            {
+                pCharacter->Set_All_Input(m_bPlayerInput);
+            }
+        }
+    }
+    IMGUI_NEW_LINE;
+
     ImGui::Checkbox("Model_Tool", &m_bShowModel_Tool);
     ImGui::Checkbox("Camera_Tool", &m_bShowCamera_Tool);
     ImGui::Checkbox("Effect_Tool", &m_bShowEffect_Tool);
@@ -154,6 +181,11 @@ void CImGui_Manager::Tick(_float fTimeDelta)
     ImGui::Checkbox("Map_Tool", &m_bShowMap_Tool);
     ImGui::Checkbox("Terrain_Tool", &m_bShowTerrain_Tool);
     ImGui::Checkbox("Navigation_Tool", &m_bShowNavigation_Tool);
+    ImGui::Checkbox("UI_Tool", &m_bShowUI_Tool);
+    ImGui::Checkbox("Item_Tool", &m_bShowItem_Tool);
+    ImGui::Checkbox("Demo", &m_bShow_Demo);
+
+
     ImGui::End();
 
 
@@ -192,12 +224,37 @@ void CImGui_Manager::Tick(_float fTimeDelta)
         m_pNavigation_Tool->Tick(fTimeDelta);
     }
 
+    if (true == m_bShowUI_Tool)
+    {
+        m_pUI_Tool->Tick(fTimeDelta);
+    }
+
+    if (true == m_bShowItem_Tool)
+    {
+        m_pItem_Tool->Tick(fTimeDelta);
+    }
+
+    if (true == m_bShow_Demo)
+    {
+        ImGui::ShowDemoWindow(&m_bShow_Demo);
+    }
+
     ImGui::EndFrame();
 }
 
 
 void CImGui_Manager::Render_ImGui()
 {
+    if (true == m_bShowModel_Tool)
+        m_pModel_Tool->Render();
+    
+    if (true == m_bShowCamera_Tool)
+        m_pCamera_Tool->Render();
+
+    if (true == m_bShowMap_Tool)
+        m_pMap_Tool->Render();
+
+
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
@@ -229,6 +286,8 @@ void CImGui_Manager::Free()
     Safe_Release(m_pNavigation_Tool);
     Safe_Release(m_pCamera_Tool);
     Safe_Release(m_pTerrain_Tool);
+    Safe_Release(m_pUI_Tool);
+    Safe_Release(m_pItem_Tool);
 }
 
 #pragma region Sample Codes
@@ -386,9 +445,9 @@ void CImGui_Manager::Free()
 //
 //            CModel* pModel = pGameObject->Get_Component<CModel>(L"Com_Model");
 //            if (pModel == nullptr)
-//                XMStoreFloat4x4(&tBoxDesc.ModePivotMatrix, XMMatrixIdentity());
+//                XMStoreFloat4x4(&tBoxDesc.ModelPivotMatrix, XMMatrixIdentity());
 //            else
-//                XMStoreFloat4x4(&tBoxDesc.ModePivotMatrix, pModel->Get_PivotMatrix());
+//                XMStoreFloat4x4(&tBoxDesc.ModelPivotMatrix, pModel->Get_PivotMatrix());
 //
 //            tBoxDesc.tBox = tBox;
 //            tBoxDesc.pOwnerTransform = pTransform;
@@ -612,9 +671,9 @@ void CImGui_Manager::Free()
 //
 //                    CModel* pModel = m_pTarget->Get_Component<CModel>(L"Com_Model");
 //                    if (pModel == nullptr)
-//                        XMStoreFloat4x4(&tBoxDesc.ModePivotMatrix, XMMatrixIdentity());
+//                        XMStoreFloat4x4(&tBoxDesc.ModelPivotMatrix, XMMatrixIdentity());
 //                    else
-//                        XMStoreFloat4x4(&tBoxDesc.ModePivotMatrix, pModel->Get_PivotMatrix());
+//                        XMStoreFloat4x4(&tBoxDesc.ModelPivotMatrix, pModel->Get_PivotMatrix());
 //
 //                    tBoxDesc.tBox = tBox;
 //                    tBoxDesc.pOwnerTransform = pTransform;
@@ -640,9 +699,9 @@ void CImGui_Manager::Free()
 //                    
 //                    CModel* pModel = m_pTarget->Get_Component<CModel>(L"Com_Model");
 //                    if (pModel == nullptr)
-//                        XMStoreFloat4x4(&tSphereDesc.ModePivotMatrix, XMMatrixIdentity());
+//                        XMStoreFloat4x4(&tSphereDesc.ModelPivotMatrix, XMMatrixIdentity());
 //                    else
-//                        XMStoreFloat4x4(&tSphereDesc.ModePivotMatrix, pModel->Get_PivotMatrix());
+//                        XMStoreFloat4x4(&tSphereDesc.ModelPivotMatrix, pModel->Get_PivotMatrix());
 //
 //                    tSphereDesc.tSphere = tSphere;
 //                    tSphereDesc.pOwnerTransform = pTransform;
@@ -1799,9 +1858,9 @@ void CImGui_Manager::Free()
 //                        ZeroMemory(&tDesc, sizeof tDesc);
 //
 //                        if (nullptr == pObj->Get_Component<CModel>(L"Com_Model"))
-//                            XMStoreFloat4x4(&tDesc.ModePivotMatrix, XMMatrixIdentity());
+//                            XMStoreFloat4x4(&tDesc.ModelPivotMatrix, XMMatrixIdentity());
 //                        else
-//                            XMStoreFloat4x4(&tDesc.ModePivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
+//                            XMStoreFloat4x4(&tDesc.ModelPivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
 //
 //                        tDesc.vOffsetPosition = vColliderOffset;
 //                        tDesc.pOwnerTransform = pTransform;
@@ -1818,9 +1877,9 @@ void CImGui_Manager::Free()
 //                        ZeroMemory(&tDesc, sizeof tDesc);
 //
 //                        if (nullptr == pObj->Get_Component<CModel>(L"Com_Model"))
-//                            XMStoreFloat4x4(&tDesc.ModePivotMatrix, XMMatrixIdentity());
+//                            XMStoreFloat4x4(&tDesc.ModelPivotMatrix, XMMatrixIdentity());
 //                        else
-//                            XMStoreFloat4x4(&tDesc.ModePivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
+//                            XMStoreFloat4x4(&tDesc.ModelPivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
 //
 //                        tDesc.vOffsetPosition = vColliderOffset;
 //                        tDesc.pOwnerTransform = pTransform;

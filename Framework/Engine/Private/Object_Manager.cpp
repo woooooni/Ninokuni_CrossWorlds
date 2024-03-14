@@ -35,8 +35,10 @@ HRESULT CObject_Manager::Reserve_Manager(_uint iNumLevels, _uint iNumLayerTypes)
 	return S_OK;
 }
 
-HRESULT CObject_Manager::Add_Prototype(const wstring& strPrototypeTag, CGameObject* pPrototype, _uint iLayerType)
+HRESULT CObject_Manager::Add_Prototype(const wstring& strPrototypeTag, CGameObject* pPrototype, _uint iLayerType, _bool bUseLock)
 {
+	std::lock_guard<std::mutex> Guard(m_GameObjectLock);
+
 	if (nullptr != Find_Prototype(strPrototypeTag, iLayerType))
 		return E_FAIL;
 
@@ -47,8 +49,11 @@ HRESULT CObject_Manager::Add_Prototype(const wstring& strPrototypeTag, CGameObje
 }
 
 
-HRESULT CObject_Manager::Add_GameObject(_uint iLevelIndex, const _uint iLayerType, const wstring & strPrototypeTag, void * pArg, __out class CGameObject** ppOut)
+HRESULT CObject_Manager::Add_GameObject(_uint iLevelIndex, const _uint iLayerType, const wstring & strPrototypeTag, void * pArg, __out class CGameObject** ppOut, _bool bUseLock)
 {
+	if(true == bUseLock)
+		std::lock_guard<std::mutex> Guard(m_GameObjectLock);
+
 	/* 복제할 사본을 차즌ㄷ나. */
 	CGameObject*		pPrototype = Find_Prototype(strPrototypeTag, iLayerType);
 	if (nullptr == pPrototype)
@@ -70,22 +75,29 @@ HRESULT CObject_Manager::Add_GameObject(_uint iLevelIndex, const _uint iLayerTyp
 	return S_OK;
 }
 
-HRESULT CObject_Manager::Add_GameObject(_uint iLevelIndex, const _uint iLayerType, CGameObject* pGameObject)
+HRESULT CObject_Manager::Add_GameObject(_uint iLevelIndex, const _uint iLayerType, CGameObject* pGameObject, _bool bUseLock)
 {
 	if (nullptr == pGameObject)
 		return E_FAIL;
+
+	if (true == bUseLock)
+		std::lock_guard<std::mutex> Guard(m_GameObjectLock);
 
 	CLayer* pLayer = Find_Layer(iLevelIndex, iLayerType);
 	if (nullptr == pLayer)
 		return E_FAIL;
 
+	
 	pLayer->Add_GameObject(pGameObject);
 
 	return S_OK;
 }
 
-CGameObject* CObject_Manager::Clone_GameObject(const wstring& strPrototypeTag, _uint iLayerType, void* pArg)
+CGameObject* CObject_Manager::Clone_GameObject(const wstring& strPrototypeTag, _uint iLayerType, void* pArg, _bool bUseLock)
 {
+	if (true == bUseLock)
+		std::lock_guard<std::mutex> Guard(m_GameObjectLock);
+
 	CGameObject* pPrototype = Find_Prototype(strPrototypeTag, iLayerType);
 
 	if (nullptr == pPrototype)

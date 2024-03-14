@@ -32,6 +32,18 @@ public:
 		return XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_UP][0]);
 	}
 
+	_vector Get_Back() {
+		return Vec4(XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_LOOK][0]) * -1.f);
+	}
+
+	_vector Get_Left() {
+		return Vec4(XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_RIGHT][0]) * -1.f);
+	}
+
+	_vector Get_Down() {
+		return Vec4(XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_UP][0]) * -1.f);
+	}
+
 	_vector Get_Position() {
 		return XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_POSITION][0]);
 	}
@@ -45,7 +57,7 @@ public:
 	}
 
 	_float4x4 Get_WorldFloat4x4() const {
-		return m_WorldMatrix;
+ 		return m_WorldMatrix;
 	}
 
 	_float4x4 Get_WorldFloat4x4_TransPose() const {
@@ -58,9 +70,24 @@ public:
 		return XMMatrixInverse(nullptr, Get_WorldMatrix());
 	}
 
+	_float4x4 Get_WorldMatrix_Float4x4_Inverse() const {
+		_float4x4 WorldMatrixInverse;
+		XMStoreFloat4x4(&WorldMatrixInverse, XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_WorldMatrix)));
+		return WorldMatrixInverse;
+	}
+
+	Vec4 Get_RelativeOffset(Vec4 vPos);
+
 public:
 	void Set_State(STATE eState, _vector vState);
-	void Set_Position(_vector vPosition, _float fTimeDelta, class CNavigation* pNavigation = nullptr, _bool* bMovable = nullptr);
+	void Set_Right(_vector vState);
+	void Set_Up(_vector vState);
+	void Set_Look(_vector vState);
+	
+	void Set_Position(_vector vState);
+
+	Vec4 Get_LookAt();
+	void Set_LookAtByDir(Vec4 vLook);
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -71,6 +98,7 @@ public:
 
 public:
 	void Move(_vector vDir, _float fSpeed, _float fTimeDelta, class CNavigation* pNavigation = nullptr);	
+	void Translate(const Vec3& vTranslation);
 	void Set_Scale(_vector vScale);
 	void Set_Scale(_float3 vScale);
 
@@ -83,9 +111,20 @@ public:
 
 	void LookAt(_vector vPosition);
 	void LookAt_ForLandObject(_vector vPosition);
+	void Rotation_Look(_vector vLook);
 
+	void FixRotation(_float x, _float y, _float z);
+	void RevolutionRotation(const Vec3& vPoint, const Vec3 vAxis, const _float& fAngle);
+	void ParabolicFormula(const Vec3& startPos, const Vec3& endPos, const _float fTimeDelta,
+		const _float& maxHeight = 150.0f, const _float& maxTime = 3.6f);
+	XMVECTOR Get_WorldRotation() { return m_vRotation; }
+	
+	void ResetTime() { m_fTime = 0.0f; }
 private:
 	_float4x4				m_WorldMatrix;
+	XMVECTOR m_vRotation = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+
+	_float m_fTime = 0.0f;
 
 public:
 	static CTransform* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

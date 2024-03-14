@@ -9,7 +9,7 @@ CCollider_AABB::CCollider_AABB(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 	: CCollider(pDevice, pContext, CCollider::AABB)
 
 {
-	
+
 }
 
 CCollider_AABB::CCollider_AABB(CCollider_AABB& rhs)
@@ -20,7 +20,8 @@ CCollider_AABB::CCollider_AABB(CCollider_AABB& rhs)
 
 HRESULT CCollider_AABB::Initialize_Prototype()
 {
-
+	if (FAILED(__super::Initialize_Prototype()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -35,7 +36,10 @@ HRESULT CCollider_AABB::Initialize(void* pArg)
 
 
 	AABB_COLLIDER_DESC* pDesc = static_cast<AABB_COLLIDER_DESC*>(pArg);
-	m_tBoundingBox = pDesc->tBox;
+	m_tOriginBox = pDesc->tBox;
+
+	Compute_Final_Matrix();
+	m_tOriginBox.Transform(m_tBoundingBox, XMLoadFloat4x4(&m_FinalMatrix));
 
 	return S_OK;
 }
@@ -70,13 +74,13 @@ _bool CCollider_AABB::Is_Collision(CCollider* pCollider)
 void CCollider_AABB::LateTick_Collider(_float fTimeDelta)
 {
 	__super::LateTick_Collider(fTimeDelta);
-	XMStoreFloat3(&m_tBoundingBox.Center, XMLoadFloat4x4(&m_FinalMatrix).r[CTransform::STATE_POSITION]);
+	m_tOriginBox.Transform(m_tBoundingBox, XMLoadFloat4x4(&m_FinalMatrix));
 }
 
 #ifdef _DEBUG
 HRESULT CCollider_AABB::Render()
 {
-
+	__super::Render();
 	m_pEffect->SetWorld(XMMatrixIdentity());
 	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
 	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));

@@ -57,12 +57,21 @@ void CTerrain::Priority_Tick(_float fTimeDelta)
 void CTerrain::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+#ifdef _DEBUG
+	if (KEY_TAP(KEY::F7))
+		m_bDraw = !m_bDraw;
+#endif
 }
 
 void CTerrain::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_NONBLEND, this);	
+#ifdef _DEBUG
+
+	if(m_bDraw)
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_NONBLEND, this);	
+#endif
+
 }
 
 HRESULT CTerrain::Render()
@@ -101,10 +110,20 @@ HRESULT CTerrain::Render()
 		m_pBatch->End();
 	}
 
+
+	
+
 	if (FAILED(m_pNavigationCom->Render()))
 		return E_FAIL;
 	
 #endif
+
+	//if (FAILED(Bind_ShaderResources()))
+	//	return E_FAIL;
+
+	//if(FAILED(m_pVIBufferCom->Render()))
+	//	return E_FAIL;
+
 
 	return S_OK;
 }
@@ -127,8 +146,8 @@ HRESULT CTerrain::Ready_Components()
 		TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
 		return E_FAIL;
 
-	///* Com_Texture*/
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Terrain"),
+	/////* Com_Texture*/
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SnowLandScape"),
 	//	TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 	//	return E_FAIL;
 
@@ -163,7 +182,11 @@ HRESULT CTerrain::Bind_ShaderResources()
 	if (FAILED(GI->Bind_TransformToShader(m_pShaderCom, "g_ProjMatrix", CPipeLine::D3DTS_PROJ)))
 		return E_FAIL;
 
+	if(FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+		return E_FAIL;
 
+	if(FAILED(m_pShaderCom->Begin(0)))
+		return E_FAIL;
 
 
 	return S_OK;

@@ -7,6 +7,9 @@
 #pragma warning (disable : 4267)
 
 
+
+
+
 #ifndef WinSock_Include_h__
 #define WinSock_Include_h__
 
@@ -17,9 +20,13 @@
 
 #endif
 
-//#include "PxPhysics.h"
-//#include "PxPhysicsAPI.h"
-//using namespace physx;
+#include "PxPhysics.h"
+#include "PxPhysicsAPI.h"
+#include "PxParticleExt.h"
+#include "PxParticleClothCooker.h"
+#include "cudamanager\PxCudaContext.h"
+using namespace physx;
+using namespace physx::ExtGpu;
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -41,22 +48,11 @@
 #include <Assimp/Importer.hpp>
 #include <Assimp/postprocess.h>
 
-#define DIRECTINPUT_VERSION 0x0800
 
-//#ifdef _DEBUG
-//#pragma comment(lib, "ServerCore.lib")
-//#pragma comment(lib, "libprotobufd.lib")
-//#else
-//#pragma comment(lib, "ServerCore.lib")
-//#pragma comment(lib, "libprotobuf.lib")
-//#endif
-//
-//
-//#include "CoreExports.h"
-//#include "Enum.pb.h"
-//
-//using GameSessionRef = shared_ptr<class GameSession>;
-//using PlayerRef = shared_ptr<class Player>;
+#include <nlohmann/json.hpp>
+using Json = nlohmann::json;
+
+#define DIRECTINPUT_VERSION 0x0800
 #include <mutex>
 #include <future>
 
@@ -77,14 +73,21 @@ using namespace DirectX;
 #include <array>
 #include <process.h>
 #include <stdlib.h>
+#include <queue>
+#include <random>
 
-
+#include <iostream>
+using namespace std;
 
 #include "Engine_Macro.h"
-#include "Engine_Struct.h"
 #include "Engine_Typedef.h"
-#include "Engine_Function.h"
 #include "Engine_Enum.h"
+#include "Engine_Struct.h"
+#include "Engine_Function.h"
+
+using namespace Engine;
+
+
 
 
 
@@ -100,8 +103,5 @@ using namespace DirectX;
 #endif
 
 #endif // _DEBUG
-
-using namespace std;
-using namespace Engine;
 
 

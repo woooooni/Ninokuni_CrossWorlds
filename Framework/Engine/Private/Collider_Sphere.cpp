@@ -9,7 +9,7 @@ CCollider_Sphere::CCollider_Sphere(ID3D11Device* pDevice, ID3D11DeviceContext* p
 	: CCollider(pDevice, pContext, CCollider::SPHERE)
 
 {
-	
+
 }
 
 CCollider_Sphere::CCollider_Sphere(CCollider_Sphere& rhs)
@@ -20,7 +20,8 @@ CCollider_Sphere::CCollider_Sphere(CCollider_Sphere& rhs)
 
 HRESULT CCollider_Sphere::Initialize_Prototype()
 {
-
+	if (FAILED(__super::Initialize_Prototype()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -62,6 +63,11 @@ _bool CCollider_Sphere::Is_Collision(CCollider* pCollider)
 	}
 
 	return false;
+}
+
+void CCollider_Sphere::Set_Radius(_float fRadius)
+{
+	m_tBoundingSphere.Radius = fRadius;
 }
 
 void CCollider_Sphere::LateTick_Collider(_float fTimeDelta)

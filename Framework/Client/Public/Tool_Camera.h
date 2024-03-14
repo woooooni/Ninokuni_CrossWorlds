@@ -1,7 +1,10 @@
 #pragma once
 #include "Tool.h"
 
+#include "Camera.h"
+
 BEGIN(Client)
+
 class CTool_Camera final : public CTool
 {
 private:
@@ -11,12 +14,47 @@ private:
 public:
 	virtual HRESULT Initialize() override;
 	virtual void Tick(_float fTimeDelta) override;
+	virtual HRESULT Render() override;
 
+private:
+	void Show_Select_Camera();
+		 
+	void Show_Camera_Prop_Default(CCamera* pCurCam);
+	void Show_Camera_Prop_Free(CCamera* pCurCam);
+	void Show_Camera_Prop_Follow(CCamera* pCurCam);
+	void Show_Camera_Prop_CutScene_Map(_float fTimeDelta);
+		 
+private: 
+	void Clear_CutScene_Map_Cache();
 
+private:
+	HRESULT Ready_DebugDraw();
+	HRESULT Render_DebugDraw();
+
+	/* 베지어 곡선의 경로를 나타내기 위해 사용 */
+	vector<Vec3> Get_CamPositionPaths();
+	vector<Vec3> Get_CamLookAtPaths();
+	vector<Vec3> Subdivide_Bezier(const vector<Vec3>& controlPoints, int numSegments);
+
+private:
+	/* CutScene Map */
+	_bool	m_bShow_Prop_CutScene		= false;
+	_int	m_iCurCutSceneIndex			= -1;
+	_bool	m_bShowMarker				= true;
+	_bool	m_bPlayCutScene				= false;
+
+	LERP_TIME_DESC	m_tCutSceneDebugTimeDesc;
+
+#pragma region Debug Draw 
+	BasicEffect*							m_pEffect = nullptr;
+	BoundingSphere*							m_pSphere = nullptr;
+	ID3D11InputLayout*						m_pInputLayout = nullptr;
+	PrimitiveBatch<VertexPositionColor>*	m_pBatch = nullptr;
+#pragma endregion
+	
 public:
 	static CTool_Camera* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;
-
 };
 
 END

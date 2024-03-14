@@ -25,10 +25,10 @@ public:
     virtual HRESULT Initialize(void* pArg);
 
 public:
-    virtual _bool Is_Collision(CCollider* pCollider) override;
-    virtual void Collision_Enter(CCollider* pCollider) override;
-    virtual void Collision_Continue(CCollider* pCollider) override;
-    virtual void Collision_Exit(CCollider* pCollider) override;
+    virtual _bool Is_Collision(CCollider * pCollider) override;
+    virtual void Collision_Enter(CCollider * pCollider) override;
+    virtual void Collision_Continue(CCollider * pCollider) override;
+    virtual void Collision_Exit(CCollider * pCollider) override;
 
     virtual _vector Get_Position() override { return XMLoadFloat3(&m_tBoundingBox.Center); }
 
@@ -42,15 +42,16 @@ public:
 #endif
 
 public:
-    void Set_AABB_Box(BoundingBox& tBoundingBox) { m_tBoundingBox = tBoundingBox; }
-    const BoundingBox& Get_AABB_Box() { return m_tBoundingBox; }
+    void Set_AABB_Box(BoundingBox & tBoundingBox) { m_tOriginBox = tBoundingBox; }
+    BoundingBox& Get_AABB_Box() { return m_tBoundingBox; }
 
 
 private:
+    BoundingBox m_tOriginBox = {};
     BoundingBox m_tBoundingBox = {};
 
 public:
-    static CCollider_AABB* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    static CCollider_AABB* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
     virtual CComponent* Clone(void* pArg);
     virtual void Free() override;
 

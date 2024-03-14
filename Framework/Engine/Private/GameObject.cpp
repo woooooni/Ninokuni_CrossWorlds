@@ -9,7 +9,6 @@ CGameObject::CGameObject(ID3D11Device * pDevice, ID3D11DeviceContext * pContext,
 	, m_pContext(pContext)
 	, m_strObjectTag(strObjectTag)
 	, m_iObjectType(iObjectType)
-	, m_iObjectID(g_ObjecId++)
 {
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
@@ -49,23 +48,29 @@ HRESULT CGameObject::Initialize(void* pArg)
 
 void CGameObject::Tick(_float fTimeDelta)
 {
+	
 }
 
 void CGameObject::LateTick(_float fTimeDelta)
 {
 	LateUpdate_Collider(fTimeDelta);
+
 }
 
 HRESULT CGameObject::Render()
 {
-#ifdef _DEBUG
-	Render_Collider();
-#endif // _DEBUG
 	return S_OK;
 }
 
 HRESULT CGameObject::Render_ShadowDepth()
 {
+	return S_OK;
+}
+
+HRESULT CGameObject::Render_Reflect()
+{
+
+
 	return S_OK;
 }
 
@@ -122,6 +127,36 @@ HRESULT CGameObject::Compute_CamZ(_fvector vWorldPos)
 
 }
 
+CTransform* CGameObject::Get_Component_Transform()
+{
+	return Get_Component<CTransform>(L"Com_Transform");
+}
+
+CModel* CGameObject::Get_Component_Model()
+{
+	return Get_Component<CModel>(L"Com_Model");
+}
+
+CStateMachine* CGameObject::Get_Component_StateMachine()
+{
+	return Get_Component<CStateMachine>(L"Com_StateMachine");
+}
+
+CShader* CGameObject::Get_Component_Shader()
+{
+	return Get_Component<CShader>(L"Com_Shader");
+}
+
+CRigidBody* CGameObject::Get_Component_Rigidbody()
+{
+	return Get_Component<CRigidBody>(L"Com_RigidBody");
+}
+
+CRenderer* CGameObject::Get_Component_Renderer()
+{
+	return Get_Component<CRenderer>(L"Com_Renderer");
+}
+
 HRESULT CGameObject::Add_Collider(_uint iLevelIndex, _uint eColliderType, _uint eDetectionType, void* pArg)
 {
 	CComponent* pComponent = nullptr;
@@ -154,8 +189,9 @@ HRESULT CGameObject::Add_Collider(_uint iLevelIndex, _uint eColliderType, _uint 
 	}
 
 	pCollider->Set_DetectionType(CCollider::DETECTION_TYPE(eDetectionType));
+	if (CCollider::DETECTION_TYPE::ATTACK == eDetectionType)
+		pCollider->Set_Active(false);
 
-	Safe_AddRef(pCollider);
 	iter->second.push_back(pCollider);
 	return S_OK;
 }
@@ -191,6 +227,18 @@ HRESULT CGameObject::Set_Collider_AttackMode(_uint eAttackMode, _float fAirBornP
 	return S_OK;
 }
 
+HRESULT CGameObject::Set_Collider_Elemental(ELEMENTAL_TYPE eElementalType)
+{
+	auto iter = m_Colliders.find(CCollider::DETECTION_TYPE::ATTACK);
+	if (iter == m_Colliders.end())
+		return S_OK;
+
+	for (auto& pCollider : iter->second)
+	{
+		pCollider->Set_ElementalType(eElementalType);
+	}
+	return S_OK;
+}
 
 
 void CGameObject::LateUpdate_Collider(_float fTimedelta)

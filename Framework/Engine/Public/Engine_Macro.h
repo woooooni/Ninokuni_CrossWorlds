@@ -4,30 +4,6 @@
 #define D3DCOLOR_ARGB(a,r,g,b) \
     ((D3DCOLOR)((((a)&0xff)<<24)|(((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff)))
 
-#define GET_INSTANCE(CLASSNAME)	[](){											\
-	CLASSNAME*	pInstance = CLASSNAME::GetInstance();							\
-	if(nullptr == pInstance) {													\
-	char	szMessage[MAX_PATH] = "";											\
-	strcpy_s(szMessage, typeid(CLASSNAME).name());								\
-	strcat_s(szMessage, "is nullptr");											\
-	MessageBoxA(0, szMessage, nullptr, MB_OK);}									\
-	else {																		\
-	pInstance->AddRef();}														\
-	return pInstance;															\
-	}();
-
-#define RELEASE_INSTANCE(CLASSNAME)	[](){										\
-	CLASSNAME*	pInstance = CLASSNAME::GetInstance();							\
-	if(nullptr == pInstance) {													\
-	char	szMessage[MAX_PATH] = "";											\
-	strcpy_s(szMessage, typeid(CLASSNAME).name());								\
-	strcat_s(szMessage, "is nullptr");											\
-	MessageBoxA(0, szMessage, nullptr, MB_OK);}									\
-	else {																		\
-	pInstance->Release();}														\
-	}();
-
-
 
 
 
@@ -120,8 +96,12 @@
 
 
 // VTF
-#define MAX_MODEL_TRANSFORMS 1000
-#define MAX_MODEL_KEYFRAMES 300
+//#define MAX_MODEL_CHANNELS 500 /* 애니메이션의 뼈 최대 갯수 (열) */
+//#define MAX_MODEL_KEYFRAMES	500 /* 애니메이션의 최대 프레임 카운트 수 (행) */
+
+#define DEFAULT_TWEEN_DURATION	0.2f /* 애니메이션 기본 트위닝 시간*/
+#define MIN_TWEEN_DURATION		0.05f /* 애니메이션 최소 트위닝 시간*/
+
 
 //
 ///*---------------

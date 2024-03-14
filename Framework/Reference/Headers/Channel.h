@@ -17,8 +17,11 @@ public:
 
 public:
 	HRESULT Initialize(aiNodeAnim* pAIChannel);
-	_uint Update_Transformation(_float fPlayTime, _float fTimeDelta, _uint iCurrentKeyFrame, class CTransform* pTransform, class CHierarchyNode* pNode, __out _float* pRatio = nullptr);
+	_uint Update_Transformation(_float fPlayTime, _uint iCurrentKeyFrame, class CHierarchyNode* pNode, __out _float* pRatio = nullptr);
+	_uint Update_Transformation_NoneLerp(_uint iCurrentKeyFrame, class CHierarchyNode* pNode);
 	_uint Interpolation(_float fPlayTime, _float fTimeDelta, class CAnimation* pCurrAnimation, class CAnimation* pNextAnimation, class CTransform* pTransform, _uint iCurrentKeyFrame, class CHierarchyNode* pNode, class CModel* pModel, __out _float* pRatio = nullptr);
+
+
 
 public:
 	KEYFRAME Get_FirstFrame() { return m_KeyFrames.front(); }

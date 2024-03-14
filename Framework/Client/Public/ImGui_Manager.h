@@ -38,10 +38,13 @@ private:
 	_bool m_bShowCamera_Tool = false;
 	_bool m_bShowEffect_Tool = false;
 	_bool m_bShowParticle_Tool = false;
-	_bool m_bShowMap_Tool = true;
-	_bool m_bShowTerrain_Tool = true;
+	_bool m_bShowMap_Tool = false;
+	_bool m_bShowTerrain_Tool = false;
 	_bool m_bShowNavigation_Tool = false;
-
+	_bool m_bShowUI_Tool = false;
+	_bool m_bShowItem_Tool = false;
+	_bool m_bShow_Demo = false;
+	_bool m_bPlayerInput = false;
 
 private:
 	class CTool_Model* m_pModel_Tool = nullptr;
@@ -51,6 +54,8 @@ private:
 	class CTool_Navigation* m_pNavigation_Tool = nullptr;
 	class CTool_Camera* m_pCamera_Tool = nullptr;
 	class CTool_Terrain* m_pTerrain_Tool = nullptr;
+	class CTool_UI* m_pUI_Tool = nullptr;
+	class CTool_Item* m_pItem_Tool = nullptr;
 
 private:
 	_bool m_bInitialize = false;

@@ -25,6 +25,7 @@ public: /* For.GameInstance */
 		_In_ HWND hWnd,
 		_In_ HINSTANCE hInst);
 
+	void Priority_Tick(_float fTimeDelta);
 	void Tick(_float fTimeDelta);
 	void LateTick(_float fTimeDelta);
 	void Clear(_uint iLevelIndex);
@@ -62,10 +63,10 @@ public: /* For.Level_Manager */
 	_uint Get_CurrentLevel();
 
 public: /* For.Object_Manager */
-	HRESULT Add_Prototype(const wstring & strPrototypeTag, class CGameObject* pPrototype, _uint iLayerType);
-	HRESULT Add_GameObject(_uint iLevelIndex, const _uint iLayerType, const wstring & strPrototypeTag, void* pArg = nullptr, __out class CGameObject** ppOut = nullptr);
-	HRESULT Add_GameObject(_uint iLevelIndex, const _uint iLayerType, class CGameObject* pGameObject);
-	class CGameObject* Clone_GameObject(const wstring & strPrototypeTag, _uint iLayerType, void* pArg = nullptr);
+	HRESULT Add_Prototype(const wstring & strPrototypeTag, class CGameObject* pPrototype, _uint iLayerType, _bool bUseLock = false);
+	HRESULT Add_GameObject(_uint iLevelIndex, const _uint iLayerType, const wstring & strPrototypeTag, void* pArg = nullptr, __out class CGameObject** ppOut = nullptr, _bool bUseLock = false);
+	HRESULT Add_GameObject(_uint iLevelIndex, const _uint iLayerType, class CGameObject* pGameObject, _bool bUseLock = false);
+	class CGameObject* Clone_GameObject(const wstring & strPrototypeTag, _uint iLayerType, void* pArg = nullptr, _bool bUseLock = false);
 	class CGameObject* Find_Prototype_GameObject(_uint iLayerType, const wstring & strPrototypeTag);
 	const map<const wstring, class CGameObject*>& Find_Prototype_GameObjects(_uint iLayerType);
 	class CGameObject* Find_GameObject(_uint iLevelIndex, const _uint iLayerType, const wstring & strObjectTag);
@@ -76,17 +77,25 @@ public: /* For.Object_Manager */
 public: /* For. Componenet_Manager */
 	HRESULT Add_Prototype(_uint iLevelIndex, const wstring & strProtoTypeTag, class CComponent* pPrototype);
 	class CComponent* Find_Prototype_Component(_uint iLevelIndex, const wstring & strProtoTypeTag);
-	class CComponent* Clone_Component(_uint iLevelIndex, const wstring & strProtoTypeTag, class CGameObject* pOwner = nullptr, void* pArg = nullptr);
+	map<const wstring, CComponent*>& Find_Prototype_Components(_uint iLevelIndex);
+	class CComponent* Clone_Component(_uint iLevelIndex, const wstring & strProtoTypeTag, class CGameObject* pOwner = nullptr, void* pArg = nullptr);	
 	HRESULT Check_Prototype(_uint iLevelIndex, const wstring & strProtoTypeTag);
 
 public: /* For.Light_Manager */
 	const LIGHTDESC* Get_LightDesc(_uint iIndex);
+	list<class CLight*>* Get_LightList();
 	HRESULT Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const LIGHTDESC & LightDesc);
+	HRESULT Add_Light_UI(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const LIGHTDESC & LightDesc);
 	HRESULT Add_ShadowLight(_uint iLevelIndex, _vector vEye, _vector vAt, _vector vUp);
+	HRESULT Add_Sun(class CGameObject* pSun);
 	_float4x4 Get_ShadowViewMatrix(_uint iLevelIndex);
 	_float4x4 Get_ShadowLightViewMatrix_Inverse(_uint iLevelIndex);
 	HRESULT Reset_Lights();
-
+	HRESULT Set_ShadowLight(_uint iLevelIndex, _vector vEye, _vector vAt, _vector vUp);
+	HRESULT Add_ShadowProj(_uint iLevelIndex, _float fFovAngleY, _float fAspectRatio, _float fNearZ, _float fFarZ);
+	_float4x4 Get_ShadowProjMatrix(_uint iLevelIndex);
+	XMMATRIX GetViewLightMatrix();
+	void SetMainSunAppear(_bool appear);
 
 public: /* For.PipeLine */
 	void Set_Transform(CPipeLine::TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix);
@@ -111,6 +120,9 @@ public:
 	HRESULT Export_Model_Data(class CModel* pModel, const wstring & strSubFolderName, wstring strFileName);
 	HRESULT Import_Model_Data(_uint iLevelIndex, const wstring & strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
 	HRESULT Export_Model_Data_FromPath(_uint eType, wstring strFolderPath);
+	vector<ANIM_TRANSFORM_CACHE> Create_AnimationSocketTransform(class CModel* pModel, const _uint & iSocketBoneIndex);
+	vector<ANIM_TRANSFORM_CACHES> Create_AnimationTransform_Caches_InTool(class CModel* pModel); /* 툴 디버깅용 트랜스폼 생성 */
+
 
 
 public:
@@ -129,6 +141,67 @@ public:
 	_bool Intersect_Frustum_World(_fvector vWorldPos, _float fRadius = 0.f);
 
 
+public:
+	/* For. PhysX_Manager */
+	HRESULT Add_Building(class CGameObject* pGameObject, class CModel* pModel, Matrix WorldMatrix, const wstring& strCollisionTag = L"");
+	HRESULT Add_Ground(class CGameObject* pGameObject, CModel* pModel, _matrix WorldMatrix, const wstring& strCollisionTag = L"");
+	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float3 vOffsetPos, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack = nullptr);
+	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 vExtents, _float3 vOffsetPos, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack = nullptr);
+
+	void Wait_PhysX_Scene();
+	HRESULT Remove_Actor(class CGameObject* pGameObject);
+	HRESULT Remove_Controller(PxController* pController);
+	HRESULT Clear_PhysX_Ground();
+	//PxRigidStatic* Add_Static_Actor(const PHYSX_INIT_DESC& Desc);
+	//PxRigidDynamic* Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc);
+
+	//HRESULT Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidStatic*>& refOut);
+	//HRESULT Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidDynamic*>& refOut);
+	// PxMaterial* Create_PxMaterial(_float fA, _float fB, _float fC);
+
+	
+	
+	/*class PxParticleClothBuffer* Get_TestClothBuffer();
+	class PxCudaContextManager* Get_CudaContext_Manager();
+	class PxCudaContext* Get_CudaContext();
+	class PxParticleSystem* Get_ParticleSystem();*/
+
+public:
+	/* For.Target_Manager */
+	HRESULT Begin_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag, _bool bClear = true);
+	HRESULT End_MRT(ID3D11DeviceContext* pContext);
+	ID3D11Texture2D* Get_Texture_FromRenderTarget(const wstring& strTargetTag);
+
+public:
+	PxTransform To_PxTransform(Matrix matrix);
+	Matrix To_Matrix(PxTransform pxTransform);
+
+
+	wstring To_Wstring(const string& str);
+	string To_String(const wstring& str);
+
+	_float RandomFloat(_float fMin, _float fMax);
+	_int RandomInt(_int iMin, _int iMax);
+
+	Matrix To_RightHanded(Matrix matLeftHanded);
+	Matrix To_LeftHanded(Matrix matLeftHanded);
+
+	Vec4 To_RightHanded(Vec4 vLeftHanded);
+	Vec4 To_LeftHanded(Vec4 vRightHanded);
+
+	Vec3 To_RightHanded(Vec3 vLeftHanded);
+	Vec3 To_LeftHanded(Vec3 vRightHanded);
+
+	_bool Is_Compare(const char* szLeft, const char* szRight);
+
+	Vec4 To_Hash_Color(_int iObjectID);
+	_int To_Hash(_int iObjectID);
+
+public:
+	Json Json_Load(const wstring& strFilePath);
+	HRESULT Json_Save(const wstring& strFilePath, const Json& refJsonFile);
+
+
 
 //public:
 	/* For. Network_Manager */
@@ -138,13 +211,21 @@ public:
 //	ServerSessionRef& Get_ServerSession();
 
 public:
-	void Play_Sound(TCHAR* pSoundKey, CHANNELID eID, _float fVolume, _bool bStop = false);
-	void Play_BGM(TCHAR* pSoundKey, _float fVolume, _bool bStop = false);
-	void Stop_Sound(CHANNELID eID);
+	void Play_Sound(const wstring& pSoundKey, CHANNELID eID, _float fVolume, _bool bStop = false, const _float fCamDist = 0.f);
+	void Play_BGM(const wstring& pSoundKey, _float fVolume, _bool bStop = false, _float fFadeDuration = 0.5f);
+	void Stop_Sound(CHANNELID eID, const _float fFadeOutDuration = 1.f);
 	void Stop_All();
+	void Set_AllChannelVolume(_float fVolume);
 	void Set_ChannelVolume(CHANNELID eID, float fVolume);
+	_float Get_AllChannelVolume();
 	FMOD_CHANNEL* Get_Channel(CHANNELID eID);
+	const _int Get_SoundFileIndex(const wstring& strSoundFileKey);
+	wstring Get_SoundFileKey(const _uint iIndex);
+	const map<wstring, FMOD_SOUND*>& Get_MapSound();
+	_float Get_ChannelVolume(CHANNELID eID);
 
+public:
+	HRESULT Bind_SRV(class CShader* pShader, const wstring& strTargetTag, const _char* pConstantName);
 
 private:
 	class CTimer_Manager*			m_pTimer_Manager = { nullptr };
@@ -163,7 +244,9 @@ private:
 	class CFrustum*					m_pFrustum = { nullptr };
 	// class CNetwork_Manager*			m_pNetwork_Manager = { nullptr };
 	class CSound_Manager* m_pSound_Manager = { nullptr };
+	class CPhysX_Manager* m_pPhysXManager = { nullptr };
 
+	class CCamera_Manager* m_pCamera_Manager = { nullptr };
 
 public:
 	static void Release_Engine();

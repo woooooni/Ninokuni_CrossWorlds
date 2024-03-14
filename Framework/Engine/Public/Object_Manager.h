@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine_Defines.h"
 #include "Base.h"
 
 /* 게임내에 사용될 객체들을 만들어내기위한 원형객체들을 보관한다.(원본) */
@@ -17,10 +18,10 @@ private:
 
 public:
 	HRESULT Reserve_Manager(_uint iNumLevels, _uint iNumLayerTypes);
-	HRESULT Add_Prototype(const wstring& strPrototypeTag, class CGameObject* pPrototype, _uint iLayerType);
-	HRESULT Add_GameObject(_uint iLevelIndex, const _uint iLayerType, const wstring& strPrototypeTag,  void* pArg, __out class CGameObject** ppOut = nullptr);
-	HRESULT Add_GameObject(_uint iLevelIndex, const _uint iLayerType, class CGameObject* pGameObject);
-	class CGameObject* Clone_GameObject(const wstring& strPrototypeTag, _uint iLayerType, void* pArg = nullptr);
+	HRESULT Add_Prototype(const wstring& strPrototypeTag, class CGameObject* pPrototype, _uint iLayerType, _bool bUseLock);
+	HRESULT Add_GameObject(_uint iLevelIndex, const _uint iLayerType, const wstring& strPrototypeTag,  void* pArg, __out class CGameObject** ppOut, _bool bUseLock);
+	HRESULT Add_GameObject(_uint iLevelIndex, const _uint iLayerType, class CGameObject* pGameObject, _bool bUseLock);
+	class CGameObject* Clone_GameObject(const wstring& strPrototypeTag, _uint iLayerType, void* pArg, _bool bUseLock);
 	
 public:
 	const map<const wstring, class CGameObject*>& Find_Prototype_GameObjects(_uint iLayerType);
@@ -49,6 +50,8 @@ private:
 	
 	vector<class CLayer*>*				m_pLayers = { nullptr };
 	typedef vector<class CLayer*>*		LAYERS;
+
+	std::mutex m_GameObjectLock;
 
 private:
 	class CGameObject* Find_Prototype(const wstring& strPrototypeTag, _uint iLayerType);

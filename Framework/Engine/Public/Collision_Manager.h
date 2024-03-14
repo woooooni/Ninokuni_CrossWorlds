@@ -2,18 +2,17 @@
 
 #include "Base.h"
 
-BEGIN(Engine)
-
-
 union COLLIDER_ID
 {
 	struct
-	{
+	{ 
 		UINT iLeft_id;
 		UINT iRight_id;
 	};
 	ULONGLONG ID;
 };
+
+BEGIN(Engine)
 
 class CCollider;
 class CCollision_Manager final : public CBase

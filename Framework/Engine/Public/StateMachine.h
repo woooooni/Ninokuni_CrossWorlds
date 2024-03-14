@@ -14,6 +14,10 @@ private:
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
+	
+#ifdef _DEBUG
+	virtual HRESULT Render() override;
+#endif
 
 public:
 	void Tick_State(_float fTimeDelta);
@@ -24,6 +28,8 @@ public:
 
 	_uint Get_CurrState() { return m_iCurrState;}
 		
+	map<_uint, class CState*>& Get_States() { return m_States; }
+	// map<_uint, class CState*>& 로 받는 함수 만들자.
 
 private:
 	_uint m_iCurrState = -1;

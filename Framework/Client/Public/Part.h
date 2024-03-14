@@ -15,15 +15,6 @@ BEGIN(Client)
 
 class CPart abstract : public CGameObject
 {
-public:
-	typedef struct tagPartDesc
-	{
-		CGameObject* pOwner;
-		CHierarchyNode* pSocketBone;
-		_float4x4		SocketPivot;
-		CTransform* pParentTransform;
-	}PART_DESC;
-
 protected:
 	CPart(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObejctTag, _uint iObjectType);
 	CPart(const CPart& rhs);
@@ -31,22 +22,13 @@ protected:
 	virtual ~CPart() = default;
 
 public:
-	CHierarchyNode* Get_Socket(const wstring& strNodeName);
-	_float4x4 Get_SocketPivotMatrix();
-
-	void Set_SocketBone(class CHierarchyNode* pNode);
-
-	_float3 Get_PrevRotation() { return m_vPrevRotation; }
-	CHierarchyNode* Get_Current_SocketBone() { return m_pSocketBone; }
-
-	void Set_OriginRotation_Transform(_fmatrix RotationMatrix) { XMStoreFloat4x4(&m_OriginRotationTransform, RotationMatrix); }
-
+	HRESULT	Set_Owner(CGameObject* pOwner);
 	class CGameObject* Get_Owner() { return m_pOwner; }
 
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
-	virtual void Tick(_float fTimeDelta) PURE;
+	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
@@ -55,25 +37,22 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) {};
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) {};
 
+public:
+	CModel* Get_ModelCom() { return m_pModelCom; }
 
-protected:
-	CTransform*				m_pParentTransform = { nullptr };
-	CHierarchyNode*			m_pSocketBone = { nullptr };
-	_float4x4				m_OriginRotationTransform;
-	_float4x4				m_SocketPivotMatrix;
-	_float3					m_vPrevRotation = {};
+public:
+	void Set_SavePath(const wstring strPath) { m_strSavePath = strPath; }
+	wstring Get_SavePath() const { return m_strSavePath; }
 
-
-protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
-	CTransform* m_pTransformCom = { nullptr };
-	CShader* m_pShaderCom = { nullptr };
-	CModel* m_pModelCom = { nullptr };
-	CRenderer* m_pRendererCom = { nullptr };
+protected: 
 	CGameObject* m_pOwner = { nullptr };
+	CModel* m_pModelCom = { nullptr };
+	CShader* m_pShaderCom = { nullptr };
+	CRenderer* m_pRendererCom = { nullptr };
+	CTransform* m_pTransformCom = { nullptr };
+	Matrix m_matSocketWorld;
 
-protected:
-	HRESULT Compute_RenderMatrix(_matrix ChildMatrix);
-
+	wstring m_strSavePath;
 
 public:
 	virtual void Free() override;

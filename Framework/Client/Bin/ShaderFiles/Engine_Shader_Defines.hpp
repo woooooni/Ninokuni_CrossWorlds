@@ -53,6 +53,14 @@ RasterizerState RS_Sky
 	FrontCounterClockwise = false;
 };
 
+RasterizerState RS_CostumeDummy
+{
+	FillMode = Solid;
+	CullMode = Front;
+	FrontCounterClockwise = false;
+};
+
+
 DepthStencilState DSS_Default
 {
 	DepthEnable = true;
@@ -79,6 +87,16 @@ DepthStencilState DSS_None
 {
 	DepthEnable = false;
 	DepthWriteMask = zero;
+};
+
+DepthStencilState DSS_CostumeDummy
+{
+	DepthEnable = true;
+	//DepthWriteMask = zero;
+	//DepthFunc = always;
+
+	DepthWriteMask = all;
+	DepthFunc = GREATER_EQUAL;
 };
 
 BlendState BS_Default
@@ -111,4 +129,13 @@ BlendState BS_OneBlend
 
 };
 
+BlendState BS_OneMaxBlend
+{
+	BlendEnable[0] = true;
+	BlendEnable[1] = true;
+
+	SrcBlend = One;
+	DestBlend = One;
+	BlendOp = Max;
+};
 
